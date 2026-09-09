@@ -1,0 +1,34 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="60" cy="113" rx="40" ry="7" fill="rgba(0,0,0,0.2)"/>
+  <!-- patas -->
+  <ellipse cx="26" cy="96" rx="12" ry="10" fill="#7FA85A"/>
+  <ellipse cx="94" cy="96" rx="12" ry="10" fill="#7FA85A"/>
+  <ellipse cx="40" cy="104" rx="12" ry="9" fill="#8FB868"/>
+  <ellipse cx="80" cy="104" rx="12" ry="9" fill="#8FB868"/>
+  <!-- caparazon -->
+  <path d="M18 92 Q18 46 60 46 Q102 46 102 92 Z" fill="#5E8A46"/>
+  <path d="M26 90 Q26 54 60 54 Q94 54 94 90 Z" fill="#78A858"/>
+  <!-- placas -->
+  <g fill="none" stroke="#4A7038" stroke-width="3" stroke-linejoin="round">
+    <path d="M60 54 L60 90"/>
+    <path d="M42 58 L46 90"/>
+    <path d="M78 58 L74 90"/>
+    <path d="M28 74 L92 74"/>
+  </g>
+  <!-- borde inferior del caparazon -->
+  <rect x="16" y="88" width="88" height="10" rx="5" fill="#C8A868"/>
+  <!-- cabeza -->
+  <circle cx="60" cy="34" r="20" fill="#8FB868"/>
+  <!-- ojos -->
+  <ellipse cx="50" cy="30" rx="7.5" ry="8" fill="white"/>
+  <ellipse cx="70" cy="30" rx="7.5" ry="8" fill="white"/>
+  <ellipse cx="51" cy="31" rx="5" ry="5.6" fill="#22301A"/>
+  <ellipse cx="69" cy="31" rx="5" ry="5.6" fill="#22301A"/>
+  <circle cx="49" cy="28" r="2" fill="white"/>
+  <circle cx="67" cy="28" r="2" fill="white"/>
+  <!-- cachetes -->
+  <circle cx="44" cy="40" r="4" fill="#E8A0A0" opacity="0.7"/>
+  <circle cx="76" cy="40" r="4" fill="#E8A0A0" opacity="0.7"/>
+  <!-- sonrisa -->
+  <path d="M52 42 Q60 48 68 42" stroke="#4A7038" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>

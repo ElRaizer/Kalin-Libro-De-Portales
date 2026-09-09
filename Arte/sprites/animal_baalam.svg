@@ -1,0 +1,59 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="60" cy="115" rx="38" ry="7" fill="rgba(0,0,0,0.2)"/>
+  <!-- cola con manchas -->
+  <path d="M94 82 Q112 80 112 96 Q112 106 104 104 Q108 96 98 90 Z" fill="#E0A838"/>
+  <circle cx="104" cy="92" r="2.4" fill="#3A2410"/>
+  <circle cx="108" cy="99" r="2.4" fill="#3A2410"/>
+  <!-- cuerpo -->
+  <ellipse cx="60" cy="74" rx="38" ry="32" fill="#E0A838"/>
+  <ellipse cx="60" cy="82" rx="24" ry="20" fill="#F2DCA8"/>
+  <!-- rosetas del cuerpo -->
+  <g fill="none" stroke="#3A2410" stroke-width="2">
+    <circle cx="42" cy="68" r="4"/><circle cx="78" cy="68" r="4"/>
+    <circle cx="48" cy="86" r="4"/><circle cx="72" cy="86" r="4"/>
+    <circle cx="60" cy="76" r="4"/>
+  </g>
+  <circle cx="42" cy="68" r="1.2" fill="#3A2410"/>
+  <circle cx="78" cy="68" r="1.2" fill="#3A2410"/>
+  <circle cx="60" cy="76" r="1.2" fill="#3A2410"/>
+  <!-- patas -->
+  <rect x="38" y="90" width="15" height="26" rx="7" fill="#E0A838"/>
+  <rect x="67" y="90" width="15" height="26" rx="7" fill="#E0A838"/>
+  <ellipse cx="45" cy="116" rx="10" ry="5" fill="#C68820"/>
+  <ellipse cx="75" cy="116" rx="10" ry="5" fill="#C68820"/>
+  <!-- collar magico -->
+  <rect x="34" y="64" width="52" height="8" rx="4" fill="#7A4FB0"/>
+  <circle cx="60" cy="68" r="4" fill="#FFD040"/>
+  <!-- cabeza -->
+  <ellipse cx="60" cy="46" rx="33" ry="29" fill="#E0A838"/>
+  <!-- orejas -->
+  <circle cx="34" cy="26" r="10" fill="#E0A838"/>
+  <circle cx="86" cy="26" r="10" fill="#E0A838"/>
+  <circle cx="34" cy="27" r="5" fill="#3A2410"/>
+  <circle cx="86" cy="27" r="5" fill="#3A2410"/>
+  <!-- rosetas de la cara -->
+  <circle cx="40" cy="44" r="2.4" fill="#3A2410"/>
+  <circle cx="80" cy="44" r="2.4" fill="#3A2410"/>
+  <circle cx="36" cy="54" r="2.2" fill="#3A2410"/>
+  <circle cx="84" cy="54" r="2.2" fill="#3A2410"/>
+  <!-- cachetes -->
+  <ellipse cx="48" cy="60" rx="13" ry="11" fill="#F2DCA8"/>
+  <ellipse cx="72" cy="60" rx="13" ry="11" fill="#F2DCA8"/>
+  <!-- ojos -->
+  <ellipse cx="47" cy="42" rx="9" ry="9" fill="white"/>
+  <ellipse cx="73" cy="42" rx="9" ry="9" fill="white"/>
+  <ellipse cx="48" cy="43" rx="6" ry="6.5" fill="#3E8E3E"/>
+  <ellipse cx="72" cy="43" rx="6" ry="6.5" fill="#3E8E3E"/>
+  <ellipse cx="48" cy="43" rx="3" ry="5" fill="#0A0A10"/>
+  <ellipse cx="72" cy="43" rx="3" ry="5" fill="#0A0A10"/>
+  <circle cx="45" cy="40" r="2.4" fill="white"/>
+  <circle cx="69" cy="40" r="2.4" fill="white"/>
+  <!-- nariz y boca -->
+  <polygon points="60,52 54,57 66,57" fill="#7A3848"/>
+  <path d="M60 57 L60 62 M60 62 Q53 66 48 60 M60 62 Q67 66 72 60" stroke="#5A3018" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- bigotes -->
+  <line x1="30" y1="58" x2="46" y2="60" stroke="#7A5028" stroke-width="1.5"/>
+  <line x1="30" y1="64" x2="46" y2="63" stroke="#7A5028" stroke-width="1.5"/>
+  <line x1="74" y1="60" x2="90" y2="58" stroke="#7A5028" stroke-width="1.5"/>
+  <line x1="74" y1="63" x2="90" y2="64" stroke="#7A5028" stroke-width="1.5"/>
+</svg>

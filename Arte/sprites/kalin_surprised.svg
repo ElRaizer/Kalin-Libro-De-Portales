@@ -1,0 +1,117 @@
+<svg viewBox="0 0 200 340" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="softshadow"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+
+  <!-- Body shadow -->
+  <ellipse cx="100" cy="332" rx="48" ry="9" fill="rgba(0,0,0,0.2)" filter="url(#softshadow)"/>
+
+  <!-- Sandals -->
+  <ellipse cx="78"  cy="320" rx="20" ry="8" fill="#5C3A1A"/>
+  <ellipse cx="122" cy="320" rx="20" ry="8" fill="#5C3A1A"/>
+
+  <!-- Legs (slightly bent — startled pose) -->
+  <rect x="70" y="255" width="22" height="68" rx="8" fill="#C07840" transform="rotate(-4,81,289)"/>
+  <rect x="108" y="255" width="22" height="68" rx="8" fill="#B87038" transform="rotate(5,119,289)"/>
+
+  <!-- Tunic (slightly disheveled) -->
+  <path d="M 50 148 Q 42 210 46 264 L 154 264 Q 158 210 150 148 Z" fill="#F5EED8"/>
+  <!-- Hem pattern -->
+  <g fill="#0D8A7A" opacity="0.7">
+    <rect x="50"  y="254" width="12" height="8"/>
+    <rect x="66"  y="254" width="8"  height="8"/>
+    <rect x="78"  y="254" width="12" height="8"/>
+    <rect x="94"  y="254" width="8"  height="8"/>
+    <rect x="106" y="254" width="12" height="8"/>
+    <rect x="122" y="254" width="8"  height="8"/>
+    <rect x="134" y="254" width="12" height="8"/>
+  </g>
+
+  <!-- Cloak (blown to the side — wind effect) -->
+  <path d="M 50 148 Q 56 130 74 126 Q 100 120 126 126 Q 144 130 150 148 Q 128 156 100 158 Q 72 156 50 148 Z" fill="#0D8A7A"/>
+  <polygon points="100,128 108,136 100,144 92,136" fill="#F5EED8" opacity="0.5"/>
+
+  <!-- Both arms raised/out (startled) -->
+  <!-- Left arm raised -->
+  <path d="M 50 158 Q 14 135 10 108 Q 8 90 26 88 Q 36 94 32 108 Q 28 124 38 140 Q 44 152 52 160 Z" fill="#C07840"/>
+  <!-- Right arm raised -->
+  <path d="M 150 158 Q 186 135 190 108 Q 192 90 174 88 Q 164 94 168 108 Q 172 124 162 140 Q 156 152 148 160 Z" fill="#B87038"/>
+
+  <!-- Open hands (palms showing) -->
+  <!-- Left hand -->
+  <ellipse cx="16" cy="90" rx="14" ry="12" fill="#C07840"/>
+  <!-- Fingers left -->
+  <path d="M6 82 Q4 74 8 70 Q12 66 14 74 Z"  fill="#C07840"/>
+  <path d="M14 80 Q12 72 16 68 Q20 64 22 72 Z" fill="#C07840"/>
+  <path d="M22 82 Q22 74 26 70 Q30 66 28 74 Z" fill="#C07840"/>
+  <!-- Right hand -->
+  <ellipse cx="184" cy="90" rx="14" ry="12" fill="#B87038"/>
+  <path d="M194 82 Q196 74 192 70 Q188 66 186 74 Z" fill="#B87038"/>
+  <path d="M186 80 Q188 72 184 68 Q180 64 178 72 Z" fill="#B87038"/>
+  <path d="M178 82 Q178 74 174 70 Q170 66 172 74 Z" fill="#B87038"/>
+
+  <!-- Neck -->
+  <rect x="87" y="126" width="26" height="26" rx="6" fill="#C07840"/>
+
+  <!-- Head (tilted slightly) -->
+  <g transform="rotate(6, 100, 96)">
+    <ellipse cx="100" cy="96" rx="46" ry="50" fill="#C07840"/>
+    <ellipse cx="112" cy="100" rx="30" ry="35" fill="#B06838" opacity="0.2"/>
+
+    <!-- Hair -->
+    <path d="M 54 84 Q 55 48 100 44 Q 145 48 146 84 Q 142 60 128 52 Q 114 46 100 46 Q 86 46 72 52 Q 58 60 54 84 Z" fill="#180E06"/>
+    <path d="M 56 78 Q 54 62 62 54" stroke="#180E06" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M 144 78 Q 146 62 138 54" stroke="#180E06" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- Disheveled hair strands -->
+    <path d="M 58 60 Q 46 50 50 38" stroke="#180E06" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M 78 46 Q 76 30 84 26"  stroke="#180E06" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="100" cy="46" r="5" fill="#D4A020"/>
+
+    <!-- Ears -->
+    <ellipse cx="54"  cy="98" rx="9" ry="12" fill="#B87038"/>
+    <ellipse cx="146" cy="98" rx="9" ry="12" fill="#B87038"/>
+
+    <!-- Eyes WIDE open (surprised) -->
+    <ellipse cx="83"  cy="96" rx="14" ry="16" fill="white"/>
+    <ellipse cx="117" cy="96" rx="14" ry="16" fill="white"/>
+    <!-- Irises -->
+    <ellipse cx="83"  cy="97" rx="9"  ry="10" fill="#2C1808"/>
+    <ellipse cx="117" cy="97" rx="9"  ry="10" fill="#2C1808"/>
+    <!-- Pupils (dilated with fear) -->
+    <ellipse cx="83"  cy="97" rx="6"  ry="7"  fill="#0A0604"/>
+    <ellipse cx="117" cy="97" rx="6"  ry="7"  fill="#0A0604"/>
+    <!-- Big eye shines -->
+    <circle cx="87"  cy="92" r="4" fill="white"/>
+    <circle cx="121" cy="92" r="4" fill="white"/>
+    <circle cx="80"  cy="100" r="1.5" fill="white"/>
+    <circle cx="114" cy="100" r="1.5" fill="white"/>
+
+    <!-- Eyebrows raised HIGH -->
+    <path d="M 68 78 Q 83 70 96 77"  stroke="#180E06" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M 104 77 Q 117 70 132 78" stroke="#180E06" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Nose -->
+    <path d="M 96 110 Q 100 116 104 110" stroke="#9A5828" stroke-width="2" fill="none" opacity="0.5"/>
+    <circle cx="94"  cy="112" r="2.5" fill="#9A5828" opacity="0.35"/>
+    <circle cx="106" cy="112" r="2.5" fill="#9A5828" opacity="0.35"/>
+
+    <!-- Mouth OPEN (surprised "O") -->
+    <ellipse cx="100" cy="126" rx="14" ry="12" fill="#5A2808"/>
+    <ellipse cx="100" cy="124" rx="11" ry="9"  fill="#3A1606"/>
+    <!-- Teeth showing -->
+    <rect x="90" y="120" width="20" height="6" rx="2" fill="white"/>
+
+    <!-- Headband (slightly crooked) -->
+    <path d="M 56 74 Q 100 67 144 74" stroke="#D4A020" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <polygon points="100,64 106,72 100,76 94,72" fill="#D4A020"/>
+    <circle cx="100" cy="72" r="4" fill="#FFE060"/>
+
+    <!-- Sweat drops (nervous) -->
+    <path d="M 148 68 Q 150 58 154 64 Q 150 68 148 68 Z" fill="#A0D0F0" opacity="0.8"/>
+    <path d="M 158 82 Q 160 74 163 79 Q 160 83 158 82 Z" fill="#A0D0F0" opacity="0.7"/>
+  </g>
+
+  <!-- Floating exclamation / question marks (impact) -->
+  <text x="162" y="65" font-size="32" fill="#FFD030" font-weight="bold" opacity="0.9">!</text>
+  <text x="26"  y="68" font-size="28" fill="#FFD030" font-weight="bold" opacity="0.8">?</text>
+</svg>

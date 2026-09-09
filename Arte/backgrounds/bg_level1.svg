@@ -1,0 +1,164 @@
+<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#5AB4E8"/>
+      <stop offset="60%"  stop-color="#A0D8F0"/>
+      <stop offset="100%" stop-color="#D0EDF8"/>
+    </linearGradient>
+    <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#3A9040"/>
+      <stop offset="100%" stop-color="#2A6830"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%"   stop-color="#FFFFD0" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#F0E060" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur4"><feGaussianBlur stdDeviation="4"/></filter>
+    <filter id="blur8"><feGaussianBlur stdDeviation="8"/></filter>
+    <filter id="blur2"><feGaussianBlur stdDeviation="2"/></filter>
+    <filter id="blur1"><feGaussianBlur stdDeviation="1"/></filter>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="1280" height="720" fill="url(#sky)"/>
+
+  <!-- Sun -->
+  <circle cx="200" cy="130" r="80" fill="url(#sunGlow)" filter="url(#blur8)"/>
+  <circle cx="200" cy="130" r="52" fill="#FFF8A0"/>
+  <circle cx="200" cy="130" r="46" fill="#FFEC60"/>
+
+  <!-- Clouds -->
+  <g fill="white" opacity="0.85">
+    <ellipse cx="380" cy="90"  rx="90"  ry="35"/>
+    <ellipse cx="340" cy="90"  rx="60"  ry="30"/>
+    <ellipse cx="420" cy="88"  rx="70"  ry="28"/>
+    <ellipse cx="380" cy="80"  rx="55"  ry="30"/>
+
+    <ellipse cx="900" cy="75"  rx="100" ry="38"/>
+    <ellipse cx="850" cy="78"  rx="70"  ry="30"/>
+    <ellipse cx="950" cy="76"  rx="75"  ry="30"/>
+    <ellipse cx="900" cy="65"  rx="60"  ry="32"/>
+
+    <ellipse cx="1150" cy="110" rx="80" ry="32"/>
+    <ellipse cx="1110" cy="112" rx="55" ry="26"/>
+    <ellipse cx="1190" cy="110" rx="62" ry="26"/>
+  </g>
+
+  <!-- Distant ocean/sea (background) -->
+  <rect x="0" y="350" width="1280" height="50" fill="#5898C8" opacity="0.5"/>
+  <rect x="0" y="358" width="1280" height="8"  fill="#FFFFFF" opacity="0.2"/>
+
+  <!-- Island ground -->
+  <ellipse cx="640" cy="620" rx="700" ry="260" fill="#4A9050"/>
+  <ellipse cx="640" cy="620" rx="700" ry="260" fill="url(#grass)"/>
+  <!-- Ground texture variation -->
+  <ellipse cx="300" cy="650" rx="200" ry="80"  fill="#3A7840" opacity="0.4"/>
+  <ellipse cx="980" cy="640" rx="180" ry="70"  fill="#3A7840" opacity="0.4"/>
+  <ellipse cx="640" cy="700" rx="300" ry="60"  fill="#2A6030" opacity="0.3"/>
+
+  <!-- Dirt path areas (lighter green/sandy) -->
+  <ellipse cx="640" cy="600" rx="550" ry="200" fill="#5AAA58" opacity="0.3"/>
+
+  <!-- Maya stone huts / houses background (right and left) -->
+  <!-- Left area houses -->
+  <g opacity="0.85">
+    <!-- House 1 (left far) -->
+    <rect x="60" y="380" width="110" height="90" rx="4" fill="#C8B880"/>
+    <polygon points="60,380 115,330 170,380" fill="#A89060"/>
+    <rect x="95" y="415" width="28" height="55" rx="3" fill="#6A4A20"/>
+    <!-- House 2 (left near) -->
+    <rect x="50" y="460" width="130" height="100" rx="4" fill="#D0C090"/>
+    <polygon points="50,460 115,405 180,460" fill="#B09870"/>
+    <rect x="88" y="505" width="32" height="55" rx="3" fill="#5A3A18"/>
+  </g>
+  <!-- Right area houses -->
+  <g opacity="0.85">
+    <rect x="1110" y="375" width="115" height="88" rx="4" fill="#C8B880"/>
+    <polygon points="1110,375 1167,324 1225,375" fill="#A89060"/>
+    <rect x="1148" y="413" width="28" height="50" rx="3" fill="#6A4A20"/>
+
+    <rect x="1100" y="455" width="130" height="100" rx="4" fill="#D0C090"/>
+    <polygon points="1100,455 1165,400 1230,455" fill="#B09870"/>
+    <rect x="1138" y="500" width="32" height="55" rx="3" fill="#5A3A18"/>
+  </g>
+
+  <!-- Sak Beh (white stone paths) — subtle grid hints in the middle area -->
+  <!-- These give context to the grid puzzle area -->
+  <g fill="#E8E0C0" opacity="0.45">
+    <!-- Horizontal path traces -->
+    <rect x="150" y="395" width="980" height="10" rx="3"/>
+    <rect x="150" y="475" width="980" height="10" rx="3"/>
+    <rect x="150" y="555" width="980" height="10" rx="3"/>
+    <!-- Vertical path traces -->
+    <rect x="220" y="350" width="10" height="240" rx="3"/>
+    <rect x="380" y="350" width="10" height="240" rx="3"/>
+    <rect x="540" y="350" width="10" height="240" rx="3"/>
+    <rect x="700" y="350" width="10" height="240" rx="3"/>
+    <rect x="860" y="350" width="10" height="240" rx="3"/>
+    <rect x="1020" y="350" width="10" height="240" rx="3"/>
+  </g>
+
+  <!-- Maya ruins stone (center back) — decorative arch/stele -->
+  <rect x="590" y="310" width="100" height="180" rx="5" fill="#C0A870" opacity="0.6"/>
+  <rect x="610" y="295" width="60"  height="30"  rx="4" fill="#C0A870" opacity="0.6"/>
+  <!-- Glyph on stele -->
+  <g stroke="#8A7040" stroke-width="2" fill="none" opacity="0.7">
+    <rect x="618" y="330" width="44" height="44" rx="2"/>
+    <line x1="618" y1="352" x2="662" y2="352"/>
+    <line x1="640" y1="330" x2="640" y2="374"/>
+    <circle cx="640" cy="352" r="8"/>
+  </g>
+
+  <!-- Palm trees (decorative) -->
+  <!-- Left palms -->
+  <g>
+    <rect x="178" y="290" width="14" height="180" rx="4" fill="#6A4A1A" transform="rotate(5,185,380)"/>
+    <!-- Fronds left palm -->
+    <path d="M185 292 Q140 240 100 260 Q150 280 185 292 Z" fill="#2A8030"/>
+    <path d="M185 292 Q160 230 185 210 Q185 250 185 292 Z" fill="#2A9038"/>
+    <path d="M185 292 Q230 240 270 260 Q220 275 185 292 Z" fill="#2A8030"/>
+    <path d="M185 292 Q200 225 230 235 Q205 265 185 292 Z" fill="#258035"/>
+    <path d="M185 292 Q145 260 125 290 Q155 285 185 292 Z" fill="#228028"/>
+    <!-- Coconuts -->
+    <circle cx="183" cy="300" r="8" fill="#9A7030"/>
+    <circle cx="192" cy="296" r="7" fill="#8A6828"/>
+  </g>
+  <!-- Right palms -->
+  <g>
+    <rect x="1088" y="295" width="14" height="175" rx="4" fill="#6A4A1A" transform="rotate(-4,1095,382)"/>
+    <path d="M1095 297 Q1050 245 1010 265 Q1060 280 1095 297 Z" fill="#2A8030"/>
+    <path d="M1095 297 Q1070 235 1095 215 Q1095 255 1095 297 Z" fill="#2A9038"/>
+    <path d="M1095 297 Q1140 245 1180 265 Q1130 278 1095 297 Z" fill="#2A8030"/>
+    <path d="M1095 297 Q1110 230 1140 240 Q1115 268 1095 297 Z" fill="#258035"/>
+    <circle cx="1093" cy="305" r="8" fill="#9A7030"/>
+    <circle cx="1102" cy="301" r="7" fill="#8A6828"/>
+  </g>
+
+  <!-- Tropical flowers / plants in foreground -->
+  <g>
+    <!-- Bottom left flora -->
+    <path d="M0 620 Q30 560 80 580 Q40 590 0 620 Z" fill="#1A6020"/>
+    <path d="M0 660 Q50 600 100 620 Q55 635 0 660 Z" fill="#1A6820"/>
+    <circle cx="55" cy="585" r="10" fill="#FF4040" opacity="0.9"/>
+    <circle cx="75" cy="598" r="8"  fill="#FF6030" opacity="0.9"/>
+
+    <!-- Bottom right flora -->
+    <path d="M1280 620 Q1250 560 1200 580 Q1240 590 1280 620 Z" fill="#1A6020"/>
+    <path d="M1280 660 Q1230 600 1180 620 Q1225 635 1280 660 Z" fill="#1A6820"/>
+    <circle cx="1225" cy="585" r="10" fill="#FF4040" opacity="0.9"/>
+    <circle cx="1205" cy="598" r="8"  fill="#FFFF30" opacity="0.9"/>
+
+    <!-- Bottom center flora -->
+    <path d="M540 720 Q560 670 580 685 Q570 695 540 720 Z" fill="#1A6020"/>
+    <path d="M700 720 Q680 668 660 682 Q672 693 700 720 Z" fill="#1A6020"/>
+    <circle cx="568" cy="680" r="9" fill="#FF8020" opacity="0.9"/>
+    <circle cx="670" cy="677" r="8" fill="#FF4080" opacity="0.9"/>
+  </g>
+
+  <!-- Light vignette overlay (darken edges for focus on center) -->
+  <radialGradient id="vignette" cx="0.5" cy="0.55" r="0.65">
+    <stop offset="60%"  stop-color="#000000" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#000000" stop-opacity="0.35"/>
+  </radialGradient>
+  <rect width="1280" height="720" fill="url(#vignette)"/>
+</svg>

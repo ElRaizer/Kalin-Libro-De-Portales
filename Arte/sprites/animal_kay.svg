@@ -1,0 +1,26 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="60" cy="112" rx="34" ry="6" fill="rgba(0,0,0,0.18)"/>
+  <!-- burbujas -->
+  <circle cx="98" cy="30" r="5" fill="#CFE8F0" opacity="0.8"/>
+  <circle cx="106" cy="18" r="3.5" fill="#CFE8F0" opacity="0.8"/>
+  <!-- cola -->
+  <path d="M24 60 Q6 42 10 60 Q6 78 24 60 Z" fill="#E88030"/>
+  <path d="M24 60 Q12 50 14 60 Q12 70 24 60 Z" fill="#F0A050"/>
+  <!-- cuerpo -->
+  <ellipse cx="64" cy="60" rx="42" ry="32" fill="#F09040"/>
+  <ellipse cx="70" cy="68" rx="28" ry="18" fill="#F8C088"/>
+  <!-- franjas -->
+  <path d="M48 32 Q44 60 48 88" stroke="#D87020" stroke-width="6" fill="none" opacity="0.7" stroke-linecap="round"/>
+  <path d="M66 30 Q62 60 66 90" stroke="#D87020" stroke-width="6" fill="none" opacity="0.7" stroke-linecap="round"/>
+  <!-- aleta superior -->
+  <path d="M52 30 Q60 12 76 18 Q68 26 68 32 Z" fill="#E88030"/>
+  <!-- aleta lateral -->
+  <path d="M58 66 Q48 80 60 82 Q66 74 64 66 Z" fill="#E88030"/>
+  <!-- cara -->
+  <ellipse cx="86" cy="52" rx="9" ry="10" fill="white"/>
+  <ellipse cx="87" cy="53" rx="6" ry="7" fill="#203048"/>
+  <circle cx="85" cy="50" r="2.4" fill="white"/>
+  <path d="M96 64 Q100 66 98 70" stroke="#B85820" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- labios -->
+  <ellipse cx="104" cy="62" rx="4" ry="6" fill="#E07850"/>
+</svg>

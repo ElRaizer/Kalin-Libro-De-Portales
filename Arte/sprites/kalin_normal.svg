@@ -1,0 +1,141 @@
+<svg viewBox="0 0 200 340" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bookAura" cx="0.4" cy="0.5" r="0.6">
+      <stop offset="0%"  stop-color="#40C8FF" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#0040A0" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softshadow"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+
+  <!-- Body shadow -->
+  <ellipse cx="100" cy="330" rx="50" ry="10" fill="rgba(0,0,0,0.25)" filter="url(#softshadow)"/>
+
+  <!-- Sandals / feet -->
+  <ellipse cx="82"  cy="318" rx="20" ry="8" fill="#5C3A1A"/>
+  <ellipse cx="118" cy="318" rx="20" ry="8" fill="#5C3A1A"/>
+  <!-- Sandal straps -->
+  <line x1="72"  y1="312" x2="92"  y2="312" stroke="#3A2010" stroke-width="3"/>
+  <line x1="108" y1="312" x2="128" y2="312" stroke="#3A2010" stroke-width="3"/>
+
+  <!-- Legs -->
+  <rect x="74" y="258" width="22" height="62" rx="8" fill="#C07840"/>
+  <rect x="104" y="258" width="22" height="62" rx="8" fill="#B87038"/>
+
+  <!-- Huipil / Tunic (white with teal pattern) -->
+  <path d="M 52 148 Q 46 210 50 260 L 150 260 Q 154 210 148 148 Z" fill="#F5EED8"/>
+  <!-- Maya geometric border pattern at hem -->
+  <g fill="#0D8A7A" opacity="0.75">
+    <rect x="52"  y="250" width="12" height="8"/>
+    <rect x="68"  y="250" width="8"  height="8"/>
+    <rect x="80"  y="250" width="12" height="8"/>
+    <rect x="96"  y="250" width="8"  height="8"/>
+    <rect x="108" y="250" width="12" height="8"/>
+    <rect x="124" y="250" width="8"  height="8"/>
+    <rect x="136" y="250" width="12" height="8"/>
+  </g>
+  <!-- Central chest pattern (cross glyph) -->
+  <g fill="#0D8A7A" opacity="0.6">
+    <rect x="92"  y="180" width="16" height="5"/>
+    <rect x="97"  y="175" width="6"  height="15"/>
+    <rect x="88"  y="195" width="24" height="3" opacity="0.4"/>
+  </g>
+
+  <!-- Cloak / shoulder piece (teal, maya style) -->
+  <path d="M 52 148 Q 60 132 76 128 Q 100 122 124 128 Q 140 132 148 148 Q 126 158 100 160 Q 74 158 52 148 Z" fill="#0D8A7A"/>
+  <!-- Diamond pattern on cloak -->
+  <polygon points="100,130 108,138 100,146 92,138" fill="#F5EED8" opacity="0.5"/>
+  <polygon points="76,137 82,143 76,149 70,143"   fill="#F5EED8" opacity="0.35"/>
+  <polygon points="124,137 130,143 124,149 118,143" fill="#F5EED8" opacity="0.35"/>
+
+  <!-- Left arm (raised, holding book) -->
+  <path d="M 52 158 Q 22 170 18 205 Q 16 228 38 232 Q 44 224 40 210 Q 38 194 50 178 Q 54 168 58 165 Z" fill="#C07840"/>
+  <!-- Right arm (slightly out) -->
+  <path d="M 148 158 Q 174 170 178 198 Q 180 215 165 218 Q 160 212 162 200 Q 164 185 155 172 Q 151 165 148 162 Z" fill="#B87038"/>
+
+  <!-- Spell book (held by left hand) -->
+  <!-- Book glow -->
+  <ellipse cx="38" cy="248" rx="32" ry="40" fill="url(#bookAura)"/>
+  <!-- Book body (closed, left hand) -->
+  <rect x="12" y="218" width="52" height="66" rx="5" fill="#1A4A8A"/>
+  <rect x="16" y="222" width="44" height="58" rx="4" fill="#2060A0"/>
+  <!-- Book spine -->
+  <rect x="12" y="218" width="7"  height="66" rx="3" fill="#0D2E60"/>
+  <!-- Cover decoration: glyph circle -->
+  <circle cx="40" cy="254" r="18" fill="none" stroke="#FFD050" stroke-width="1.5" opacity="0.8"/>
+  <circle cx="40" cy="254" r="10" fill="none" stroke="#FFD050" stroke-width="1"   opacity="0.6"/>
+  <!-- Cross glyph on cover -->
+  <line x1="40" y1="238" x2="40" y2="270" stroke="#FFD050" stroke-width="1.5" opacity="0.7"/>
+  <line x1="24" y1="254" x2="56" y2="254" stroke="#FFD050" stroke-width="1.5" opacity="0.7"/>
+  <!-- Torn page corner (some pages missing) -->
+  <path d="M 56 222 L 64 214 L 64 222 Z" fill="#C0DCFF" opacity="0.8"/>
+  <!-- Magic sparkles from book -->
+  <g fill="#80D8FF" opacity="0.8">
+    <circle cx="8"  cy="208" r="2.5"/>
+    <circle cx="0"  cy="230" r="2"/>
+    <circle cx="10" cy="252" r="3"/>
+    <circle cx="68" cy="215" r="2"/>
+    <circle cx="72" cy="238" r="2.5"/>
+  </g>
+
+  <!-- Neck -->
+  <rect x="88" y="128" width="24" height="24" rx="6" fill="#C07840"/>
+
+  <!-- Head -->
+  <ellipse cx="100" cy="96" rx="46" ry="50" fill="#C07840"/>
+  <!-- Head shading -->
+  <ellipse cx="112" cy="100" rx="30" ry="35" fill="#B06838" opacity="0.2"/>
+
+  <!-- Hair (dark, tied back with small decoration) -->
+  <path d="M 54 84 Q 55 48 100 44 Q 145 48 146 84 Q 142 60 128 52 Q 114 46 100 46 Q 86 46 72 52 Q 58 60 54 84 Z" fill="#180E06"/>
+  <!-- Side hair strands -->
+  <path d="M 56 78 Q 54 62 62 54" stroke="#180E06" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M 144 78 Q 146 62 138 54" stroke="#180E06" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- Hair highlight -->
+  <path d="M 80 48 Q 100 44 120 48" stroke="#2A1A08" stroke-width="2" fill="none" opacity="0.5"/>
+  <!-- Hair tie / small gold bead -->
+  <circle cx="100" cy="46" r="5" fill="#D4A020"/>
+
+  <!-- Ears -->
+  <ellipse cx="54"  cy="98" rx="9" ry="12" fill="#B87038"/>
+  <ellipse cx="146" cy="98" rx="9" ry="12" fill="#B87038"/>
+  <!-- Inner ear -->
+  <ellipse cx="54"  cy="98" rx="5" ry="7" fill="#A06030" opacity="0.5"/>
+  <ellipse cx="146" cy="98" rx="5" ry="7" fill="#A06030" opacity="0.5"/>
+
+  <!-- Eyes -->
+  <!-- Eye whites -->
+  <ellipse cx="83"  cy="96" rx="12" ry="13" fill="white"/>
+  <ellipse cx="117" cy="96" rx="12" ry="13" fill="white"/>
+  <!-- Irises (warm dark brown) -->
+  <ellipse cx="84"  cy="97" rx="8"  ry="9"  fill="#2C1808"/>
+  <ellipse cx="118" cy="97" rx="8"  ry="9"  fill="#2C1808"/>
+  <!-- Pupils -->
+  <ellipse cx="85"  cy="98" rx="5"  ry="6"  fill="#0A0604"/>
+  <ellipse cx="119" cy="98" rx="5"  ry="6"  fill="#0A0604"/>
+  <!-- Eye shine -->
+  <circle cx="88"  cy="93" r="3" fill="white"/>
+  <circle cx="122" cy="93" r="3" fill="white"/>
+  <!-- Lower eyelid line -->
+  <path d="M74 102 Q83 107 92 102"  stroke="#9A6030" stroke-width="1" fill="none" opacity="0.5"/>
+  <path d="M108 102 Q117 107 126 102" stroke="#9A6030" stroke-width="1" fill="none" opacity="0.5"/>
+
+  <!-- Eyebrows (determined) -->
+  <path d="M 73 82 Q 83 78 94 82"  stroke="#180E06" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M 106 82 Q 117 78 127 82" stroke="#180E06" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Nose -->
+  <path d="M 96 110 Q 100 116 104 110" stroke="#9A5828" stroke-width="2" fill="none" opacity="0.5"/>
+  <circle cx="94"  cy="112" r="2.5" fill="#9A5828" opacity="0.35"/>
+  <circle cx="106" cy="112" r="2.5" fill="#9A5828" opacity="0.35"/>
+
+  <!-- Mouth (determined smile) -->
+  <path d="M 87 122 Q 100 130 113 122" stroke="#8B4513" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Lower lip -->
+  <path d="M 90 126 Q 100 130 110 126" stroke="#C07040" stroke-width="1" fill="none" opacity="0.4"/>
+
+  <!-- Headband with small glyph (gold) -->
+  <path d="M 56 74 Q 100 68 144 74" stroke="#D4A020" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <!-- Center ornament on headband -->
+  <polygon points="100,64 106,72 100,76 94,72" fill="#D4A020"/>
+  <circle cx="100" cy="72" r="4" fill="#FFE060"/>
+</svg>

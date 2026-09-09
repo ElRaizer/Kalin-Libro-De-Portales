@@ -1,0 +1,35 @@
+<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#BFD9C4"/>
+      <stop offset="1" stop-color="#93B896"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#sky)"/>
+  <!-- colinas lejanas -->
+  <path d="M0 260 Q200 180 420 250 Q640 320 880 240 Q1100 170 1280 250 L1280 720 L0 720 Z" fill="#7FA383" opacity="0.7"/>
+  <path d="M0 360 Q260 280 560 350 Q860 420 1280 330 L1280 720 L0 720 Z" fill="#6E9472" opacity="0.8"/>
+  <!-- suelo -->
+  <rect y="430" width="1280" height="290" fill="#5F855F" opacity="0.9"/>
+  <!-- arboles estilizados laterales (fuera del area del tablero) -->
+  <g opacity="0.55">
+    <ellipse cx="60" cy="200" rx="70" ry="90" fill="#4E7B52"/>
+    <rect x="50" y="260" width="20" height="90" rx="8" fill="#6E5236"/>
+    <ellipse cx="1225" cy="180" rx="75" ry="95" fill="#4E7B52"/>
+    <rect x="1214" y="250" width="22" height="100" rx="8" fill="#6E5236"/>
+  </g>
+  <!-- follaje superior decorativo -->
+  <g fill="#4E7B52" opacity="0.45">
+    <ellipse cx="200" cy="-10" rx="120" ry="60"/>
+    <ellipse cx="640" cy="-24" rx="180" ry="66"/>
+    <ellipse cx="1080" cy="-10" rx="130" ry="58"/>
+  </g>
+  <!-- florecitas del suelo -->
+  <g opacity="0.5">
+    <circle cx="120" cy="640" r="6" fill="#E8C060"/>
+    <circle cx="180" cy="690" r="5" fill="#D88098"/>
+    <circle cx="1120" cy="655" r="6" fill="#E8C060"/>
+    <circle cx="1200" cy="620" r="5" fill="#D88098"/>
+    <circle cx="1060" cy="700" r="5" fill="#E8C060"/>
+  </g>
+</svg>

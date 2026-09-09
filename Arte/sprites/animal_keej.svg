@@ -1,0 +1,39 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="60" cy="115" rx="35" ry="7" fill="rgba(0,0,0,0.2)"/>
+  <!-- astas -->
+  <path d="M48 24 Q44 8 38 4 M44 14 Q36 12 32 6 M44 18 Q38 20 32 18" stroke="#9A6B36" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M72 24 Q76 8 82 4 M76 14 Q84 12 88 6 M76 18 Q82 20 88 18" stroke="#9A6B36" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- cuerpo -->
+  <ellipse cx="60" cy="74" rx="33" ry="31" fill="#C89868"/>
+  <ellipse cx="60" cy="82" rx="21" ry="19" fill="#E8D0A8"/>
+  <!-- manchas de cervatillo -->
+  <circle cx="46" cy="70" r="3" fill="#EAD6B0"/>
+  <circle cx="74" cy="72" r="3" fill="#EAD6B0"/>
+  <circle cx="58" cy="64" r="2.6" fill="#EAD6B0"/>
+  <!-- patas -->
+  <rect x="40" y="92" width="12" height="24" rx="5" fill="#C89868"/>
+  <rect x="68" y="92" width="12" height="24" rx="5" fill="#C89868"/>
+  <ellipse cx="46" cy="116" rx="8" ry="4" fill="#6E4A26"/>
+  <ellipse cx="74" cy="116" rx="8" ry="4" fill="#6E4A26"/>
+  <!-- collar magico -->
+  <rect x="36" y="62" width="48" height="8" rx="4" fill="#2E8B6E"/>
+  <circle cx="60" cy="66" r="4" fill="#FFD040"/>
+  <!-- cabeza -->
+  <ellipse cx="60" cy="46" rx="26" ry="25" fill="#C89868"/>
+  <!-- orejas -->
+  <ellipse cx="34" cy="36" rx="9" ry="14" fill="#C89868" transform="rotate(-28 34 36)"/>
+  <ellipse cx="86" cy="36" rx="9" ry="14" fill="#C89868" transform="rotate(28 86 36)"/>
+  <ellipse cx="34" cy="37" rx="4" ry="8" fill="#E8B8C0" transform="rotate(-28 34 37)"/>
+  <ellipse cx="86" cy="37" rx="4" ry="8" fill="#E8B8C0" transform="rotate(28 86 37)"/>
+  <!-- hocico -->
+  <ellipse cx="60" cy="58" rx="13" ry="10" fill="#E8D0A8"/>
+  <ellipse cx="60" cy="56" rx="6" ry="4.5" fill="#3A2414"/>
+  <path d="M54 62 Q60 67 66 62" stroke="#8B5A2B" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- ojos -->
+  <ellipse cx="48" cy="44" rx="8" ry="9" fill="white"/>
+  <ellipse cx="72" cy="44" rx="8" ry="9" fill="white"/>
+  <ellipse cx="49" cy="45" rx="5.5" ry="6.5" fill="#2A1808"/>
+  <ellipse cx="71" cy="45" rx="5.5" ry="6.5" fill="#2A1808"/>
+  <circle cx="47" cy="42" r="2.2" fill="white"/>
+  <circle cx="69" cy="42" r="2.2" fill="white"/>
+</svg>

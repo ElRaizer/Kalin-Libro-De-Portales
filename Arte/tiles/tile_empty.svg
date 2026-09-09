@@ -1,0 +1,22 @@
+<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#F0E8D0"/>
+      <stop offset="100%" stop-color="#D8CEB0"/>
+    </linearGradient>
+  </defs>
+  <!-- Stone tile base -->
+  <rect width="80" height="80" rx="4" fill="url(#stone)"/>
+  <!-- Stone crack / joint lines (subtle) -->
+  <line x1="0"  y1="40" x2="80" y2="40" stroke="#C8BCA0" stroke-width="1.5" opacity="0.5"/>
+  <line x1="40" y1="0"  x2="40" y2="80" stroke="#C8BCA0" stroke-width="1.5" opacity="0.5"/>
+  <!-- Corner dots (stone peg holes) -->
+  <circle cx="12" cy="12" r="3" fill="#C8BCA0" opacity="0.6"/>
+  <circle cx="68" cy="12" r="3" fill="#C8BCA0" opacity="0.6"/>
+  <circle cx="12" cy="68" r="3" fill="#C8BCA0" opacity="0.6"/>
+  <circle cx="68" cy="68" r="3" fill="#C8BCA0" opacity="0.6"/>
+  <!-- Top highlight (light) -->
+  <rect x="2" y="2" width="76" height="6" rx="2" fill="white" opacity="0.3"/>
+  <!-- Border -->
+  <rect x="1" y="1" width="78" height="78" rx="3" fill="none" stroke="#B8AA88" stroke-width="1.5" opacity="0.6"/>
+</svg>

@@ -1,0 +1,198 @@
+<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="roomBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#0A0618"/>
+      <stop offset="100%" stop-color="#180C28"/>
+    </linearGradient>
+    <radialGradient id="bookGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%"   stop-color="#60E8FF" stop-opacity="0.9"/>
+      <stop offset="50%"  stop-color="#2080D0" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#0030A0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="candleGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%"   stop-color="#FFD070" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#FF6000" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="windowMoon" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%"   stop-color="#C8D8FF" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#080420" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur6"><feGaussianBlur stdDeviation="6"/></filter>
+    <filter id="blur12"><feGaussianBlur stdDeviation="12"/></filter>
+    <filter id="blur3"><feGaussianBlur stdDeviation="3"/></filter>
+    <filter id="blur20"><feGaussianBlur stdDeviation="20"/></filter>
+  </defs>
+
+  <!-- Room background -->
+  <rect width="1280" height="720" fill="url(#roomBg)"/>
+
+  <!-- Stone wall texture lines (horizontal) -->
+  <g stroke="#201030" stroke-width="2" opacity="0.4">
+    <line x1="0" y1="80"  x2="1280" y2="80"/>
+    <line x1="0" y1="180" x2="1280" y2="180"/>
+    <line x1="0" y1="280" x2="1280" y2="280"/>
+    <line x1="0" y1="380" x2="1280" y2="380"/>
+  </g>
+  <!-- Stone wall vertical joints (offset pattern) -->
+  <g stroke="#201030" stroke-width="1.5" opacity="0.3">
+    <line x1="160" y1="80"  x2="160" y2="180"/>
+    <line x1="480" y1="80"  x2="480" y2="180"/>
+    <line x1="800" y1="80"  x2="800" y2="180"/>
+    <line x1="1120" y1="80" x2="1120" y2="180"/>
+    <line x1="320" y1="180" x2="320" y2="280"/>
+    <line x1="640" y1="180" x2="640" y2="280"/>
+    <line x1="960" y1="180" x2="960" y2="280"/>
+    <line x1="160" y1="280" x2="160" y2="380"/>
+    <line x1="480" y1="280" x2="480" y2="380"/>
+    <line x1="800" y1="280" x2="800" y2="380"/>
+    <line x1="1120" y1="280" x2="1120" y2="380"/>
+  </g>
+
+  <!-- Floor -->
+  <rect x="0" y="540" width="1280" height="180" fill="#120820"/>
+  <!-- Floor boards -->
+  <g stroke="#1E1030" stroke-width="2" opacity="0.5">
+    <line x1="0" y1="560" x2="1280" y2="560"/>
+    <line x1="0" y1="580" x2="1280" y2="580"/>
+    <line x1="0" y1="600" x2="1280" y2="600"/>
+    <line x1="0" y1="620" x2="1280" y2="620"/>
+    <line x1="0" y1="640" x2="1280" y2="640"/>
+  </g>
+
+  <!-- Window (right side, moonlight) -->
+  <rect x="900" y="60" width="260" height="360" rx="8" fill="#080420"/>
+  <rect x="908" y="68" width="244" height="344" rx="6" fill="#0A0830"/>
+  <!-- Night sky through window -->
+  <rect x="912" y="72" width="236" height="332" rx="4" fill="#0A0620"/>
+  <!-- Moon visible through window -->
+  <circle cx="1040" cy="200" r="55" fill="url(#windowMoon)" filter="url(#blur12)"/>
+  <circle cx="1040" cy="200" r="38" fill="#D8E8FF" opacity="0.85"/>
+  <!-- Window frame cross -->
+  <line x1="1030" y1="72" x2="1030" y2="404" stroke="#2A1840" stroke-width="8"/>
+  <line x1="912" y1="240" x2="1148" y2="240" stroke="#2A1840" stroke-width="8"/>
+  <!-- Window glow on floor -->
+  <ellipse cx="1040" cy="600" rx="130" ry="40" fill="#C8D8FF" opacity="0.06" filter="url(#blur12)"/>
+  <!-- Window frame outer -->
+  <rect x="900" y="60" width="260" height="360" rx="8" fill="none" stroke="#3A2050" stroke-width="6"/>
+  <!-- Stars in window -->
+  <g fill="#FFFFFF" opacity="0.7">
+    <circle cx="930"  cy="100" r="1"/>
+    <circle cx="980"  cy="85"  r="1.5"/>
+    <circle cx="1100" cy="95"  r="1"/>
+    <circle cx="1130" cy="130" r="1.5"/>
+    <circle cx="960"  cy="150" r="1"/>
+    <circle cx="1110" cy="160" r="1"/>
+    <circle cx="940"  cy="300" r="1"/>
+    <circle cx="1120" cy="310" r="1"/>
+    <circle cx="960"  cy="360" r="1.5"/>
+  </g>
+
+  <!-- Bookshelf (left wall) -->
+  <rect x="30" y="80" width="220" height="400" rx="4" fill="#1A0E28"/>
+  <rect x="34" y="84" width="212" height="396" rx="3" fill="#150B22"/>
+  <!-- Shelf planks -->
+  <rect x="30" y="160" width="220" height="10" fill="#2A1840"/>
+  <rect x="30" y="260" width="220" height="10" fill="#2A1840"/>
+  <rect x="30" y="360" width="220" height="10" fill="#2A1840"/>
+  <!-- Books on shelves -->
+  <!-- Row 1 -->
+  <rect x="40"  y="95"  width="18" height="62" rx="2" fill="#8B2020"/>
+  <rect x="62"  y="100" width="14" height="58" rx="2" fill="#205080"/>
+  <rect x="80"  y="92"  width="20" height="66" rx="2" fill="#1A7020"/>
+  <rect x="104" y="98"  width="16" height="60" rx="2" fill="#6A4010"/>
+  <rect x="124" y="95"  width="18" height="63" rx="2" fill="#502080"/>
+  <rect x="146" y="100" width="14" height="58" rx="2" fill="#803018"/>
+  <rect x="164" y="93"  width="20" height="65" rx="2" fill="#103858"/>
+  <rect x="188" y="98"  width="16" height="60" rx="2" fill="#206030"/>
+  <rect x="208" y="94"  width="15" height="64" rx="2" fill="#701840"/>
+  <!-- Row 2 -->
+  <rect x="40"  y="173" width="16" height="84" rx="2" fill="#1A5080"/>
+  <rect x="60"  y="178" width="20" height="79" rx="2" fill="#702010"/>
+  <rect x="84"  y="170" width="14" height="87" rx="2" fill="#306020"/>
+  <rect x="102" y="175" width="18" height="82" rx="2" fill="#601830"/>
+  <rect x="124" y="172" width="16" height="85" rx="2" fill="#4A3010"/>
+  <rect x="144" y="176" width="20" height="81" rx="2" fill="#103060"/>
+  <rect x="168" y="170" width="14" height="87" rx="2" fill="#502860"/>
+  <rect x="186" y="174" width="18" height="83" rx="2" fill="#0A5030"/>
+  <!-- Row 3 -->
+  <rect x="40"  y="273" width="18" height="84" rx="2" fill="#703020"/>
+  <rect x="62"  y="278" width="14" height="79" rx="2" fill="#204870"/>
+  <rect x="80"  y="270" width="20" height="87" rx="2" fill="#0A6040"/>
+  <rect x="104" y="274" width="16" height="83" rx="2" fill="#601060"/>
+  <rect x="124" y="271" width="18" height="86" rx="2" fill="#A02820"/>
+  <rect x="146" y="276" width="14" height="81" rx="2" fill="#2A4818"/>
+  <rect x="164" y="272" width="20" height="85" rx="2" fill="#401828"/>
+  <rect x="188" y="275" width="16" height="82" rx="2" fill="#1A3868"/>
+
+  <!-- Desk (center-left area) -->
+  <!-- Desk top -->
+  <rect x="280" y="420" width="580" height="28" rx="6" fill="#3A2010"/>
+  <rect x="284" y="424" width="572" height="20" rx="5" fill="#4A2C14"/>
+  <!-- Desk legs -->
+  <rect x="300" y="448" width="22" height="200" rx="4" fill="#3A2010"/>
+  <rect x="820" y="448" width="22" height="200" rx="4" fill="#3A2010"/>
+  <!-- Desk surface items shadow -->
+  <rect x="280" y="418" width="580" height="10" rx="4" fill="#200E06" opacity="0.5"/>
+
+  <!-- Glowing book on desk (CENTER) -->
+  <!-- Book glow halo -->
+  <ellipse cx="560" cy="400" rx="200" ry="140" fill="url(#bookGlow)" filter="url(#blur20)"/>
+  <ellipse cx="560" cy="410" rx="160" ry="100" fill="#40B8FF" opacity="0.15" filter="url(#blur12)"/>
+  <!-- Book shadow on desk -->
+  <ellipse cx="560" cy="428" rx="100" ry="18" fill="#000000" opacity="0.5"/>
+  <!-- Book body (open) -->
+  <path d="M 420 310 Q 425 390 430 418 Q 555 408 560 415 L 560 310 Z" fill="#1A4080"/>
+  <path d="M 700 310 Q 695 390 690 418 Q 565 408 560 415 L 560 310 Z" fill="#1A3870"/>
+  <!-- Book spine -->
+  <rect x="555" y="310" width="10" height="108" rx="3" fill="#0D2850"/>
+  <!-- Left page (glowing blue-white) -->
+  <path d="M 424 314 Q 426 388 432 414 Q 556 405 558 413 L 558 314 Z" fill="#D0EEFF"/>
+  <!-- Right page -->
+  <path d="M 696 314 Q 694 388 688 414 Q 564 405 562 413 L 562 314 Z" fill="#C8E8FF"/>
+  <!-- Page glow lines (magic text) -->
+  <g stroke="#40A8FF" stroke-width="1.5" opacity="0.7">
+    <line x1="445" y1="335" x2="540" y2="332"/>
+    <line x1="445" y1="348" x2="535" y2="345"/>
+    <line x1="445" y1="361" x2="540" y2="358"/>
+    <line x1="445" y1="374" x2="530" y2="371"/>
+    <line x1="445" y1="387" x2="538" y2="384"/>
+  </g>
+  <g stroke="#40A8FF" stroke-width="1.5" opacity="0.7">
+    <line x1="578" y1="335" x2="672" y2="332"/>
+    <line x1="578" y1="348" x2="668" y2="345"/>
+    <line x1="578" y1="361" x2="672" y2="358"/>
+    <line x1="578" y1="374" x2="665" y2="371"/>
+    <line x1="578" y1="387" x2="670" y2="384"/>
+  </g>
+  <!-- Floating magic pages -->
+  <g opacity="0.7">
+    <rect x="660" y="260" width="60" height="80" rx="3" fill="#C0DEFF" transform="rotate(-18, 690, 300)"/>
+    <rect x="360" y="250" width="55" height="75" rx="3" fill="#C0DEFF" transform="rotate(15, 387, 287)"/>
+    <rect x="720" y="200" width="45" height="62" rx="3" fill="#D0E8FF" transform="rotate(-30, 742, 231)"/>
+    <rect x="310" y="180" width="48" height="65" rx="3" fill="#D0E8FF" transform="rotate(25, 334, 212)"/>
+  </g>
+
+  <!-- Candles on desk (left and right of book) -->
+  <!-- Left candle -->
+  <rect x="360" y="378" width="14" height="42" rx="3" fill="#F0E0C0"/>
+  <ellipse cx="367" cy="372" rx="7" ry="4" fill="#D8C8A0"/>
+  <ellipse cx="367" cy="376" rx="3" ry="5" fill="url(#candleGlow)" filter="url(#blur3)"/>
+  <ellipse cx="367" cy="376" rx="12" ry="22" fill="#FFD060" opacity="0.25" filter="url(#blur6)"/>
+  <!-- Candle flame left -->
+  <path d="M364 372 Q367 360 370 372" fill="#FFE060"/>
+  <path d="M365 373 Q367 364 369 373" fill="#FFF0A0"/>
+  <!-- Right candle -->
+  <rect x="748" y="382" width="14" height="38" rx="3" fill="#F0E0C0"/>
+  <ellipse cx="755" cy="376" rx="7" ry="4" fill="#D8C8A0"/>
+  <ellipse cx="755" cy="380" rx="3" ry="5" fill="url(#candleGlow)" filter="url(#blur3)"/>
+  <ellipse cx="755" cy="380" rx="12" ry="22" fill="#FFD060" opacity="0.25" filter="url(#blur6)"/>
+  <path d="M752 376 Q755 364 758 376" fill="#FFE060"/>
+  <path d="M753 377 Q755 368 757 377" fill="#FFF0A0"/>
+
+  <!-- Scroll/notes on desk -->
+  <rect x="680" y="398" width="80" height="22" rx="4" fill="#D8C890" opacity="0.8" transform="rotate(-5,720,409)"/>
+  <rect x="300" y="400" width="70" height="20" rx="4" fill="#D8C890" opacity="0.7" transform="rotate(8,335,410)"/>
+
+  <!-- Room corner glow (ambient from book) -->
+  <ellipse cx="560" cy="400" rx="400" ry="300" fill="#1040A0" opacity="0.06"/>
+</svg>

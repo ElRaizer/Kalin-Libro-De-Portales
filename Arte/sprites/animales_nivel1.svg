@@ -1,0 +1,138 @@
+<svg viewBox="0 0 360 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- PEEK' (Perro) — col 0-119 -->
+  <g transform="translate(0,0)">
+    <!-- Body shadow -->
+    <ellipse cx="60" cy="115" rx="38" ry="7" fill="rgba(0,0,0,0.2)"/>
+    <!-- Body -->
+    <ellipse cx="60" cy="72" rx="38" ry="32" fill="#D4985A"/>
+    <!-- Belly -->
+    <ellipse cx="60" cy="80" rx="24" ry="20" fill="#E8C090"/>
+    <!-- Tail -->
+    <path d="M96 68 Q112 48 106 38 Q102 30 96 40 Q100 50 92 65 Z" fill="#C88840"/>
+    <!-- Front legs -->
+    <rect x="38" y="88" width="14" height="28" rx="6" fill="#D4985A"/>
+    <rect x="68" y="88" width="14" height="28" rx="6" fill="#D4985A"/>
+    <!-- Paws -->
+    <ellipse cx="45" cy="116" rx="10" ry="5" fill="#C88840"/>
+    <ellipse cx="75" cy="116" rx="10" ry="5" fill="#C88840"/>
+    <!-- Head -->
+    <ellipse cx="60" cy="46" rx="32" ry="28" fill="#D4985A"/>
+    <!-- Ears (floppy) -->
+    <path d="M32 34 Q18 28 20 48 Q24 64 36 58 Q32 46 36 36 Z" fill="#C07830"/>
+    <path d="M88 34 Q102 28 100 48 Q96 64 84 58 Q88 46 84 36 Z" fill="#C07830"/>
+    <!-- Snout -->
+    <ellipse cx="60" cy="56" rx="18" ry="14" fill="#E8B070"/>
+    <!-- Nose -->
+    <ellipse cx="60" cy="48" rx="8" ry="5" fill="#3A1808"/>
+    <!-- Nose highlight -->
+    <circle cx="58" cy="47" r="2" fill="white" opacity="0.6"/>
+    <!-- Eyes -->
+    <ellipse cx="44" cy="40" rx="9" ry="9" fill="white"/>
+    <ellipse cx="76" cy="40" rx="9" ry="9" fill="white"/>
+    <ellipse cx="45" cy="41" rx="6" ry="6" fill="#3A2010"/>
+    <ellipse cx="77" cy="41" rx="6" ry="6" fill="#3A2010"/>
+    <circle cx="43"  cy="38" r="2.5" fill="white"/>
+    <circle cx="75" cy="38" r="2.5" fill="white"/>
+    <!-- Happy eyebrows -->
+    <path d="M37 32 Q44 27 52 31" stroke="#8B5020" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M68 31 Q75 27 84 32" stroke="#8B5020" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Happy mouth -->
+    <path d="M48 62 Q60 70 72 62" stroke="#8B3810" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Tongue -->
+    <ellipse cx="60" cy="68" rx="8" ry="6" fill="#FF7080"/>
+    <!-- Collar -->
+    <rect x="34" y="66" width="52" height="8" rx="4" fill="#E05020"/>
+    <circle cx="60" cy="70" r="4" fill="#FFD040"/>
+    <!-- Maya name tag on collar -->
+    <rect x="50" y="66" width="20" height="8" rx="3" fill="#FFD040"/>
+  </g>
+
+  <!-- MÍIS (Gato) — col 120-239 -->
+  <g transform="translate(120,0)">
+    <ellipse cx="60" cy="115" rx="36" ry="7" fill="rgba(0,0,0,0.2)"/>
+    <!-- Body -->
+    <ellipse cx="60" cy="74" rx="34" ry="30" fill="#A8A8C0"/>
+    <!-- Belly -->
+    <ellipse cx="60" cy="80" rx="20" ry="18" fill="#D8D8E8"/>
+    <!-- Tail (curled) -->
+    <path d="M94 80 Q116 72 118 56 Q120 42 108 42 Q100 42 102 54 Q104 64 96 70 Z" fill="#9898B0"/>
+    <!-- Front legs -->
+    <rect x="40" y="90" width="13" height="26" rx="6" fill="#A8A8C0"/>
+    <rect x="67" y="90" width="13" height="26" rx="6" fill="#A8A8C0"/>
+    <!-- Paws -->
+    <ellipse cx="46" cy="116" rx="10" ry="5" fill="#9898B0"/>
+    <ellipse cx="73" cy="116" rx="10" ry="5" fill="#9898B0"/>
+    <!-- Head -->
+    <ellipse cx="60" cy="44" rx="30" ry="28" fill="#A8A8C0"/>
+    <!-- Ears (pointed) -->
+    <polygon points="36,28 28,6 50,22"  fill="#A8A8C0"/>
+    <polygon points="84,28 92,6 70,22"  fill="#A8A8C0"/>
+    <!-- Inner ears -->
+    <polygon points="38,26 32,12 48,22" fill="#E880A0"/>
+    <polygon points="82,26 88,12 72,22" fill="#E880A0"/>
+    <!-- Stripes -->
+    <path d="M44 35 Q52 30 60 35" stroke="#8888A0" stroke-width="2.5" fill="none"/>
+    <path d="M60 35 Q68 30 76 35" stroke="#8888A0" stroke-width="2.5" fill="none"/>
+    <path d="M38 48 Q32 56 38 64" stroke="#8888A0" stroke-width="2" fill="none"/>
+    <path d="M82 48 Q88 56 82 64" stroke="#8888A0" stroke-width="2" fill="none"/>
+    <!-- Eyes (large, green) -->
+    <ellipse cx="44" cy="44" rx="10" ry="11" fill="white"/>
+    <ellipse cx="76" cy="44" rx="10" ry="11" fill="white"/>
+    <ellipse cx="44" cy="45" rx="7"  ry="8"  fill="#308030"/>
+    <ellipse cx="76" cy="45" rx="7"  ry="8"  fill="#308030"/>
+    <ellipse cx="44" cy="45" rx="4"  ry="6"  fill="#0A0A10"/>
+    <ellipse cx="76" cy="45" rx="4"  ry="6"  fill="#0A0A10"/>
+    <circle cx="42"  cy="42" r="2.5" fill="white"/>
+    <circle cx="74" cy="42" r="2.5" fill="white"/>
+    <!-- Whiskers -->
+    <line x1="24" y1="58" x2="46" y2="60" stroke="#808090" stroke-width="1.5"/>
+    <line x1="24" y1="64" x2="46" y2="63" stroke="#808090" stroke-width="1.5"/>
+    <line x1="74" y1="60" x2="96" y2="58" stroke="#808090" stroke-width="1.5"/>
+    <line x1="74" y1="63" x2="96" y2="64" stroke="#808090" stroke-width="1.5"/>
+    <!-- Nose -->
+    <polygon points="60,56 56,62 64,62" fill="#E880A0"/>
+    <!-- Mouth -->
+    <path d="M56 62 Q60 68 64 62" stroke="#C05070" stroke-width="1.5" fill="none"/>
+    <!-- Collar (teal, maya style) -->
+    <rect x="36" y="66" width="48" height="8" rx="4" fill="#0D8A7A"/>
+    <circle cx="60" cy="70" r="4" fill="#FFD040"/>
+  </g>
+
+  <!-- KÁAX (Gallina) — col 240-359 -->
+  <g transform="translate(240,0)">
+    <ellipse cx="60" cy="115" rx="35" ry="7" fill="rgba(0,0,0,0.2)"/>
+    <!-- Body (round, fluffy) -->
+    <ellipse cx="60" cy="76" rx="36" ry="34" fill="#C85820"/>
+    <!-- Belly (lighter) -->
+    <ellipse cx="60" cy="84" rx="22" ry="24" fill="#E87838"/>
+    <!-- Wing detail -->
+    <path d="M24 68 Q16 80 22 96 Q32 92 38 84 Q36 76 30 72 Z" fill="#B04818" opacity="0.8"/>
+    <path d="M96 68 Q104 80 98 96 Q88 92 82 84 Q84 76 90 72 Z" fill="#B04818" opacity="0.8"/>
+    <!-- Feather lines on body -->
+    <path d="M44 60 Q52 52 60 58" stroke="#A84010" stroke-width="2" fill="none" opacity="0.6"/>
+    <path d="M60 58 Q68 52 76 60" stroke="#A84010" stroke-width="2" fill="none" opacity="0.6"/>
+    <!-- Legs (thin, yellow) -->
+    <rect x="44" y="104" width="8" height="18" rx="3" fill="#D4A020"/>
+    <rect x="68" y="104" width="8" height="18" rx="3" fill="#D4A020"/>
+    <!-- Claws -->
+    <path d="M40 122 Q44 120 52 122 Q44 122 40 126 Z" fill="#C49018"/>
+    <path d="M64 122 Q68 120 76 122 Q68 122 64 126 Z" fill="#C49018"/>
+    <!-- Head -->
+    <ellipse cx="60" cy="44" rx="26" ry="24" fill="#C85820"/>
+    <!-- Comb (red) -->
+    <path d="M52 24 Q56 14 60 20 Q64 10 68 18 Q72 8 76 16 Q80 24 74 28 Q68 24 64 28 Q60 24 56 28 Q52 24 52 24 Z" fill="#CC2020"/>
+    <!-- Wattle (red, under beak) -->
+    <ellipse cx="60" cy="60" rx="8" ry="6" fill="#CC2020"/>
+    <!-- Beak -->
+    <polygon points="60,48 46,54 60,58" fill="#E4A020"/>
+    <!-- Eye -->
+    <ellipse cx="72" cy="40" rx="9" ry="9" fill="white"/>
+    <ellipse cx="73" cy="41" rx="6" ry="6" fill="#C84010"/>
+    <circle cx="74" cy="40" rx="3" ry="3" fill="#1A0808"/>
+    <circle cx="73" cy="39" r="2" fill="white"/>
+    <!-- Eyebrow-feather crest -->
+    <path d="M66 33 Q72 28 80 33" stroke="#A83010" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Happy expression marks -->
+    <path d="M32 72 Q38 68 44 72" stroke="#E87838" stroke-width="1.5" fill="none" opacity="0.6"/>
+  </g>
+</svg>

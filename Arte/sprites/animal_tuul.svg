@@ -1,0 +1,40 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="60" cy="115" rx="35" ry="7" fill="rgba(0,0,0,0.2)"/>
+  <!-- orejas largas -->
+  <ellipse cx="46" cy="20" rx="9" ry="22" fill="#C4C4CE" transform="rotate(-10 46 20)"/>
+  <ellipse cx="74" cy="20" rx="9" ry="22" fill="#C4C4CE" transform="rotate(10 74 20)"/>
+  <ellipse cx="46" cy="22" rx="4.5" ry="15" fill="#F0B8C4" transform="rotate(-10 46 22)"/>
+  <ellipse cx="74" cy="22" rx="4.5" ry="15" fill="#F0B8C4" transform="rotate(10 74 22)"/>
+  <!-- cuerpo -->
+  <ellipse cx="60" cy="78" rx="32" ry="29" fill="#C4C4CE"/>
+  <ellipse cx="60" cy="84" rx="20" ry="18" fill="#EDEDF2"/>
+  <!-- colita -->
+  <circle cx="90" cy="90" r="9" fill="#EDEDF2"/>
+  <!-- patas -->
+  <ellipse cx="46" cy="108" rx="12" ry="8" fill="#C4C4CE"/>
+  <ellipse cx="74" cy="108" rx="12" ry="8" fill="#C4C4CE"/>
+  <!-- collar magico -->
+  <rect x="38" y="62" width="44" height="8" rx="4" fill="#2E8B6E"/>
+  <circle cx="60" cy="66" r="4" fill="#FFD040"/>
+  <!-- cabeza -->
+  <ellipse cx="60" cy="48" rx="26" ry="24" fill="#C4C4CE"/>
+  <!-- cachetes -->
+  <ellipse cx="49" cy="58" rx="10" ry="8" fill="#EDEDF2"/>
+  <ellipse cx="71" cy="58" rx="10" ry="8" fill="#EDEDF2"/>
+  <!-- ojos -->
+  <ellipse cx="48" cy="44" rx="8" ry="9" fill="white"/>
+  <ellipse cx="72" cy="44" rx="8" ry="9" fill="white"/>
+  <ellipse cx="49" cy="45" rx="5.5" ry="6.5" fill="#3A2438"/>
+  <ellipse cx="71" cy="45" rx="5.5" ry="6.5" fill="#3A2438"/>
+  <circle cx="47" cy="42" r="2.2" fill="white"/>
+  <circle cx="69" cy="42" r="2.2" fill="white"/>
+  <!-- nariz y boca -->
+  <polygon points="60,52 55,56 65,56" fill="#E888A0"/>
+  <path d="M60 56 L60 60 M60 60 Q55 64 51 60 M60 60 Q65 64 69 60" stroke="#9090A0" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- dientes -->
+  <rect x="55" y="62" width="4.5" height="6" rx="1.5" fill="white"/>
+  <rect x="60.5" y="62" width="4.5" height="6" rx="1.5" fill="white"/>
+  <!-- bigotes -->
+  <line x1="30" y1="54" x2="44" y2="56" stroke="#9898A8" stroke-width="1.5"/>
+  <line x1="76" y1="56" x2="90" y2="54" stroke="#9898A8" stroke-width="1.5"/>
+</svg>
