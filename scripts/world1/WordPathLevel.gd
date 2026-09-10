@@ -18,11 +18,11 @@ var BG_PATH: String = "res://Arte/backgrounds/bg_level1.svg"
 
 var grid_state: Array;  var tile_owner: Dictionary
 var paths: Dictionary;  var connected: Array[int]
-var drawing := false;   var active_id := -1
-var last_gp := Vector2i(-1,-1)
+var drawing: bool = false;   var active_id: int = -1
+var last_gp: Vector2i = Vector2i(-1,-1)
 var ring_tween: Tween
-var _completing := false
-var _dialogue_open := false
+var _completing: bool = false
+var _dialogue_open: bool = false
 var tile_rects: Dictionary;  var word_panels: Dictionary
 
 @onready var bg_texture:   TextureRect = $Background
@@ -50,7 +50,7 @@ func _ready() -> void:
 ## paneles crema con borde cafe (texto oscuro legible) y barra superior
 ## semitransparente oscura (texto claro legible sobre cualquier fondo).
 func _apply_friendly_theme() -> void:
-	var cream := StyleBoxFlat.new()
+	var cream: StyleBoxFlat = StyleBoxFlat.new()
 	cream.bg_color = Color(0.98, 0.94, 0.84, 0.97)
 	cream.border_color = Color(0.45, 0.30, 0.15)
 	cream.set_border_width_all(4)
@@ -58,9 +58,9 @@ func _apply_friendly_theme() -> void:
 	cream.corner_radius_bottom_left = 14;  cream.corner_radius_bottom_right = 14
 	for panel in [dialogue, complete_pan]:
 		if panel: panel.add_theme_stylebox_override("panel", cream)
-	var instr_panel := instr_lbl.get_parent() as Panel
+	var instr_panel: Panel = instr_lbl.get_parent() as Panel
 	if instr_panel:
-		var dark := StyleBoxFlat.new()
+		var dark: StyleBoxFlat = StyleBoxFlat.new()
 		dark.bg_color = Color(0.10, 0.14, 0.10, 0.82)
 		dark.border_color = Color(1.0, 0.85, 0.35, 0.9)
 		dark.set_border_width_all(2)
@@ -74,7 +74,7 @@ func _setup_data() -> void: pass
 func _init_grid() -> void:
 	grid_state=[]; tile_owner={}; paths={}; connected=[]; tile_rects={}; word_panels={}
 	for r in range(ROWS):
-		var row:=[]; for c in range(COLS): row.append(Cell.EMPTY)
+		var row: Array[int] = []; for _column in range(COLS): row.append(Cell.EMPTY)
 		grid_state.append(row)
 	for pos in OBSTACLES: grid_state[pos.y][pos.x] = Cell.OBSTACLE
 	for w in WORDS:
@@ -84,13 +84,13 @@ func _init_grid() -> void:
 		paths[w.id] = []
 
 func _build_tiles() -> void:
-	var tex_e := load(RES_TILE_E) as Texture2D
-	var tex_o := load(RES_TILE_O) as Texture2D
+	var tex_e: Texture2D = load(RES_TILE_E) as Texture2D
+	var tex_o: Texture2D = load(RES_TILE_O) as Texture2D
 	for r in range(ROWS):
 		for c in range(COLS):
-			var gp := Vector2i(c,r);  var pos := _screen_pos(gp)
+			var gp: Vector2i = Vector2i(c,r);  var pos: Vector2 = _screen_pos(gp)
 			var cell: int = grid_state[r][c]
-			var node := TextureRect.new()
+			var node: TextureRect = TextureRect.new()
 			node.size = Vector2(TILE_PX-2,TILE_PX-2);  node.position = pos+Vector2(1,1)
 			node.stretch_mode = TextureRect.STRETCH_SCALE
 			match cell:
@@ -101,15 +101,15 @@ func _build_tiles() -> void:
 			if cell == Cell.HOUSE:
 				var wid: int = tile_owner[gp]
 				var w: Dictionary = WORDS[wid]
-				var p := Panel.new()
+				var p: Panel = Panel.new()
 				p.size = Vector2(TILE_PX-4,TILE_PX-4);  p.position = pos+Vector2(2,2)
-				var st := StyleBoxFlat.new()
+				var st: StyleBoxFlat = StyleBoxFlat.new()
 				st.bg_color = w.color.lightened(0.55)
 				st.set_border_width_all(2);  st.border_color = w.color
 				st.corner_radius_top_left=6; st.corner_radius_top_right=6
 				st.corner_radius_bottom_left=6; st.corner_radius_bottom_right=6
 				p.add_theme_stylebox_override("panel", st)
-				var lbl := Label.new()
+				var lbl: Label = Label.new()
 				lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 				lbl.text = w.emoji+"\n"+w.spanish
 				lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -121,10 +121,10 @@ func _build_tiles() -> void:
 
 func _build_word_tiles() -> void:
 	for w in WORDS:
-		var pos := _screen_pos(w.grid_pos)
-		var p := Panel.new()
+		var pos: Vector2 = _screen_pos(w.grid_pos)
+		var p: Panel = Panel.new()
 		p.size = Vector2(TILE_PX-4,TILE_PX-4);  p.position = pos+Vector2(2,2)
-		var st := StyleBoxFlat.new()
+		var st: StyleBoxFlat = StyleBoxFlat.new()
 		st.bg_color = w.color;  st.set_border_width_all(3);  st.border_color = w.color.darkened(0.3)
 		st.corner_radius_top_left=6; st.corner_radius_top_right=6
 		st.corner_radius_bottom_left=6; st.corner_radius_bottom_right=6
@@ -132,16 +132,16 @@ func _build_word_tiles() -> void:
 		# Si la palabra trae un sprite (niveles de animales), lo mostramos
 		# con el nombre maya en una franja inferior; si no, solo el texto.
 		if w.has("sprite") and String(w.sprite) != "":
-			var tex := load(w.sprite) as Texture2D
+			var tex: Texture2D = load(w.sprite) as Texture2D
 			if tex:
-				var tr := TextureRect.new()
-				tr.texture = tex
-				tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				tr.position = Vector2(2, 0)
-				tr.size = Vector2(TILE_PX-8, TILE_PX-22)
-				tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
-				p.add_child(tr)
-			var name_lbl := Label.new()
+				var texr: TextureRect = TextureRect.new()
+				texr.texture = tex
+				texr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				texr.position = Vector2(2, 0)
+				texr.size = Vector2(TILE_PX-8, TILE_PX-22)
+				texr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				p.add_child(texr)
+			var name_lbl: Label = Label.new()
 			name_lbl.text = w.maya
 			name_lbl.position = Vector2(0, TILE_PX-22)
 			name_lbl.size = Vector2(TILE_PX-4, 18)
@@ -152,7 +152,7 @@ func _build_word_tiles() -> void:
 			name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			p.add_child(name_lbl)
 		else:
-			var lbl := Label.new()
+			var lbl: Label = Label.new()
 			lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 			lbl.text = w.maya;  lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -172,7 +172,7 @@ func _input(event: InputEvent) -> void:
 			last_gp = Vector2i(-1,-1);  _handle_press(_grid_pos(event.position))
 		else: _stop_drawing()
 	elif event is InputEventMouseMotion and drawing:
-		var gp := _grid_pos(event.position)
+		var gp: Vector2i = _grid_pos(event.position)
 		if gp != last_gp: _fill_gap(last_gp, gp); last_gp = gp
 
 func _handle_press(gp: Vector2i) -> void:
@@ -198,10 +198,10 @@ func _stop_drawing() -> void:
 func _fill_gap(from_gp: Vector2i, to_gp: Vector2i) -> void:
 	if not _valid(to_gp): return
 	if from_gp == Vector2i(-1,-1): _try_cell(to_gp); return
-	var dx := to_gp.x-from_gp.x;  var dy := to_gp.y-from_gp.y
-	var steps := maxi(absi(dx), absi(dy))
+	var dx: int = to_gp.x-from_gp.x;  var dy: int = to_gp.y-from_gp.y
+	var steps: int = maxi(absi(dx), absi(dy))
 	for i in range(1, steps+1):
-		var mid := Vector2i(from_gp.x+roundi(float(dx)*i/steps), from_gp.y+roundi(float(dy)*i/steps))
+		var mid: Vector2i = Vector2i(from_gp.x+roundi(float(dx)*i/steps), from_gp.y+roundi(float(dy)*i/steps))
 		if _valid(mid): _try_cell(mid)
 
 func _try_cell(gp: Vector2i) -> void:
@@ -215,7 +215,7 @@ func _extend_path(gp: Vector2i) -> void:
 	if active_id < 0: return
 	if gp in paths[active_id]: return
 	if gp in tile_owner and tile_owner[gp] != active_id: return
-	var ok := false
+	var ok: bool = false
 	if paths[active_id].is_empty(): ok = _adjacent(gp, WORDS[active_id].grid_pos)
 	else: ok = _adjacent(gp, paths[active_id].back())
 	if not ok: return
@@ -236,7 +236,7 @@ func _finalize_connection(wid: int) -> void:
 	_show_dialogue(wid)
 
 func _show_ring(wid: int) -> void:
-	var pos := _screen_pos(WORDS[wid].grid_pos)
+	var pos: Vector2 = _screen_pos(WORDS[wid].grid_pos)
 	sel_ring.position = pos-Vector2(5,5);  sel_ring.size = Vector2(TILE_PX+10,TILE_PX+10)
 	sel_ring.color = WORDS[wid].color;  sel_ring.visible = true;  sel_ring.modulate = Color.WHITE
 	if ring_tween and ring_tween.is_valid(): ring_tween.kill()
@@ -253,7 +253,7 @@ func _show_dialogue(wid: int) -> void:
 	_dialogue_open = true;  dialogue.visible = true
 	var p = word_panels.get(wid)
 	if p:
-		var tw := create_tween()
+		var tw: Tween = create_tween()
 		tw.tween_property(p, "position:y", p.position.y-14, 0.15)
 		tw.tween_property(p, "position:y", p.position.y,    0.20)
 	await get_tree().create_timer(3.2).timeout
@@ -293,7 +293,7 @@ func _grid_pos(screen: Vector2) -> Vector2i:
 func _valid(gp: Vector2i) -> bool:
 	return gp.x>=0 and gp.x<COLS and gp.y>=0 and gp.y<ROWS
 func _adjacent(a: Vector2i, b: Vector2i) -> bool:
-	var d := a-b; return (abs(d.x)==1 and d.y==0) or (d.x==0 and abs(d.y)==1)
+	var d: Vector2i = a-b; return (abs(d.x)==1 and d.y==0) or (d.x==0 and abs(d.y)==1)
 func _set_tile_color(gp: Vector2i, col: Color) -> void:
 	var node: TextureRect = tile_rects.get(gp); if node: node.modulate = col
 func _reset_tile(gp: Vector2i) -> void:

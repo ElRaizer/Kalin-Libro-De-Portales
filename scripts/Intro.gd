@@ -140,7 +140,7 @@ func _show_panel(idx: int) -> void:
 		kalin_sprite.position.x = p.kalin_x
 		kalin_sprite.visible = true
 		# Subtle entrance animation
-		var tw := create_tween()
+		var tw: Tween = create_tween()
 		kalin_sprite.modulate.a = 0.0
 		tw.tween_property(kalin_sprite, "modulate:a", 1.0, 0.4)
 	else:
@@ -154,7 +154,7 @@ func _show_panel(idx: int) -> void:
 
 	# Fade in dialogue box
 	dialogue_box.modulate.a = 0.0
-	var tw2 := create_tween()
+	var tw2: Tween = create_tween()
 	tw2.tween_property(dialogue_box, "modulate:a", 1.0, 0.3)
 	await tw2.finished
 
@@ -188,7 +188,7 @@ func _load_texture_async(rect: TextureRect, path: String) -> void:
 	if path == "":
 		rect.texture = null
 		return
-	var tex := load(path)
+	var tex: Texture2D = load(path) as Texture2D
 	if tex:
 		rect.texture = tex
 

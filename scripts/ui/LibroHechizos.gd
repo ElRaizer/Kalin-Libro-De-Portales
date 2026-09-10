@@ -46,7 +46,7 @@ func _populate() -> void:
 	for child in word_grid.get_children():
 		child.queue_free()
 
-	var learned := GameManager.words_learned
+	var learned: Dictionary = GameManager.words_learned
 	empty_label.visible  = learned.is_empty()
 	word_count_lbl.text  = "Palabras aprendidas: %d / %d" % [
 		learned.size(), GameManager.VOCABULARY.size()
@@ -59,7 +59,7 @@ func _populate() -> void:
 		if lvl not in by_level: by_level[lvl] = []
 		by_level[lvl].append(word)
 
-	var levels := by_level.keys(); levels.sort()
+	var levels: Array = by_level.keys(); levels.sort()
 	for lvl in levels:
 		word_grid.add_child(_make_separator("Nivel %d" % lvl))
 		for _i in range(2):
@@ -69,10 +69,10 @@ func _populate() -> void:
 
 # ─── Tarjeta individual ───────────────────────────────────────────────────────
 func _make_card(maya_word: String, data: Dictionary) -> Panel:
-	var card := Panel.new()
+	var card: Panel = Panel.new()
 	card.custom_minimum_size = CARD_SIZE
 
-	var style := StyleBoxFlat.new()
+	var style: StyleBoxFlat = StyleBoxFlat.new()
 	style.bg_color   = CARD_BG
 	style.border_color = CARD_BORDER
 	style.set_border_width_all(2)
@@ -82,32 +82,32 @@ func _make_card(maya_word: String, data: Dictionary) -> Panel:
 	style.corner_radius_bottom_right = 8
 	card.add_theme_stylebox_override("panel", style)
 
-	var vbox := VBoxContainer.new()
+	var vbox: VBoxContainer = VBoxContainer.new()
 	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	vbox.add_theme_constant_override("separation", 3)
 
 	# Emoji
-	var emoji_lbl := Label.new()
+	var emoji_lbl: Label = Label.new()
 	emoji_lbl.text = data.get("emoji", "?")
 	emoji_lbl.add_theme_font_size_override("font_size", 36)
 	emoji_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 	# Palabra maya
-	var maya_lbl := Label.new()
+	var maya_lbl: Label = Label.new()
 	maya_lbl.text = maya_word
 	maya_lbl.add_theme_font_size_override("font_size", 20)
 	maya_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	maya_lbl.add_theme_color_override("font_color", Color(0.18, 0.08, 0.0))
 
 	# Traduccion
-	var es_lbl := Label.new()
+	var es_lbl: Label = Label.new()
 	es_lbl.text = data.get("spanish", "")
 	es_lbl.add_theme_font_size_override("font_size", 13)
 	es_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	es_lbl.add_theme_color_override("font_color", Color(0.40, 0.28, 0.08))
 
 	# Estructura de frase
-	var struct_lbl := Label.new()
+	var struct_lbl: Label = Label.new()
 	struct_lbl.text = data.get("estructura", "")
 	struct_lbl.add_theme_font_size_override("font_size", 11)
 	struct_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -115,10 +115,10 @@ func _make_card(maya_word: String, data: Dictionary) -> Panel:
 	struct_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 
 	# ── Botón de audio ──────────────────────────────────────────────────────
-	var audio_file := _audio_path(maya_word)
-	var audio_exists := ResourceLoader.exists(audio_file)
+	var audio_file: String = _audio_path(maya_word)
+	var audio_exists: bool = ResourceLoader.exists(audio_file)
 
-	var audio_btn := Button.new()
+	var audio_btn: Button = Button.new()
 	audio_btn.text = "Escuchar" if audio_exists else "Audio pronto"
 	audio_btn.disabled = not audio_exists
 	audio_btn.add_theme_font_size_override("font_size", 12)
@@ -126,7 +126,7 @@ func _make_card(maya_word: String, data: Dictionary) -> Panel:
 
 	# Color del botón según disponibilidad
 	if audio_exists:
-		var btn_style := StyleBoxFlat.new()
+		var btn_style: StyleBoxFlat = StyleBoxFlat.new()
 		btn_style.bg_color     = Color(0.25, 0.55, 0.82)
 		btn_style.corner_radius_top_left     = 5
 		btn_style.corner_radius_top_right    = 5
@@ -151,11 +151,11 @@ func _make_card(maya_word: String, data: Dictionary) -> Panel:
 
 # ─── Reproducir audio ─────────────────────────────────────────────────────────
 func _play_audio(maya_word: String) -> void:
-	var path := _audio_path(maya_word)
+	var path: String = _audio_path(maya_word)
 	if not ResourceLoader.exists(path):
 		_show_notice("Audio de \"%s\" no encontrado" % maya_word)
 		return
-	var stream := load(path) as AudioStream
+	var stream: AudioStream = load(path) as AudioStream
 	if stream:
 		audio_player.stream = stream
 		audio_player.play()
@@ -163,7 +163,7 @@ func _play_audio(maya_word: String) -> void:
 ## Devuelve la ruta del archivo de audio para una palabra maya.
 ## Elimina apóstrofes y espacios para obtener el nombre de archivo.
 func _audio_path(maya_word: String) -> String:
-	var clean := maya_word.replace("'", "").replace(" ", "_")
+	var clean: String = maya_word.replace("'", "").replace(" ", "_")
 	return AUDIO_BASE + clean + ".ogg"
 
 # ─── Aviso flotante ──────────────────────────────────────────────────────────
@@ -178,7 +178,7 @@ func _show_notice(msg: String) -> void:
 
 # ─── Separador de nivel ───────────────────────────────────────────────────────
 func _make_separator(title: String) -> Label:
-	var lbl := Label.new()
+	var lbl: Label = Label.new()
 	lbl.text = "-- %s --" % title
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	lbl.add_theme_font_size_override("font_size", 16)

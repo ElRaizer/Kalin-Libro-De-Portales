@@ -23,70 +23,70 @@ var completed_levels: Array[String] = []    # [ "w1_l1", "w1_l2", ... ]
 const VOCABULARY: Dictionary = {
 	# Nivel 1 — Animales (estructura: In k'aaba'e' ___)
 	"Peek'":    { "spanish": "Perro",    "emoji": "🐶", "world": 1, "level": 1,
-	              "estructura": "In k'aaba'e' Peek'",    "traduccion": "Me llamo Perro" },
+				  "estructura": "In k'aaba'e' Peek'",    "traduccion": "Me llamo Perro" },
 	"Míis":     { "spanish": "Gato",     "emoji": "🐱", "world": 1, "level": 1,
-	              "estructura": "In k'aaba'e' Míis",     "traduccion": "Me llamo Gato" },
+				  "estructura": "In k'aaba'e' Míis",     "traduccion": "Me llamo Gato" },
 	"Káax":     { "spanish": "Gallina",  "emoji": "🐔", "world": 1, "level": 1,
-	              "estructura": "In k'aaba'e' Káax",     "traduccion": "Me llamo Gallina" },
+				  "estructura": "In k'aaba'e' Káax",     "traduccion": "Me llamo Gallina" },
 	"Aak'":     { "spanish": "Tortuga",  "emoji": "🐢", "world": 1, "level": 7,
-	              "estructura": "In k'aaba'e' Aak'",     "traduccion": "Me llamo Tortuga" },
+				  "estructura": "In k'aaba'e' Aak'",     "traduccion": "Me llamo Tortuga" },
 	"Kéej":     { "spanish": "Venado",   "emoji": "🦌", "world": 1, "level": 5,
-	              "estructura": "In k'aaba'e' Kéej",     "traduccion": "Me llamo Venado" },
+				  "estructura": "In k'aaba'e' Kéej",     "traduccion": "Me llamo Venado" },
 	"K'éek'en": { "spanish": "Cerdo",    "emoji": "🐷", "world": 1, "level": 5,
-	              "estructura": "In k'aaba'e' K'éek'en", "traduccion": "Me llamo Cerdo" },
+				  "estructura": "In k'aaba'e' K'éek'en", "traduccion": "Me llamo Cerdo" },
 	# Extras nivel 1
 	"Ma'ax":    { "spanish": "Mono",     "emoji": "🐒", "world": 1, "level": 5,
-	              "estructura": "In k'aaba'e' Ma'ax",    "traduccion": "Me llamo Mono" },
+				  "estructura": "In k'aaba'e' Ma'ax",    "traduccion": "Me llamo Mono" },
 	"T'uut":    { "spanish": "Loro",     "emoji": "🦜", "world": 1, "level": 1,
-	              "estructura": "In k'aaba'e' T'uut",    "traduccion": "Me llamo Loro" },
+				  "estructura": "In k'aaba'e' T'uut",    "traduccion": "Me llamo Loro" },
 
 	# Nivel 2 — Objetos del hogar (sustantivos)
 	"mayak":    { "spanish": "Mesa",     "emoji": "🪑", "world": 1, "level": 2,
-	              "estructura": "mayak",                 "traduccion": "Mesa" },
+				  "estructura": "mayak",                 "traduccion": "Mesa" },
 	"lak":      { "spanish": "Plato",    "emoji": "🍽️", "world": 1, "level": 2,
-	              "estructura": "lak",                   "traduccion": "Plato" },
+				  "estructura": "lak",                   "traduccion": "Plato" },
 	"ch'áak":   { "spanish": "Cama",     "emoji": "🛏️", "world": 1, "level": 2,
-	              "estructura": "ch'áak",                "traduccion": "Cama" },
+				  "estructura": "ch'áak",                "traduccion": "Cama" },
 	"chan":      { "spanish": "Silla",    "emoji": "💺",  "world": 1, "level": 2,
-	              "estructura": "chan",                   "traduccion": "Silla" },
+				  "estructura": "chan",                   "traduccion": "Silla" },
 	"janal":    { "spanish": "Comida",   "emoji": "🍲",  "world": 1, "level": 2,
-	              "estructura": "janal",                  "traduccion": "Comida" },
+				  "estructura": "janal",                  "traduccion": "Comida" },
 
 	# Nivel 3 — Adjetivos
 	"mejen":    { "spanish": "Pequeño/a", "emoji": "🔹", "world": 1, "level": 3,
-	              "estructura": "In [sust.]e' mejen",    "traduccion": "Mi [cosa] es pequeña" },
+				  "estructura": "In [sust.]e' mejen",    "traduccion": "Mi [cosa] es pequeña" },
 	"nojoch":   { "spanish": "Grande",    "emoji": "🔷", "world": 1, "level": 3,
-	              "estructura": "In [sust.]e' nojoch",   "traduccion": "Mi [cosa] es grande" },
+				  "estructura": "In [sust.]e' nojoch",   "traduccion": "Mi [cosa] es grande" },
 	"Jats'uts": { "spanish": "Bonito/a",  "emoji": "✨",  "world": 1, "level": 3,
-	              "estructura": "In [sust.]e' Jats'uts", "traduccion": "Mi [cosa] es bonita" },
+				  "estructura": "In [sust.]e' Jats'uts", "traduccion": "Mi [cosa] es bonita" },
 	"ki'":      { "spanish": "Delicioso", "emoji": "😋", "world": 1, "level": 3,
-	              "estructura": "In [sust.]e' ki'",      "traduccion": "Mi [cosa] es deliciosa" },
+				  "estructura": "In [sust.]e' ki'",      "traduccion": "Mi [cosa] es deliciosa" },
 	"jach'":    { "spanish": "Fuerte",    "emoji": "💪", "world": 1, "level": 3,
-	              "estructura": "In [sust.]e' jach'",    "traduccion": "Mi [cosa] es fuerte" },
+				  "estructura": "In [sust.]e' jach'",    "traduccion": "Mi [cosa] es fuerte" },
 
 	# Nivel 4 — Alimentos / In k'a'at
 	"ja'":      { "spanish": "Agua",     "emoji": "💧", "world": 1, "level": 4,
-	              "estructura": "In k'a'at ja'",         "traduccion": "Yo quiero agua" },
+				  "estructura": "In k'a'at ja'",         "traduccion": "Yo quiero agua" },
 	"Ja'as":    { "spanish": "Plátano",  "emoji": "🍌", "world": 1, "level": 4,
-	              "estructura": "In k'a'at Ja'as",       "traduccion": "Yo quiero plátano" },
+				  "estructura": "In k'a'at Ja'as",       "traduccion": "Yo quiero plátano" },
 	"pak'al":   { "spanish": "Fruta",    "emoji": "🍎", "world": 1, "level": 4,
-	              "estructura": "In k'a'at pak'al",      "traduccion": "Yo quiero fruta" },
+				  "estructura": "In k'a'at pak'al",      "traduccion": "Yo quiero fruta" },
 	"K'úum":    { "spanish": "Calabaza", "emoji": "🎃", "world": 1, "level": 4,
-	              "estructura": "In k'a'at K'úum",       "traduccion": "Yo quiero calabaza" },
+				  "estructura": "In k'a'at K'úum",       "traduccion": "Yo quiero calabaza" },
 
 	# Nivel 6 — Animales del monte (listos para el próximo nivel)
 	"Kuuts":    { "spanish": "Pavo",     "emoji": "🦃", "world": 1, "level": 6,
-	              "estructura": "In k'aaba'e' Kuuts",    "traduccion": "Me llamo Pavo" },
+				  "estructura": "In k'aaba'e' Kuuts",    "traduccion": "Me llamo Pavo" },
 	"Báalam":   { "spanish": "Jaguar",   "emoji": "🐆", "world": 1, "level": 6,
-	              "estructura": "In k'aaba'e' Báalam",   "traduccion": "Me llamo Jaguar" },
+				  "estructura": "In k'aaba'e' Báalam",   "traduccion": "Me llamo Jaguar" },
 	"T'u'ul":   { "spanish": "Conejo",   "emoji": "🐇", "world": 1, "level": 6,
-	              "estructura": "In k'aaba'e' T'u'ul",   "traduccion": "Me llamo Conejo" },
+				  "estructura": "In k'aaba'e' T'u'ul",   "traduccion": "Me llamo Conejo" },
 
 	# Nivel 7 — Agua y Cielo
 	"Kay":      { "spanish": "Pez",      "emoji": "🐟", "world": 1, "level": 7,
-	              "estructura": "In k'aaba'e' Kay",      "traduccion": "Me llamo Pez" },
+				  "estructura": "In k'aaba'e' Kay",      "traduccion": "Me llamo Pez" },
 	"Ch'íich'": { "spanish": "Pájaro",   "emoji": "🐦", "world": 1, "level": 7,
-	              "estructura": "In k'aaba'e' Ch'íich'", "traduccion": "Me llamo Pájaro" },
+				  "estructura": "In k'aaba'e' Ch'íich'", "traduccion": "Me llamo Pájaro" },
 }
 
 # ─── Rutas de escenas ────────────────────────────────────────────────────────
@@ -116,7 +116,7 @@ func _ready() -> void:
 ## Tolera variaciones de acentos: "Miis" encuentra "Míis", etc.
 func learn_word(maya_word: String) -> void:
 	# Buscar la clave real en el vocabulario (tolerante a acentos)
-	var key := _resolve_vocab_key(maya_word)
+	var key: String = _resolve_vocab_key(maya_word)
 	if key == "":
 		push_warning("GameManager: palabra desconocida '%s'" % maya_word)
 		return
@@ -132,7 +132,7 @@ func learn_word(maya_word: String) -> void:
 func _resolve_vocab_key(word: String) -> String:
 	if word in VOCABULARY:
 		return word
-	var normalized := _strip_accents(word).to_lower()
+	var normalized: String = _strip_accents(word).to_lower()
 	for k in VOCABULARY.keys():
 		if _strip_accents(k).to_lower() == normalized:
 			return k
@@ -140,8 +140,8 @@ func _resolve_vocab_key(word: String) -> String:
 
 ## Quita acentos de una cadena (á→a, í→i, etc.) para comparaciones flexibles.
 func _strip_accents(s: String) -> String:
-	var result := s
-	var pairs := {
+	var result: String = s
+	var pairs: Dictionary = {
 		"á":"a","é":"e","í":"i","ó":"o","ú":"u","ü":"u",
 		"Á":"A","É":"E","Í":"I","Ó":"O","Ú":"U","Ü":"U",
 		"ñ":"n","Ñ":"N",
@@ -152,7 +152,7 @@ func _strip_accents(s: String) -> String:
 
 ## Marca un nivel como completado y suma puntos de bonificación.
 func complete_level(world: int, level: int) -> void:
-	var key := "w%d_l%d" % [world, level]
+	var key: String = "w%d_l%d" % [world, level]
 	if key not in completed_levels:
 		completed_levels.append(key)
 		_add_magic(MAGIC_PER_LEVEL)
@@ -197,12 +197,12 @@ func _add_magic(amount: int) -> void:
 	magic_points_changed.emit(magic_points)
 
 func _save() -> void:
-	var data := {
+	var data: Dictionary = {
 		"magic_points": magic_points,
 		"words_learned": words_learned,
 		"completed_levels": completed_levels,
 	}
-	var f := FileAccess.open("user://kalin_save.json", FileAccess.WRITE)
+	var f: FileAccess = FileAccess.open("user://kalin_save.json", FileAccess.WRITE)
 	if f:
 		f.store_string(JSON.stringify(data, "\t"))
 		f.close()
@@ -210,7 +210,7 @@ func _save() -> void:
 func _load_save() -> void:
 	if not FileAccess.file_exists("user://kalin_save.json"):
 		return
-	var f := FileAccess.open("user://kalin_save.json", FileAccess.READ)
+	var f: FileAccess = FileAccess.open("user://kalin_save.json", FileAccess.READ)
 	if not f:
 		return
 	var result = JSON.parse_string(f.get_as_text())
