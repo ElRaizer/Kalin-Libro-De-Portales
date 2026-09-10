@@ -95,10 +95,23 @@ const CHAR_DELAY := 0.025   # segundos entre caracteres (typewriter)
 
 # ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
+	_apply_friendly_theme()
 	skip_btn.pressed.connect(_on_skip)
 	typewriter_timer.wait_time = CHAR_DELAY
 	typewriter_timer.timeout.connect(_typewriter_tick)
 	_show_panel(0)
+
+## El texto del dialogo (MainText/SubText) usa colores claros/blancos, asi
+## que el panel detras debe ser oscuro explicitamente — si no, con el tema
+## por defecto de Godot el texto claro podria perderse.
+func _apply_friendly_theme() -> void:
+	var dark := StyleBoxFlat.new()
+	dark.bg_color = Color(0.05, 0.05, 0.08, 0.88)
+	dark.border_color = Color(1.0, 0.85, 0.35, 0.85)
+	dark.set_border_width_all(2)
+	dark.corner_radius_top_left = 12;    dark.corner_radius_top_right = 12
+	dark.corner_radius_bottom_left = 12; dark.corner_radius_bottom_right = 12
+	dialogue_box.add_theme_stylebox_override("panel", dark)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:

@@ -17,6 +17,7 @@ var _completing: bool = false
 
 @onready var bg:          TextureRect    = $Background
 @onready var kalin_img:   TextureRect    = $UI/KalinSprite
+@onready var phrase_box:  Panel          = $UI/PhraseBox
 @onready var phrase_lbl:  Label          = $UI/PhraseBox/VBox/PhraseLbl
 @onready var hint_lbl:    Label          = $UI/PhraseBox/VBox/HintLbl
 @onready var progress:    Label          = $UI/ProgressLbl
@@ -28,6 +29,7 @@ var _completing: bool = false
 func _ready() -> void:
 	bg.texture = load(RES_BG)
 	kalin_img.texture = load(RES_KALIN)
+	_apply_friendly_theme()
 	_build_food_buttons()
 	phrase_lbl.text = "In k'a'at ..."
 	phrase_lbl.add_theme_color_override("font_color", Color(0.55, 0.55, 0.55))
@@ -36,6 +38,18 @@ func _ready() -> void:
 	complete_pan.visible = false
 	GameManager.magic_points_changed.connect(func(_v): magic_lbl.text = "%d pts" % GameManager.magic_points)
 	magic_lbl.text = "%d pts" % GameManager.magic_points
+
+## Mismo estilo de alto contraste que el resto de niveles: panel crema con
+## borde cafe para que el texto oscuro (frase/pista) nunca se pierda.
+func _apply_friendly_theme() -> void:
+	var cream := StyleBoxFlat.new()
+	cream.bg_color = Color(0.98, 0.94, 0.84, 0.97)
+	cream.border_color = Color(0.45, 0.30, 0.15)
+	cream.set_border_width_all(4)
+	cream.corner_radius_top_left = 14;     cream.corner_radius_top_right = 14
+	cream.corner_radius_bottom_left = 14;  cream.corner_radius_bottom_right = 14
+	for panel in [phrase_box, complete_pan]:
+		if panel: panel.add_theme_stylebox_override("panel", cream)
 
 func _build_food_buttons() -> void:
 	for i in range(FOODS.size()):
