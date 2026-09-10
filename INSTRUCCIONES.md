@@ -98,9 +98,11 @@ Una vez que el Nivel 1 funciona, los siguientes archivos a crear son:
 - Fondos temáticos por nivel con colores suaves y desaturados para que las
   fichas de colores vivos nunca se pierdan: `bg_level1` (caminos),
   `bg_level_monte` (niveles 5-6), `bg_level_agua` (nivel 7).
+- Los niveles 1, 2, 3, 5, 6 y 7 comparten `GridBoard`, `GridWordData` y
+  `GridPathLevel`; cada escena configura sus palabras, fichas y obstáculos.
 - Paneles de diálogo/instrucciones con estilo consistente de alto contraste:
   crema con borde café (texto oscuro) y barra de instrucciones oscura
-  semitransparente (texto claro), aplicados desde `WordPathLevel`.
+  semitransparente (texto claro), aplicados desde el sistema común de grid.
 
 ### Flujo de navegación
 Intro → Menú Principal → Niveles 1-7 en cadena → Menú.

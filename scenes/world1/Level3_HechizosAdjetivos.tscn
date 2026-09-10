@@ -1,170 +1,62 @@
 [gd_scene format=3 uid="uid://b55van14jkj3b"]
 
-[ext_resource type="Script" uid="uid://cmj8x3eg7tafw" path="res://scripts/world1/Level3.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/world1/Level5_AnimalesBosque.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/world1/Level3.gd" id="2_script"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level1.svg" id="3_bg"]
+[ext_resource type="Script" path="res://scripts/components/GridWordData.gd" id="4_data"]
 
-[node name="Level3" type="Node2D" unique_id=323058329]
-script = ExtResource("1")
+[sub_resource type="Resource" id="Word_mejen"]
+script = ExtResource("4_data")
+maya_word = "mejen"
+spanish_word = "Pequeño"
+phrase = "In peek'e' mejen"
+explanation = "Mi perro es pequeño"
+destination_text = "🔹\nPequeño"
+color = Color(0.82, 0.22, 0.22, 1)
+start_cell = Vector2i(0, 1)
+destination_cell = Vector2i(8, 1)
 
-[node name="Background" type="TextureRect" parent="." unique_id=779174442]
-offset_right = 1280.0
-offset_bottom = 720.0
-expand_mode = 1
-stretch_mode = 6
+[sub_resource type="Resource" id="Word_nojoch"]
+script = ExtResource("4_data")
+maya_word = "nojoch"
+spanish_word = "Grande"
+phrase = "In peek'e' nojoch"
+explanation = "Mi perro es grande"
+destination_text = "🔷\nGrande"
+color = Color(0.55, 0.22, 0.82, 1)
+start_cell = Vector2i(0, 3)
+destination_cell = Vector2i(8, 3)
 
-[node name="GridRoot" type="Node2D" parent="." unique_id=1060634264]
+[sub_resource type="Resource" id="Word_ki"]
+script = ExtResource("4_data")
+maya_word = "ki'"
+spanish_word = "Delicioso"
+phrase = "In janale' ki'"
+explanation = "Mi comida es deliciosa"
+destination_text = "😋\nDelicioso"
+color = Color(0.82, 0.65, 0.1, 1)
+start_cell = Vector2i(0, 5)
+destination_cell = Vector2i(8, 5)
 
-[node name="SelectionRing" type="ColorRect" parent="GridRoot" unique_id=124970442]
-visible = false
-z_index = -1
-offset_right = 90.0
-offset_bottom = 90.0
-color = Color(1, 0.85, 0.2, 0.9)
+[node name="Level3" instance=ExtResource("1_base")]
+script = ExtResource("2_script")
+level_number = 3
+next_scene_key = "world1_level4"
+default_instruction = "Conecta cada adjetivo maya con su significado en español.\nArrastra de izquierda a derecha."
+selection_instruction = "Arrastra el adjetivo \"%s\" hasta \"%s\"."
 
-[node name="UI" type="CanvasLayer" parent="." unique_id=361842067]
+[node name="Background" parent="."]
+texture = ExtResource("3_bg")
 
-[node name="TopBar" type="HBoxContainer" parent="UI" unique_id=32354146]
-offset_left = 10.0
-offset_top = 8.0
-offset_right = 1270.0
-offset_bottom = 52.0
+[node name="GridBoard" parent="."]
+obstacles = Array[Vector2i]([Vector2i(2, 1), Vector2i(5, 1), Vector2i(7, 1), Vector2i(1, 3), Vector2i(4, 3), Vector2i(6, 3), Vector2i(3, 5), Vector2i(6, 5)])
+words = Array[ExtResource("4_data")]([SubResource("Word_mejen"), SubResource("Word_nojoch"), SubResource("Word_ki")])
 
-[node name="BackBtn" type="Button" parent="UI/TopBar" unique_id=874725585]
-custom_minimum_size = Vector2(120, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "<- Menu"
+[node name="TitleLabel" parent="UI/TopBar"]
+text = "Nivel 3 — Adjetivos Mágicos"
 
-[node name="TitleLabel" type="Label" parent="UI/TopBar" unique_id=214261533]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(1, 0.93, 0.6, 1)
-theme_override_font_sizes/font_size = 20
-text = "Nivel 3 -- Adjetivos Magicos"
-horizontal_alignment = 1
+[node name="TitleLbl" parent="UI/CompletePanel/VBox"]
+text = "¡Nivel 3 completado!"
 
-[node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=537186143]
-custom_minimum_size = Vector2(160, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
-theme_override_font_sizes/font_size = 18
-text = "0 pts magicos"
-horizontal_alignment = 2
-
-[node name="BookBtn" type="Button" parent="UI/TopBar" unique_id=2141402126]
-custom_minimum_size = Vector2(130, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "Libro"
-
-[node name="InstrPanel" type="Panel" parent="UI" unique_id=1836150922]
-offset_left = 50.0
-offset_top = 648.0
-offset_right = 1230.0
-offset_bottom = 708.0
-
-[node name="InstrLbl" type="Label" parent="UI/InstrPanel" unique_id=267006920]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = 4.0
-offset_right = -8.0
-offset_bottom = -4.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
-theme_override_font_sizes/font_size = 17
-text = "Conecta cada palabra maya con su traduccion. Arrastra de izquierda a derecha."
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 3
-
-[node name="DialoguePanel" type="Panel" parent="UI" unique_id=265328479]
-visible = false
-offset_left = 200.0
-offset_top = 235.0
-offset_right = 1080.0
-offset_bottom = 445.0
-
-[node name="VBox" type="VBoxContainer" parent="UI/DialoguePanel" unique_id=2070527585]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 14.0
-offset_right = 864.0
-offset_bottom = 196.0
-theme_override_constants/separation = 8
-
-[node name="Phrase" type="Label" parent="UI/DialoguePanel/VBox" unique_id=302236104]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.08, 0.08, 0.45, 1)
-theme_override_font_sizes/font_size = 26
-horizontal_alignment = 1
-
-[node name="Hint" type="Label" parent="UI/DialoguePanel/VBox" unique_id=1438151197]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
-theme_override_font_sizes/font_size = 17
-horizontal_alignment = 1
-
-[node name="Struct" type="Label" parent="UI/DialoguePanel/VBox" unique_id=692517667]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.5, 0.2, 1)
-theme_override_font_sizes/font_size = 14
-horizontal_alignment = 1
-
-[node name="SkipLbl" type="Label" parent="UI/DialoguePanel/VBox" unique_id=1983189032]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
-theme_override_font_sizes/font_size = 12
-text = "(Clic para cerrar)"
-horizontal_alignment = 1
-
-[node name="CompletePanel" type="Panel" parent="UI" unique_id=1171463715]
-visible = false
-offset_left = 290.0
-offset_top = 170.0
-offset_right = 990.0
-offset_bottom = 548.0
-
-[node name="VBox" type="VBoxContainer" parent="UI/CompletePanel" unique_id=1895968746]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 24.0
-offset_right = 676.0
-offset_bottom = 354.0
-theme_override_constants/separation = 20
-
-[node name="TitleLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=1725078658]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.1, 0.5, 0.1, 1)
-theme_override_font_sizes/font_size = 36
-text = "Nivel Completado!"
-horizontal_alignment = 1
-
-[node name="SubLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=77730720]
-layout_mode = 2
-theme_override_font_sizes/font_size = 19
-text = "+50 puntos magicos"
-horizontal_alignment = 1
-autowrap_mode = 3
-
-[node name="NextBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=1394432975]
-custom_minimum_size = Vector2(0, 64)
-layout_mode = 2
-theme_override_font_sizes/font_size = 26
-text = "Siguiente Nivel ->"
-
-[node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=368658201]
-custom_minimum_size = Vector2(0, 52)
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "Volver al Menu"
-
-[node name="LibroHechizos" parent="." unique_id=2120993351 instance=ExtResource("2")]
-
-[connection signal="pressed" from="UI/TopBar/BackBtn" to="." method="_on_menu_pressed"]
-[connection signal="pressed" from="UI/TopBar/BookBtn" to="." method="_on_book_pressed"]
-[connection signal="pressed" from="UI/CompletePanel/VBox/NextBtn" to="." method="_on_next_level_pressed"]
-[connection signal="pressed" from="UI/CompletePanel/VBox/MenuBtn" to="." method="_on_menu_pressed"]
+[node name="SubLbl" parent="UI/CompletePanel/VBox"]
+text = "Aprendiste: mejen, nojoch y ki'\n+50 puntos mágicos"
