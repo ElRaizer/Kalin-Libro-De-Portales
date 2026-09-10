@@ -25,6 +25,20 @@ wait_time = 0.025
 one_shot = false
 autostart = false
 
+[node name="TopCornersBG" type="ColorRect" parent="."]
+offset_left = 12.0
+offset_top = 6.0
+offset_right = 120.0
+offset_bottom = 46.0
+color = Color(0, 0, 0, 0.45)
+
+[node name="PanelNumberBG" type="ColorRect" parent="."]
+offset_left = 1172.0
+offset_top = 6.0
+offset_right = 1268.0
+offset_bottom = 44.0
+color = Color(0, 0, 0, 0.45)
+
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="PanelNumber" type="Label" parent="UI"]
@@ -35,7 +49,7 @@ offset_bottom = 40.0
 text = "1 / 8"
 horizontal_alignment = 2
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 0.7)
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 0.9)
 
 [node name="SkipBtn" type="Button" parent="UI"]
 offset_left = 20.0
@@ -44,7 +58,7 @@ offset_right = 110.0
 offset_bottom = 42.0
 text = "Saltar intro"
 theme_override_font_sizes/font_size = 15
-theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 0.8)
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 0.95)
 
 [node name="DialogueBox" type="Panel" parent="UI"]
 offset_left = 60.0

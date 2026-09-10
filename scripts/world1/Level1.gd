@@ -61,11 +61,37 @@ var tile_rects: Dictionary;       var animal_nodes: Dictionary
 # ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
 	bg_texture.texture = load(RES_BG)
+	_apply_friendly_theme()
 	_init_grid(); _build_tiles(); _build_animal_sprites(); _refresh_hud()
 	dialogue.visible = false;  complete_pan.visible = false
 	sel_ring.visible = false
 	_set_instr("Haz clic en un animal y arrastra hasta su casa.\nConecta los tres para completar el nivel.")
 	GameManager.magic_points_changed.connect(func(_v): _refresh_hud())
+
+## Estilo consistente y de alto contraste (igual que el resto de niveles):
+## paneles crema con borde cafe (texto oscuro legible) y barra de
+## instrucciones oscura semitransparente (texto claro legible). Sin esto,
+## el dialogo y el panel de "completado" quedaban con el tema por defecto
+## de Godot y el texto oscuro podia perderse contra un fondo oscuro.
+func _apply_friendly_theme() -> void:
+	var cream := StyleBoxFlat.new()
+	cream.bg_color = Color(0.98, 0.94, 0.84, 0.97)
+	cream.border_color = Color(0.45, 0.30, 0.15)
+	cream.set_border_width_all(4)
+	cream.corner_radius_top_left = 14;     cream.corner_radius_top_right = 14
+	cream.corner_radius_bottom_left = 14;  cream.corner_radius_bottom_right = 14
+	for panel in [dialogue, complete_pan]:
+		if panel: panel.add_theme_stylebox_override("panel", cream)
+	var instr_panel := instr_lbl.get_parent() as Panel
+	if instr_panel:
+		var dark := StyleBoxFlat.new()
+		dark.bg_color = Color(0.10, 0.14, 0.10, 0.82)
+		dark.border_color = Color(1.0, 0.85, 0.35, 0.9)
+		dark.set_border_width_all(2)
+		dark.corner_radius_top_left = 10;    dark.corner_radius_top_right = 10
+		dark.corner_radius_bottom_left = 10; dark.corner_radius_bottom_right = 10
+		instr_panel.add_theme_stylebox_override("panel", dark)
+		instr_lbl.add_theme_color_override("font_color", Color(1, 0.98, 0.9))
 
 # ─── Grid ─────────────────────────────────────────────────────────────────────
 func _init_grid() -> void:

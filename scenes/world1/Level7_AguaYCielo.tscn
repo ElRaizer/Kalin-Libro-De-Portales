@@ -12,6 +12,15 @@ offset_bottom = 720.0
 expand_mode = 1
 stretch_mode = 6
 
+; ── Fondo oscuro semitransparente detras de la barra superior, para que el
+; ── texto claro nunca se pierda contra el fondo del nivel ────────────────────
+[node name="TopBarBG" type="ColorRect" parent="."]
+offset_left = 6.0
+offset_top = 4.0
+offset_right = 1274.0
+offset_bottom = 56.0
+color = Color(0, 0, 0, 0.42)
+
 [node name="GridRoot" type="Node2D" parent="."]
 
 [node name="SelectionRing" type="ColorRect" parent="GridRoot"]
@@ -41,7 +50,7 @@ size_flags_horizontal = 3
 text = "Nivel 7 -- Agua y Cielo"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 0.93, 0.6, 1)
+theme_override_colors/font_color = Color(1, 1, 0.95, 1)
 
 [node name="MagicLabel" type="Label" parent="UI/TopBar"]
 layout_mode = 2
@@ -49,7 +58,7 @@ custom_minimum_size = Vector2(160, 0)
 text = "0 pts magicos"
 horizontal_alignment = 2
 theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
+theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
 
 [node name="BookBtn" type="Button" parent="UI/TopBar"]
 layout_mode = 2
@@ -119,7 +128,7 @@ layout_mode = 2
 text = "(Clic para cerrar)"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
 
 [node name="CompletePanel" type="Panel" parent="UI"]
 visible = false
@@ -147,6 +156,7 @@ layout_mode = 2
 text = "Aprendiste los animales del agua y el cielo:\nKay, Ch'iich' y Aak  --  +50 puntos magicos"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.35, 0.22, 0.08, 1)
 autowrap_mode = 3
 
 [node name="NextBtn" type="Button" parent="UI/CompletePanel/VBox"]

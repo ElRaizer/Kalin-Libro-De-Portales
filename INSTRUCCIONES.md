@@ -6,6 +6,7 @@ Implementa la base del juego según el GDD:
 - **GameManager** (autoload): vocabulario maya completo, puntos mágicos, guardado automático.
 - **Menú Principal**: botones de jugar/continuar, libro de hechizos, reiniciar.
 - **Nivel 1 — Los Caminos Blancos**: puzzle estilo "Flow Free" donde conectas animales con sus casas usando rutas. Al conectar cada animal, dice su nombre en maya (*In k'aaba'e' Peek'*).
+- **Nivel 2 — La Casa Maya**: mecánica propia de "lanzar el hechizo correcto" (ya no reutiliza el puzzle de caminos del Nivel 1). Cada animal pide un objeto para su casa; el jugador elige el sustantivo maya correcto entre varias opciones. Tiene dos fases, tal como pide el GDD: primero con imagen + palabra visible, y luego solo con la imagen, sin apoyo escrito.
 - **Libro de Hechizos**: inventario visual de todas las palabras aprendidas con emoji, nombre maya, traducción y estructura gramatical.
 
 ---
@@ -72,21 +73,28 @@ kalin-libro-de-portales/
 
 ## Siguiente paso
 
-Una vez que el Nivel 1 funciona, los siguientes archivos a crear son:
-- `Level2_ConstruyendoPalabras.tscn` / `.gd` — hechizos de sustantivos
-- `Level3_HechizosAdjetivos.tscn` / `.gd` — sustantivo + adjetivo
-- `Level4_YoQuiero.tscn` / `.gd` — peticiones con *In k'a'at*
+Todos los niveles del Mundo 1 (1-7) ya existen. El trabajo pendiente es de
+**calidad de mecánica**, no de niveles faltantes:
+- `Level3.gd` — hoy usa el mismo puzzle de caminos que el Nivel 1; el GDD pide
+  construir la frase sustantivo+adjetivo de verdad (arrastrar/combinar tarjetas).
+- Un Nivel 5 real del GDD (frases de despedida + cierre narrativo, portal de
+  regreso) — no existe todavía; los "Niveles 5-7" actuales son contenido extra
+  de animales con la mecánica del Nivel 1.
 
 ---
 
-## Estado actual del juego (v9 — julio 2026)
+## Estado actual del juego (v10 — septiembre 2026)
+
+### Novedades de esta actualización
+- **Nivel 2 rediseñado.** Antes reutilizaba el mismo puzzle de caminos del Nivel 1 (solo cambiaban las palabras); ahora tiene su propia mecánica de "lanzar el hechizo correcto" con selección de sustantivos y progresión de dificultad (imagen+palabra → solo imagen), como describe el GDD. Además ahora enseña las 5 palabras del nivel (antes solo 3): mayak, lak, ch'áak, chan, janal.
+- Pendiente para las próximas iteraciones: la misma revisión para el Nivel 3 (construcción real de frase sustantivo+adjetivo, en vez de conectar caminos) y el Nivel 5 real del GDD (frases de despedida + cierre narrativo abriendo el portal), que hoy no existe — los "Niveles 5-7" actuales son contenido extra de animales, no ese cierre.
 
 ### Mapa de niveles del Mundo 1
 
 | # | Nivel | Tema | Hechizo | Palabras |
 |---|-------|------|---------|----------|
 | 1 | Los Caminos Blancos | Animales | *In k'aaba'e'* (Me llamo) | Peek', Miis, Kaax |
-| 2 | Construyendo Palabras | Objetos del hogar | Sustantivos | mayak, lak, chan |
+| 2 | La Casa Maya | Objetos del hogar | Selección de sustantivo (2 fases) | mayak, lak, ch'áak, chan, janal |
 | 3 | Hechizos de Adjetivos | Descripciones | Sustantivo + adjetivo | mejen, nojoch, ki' |
 | 4 | Yo Quiero | Comida | *In k'a'at* (Yo quiero) | ja', Ja'as, pak'al, K'úum |
 | 5 | Los Animales del Bosque | Animales | *In k'aaba'e'* | Kéej, K'éek'en, Ma'ax |

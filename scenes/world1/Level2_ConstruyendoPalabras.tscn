@@ -12,15 +12,6 @@ offset_bottom = 720.0
 expand_mode = 1
 stretch_mode = 6
 
-[node name="GridRoot" type="Node2D" parent="."]
-
-[node name="SelectionRing" type="ColorRect" parent="GridRoot"]
-visible = false
-offset_right = 90.0
-offset_bottom = 90.0
-color = Color(1, 0.85, 0.2, 0.9)
-z_index = -1
-
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="TopBar" type="HBoxContainer" parent="UI"]
@@ -57,70 +48,101 @@ custom_minimum_size = Vector2(130, 0)
 text = "Libro"
 theme_override_font_sizes/font_size = 18
 
-[node name="InstrPanel" type="Panel" parent="UI"]
-offset_left = 50.0
-offset_top = 648.0
-offset_right = 1230.0
-offset_bottom = 708.0
+; ── Panel de la peticion del animal ───────────────────────────────────────────
+[node name="RequestPanel" type="Panel" parent="UI"]
+offset_left = 140.0
+offset_top = 68.0
+offset_right = 1140.0
+offset_bottom = 278.0
 
-[node name="InstrLbl" type="Label" parent="UI/InstrPanel"]
+[node name="AnimalSprite" type="TextureRect" parent="UI/RequestPanel"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 190.0
+offset_bottom = 190.0
+stretch_mode = 6
+expand_mode = 1
+
+[node name="VBox" type="VBoxContainer" parent="UI/RequestPanel"]
+offset_left = 212.0
+offset_top = 34.0
+offset_right = 980.0
+offset_bottom = 176.0
+theme_override_constants/separation = 14
+
+[node name="NeedLbl" type="Label" parent="UI/RequestPanel/VBox"]
+layout_mode = 2
+text = ""
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.25, 0.15, 0.05, 1)
+autowrap_mode = 3
+
+[node name="WordLbl" type="Label" parent="UI/RequestPanel/VBox"]
+layout_mode = 2
+text = ""
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 42
+autowrap_mode = 3
+
+; ── Opciones de hechizo (palabras maya) ───────────────────────────────────────
+[node name="ChoicesGrid" type="GridContainer" parent="UI"]
+offset_left = 250.0
+offset_top = 298.0
+offset_right = 1030.0
+offset_bottom = 560.0
+columns = 3
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 20
+
+[node name="FeedbackPanel" type="Panel" parent="UI"]
+offset_left = 240.0
+offset_top = 564.0
+offset_right = 1040.0
+offset_bottom = 610.0
+
+[node name="FeedbackLbl" type="Label" parent="UI/FeedbackPanel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 8.0
-offset_top = 4.0
+offset_top = 2.0
 offset_right = -8.0
-offset_bottom = -4.0
-text = "Conecta cada palabra maya con su traduccion. Arrastra de izquierda a derecha."
+offset_bottom = -2.0
+text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 17
-theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
+theme_override_font_sizes/font_size = 19
 autowrap_mode = 3
 
-[node name="DialoguePanel" type="Panel" parent="UI"]
-visible = false
-offset_left = 200.0
-offset_top = 235.0
-offset_right = 1080.0
-offset_bottom = 445.0
+; ── Barra de estado (fase / progreso) ─────────────────────────────────────────
+[node name="StatusPanel" type="Panel" parent="UI"]
+offset_left = 50.0
+offset_top = 648.0
+offset_right = 1230.0
+offset_bottom = 708.0
 
-[node name="VBox" type="VBoxContainer" parent="UI/DialoguePanel"]
-offset_left = 16.0
-offset_top = 14.0
-offset_right = 864.0
-offset_bottom = 196.0
-theme_override_constants/separation = 8
+[node name="StatusVBox" type="VBoxContainer" parent="UI/StatusPanel"]
+offset_left = 10.0
+offset_top = 4.0
+offset_right = 1170.0
+offset_bottom = 56.0
+theme_override_constants/separation = 2
 
-[node name="Phrase" type="Label" parent="UI/DialoguePanel/VBox"]
+[node name="PhaseLbl" type="Label" parent="UI/StatusPanel/StatusVBox"]
 layout_mode = 2
 text = ""
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 26
-theme_override_colors/font_color = Color(0.08, 0.08, 0.45, 1)
+theme_override_font_sizes/font_size = 16
 
-[node name="Hint" type="Label" parent="UI/DialoguePanel/VBox"]
-layout_mode = 2
-text = ""
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 17
-theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
-
-[node name="Struct" type="Label" parent="UI/DialoguePanel/VBox"]
+[node name="ProgressLbl" type="Label" parent="UI/StatusPanel/StatusVBox"]
 layout_mode = 2
 text = ""
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.25, 0.50, 0.20, 1)
 
-[node name="SkipLbl" type="Label" parent="UI/DialoguePanel/VBox"]
-layout_mode = 2
-text = "(Clic para cerrar)"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
-
+; ── Panel de completado ───────────────────────────────────────────────────────
 [node name="CompletePanel" type="Panel" parent="UI"]
 visible = false
 offset_left = 290.0
@@ -133,37 +155,45 @@ offset_left = 24.0
 offset_top = 24.0
 offset_right = 676.0
 offset_bottom = 354.0
-theme_override_constants/separation = 20
+theme_override_constants/separation = 18
 
 [node name="TitleLbl" type="Label" parent="UI/CompletePanel/VBox"]
 layout_mode = 2
-text = "Nivel Completado!"
+text = "Nivel 2 Completado!"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 34
 theme_override_colors/font_color = Color(0.1, 0.5, 0.1, 1)
 
 [node name="SubLbl" type="Label" parent="UI/CompletePanel/VBox"]
 layout_mode = 2
-text = "+50 puntos magicos"
+text = "Aprendiste a lanzar hechizos para construir la casa maya.\n+50 puntos magicos"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 19
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.35, 0.22, 0.08, 1)
 autowrap_mode = 3
 
 [node name="NextBtn" type="Button" parent="UI/CompletePanel/VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 64)
 text = "Siguiente Nivel ->"
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 24
 
 [node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 52)
 text = "Volver al Menu"
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 20
+
+[node name="ReplayBtn" type="Button" parent="UI/CompletePanel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 48)
+text = "Practicar de nuevo"
+theme_override_font_sizes/font_size = 18
 
 [node name="LibroHechizos" parent="." instance=ExtResource("2")]
 
-[connection signal="pressed" from="UI/TopBar/BackBtn"             to="." method="_on_menu_pressed"]
-[connection signal="pressed" from="UI/TopBar/BookBtn"             to="." method="_on_book_pressed"]
-[connection signal="pressed" from="UI/CompletePanel/VBox/NextBtn" to="." method="_on_next_level_pressed"]
-[connection signal="pressed" from="UI/CompletePanel/VBox/MenuBtn" to="." method="_on_menu_pressed"]
+[connection signal="pressed" from="UI/TopBar/BackBtn"               to="." method="_on_menu_pressed"]
+[connection signal="pressed" from="UI/TopBar/BookBtn"               to="." method="_on_book_pressed"]
+[connection signal="pressed" from="UI/CompletePanel/VBox/NextBtn"   to="." method="_on_next_level_pressed"]
+[connection signal="pressed" from="UI/CompletePanel/VBox/MenuBtn"   to="." method="_on_menu_pressed"]
+[connection signal="pressed" from="UI/CompletePanel/VBox/ReplayBtn" to="." method="_on_replay_pressed"]
