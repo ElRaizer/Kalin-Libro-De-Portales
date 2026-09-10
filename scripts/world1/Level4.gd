@@ -11,9 +11,9 @@ const FOODS := [
 const RES_BG    := "res://Arte/backgrounds/bg_level1.svg"
 const RES_KALIN := "res://Arte/sprites/kalin_normal.svg"
 
-var learned_count := 0
+var learned_count: int = 0
 var food_buttons: Array = []
-var _completing := false
+var _completing: bool = false
 
 @onready var bg:          TextureRect    = $Background
 @onready var kalin_img:   TextureRect    = $UI/KalinSprite
@@ -54,11 +54,11 @@ func _apply_friendly_theme() -> void:
 func _build_food_buttons() -> void:
 	for i in range(FOODS.size()):
 		var f: Dictionary = FOODS[i]
-		var btn := Button.new()
+		var btn: Button = Button.new()
 		btn.custom_minimum_size = Vector2(240, 130)
 		btn.text = "%s\n%s\n(%s)" % [f.emoji, f.spanish, f.maya]
 		btn.add_theme_font_size_override("font_size", 22)
-		var st := StyleBoxFlat.new()
+		var st: StyleBoxFlat = StyleBoxFlat.new()
 		st.bg_color = f.color;  st.set_border_width_all(3)
 		st.border_color = f.color.darkened(0.3)
 		st.corner_radius_top_left=12; st.corner_radius_top_right=12
@@ -66,7 +66,7 @@ func _build_food_buttons() -> void:
 		btn.add_theme_stylebox_override("normal", st)
 		btn.add_theme_color_override("font_color", Color.WHITE)
 		food_grid.add_child(btn);  food_buttons.append(btn)
-		var ci := i
+		var ci: int = i
 		btn.pressed.connect(func(): _on_food_pressed(ci))
 
 func _on_food_pressed(idx: int) -> void:
@@ -79,7 +79,7 @@ func _on_food_pressed(idx: int) -> void:
 		GameManager.learn_word(f.maya)
 		learned_count += 1
 		# Marcar botón aprendido
-		var st := StyleBoxFlat.new()
+		var st: StyleBoxFlat = StyleBoxFlat.new()
 		st.bg_color = FOODS[idx].color.darkened(0.25)
 		st.set_border_width_all(4);  st.border_color = Color.WHITE
 		st.corner_radius_top_left=12; st.corner_radius_top_right=12
@@ -87,7 +87,7 @@ func _on_food_pressed(idx: int) -> void:
 		food_buttons[idx].add_theme_stylebox_override("normal", st)
 		progress.text = "Aprendidos: %d / %d" % [learned_count, FOODS.size()]
 	# Animar Kalin
-	var tw := create_tween()
+	var tw: Tween = create_tween()
 	tw.tween_property(kalin_img, "scale", Vector2(1.15,1.15), 0.12)
 	tw.tween_property(kalin_img, "scale", Vector2(1.0,1.0),   0.18)
 	if learned_count >= FOODS.size() and not _completing:

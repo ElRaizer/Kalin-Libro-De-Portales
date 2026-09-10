@@ -10,7 +10,7 @@ extends Node2D
 @onready var play_btn:   Button = $UI/Center/VBox/PlayBtn
 
 func _ready() -> void:
-	var bg_tex := load("res://Arte/backgrounds/bg_menu.svg") as Texture2D
+	var bg_tex: Texture2D = load("res://Arte/backgrounds/bg_menu.svg") as Texture2D
 	if bg_tex: bg.texture = bg_tex
 	_refresh_ui()
 	GameManager.magic_points_changed.connect(func(_v): _refresh_ui())
@@ -18,16 +18,16 @@ func _ready() -> void:
 
 func _refresh_ui() -> void:
 	magic_lbl.text = "%d puntos magicos" % GameManager.magic_points
-	var word_count := GameManager.words_learned.size()
+	var word_count: int = GameManager.words_learned.size()
 	book_btn.text  = "Libro de Hechizos  (%d palabras)" % word_count
 	# Texto del botón Jugar según progreso
-	var next := GameManager.next_unlocked_scene()
+	var next: String = GameManager.next_unlocked_scene()
 	if next == "main_menu":
 		play_btn.text = "Completado! Jugar de nuevo"
 	elif GameManager.completed_levels.is_empty():
 		play_btn.text = "Jugar - Nivel 1"
 	else:
-		var nums := {"world1_level1":1,"world1_level2":2,"world1_level3":3,"world1_level4":4,"world1_level5":5,"world1_level6":6,"world1_level7":7}
+		var nums: Dictionary = {"world1_level1":1,"world1_level2":2,"world1_level3":3,"world1_level4":4,"world1_level5":5,"world1_level6":6,"world1_level7":7}
 		play_btn.text = "Continuar - Nivel %d" % nums.get(next, 1)
 
 func _on_play_pressed() -> void:
