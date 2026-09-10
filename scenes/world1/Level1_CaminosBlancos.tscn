@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="2"]
 [ext_resource type="Texture2D" uid="uid://bedp7h6bqksto" path="res://Arte/backgrounds/bg_level1.svg" id="3_bg"]
 [ext_resource type="PackedScene" uid="uid://dyxnxjtjkfis3" path="res://scenes/components/GridBoard.tscn" id="3_eeq0b"]
-[ext_resource type="Script" path="res://scripts/components/GridWordData.gd" id="4_japx6"]
+[ext_resource type="Script" uid="uid://kfbwe7mv5uhc" path="res://scripts/components/GridWordData.gd" id="4_japx6"]
 [ext_resource type="Texture2D" uid="uid://c82xhit3gbmdq" path="res://Arte/sprites/animal_peek.svg" id="4_peek"]
 [ext_resource type="Texture2D" uid="uid://bjtthugdl1hx" path="res://Arte/sprites/animal_miis.svg" id="5_miis"]
 [ext_resource type="Texture2D" uid="uid://bt5cevfxvdhq8" path="res://Arte/sprites/animal_kaax.svg" id="6_kaax"]
@@ -15,8 +15,8 @@ maya_word = "Peek'"
 spanish_word = "Perro"
 phrase = "In k'aaba'e' Peek'"
 explanation = "Me llamo Perro — en maya: Peek'"
-destination_text = "Peek'"
 sprite = ExtResource("4_peek")
+destination_text = "Peek'"
 color = Color(0.9, 0.55, 0.2, 1)
 start_cell = Vector2i(0, 1)
 destination_cell = Vector2i(8, 1)
@@ -27,8 +27,8 @@ maya_word = "Miis"
 spanish_word = "Gato"
 phrase = "In k'aaba'e' Miis"
 explanation = "Me llamo Gato — en maya: Miis"
-destination_text = "Miis"
 sprite = ExtResource("5_miis")
+destination_text = "Miis"
 color = Color(0.55, 0.38, 0.85, 1)
 start_cell = Vector2i(0, 3)
 destination_cell = Vector2i(8, 3)
@@ -39,15 +39,16 @@ maya_word = "Kaax"
 spanish_word = "Gallina"
 phrase = "In k'aaba'e' Kaax"
 explanation = "Me llamo Gallina — en maya: Kaax"
-destination_text = "Kaax"
 sprite = ExtResource("6_kaax")
+destination_text = "Kaax"
 color = Color(0.25, 0.65, 0.3, 1)
 start_cell = Vector2i(0, 5)
 destination_cell = Vector2i(8, 5)
 
 [node name="Level1" type="Node2D" unique_id=307257646]
 script = ExtResource("1")
-default_instruction = "Haz clic en un animal y arrastra hasta su casa.\nConecta los tres para completar el nivel."
+default_instruction = "Haz clic en un animal y arrastra hasta su casa.
+Conecta los tres para completar el nivel."
 selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
 
 [node name="Background" type="TextureRect" parent="." unique_id=1713056734]
