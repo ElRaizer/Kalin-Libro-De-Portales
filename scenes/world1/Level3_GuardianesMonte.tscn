@@ -1,54 +1,54 @@
 [gd_scene format=3 uid="uid://d2rruddd7xe0j"]
 
-[ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="1_book"]
-[ext_resource type="Script" uid="uid://ucencs5cmj0i" path="res://scripts/world1/Level6.gd" id="2_script"]
-[ext_resource type="Script" uid="uid://kfbwe7mv5uhc" path="res://scripts/components/GridWordData.gd" id="3_data"]
-[ext_resource type="Texture2D" uid="uid://d2f8hj07l54pc" path="res://Arte/sprites/animal_baalam.svg" id="4_baalam"]
-[ext_resource type="Texture2D" uid="uid://kuo4lhc2uowd" path="res://Arte/sprites/animal_kuuts.svg" id="5_kuuts"]
-[ext_resource type="Texture2D" uid="uid://br3jmwjyekrda" path="res://Arte/sprites/animal_tuul.svg" id="6_tuul"]
-[ext_resource type="Texture2D" uid="uid://l6c2nufcba36" path="res://Arte/backgrounds/bg_level_monte.svg" id="7_bg"]
-[ext_resource type="PackedScene" uid="uid://dyxnxjtjkfis3" path="res://scenes/components/GridBoard.tscn" id="8_grid"]
+[ext_resource type="Script" uid="uid://ucencs5cmj0i" path="res://scripts/world1/Level6.gd" id="1_rj3ji"]
+[ext_resource type="Texture2D" uid="uid://l6c2nufcba36" path="res://Arte/backgrounds/bg_level_monte.svg" id="2_8v1o3"]
+[ext_resource type="PackedScene" uid="uid://dyxnxjtjkfis3" path="res://scenes/components/GridBoard.tscn" id="3_fl1ur"]
+[ext_resource type="Script" uid="uid://kfbwe7mv5uhc" path="res://scripts/components/GridWordData.gd" id="4_ambyd"]
+[ext_resource type="Texture2D" uid="uid://d2f8hj07l54pc" path="res://Arte/sprites/animal_baalam.svg" id="5_oiyxb"]
+[ext_resource type="Texture2D" uid="uid://kuo4lhc2uowd" path="res://Arte/sprites/animal_kuuts.svg" id="6_r0d7p"]
+[ext_resource type="Texture2D" uid="uid://br3jmwjyekrda" path="res://Arte/sprites/animal_tuul.svg" id="7_ddrlm"]
+[ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="8_7hqrg"]
 
 [sub_resource type="Resource" id="Animal_baalam"]
-script = ExtResource("3_data")
+script = ExtResource("4_ambyd")
 maya_word = "Báalam"
 spanish_word = "Jaguar"
 phrase = "In k'aaba'e' Báalam"
 explanation = "Me llamo Jaguar — en maya: Báalam"
-sprite = ExtResource("4_baalam")
+sprite = ExtResource("5_oiyxb")
 destination_text = "Báalam"
 color = Color(0.8, 0.55, 0.12, 1)
 start_cell = Vector2i(0, 1)
 destination_cell = Vector2i(8, 1)
 
 [sub_resource type="Resource" id="Animal_kuuts"]
-script = ExtResource("3_data")
+script = ExtResource("4_ambyd")
 maya_word = "Kuuts"
 spanish_word = "Pavo"
 phrase = "In k'aaba'e' Kuuts"
 explanation = "Me llamo Pavo — en maya: Kuuts"
-sprite = ExtResource("5_kuuts")
+sprite = ExtResource("6_r0d7p")
 destination_text = "Kuuts"
 color = Color(0.38, 0.28, 0.55, 1)
 start_cell = Vector2i(0, 3)
 destination_cell = Vector2i(8, 3)
 
 [sub_resource type="Resource" id="Animal_tuul"]
-script = ExtResource("3_data")
+script = ExtResource("4_ambyd")
 maya_word = "T'u'ul"
 spanish_word = "Conejo"
 phrase = "In k'aaba'e' T'u'ul"
 explanation = "Me llamo Conejo — en maya: T'u'ul"
-sprite = ExtResource("6_tuul")
+sprite = ExtResource("7_ddrlm")
 destination_text = "T'u'ul"
 color = Color(0.3, 0.55, 0.45, 1)
 start_cell = Vector2i(0, 5)
 destination_cell = Vector2i(8, 5)
 
-[node name="Level6" type="Node2D" unique_id=891629715]
-script = ExtResource("2_script")
+[node name="Level3" type="Node2D" unique_id=891629715]
+script = ExtResource("1_rj3ji")
 level_number = 6
-next_scene_key = "world1_level7"
+next_scene_key = "world1_level4"
 default_instruction = "Haz clic en un animal y arrastra hasta su casa.
 Conecta los tres para completar el nivel."
 selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
@@ -56,13 +56,13 @@ selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
 [node name="Background" type="TextureRect" parent="." unique_id=718946208]
 offset_right = 1280.0
 offset_bottom = 720.0
-texture = ExtResource("7_bg")
+texture = ExtResource("2_8v1o3")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="GridBoard" parent="." unique_id=1075655894 instance=ExtResource("8_grid")]
+[node name="GridBoard" parent="." unique_id=1075655894 instance=ExtResource("3_fl1ur")]
 obstacles = Array[Vector2i]([Vector2i(3, 1), Vector2i(6, 1), Vector2i(2, 3), Vector2i(5, 3), Vector2i(7, 3), Vector2i(3, 5), Vector2i(6, 5)])
-words = Array[ExtResource("3_data")]([SubResource("Animal_baalam"), SubResource("Animal_kuuts"), SubResource("Animal_tuul")])
+words = Array[ExtResource("4_ambyd")]([SubResource("Animal_baalam"), SubResource("Animal_kuuts"), SubResource("Animal_tuul")])
 
 [node name="TopBarBG" type="ColorRect" parent="." unique_id=1893956046]
 offset_left = 6.0
@@ -221,7 +221,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Volver al menú"
 
-[node name="LibroHechizos" parent="." unique_id=1308887561 instance=ExtResource("1_book")]
+[node name="LibroHechizos" parent="." unique_id=1308887561 instance=ExtResource("8_7hqrg")]
 visible = false
 
 [connection signal="pressed" from="UI/TopBar/BackBtn" to="." method="_on_menu_pressed"]

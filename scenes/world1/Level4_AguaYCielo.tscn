@@ -1,52 +1,52 @@
 [gd_scene format=3 uid="uid://bol8dmmsix32s"]
 
-[ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="1_book"]
-[ext_resource type="Script" uid="uid://cdepgbhyy3q8o" path="res://scripts/world1/Level7.gd" id="2_script"]
-[ext_resource type="Texture2D" uid="uid://bo5g7pqwxq2ea" path="res://Arte/backgrounds/bg_level_agua.svg" id="3_bg"]
-[ext_resource type="Script" uid="uid://kfbwe7mv5uhc" path="res://scripts/components/GridWordData.gd" id="4_data"]
-[ext_resource type="Texture2D" uid="uid://cq288osuv6y8i" path="res://Arte/sprites/animal_kay.svg" id="5_kay"]
-[ext_resource type="Texture2D" uid="uid://ol8x8vcx6xd0" path="res://Arte/sprites/animal_chiich.svg" id="6_chiich"]
-[ext_resource type="Texture2D" uid="uid://ci3k8myufu2wx" path="res://Arte/sprites/animal_aak.svg" id="7_aak"]
-[ext_resource type="PackedScene" uid="uid://dyxnxjtjkfis3" path="res://scenes/components/GridBoard.tscn" id="8_grid"]
+[ext_resource type="Script" uid="uid://cdepgbhyy3q8o" path="res://scripts/world1/Level7.gd" id="1_pykdd"]
+[ext_resource type="Texture2D" uid="uid://bo5g7pqwxq2ea" path="res://Arte/backgrounds/bg_level_agua.svg" id="2_bt008"]
+[ext_resource type="PackedScene" uid="uid://dyxnxjtjkfis3" path="res://scenes/components/GridBoard.tscn" id="3_4nq6g"]
+[ext_resource type="Script" uid="uid://kfbwe7mv5uhc" path="res://scripts/components/GridWordData.gd" id="4_hp5qc"]
+[ext_resource type="Texture2D" uid="uid://cq288osuv6y8i" path="res://Arte/sprites/animal_kay.svg" id="5_mpl2f"]
+[ext_resource type="Texture2D" uid="uid://ol8x8vcx6xd0" path="res://Arte/sprites/animal_chiich.svg" id="6_wo87d"]
+[ext_resource type="Texture2D" uid="uid://ci3k8myufu2wx" path="res://Arte/sprites/animal_aak.svg" id="7_31hbf"]
+[ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="8_qd8oi"]
 
 [sub_resource type="Resource" id="Animal_kay"]
-script = ExtResource("4_data")
+script = ExtResource("4_hp5qc")
 maya_word = "Kay"
 spanish_word = "Pez"
 phrase = "In k'aaba'e' Kay"
 explanation = "Me llamo Pez — en maya: Kay"
-sprite = ExtResource("5_kay")
+sprite = ExtResource("5_mpl2f")
 destination_text = "Kay"
 color = Color(0.85, 0.45, 0.15, 1)
 start_cell = Vector2i(0, 1)
 destination_cell = Vector2i(8, 1)
 
 [sub_resource type="Resource" id="Animal_chiich"]
-script = ExtResource("4_data")
+script = ExtResource("4_hp5qc")
 maya_word = "Ch'íich'"
 spanish_word = "Pájaro"
 phrase = "In k'aaba'e' Ch'íich'"
 explanation = "Me llamo Pájaro — en maya: Ch'íich'"
-sprite = ExtResource("6_chiich")
+sprite = ExtResource("6_wo87d")
 destination_text = "Ch'íich'"
 color = Color(0.16, 0.48, 0.58, 1)
 start_cell = Vector2i(0, 3)
 destination_cell = Vector2i(8, 3)
 
 [sub_resource type="Resource" id="Animal_aak"]
-script = ExtResource("4_data")
+script = ExtResource("4_hp5qc")
 maya_word = "Aak'"
 spanish_word = "Tortuga"
 phrase = "In k'aaba'e' Aak'"
 explanation = "Me llamo Tortuga — en maya: Aak'"
-sprite = ExtResource("7_aak")
+sprite = ExtResource("7_31hbf")
 destination_text = "Aak'"
 color = Color(0.32, 0.52, 0.24, 1)
 start_cell = Vector2i(0, 5)
 destination_cell = Vector2i(8, 5)
 
-[node name="Level7" type="Node2D" unique_id=1178559565]
-script = ExtResource("2_script")
+[node name="Level4" type="Node2D" unique_id=1178559565]
+script = ExtResource("1_pykdd")
 level_number = 7
 next_scene_key = "main_menu"
 default_instruction = "Haz clic en un animal y arrastra hasta su casa.
@@ -56,13 +56,13 @@ selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
 [node name="Background" type="TextureRect" parent="." unique_id=1104198232]
 offset_right = 1280.0
 offset_bottom = 720.0
-texture = ExtResource("3_bg")
+texture = ExtResource("2_bt008")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="GridBoard" parent="." unique_id=147276208 instance=ExtResource("8_grid")]
+[node name="GridBoard" parent="." unique_id=147276208 instance=ExtResource("3_4nq6g")]
 obstacles = Array[Vector2i]([Vector2i(2, 1), Vector2i(4, 1), Vector2i(7, 1), Vector2i(3, 3), Vector2i(6, 3), Vector2i(2, 5), Vector2i(4, 5), Vector2i(7, 5)])
-words = Array[ExtResource("4_data")]([SubResource("Animal_kay"), SubResource("Animal_chiich"), SubResource("Animal_aak")])
+words = Array[ExtResource("4_hp5qc")]([SubResource("Animal_kay"), SubResource("Animal_chiich"), SubResource("Animal_aak")])
 
 [node name="TopBarBG" type="ColorRect" parent="." unique_id=140687833]
 offset_left = 6.0
@@ -221,7 +221,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Volver al menú"
 
-[node name="LibroHechizos" parent="." unique_id=1125537892 instance=ExtResource("1_book")]
+[node name="LibroHechizos" parent="." unique_id=1125537892 instance=ExtResource("8_qd8oi")]
 visible = false
 
 [connection signal="pressed" from="UI/TopBar/BackBtn" to="." method="_on_menu_pressed"]
