@@ -61,16 +61,15 @@ stretch_mode = 6
 [node name="GridBoard" parent="." unique_id=589564223 instance=ExtResource("3_eeq0b")]
 obstacles = Array[Vector2i]([Vector2i(3, 1), Vector2i(5, 3), Vector2i(3, 5)])
 words = Array[ExtResource("4_japx6")]([SubResource("Resource_emkns"), SubResource("Resource_81r1v"), SubResource("Resource_s82b0")])
-; ── Fondo oscuro semitransparente detras de la barra superior, para que el
-; ── texto claro nunca se pierda contra el fondo del nivel ────────────────────
-[node name="TopBarBG" type="ColorRect" parent="."]
+
+[node name="TopBarBG" type="ColorRect" parent="." unique_id=234391001]
 offset_left = 6.0
 offset_top = 4.0
 offset_right = 1274.0
 offset_bottom = 56.0
 color = Color(0, 0, 0, 0.42)
 
-[node name="GridRoot" type="Node2D" parent="."]
+[node name="GridRoot" type="Node2D" parent="." unique_id=257330901]
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1199167839]
 
@@ -89,22 +88,18 @@ text = "<- Menu"
 [node name="TitleLabel" type="Label" parent="UI/TopBar" unique_id=592108300]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(1, 0.93, 0.6, 1)
+theme_override_colors/font_color = Color(1, 1, 0.95, 1)
 theme_override_font_sizes/font_size = 20
 text = "Nivel 1 — Sak Beh (Animales)"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 0.95, 1)
 
 [node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=262575093]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
+theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
 theme_override_font_sizes/font_size = 18
 text = "0 pts magicos"
 horizontal_alignment = 2
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
 
 [node name="BookBtn" type="Button" parent="UI/TopBar" unique_id=474306232]
 custom_minimum_size = Vector2(130, 0)
@@ -172,10 +167,9 @@ theme_override_font_sizes/font_size = 18
 
 [node name="SkipLbl" type="Label" parent="UI/DialoguePanel/VBox" unique_id=1063137561]
 layout_mode = 2
-text = "(Clic para cerrar)"
-horizontal_alignment = 0
-theme_override_font_sizes/font_size = 12
 theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
+theme_override_font_sizes/font_size = 12
+text = "(Clic para cerrar)"
 
 [node name="CompletePanel" type="Panel" parent="UI" unique_id=1026106708]
 visible = false
@@ -201,8 +195,8 @@ horizontal_alignment = 1
 
 [node name="SubLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=1818714009]
 layout_mode = 2
-theme_override_font_sizes/font_size = 19
 theme_override_colors/font_color = Color(0.35, 0.22, 0.08, 1)
+theme_override_font_sizes/font_size = 19
 autowrap_mode = 3
 
 [node name="NextBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=1004652]
