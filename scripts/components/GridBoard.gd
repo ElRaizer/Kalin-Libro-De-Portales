@@ -51,6 +51,24 @@ enum Cell { EMPTY, OBSTACLE, WORD, DESTINATION, PATH }
 		destination_color = value
 		_schedule_rebuild()
 
+@export_category("Visual del camino")
+@export_range(2.0, 60.0, 1.0) var path_line_width: float = 18.0:
+	set(value):
+		path_line_width = maxf(value, 2.0)
+		_refresh_all_path_visuals()
+
+@export_range(1.0, 2.5, 0.05) var path_tip_scale: float = 1.45:
+	set(value):
+		path_tip_scale = clampf(value, 1.0, 2.5)
+		_refresh_all_path_visuals()
+
+## Cantidad de color que conserva el tile debajo de la línea.
+## 0 no altera el tile y 1 aplica completamente el color del camino.
+@export_range(0.0, 1.0, 0.01) var path_tile_tint: float = 0.12:
+	set(value):
+		path_tile_tint = clampf(value, 0.0, 1.0)
+		_refresh_all_path_visuals()
+
 @export_category("Contenido del nivel")
 @export var obstacles: Array[Vector2i] = []:
 	set(value):
@@ -78,6 +96,8 @@ var paths: Dictionary = {}
 var connected: Array[int] = []
 var tile_rects: Dictionary = {}
 var word_nodes: Dictionary = {}
+var path_lines: Dictionary = {}
+var path_tips: Dictionary = {}
 var drawing: bool = false
 var active_index: int = -1
 var last_cell: Vector2i = Vector2i(-1, -1)
@@ -108,6 +128,8 @@ func rebuild_preview() -> void:
 		child.free()
 	tile_rects.clear()
 	word_nodes.clear()
+	path_lines.clear()
+	path_tips.clear()
 
 	if Engine.is_editor_hint() and not show_preview_in_editor:
 		return
@@ -131,6 +153,8 @@ func rebuild_preview() -> void:
 			continue
 		_add_destination_preview(word, index)
 		_add_word_preview(word, index)
+
+	_refresh_all_path_visuals()
 
 ## Inicializa el estado jugable con las propiedades editadas en el Inspector.
 func start_game() -> void:
@@ -289,12 +313,17 @@ func _handle_press(cell: Vector2i) -> void:
 			last_cell = cell
 			_show_ring(index)
 			word_selected.emit(words[index])
-		Cell.EMPTY, Cell.PATH:
+		Cell.EMPTY:
 			if drawing:
 				_extend_path(cell)
+		Cell.PATH:
+			if drawing:
+				_extend_path(cell)
+			else:
+				_try_resume_path(cell)
 		Cell.DESTINATION:
 			if drawing and tile_owner.get(cell, -1) == active_index:
-				_finalize_connection(active_index)
+				_try_finalize_connection(cell)
 
 func _fill_gap(from_cell: Vector2i, to_cell: Vector2i) -> void:
 	if not is_valid_cell(to_cell):
@@ -314,12 +343,63 @@ func _fill_gap(from_cell: Vector2i, to_cell: Vector2i) -> void:
 			_try_cell(middle)
 
 func _try_cell(cell: Vector2i) -> void:
+	if drawing and _try_retract_path(cell):
+		return
 	match grid_state[cell.y][cell.x]:
 		Cell.EMPTY, Cell.PATH:
 			_extend_path(cell)
+		Cell.WORD:
+			# Volver a la ficha inicial elimina el primer tramo del camino.
+			_try_retract_path(cell)
 		Cell.DESTINATION:
 			if tile_owner.get(cell, -1) == active_index:
-				_finalize_connection(active_index)
+				_try_finalize_connection(cell)
+
+func _try_finalize_connection(destination_cell: Vector2i) -> void:
+	if active_index < 0 or active_index in connected:
+		return
+	if tile_owner.get(destination_cell, -1) != active_index:
+		return
+
+	var previous_cell: Vector2i = words[active_index].start_cell
+	if not paths[active_index].is_empty():
+		previous_cell = paths[active_index].back()
+	if not _are_adjacent(previous_cell, destination_cell):
+		return
+
+	_finalize_connection(active_index)
+
+func _try_resume_path(cell: Vector2i) -> void:
+	var index: int = tile_owner.get(cell, -1)
+	if index < 0 or index in connected or paths.get(index, []).is_empty():
+		return
+	if paths[index].back() != cell:
+		return
+	active_index = index
+	drawing = true
+	last_cell = cell
+	_show_ring(index)
+	word_selected.emit(words[index])
+
+func _try_retract_path(cell: Vector2i) -> bool:
+	if active_index < 0 or paths.get(active_index, []).is_empty():
+		return false
+	var path: Array = paths[active_index]
+	var current_tip: Vector2i = path.back()
+	if not _are_adjacent(cell, current_tip):
+		return false
+
+	var is_previous_path_cell: bool = path.size() >= 2 and path[path.size() - 2] == cell
+	var is_start_cell: bool = path.size() == 1 and words[active_index].start_cell == cell
+	if not is_previous_path_cell and not is_start_cell:
+		return false
+
+	var removed_cell: Vector2i = path.pop_back()
+	grid_state[removed_cell.y][removed_cell.x] = Cell.EMPTY
+	tile_owner.erase(removed_cell)
+	_reset_tile(removed_cell)
+	_refresh_path_line(active_index)
+	return true
 
 func _extend_path(cell: Vector2i) -> void:
 	if active_index < 0 or cell in paths[active_index]:
@@ -337,7 +417,8 @@ func _extend_path(cell: Vector2i) -> void:
 	paths[active_index].append(cell)
 	grid_state[cell.y][cell.x] = Cell.PATH
 	tile_owner[cell] = active_index
-	_set_tile_color(cell, words[active_index].color.lightened(0.4))
+	_set_path_tile_tint(cell, words[active_index].color)
+	_refresh_path_line(active_index)
 
 func _clear_path(index: int) -> void:
 	for cell: Vector2i in paths.get(index, []):
@@ -345,14 +426,16 @@ func _clear_path(index: int) -> void:
 		tile_owner.erase(cell)
 		_reset_tile(cell)
 	paths[index] = []
+	_remove_path_line(index)
 
 func _finalize_connection(index: int) -> void:
 	if index in connected:
 		return
 	connected.append(index)
 	for cell: Vector2i in paths[index]:
-		_set_tile_color(cell, words[index].color)
-	_set_tile_color(words[index].destination_cell, words[index].color.lightened(0.25))
+		_set_path_tile_tint(cell, words[index].color)
+	_set_path_tile_tint(words[index].destination_cell, words[index].color)
+	_refresh_path_line(index)
 	drawing = false
 	active_index = -1
 	selection_ring.visible = false
@@ -396,6 +479,86 @@ func _set_tile_color(cell: Vector2i, color: Color) -> void:
 	var tile: TextureRect = tile_rects.get(cell) as TextureRect
 	if tile:
 		tile.modulate = color
+
+func _set_path_tile_tint(cell: Vector2i, color: Color) -> void:
+	_set_tile_color(cell, Color.WHITE.lerp(color, path_tile_tint))
+
+func _refresh_all_path_visuals() -> void:
+	if not is_instance_valid(preview_root):
+		return
+	for index in paths:
+		for cell: Vector2i in paths[index]:
+			_set_path_tile_tint(cell, words[index].color)
+		if index in connected:
+			_set_path_tile_tint(words[index].destination_cell, words[index].color)
+		_refresh_path_line(index)
+
+func _refresh_path_line(index: int) -> void:
+	if not is_instance_valid(preview_root) or not paths.has(index) or index >= words.size():
+		return
+	var path: Array = paths[index]
+	if path.is_empty():
+		_remove_path_line(index)
+		return
+
+	var line: Line2D = path_lines.get(index) as Line2D
+	if not line:
+		line = Line2D.new()
+		line.name = "PathLine_%d" % index
+		line.z_index = 0
+		line.begin_cap_mode = Line2D.LINE_CAP_ROUND
+		line.end_cap_mode = Line2D.LINE_CAP_ROUND
+		line.joint_mode = Line2D.LINE_JOINT_ROUND
+		line.antialiased = true
+		preview_root.add_child(line)
+		path_lines[index] = line
+
+	line.width = path_line_width
+	line.default_color = words[index].color
+	line.clear_points()
+	line.add_point(_cell_center(words[index].start_cell))
+	for cell: Vector2i in path:
+		line.add_point(_cell_center(cell))
+	if index in connected:
+		line.add_point(_cell_center(words[index].destination_cell))
+	_refresh_path_tip(index, path.back())
+
+func _remove_path_line(index: int) -> void:
+	var line: Line2D = path_lines.get(index) as Line2D
+	if line:
+		line.queue_free()
+	path_lines.erase(index)
+	_remove_path_tip(index)
+
+func _refresh_path_tip(index: int, cell: Vector2i) -> void:
+	if index in connected:
+		_remove_path_tip(index)
+		return
+	var tip: Polygon2D = path_tips.get(index) as Polygon2D
+	if not tip:
+		tip = Polygon2D.new()
+		tip.name = "PathTip_%d" % index
+		tip.z_index = 0
+		preview_root.add_child(tip)
+		path_tips[index] = tip
+
+	var radius: float = path_line_width * path_tip_scale * 0.5
+	var circle_points: PackedVector2Array = PackedVector2Array()
+	for point_index in range(24):
+		var angle: float = TAU * float(point_index) / 24.0
+		circle_points.append(Vector2(cos(angle), sin(angle)) * radius)
+	tip.polygon = circle_points
+	tip.color = words[index].color
+	tip.position = _cell_center(cell)
+
+func _remove_path_tip(index: int) -> void:
+	var tip: Polygon2D = path_tips.get(index) as Polygon2D
+	if tip:
+		tip.queue_free()
+	path_tips.erase(index)
+
+func _cell_center(cell: Vector2i) -> Vector2:
+	return cell_to_local_position(cell) + Vector2.ONE * (float(tile_size) * 0.5)
 
 func _reset_tile(cell: Vector2i) -> void:
 	var tile: TextureRect = tile_rects.get(cell) as TextureRect

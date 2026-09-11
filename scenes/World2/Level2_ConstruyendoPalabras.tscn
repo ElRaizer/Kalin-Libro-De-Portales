@@ -1,0 +1,198 @@
+[gd_scene format=3 uid="uid://biosgj4ttvjhh"]
+
+[ext_resource type="Script" uid="uid://cf0u3j8ouco0h" path="res://scripts/world1/Level2.gd" id="1_xq8dk"]
+[ext_resource type="Texture2D" uid="uid://bedp7h6bqksto" path="res://Arte/backgrounds/bg_level1.svg" id="2_1drb2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="3_si73q"]
+
+[node name="Level2" type="Node2D" unique_id=159115184]
+script = ExtResource("1_xq8dk")
+
+[node name="Background" type="TextureRect" parent="." unique_id=279544058]
+offset_right = 1280.0
+offset_bottom = 720.0
+texture = ExtResource("2_1drb2")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=689509921]
+
+[node name="TopBar" type="HBoxContainer" parent="UI" unique_id=1787355346]
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 1270.0
+offset_bottom = 52.0
+
+[node name="BackBtn" type="Button" parent="UI/TopBar" unique_id=2026468759]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "← Menú"
+
+[node name="TitleLabel" type="Label" parent="UI/TopBar" unique_id=1407493651]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.93, 0.6, 1)
+theme_override_font_sizes/font_size = 20
+text = "Nivel 2 — La Casa Maya (Objetos)"
+horizontal_alignment = 1
+
+[node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=890323001]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
+theme_override_font_sizes/font_size = 18
+text = "0 pts mágicos"
+horizontal_alignment = 2
+
+[node name="BookBtn" type="Button" parent="UI/TopBar" unique_id=1736513423]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Libro"
+
+[node name="RequestPanel" type="Panel" parent="UI" unique_id=1140750888]
+offset_left = 140.0
+offset_top = 68.0
+offset_right = 1140.0
+offset_bottom = 278.0
+
+[node name="AnimalSprite" type="TextureRect" parent="UI/RequestPanel" unique_id=418525348]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 190.0
+offset_bottom = 190.0
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VBox" type="VBoxContainer" parent="UI/RequestPanel" unique_id=61670264]
+layout_mode = 0
+offset_left = 212.0
+offset_top = 34.0
+offset_right = 980.0
+offset_bottom = 176.0
+theme_override_constants/separation = 14
+
+[node name="NeedLbl" type="Label" parent="UI/RequestPanel/VBox" unique_id=251263834]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.15, 0.05, 1)
+theme_override_font_sizes/font_size = 24
+autowrap_mode = 3
+
+[node name="WordLbl" type="Label" parent="UI/RequestPanel/VBox" unique_id=694304619]
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+autowrap_mode = 3
+
+[node name="ChoicesGrid" type="GridContainer" parent="UI" unique_id=1400028220]
+offset_left = 250.0
+offset_top = 298.0
+offset_right = 1030.0
+offset_bottom = 560.0
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 20
+columns = 3
+
+[node name="FeedbackPanel" type="Panel" parent="UI" unique_id=1856786680]
+offset_left = 240.0
+offset_top = 564.0
+offset_right = 1040.0
+offset_bottom = 610.0
+
+[node name="FeedbackLbl" type="Label" parent="UI/FeedbackPanel" unique_id=1235306111]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 2.0
+offset_right = -8.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 19
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="StatusPanel" type="Panel" parent="UI" unique_id=208093274]
+offset_left = 50.0
+offset_top = 648.0
+offset_right = 1230.0
+offset_bottom = 708.0
+
+[node name="StatusVBox" type="VBoxContainer" parent="UI/StatusPanel" unique_id=1265502615]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 4.0
+offset_right = 1170.0
+offset_bottom = 56.0
+theme_override_constants/separation = 2
+
+[node name="PhaseLbl" type="Label" parent="UI/StatusPanel/StatusVBox" unique_id=1028964085]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+
+[node name="ProgressLbl" type="Label" parent="UI/StatusPanel/StatusVBox" unique_id=1746035281]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+
+[node name="CompletePanel" type="Panel" parent="UI" unique_id=1552579625]
+visible = false
+offset_left = 290.0
+offset_top = 170.0
+offset_right = 990.0
+offset_bottom = 548.0
+
+[node name="VBox" type="VBoxContainer" parent="UI/CompletePanel" unique_id=2123195852]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 676.0
+offset_bottom = 354.0
+theme_override_constants/separation = 18
+
+[node name="TitleLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=1053653155]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1, 0.5, 0.1, 1)
+theme_override_font_sizes/font_size = 36
+text = "¡Nivel 2 completado!"
+horizontal_alignment = 1
+
+[node name="SubLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=1758343003]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.22, 0.08, 1)
+theme_override_font_sizes/font_size = 18
+text = "Aprendiste a lanzar hechizos para construir la casa maya.
++50 puntos magicos"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="NextBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=195117774]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Siguiente Nivel ->"
+
+[node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=405089185]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Volver al Menu"
+
+[node name="ReplayBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=873583459]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Practicar de nuevo"
+
+[node name="LibroHechizos" parent="." unique_id=581325224 instance=ExtResource("3_si73q")]
+visible = false
+
+[connection signal="pressed" from="UI/TopBar/BackBtn" to="." method="_on_menu_pressed"]
+[connection signal="pressed" from="UI/TopBar/BookBtn" to="." method="_on_book_pressed"]
+[connection signal="pressed" from="UI/CompletePanel/VBox/NextBtn" to="." method="_on_next_level_pressed"]
+[connection signal="pressed" from="UI/CompletePanel/VBox/MenuBtn" to="." method="_on_menu_pressed"]
+[connection signal="pressed" from="UI/CompletePanel/VBox/ReplayBtn" to="." method="_on_replay_pressed"]

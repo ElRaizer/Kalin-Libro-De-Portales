@@ -94,12 +94,10 @@ const SCENE_PATHS: Dictionary = {
 	"intro":           "res://scenes/Intro.tscn",
 	"main_menu":       "res://scenes/MainMenu.tscn",
 	"world1_level1":   "res://scenes/world1/Level1_CaminosBlancos.tscn",
-	"world1_level2":   "res://scenes/world1/Level2_ConstruyendoPalabras.tscn",
-	"world1_level3":   "res://scenes/world1/Level3_HechizosAdjetivos.tscn",
-	"world1_level4":   "res://scenes/world1/Level4_YoQuiero.tscn",
-	"world1_level5":   "res://scenes/world1/Level5_AnimalesBosque.tscn",
-	"world1_level6":   "res://scenes/world1/Level6_GuardianesMonte.tscn",
-	"world1_level7":   "res://scenes/world1/Level7_AguaYCielo.tscn",
+	"world1_level2":   "res://scenes/world1/Level2_AnimalesBosque.tscn",
+	"world1_level3":   "res://scenes/world1/Level3_GuardianesMonte.tscn",
+	"world1_level4":   "res://scenes/world1/Level4_AguaYCielo.tscn",
+	"world2_level1":   "res://scenes/World2/Level2_ConstruyendoPalabras.tscn"
 }
 
 # ─── Constantes de recompensa ────────────────────────────────────────────────

@@ -1,127 +1,128 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://d2rruddd7xe0j"]
 
-[ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="1_book"]
-[ext_resource type="Script" path="res://scripts/world1/Level6.gd" id="2_script"]
-[ext_resource type="Script" path="res://scripts/components/GridWordData.gd" id="3_data"]
-[ext_resource type="Texture2D" path="res://Arte/sprites/animal_baalam.svg" id="4_baalam"]
-[ext_resource type="Texture2D" path="res://Arte/sprites/animal_kuuts.svg" id="5_kuuts"]
-[ext_resource type="Texture2D" path="res://Arte/sprites/animal_tuul.svg" id="6_tuul"]
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level_monte.svg" id="7_bg"]
-[ext_resource type="PackedScene" path="res://scenes/components/GridBoard.tscn" id="8_grid"]
+[ext_resource type="Script" uid="uid://ucencs5cmj0i" path="res://scripts/world1/Level6.gd" id="1_rj3ji"]
+[ext_resource type="Texture2D" uid="uid://l6c2nufcba36" path="res://Arte/backgrounds/bg_level_monte.svg" id="2_8v1o3"]
+[ext_resource type="PackedScene" uid="uid://dyxnxjtjkfis3" path="res://scenes/components/GridBoard.tscn" id="3_fl1ur"]
+[ext_resource type="Script" uid="uid://kfbwe7mv5uhc" path="res://scripts/components/GridWordData.gd" id="4_ambyd"]
+[ext_resource type="Texture2D" uid="uid://d2f8hj07l54pc" path="res://Arte/sprites/animal_baalam.svg" id="5_oiyxb"]
+[ext_resource type="Texture2D" uid="uid://kuo4lhc2uowd" path="res://Arte/sprites/animal_kuuts.svg" id="6_r0d7p"]
+[ext_resource type="Texture2D" uid="uid://br3jmwjyekrda" path="res://Arte/sprites/animal_tuul.svg" id="7_ddrlm"]
+[ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="8_7hqrg"]
 
 [sub_resource type="Resource" id="Animal_baalam"]
-script = ExtResource("3_data")
+script = ExtResource("4_ambyd")
 maya_word = "Báalam"
 spanish_word = "Jaguar"
 phrase = "In k'aaba'e' Báalam"
 explanation = "Me llamo Jaguar — en maya: Báalam"
+sprite = ExtResource("5_oiyxb")
 destination_text = "Báalam"
-sprite = ExtResource("4_baalam")
 color = Color(0.8, 0.55, 0.12, 1)
 start_cell = Vector2i(0, 1)
 destination_cell = Vector2i(8, 1)
 
 [sub_resource type="Resource" id="Animal_kuuts"]
-script = ExtResource("3_data")
+script = ExtResource("4_ambyd")
 maya_word = "Kuuts"
 spanish_word = "Pavo"
 phrase = "In k'aaba'e' Kuuts"
 explanation = "Me llamo Pavo — en maya: Kuuts"
+sprite = ExtResource("6_r0d7p")
 destination_text = "Kuuts"
-sprite = ExtResource("5_kuuts")
 color = Color(0.38, 0.28, 0.55, 1)
 start_cell = Vector2i(0, 3)
 destination_cell = Vector2i(8, 3)
 
 [sub_resource type="Resource" id="Animal_tuul"]
-script = ExtResource("3_data")
+script = ExtResource("4_ambyd")
 maya_word = "T'u'ul"
 spanish_word = "Conejo"
 phrase = "In k'aaba'e' T'u'ul"
 explanation = "Me llamo Conejo — en maya: T'u'ul"
+sprite = ExtResource("7_ddrlm")
 destination_text = "T'u'ul"
-sprite = ExtResource("6_tuul")
 color = Color(0.3, 0.55, 0.45, 1)
 start_cell = Vector2i(0, 5)
 destination_cell = Vector2i(8, 5)
 
-[node name="Level6" type="Node2D"]
-script = ExtResource("2_script")
+[node name="Level3" type="Node2D" unique_id=891629715]
+script = ExtResource("1_rj3ji")
 level_number = 6
-next_scene_key = "world1_level7"
-default_instruction = "Haz clic en un animal y arrastra hasta su casa.\nConecta los tres para completar el nivel."
+next_scene_key = "world1_level4"
+default_instruction = "Haz clic en un animal y arrastra hasta su casa.
+Conecta los tres para completar el nivel."
 selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=718946208]
 offset_right = 1280.0
 offset_bottom = 720.0
-texture = ExtResource("7_bg")
+texture = ExtResource("2_8v1o3")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="GridBoard" parent="." instance=ExtResource("8_grid")]
+[node name="GridBoard" parent="." unique_id=1075655894 instance=ExtResource("3_fl1ur")]
 obstacles = Array[Vector2i]([Vector2i(3, 1), Vector2i(6, 1), Vector2i(2, 3), Vector2i(5, 3), Vector2i(7, 3), Vector2i(3, 5), Vector2i(6, 5)])
-words = Array[ExtResource("3_data")]([SubResource("Animal_baalam"), SubResource("Animal_kuuts"), SubResource("Animal_tuul")])
-; ── Fondo oscuro semitransparente detras de la barra superior, para que el
-; ── texto claro nunca se pierda contra el fondo del nivel ────────────────────
-[node name="TopBarBG" type="ColorRect" parent="."]
+words = Array[ExtResource("4_ambyd")]([SubResource("Animal_baalam"), SubResource("Animal_kuuts"), SubResource("Animal_tuul")])
+
+[node name="TopBarBG" type="ColorRect" parent="." unique_id=1893956046]
 offset_left = 6.0
 offset_top = 4.0
 offset_right = 1274.0
 offset_bottom = 56.0
 color = Color(0, 0, 0, 0.42)
 
-[node name="GridRoot" type="Node2D" parent="."]
+[node name="GridRoot" type="Node2D" parent="." unique_id=1886624811]
 
-[node name="SelectionRing" type="ColorRect" parent="GridRoot"]
+[node name="SelectionRing" type="ColorRect" parent="GridRoot" unique_id=648168802]
 visible = false
+z_index = -1
 offset_right = 90.0
 offset_bottom = 90.0
 color = Color(1, 0.85, 0.2, 0.9)
-z_index = -1
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="." unique_id=218459710]
 
-[node name="TopBar" type="HBoxContainer" parent="UI"]
+[node name="TopBar" type="HBoxContainer" parent="UI" unique_id=1105897102]
 offset_left = 10.0
 offset_top = 8.0
 offset_right = 1270.0
 offset_bottom = 52.0
 
-[node name="BackBtn" type="Button" parent="UI/TopBar"]
+[node name="BackBtn" type="Button" parent="UI/TopBar" unique_id=883022758]
 custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "← Menú"
 
-[node name="TitleLabel" type="Label" parent="UI/TopBar"]
+[node name="TitleLabel" type="Label" parent="UI/TopBar" unique_id=1421063193]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 0.95, 1)
+theme_override_font_sizes/font_size = 20
 text = "Nivel 6 -- Los Guardianes del Monte"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 0.95, 1)
 
-[node name="MagicLabel" type="Label" parent="UI/TopBar"]
+[node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=1855233094]
 custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
+theme_override_font_sizes/font_size = 18
 text = "0 pts magicos"
 horizontal_alignment = 2
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
 
-[node name="BookBtn" type="Button" parent="UI/TopBar"]
+[node name="BookBtn" type="Button" parent="UI/TopBar" unique_id=100148469]
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "Libro"
 
-[node name="InstrPanel" type="Panel" parent="UI"]
+[node name="InstrPanel" type="Panel" parent="UI" unique_id=1711026447]
 offset_left = 50.0
 offset_top = 648.0
 offset_right = 1230.0
 offset_bottom = 708.0
 
-[node name="InstrLbl" type="Label" parent="UI/InstrPanel"]
+[node name="InstrLbl" type="Label" parent="UI/InstrPanel" unique_id=1623706734]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -139,14 +140,15 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="DialoguePanel" type="Panel" parent="UI"]
+[node name="DialoguePanel" type="Panel" parent="UI" unique_id=1999945265]
 visible = false
 offset_left = 230.0
 offset_top = 235.0
 offset_right = 1050.0
 offset_bottom = 435.0
 
-[node name="WordIcon" type="TextureRect" parent="UI/DialoguePanel"]
+[node name="WordIcon" type="TextureRect" parent="UI/DialoguePanel" unique_id=445268889]
+layout_mode = 0
 offset_left = 10.0
 offset_top = 10.0
 offset_right = 98.0
@@ -154,70 +156,72 @@ offset_bottom = 98.0
 expand_mode = 1
 stretch_mode = 6
 
-[node name="VBox" type="VBoxContainer" parent="UI/DialoguePanel"]
+[node name="VBox" type="VBoxContainer" parent="UI/DialoguePanel" unique_id=1364904525]
+layout_mode = 0
 offset_left = 108.0
 offset_top = 14.0
 offset_right = 800.0
 offset_bottom = 178.0
 theme_override_constants/separation = 10
 
-[node name="Phrase" type="Label" parent="UI/DialoguePanel/VBox"]
+[node name="Phrase" type="Label" parent="UI/DialoguePanel/VBox" unique_id=1450606865]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.08, 0.08, 0.45, 1)
 theme_override_font_sizes/font_size = 28
 
-[node name="Hint" type="Label" parent="UI/DialoguePanel/VBox"]
+[node name="Hint" type="Label" parent="UI/DialoguePanel/VBox" unique_id=1429251328]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
 theme_override_font_sizes/font_size = 18
 
-[node name="SkipLbl" type="Label" parent="UI/DialoguePanel/VBox"]
+[node name="SkipLbl" type="Label" parent="UI/DialoguePanel/VBox" unique_id=941767434]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
+theme_override_font_sizes/font_size = 12
 text = "(Clic para cerrar)"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
 
-[node name="CompletePanel" type="Panel" parent="UI"]
+[node name="CompletePanel" type="Panel" parent="UI" unique_id=1190703346]
 visible = false
 offset_left = 290.0
 offset_top = 170.0
 offset_right = 990.0
 offset_bottom = 548.0
 
-[node name="VBox" type="VBoxContainer" parent="UI/CompletePanel"]
+[node name="VBox" type="VBoxContainer" parent="UI/CompletePanel" unique_id=770592000]
+layout_mode = 0
 offset_left = 24.0
 offset_top = 24.0
 offset_right = 676.0
 offset_bottom = 354.0
 theme_override_constants/separation = 20
 
-[node name="TitleLbl" type="Label" parent="UI/CompletePanel/VBox"]
+[node name="TitleLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=1484585879]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.1, 0.5, 0.1, 1)
 theme_override_font_sizes/font_size = 36
 text = "¡Nivel 6 completado!"
 horizontal_alignment = 1
 
-[node name="SubLbl" type="Label" parent="UI/CompletePanel/VBox"]
+[node name="SubLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=740596483]
 layout_mode = 2
-theme_override_font_sizes/font_size = 19
 theme_override_colors/font_color = Color(0.35, 0.22, 0.08, 1)
+theme_override_font_sizes/font_size = 19
 autowrap_mode = 3
 
-[node name="NextBtn" type="Button" parent="UI/CompletePanel/VBox"]
+[node name="NextBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=2147042489]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
 text = "Siguiente nivel →"
 
-[node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox"]
+[node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=743317021]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Volver al menú"
 
-[node name="LibroHechizos" parent="." instance=ExtResource("1_book")]
+[node name="LibroHechizos" parent="." unique_id=1308887561 instance=ExtResource("8_7hqrg")]
 visible = false
 
 [connection signal="pressed" from="UI/TopBar/BackBtn" to="." method="_on_menu_pressed"]
