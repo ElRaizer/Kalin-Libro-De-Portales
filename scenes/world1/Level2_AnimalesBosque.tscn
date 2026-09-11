@@ -71,15 +71,6 @@ offset_right = 1274.0
 offset_bottom = 56.0
 color = Color(0, 0, 0, 0.42)
 
-[node name="GridRoot" type="Node2D" parent="." unique_id=354943496]
-
-[node name="SelectionRing" type="ColorRect" parent="GridRoot" unique_id=1974202867]
-visible = false
-z_index = -1
-offset_right = 90.0
-offset_bottom = 90.0
-color = Color(1, 0.85, 0.2, 0.9)
-
 [node name="UI" type="CanvasLayer" parent="." unique_id=1231194149]
 
 [node name="TopBar" type="HBoxContainer" parent="UI" unique_id=914006550]
@@ -200,14 +191,13 @@ theme_override_constants/separation = 20
 layout_mode = 2
 theme_override_colors/font_color = Color(0.1, 0.5, 0.1, 1)
 theme_override_font_sizes/font_size = 36
-text = "¡Nivel 5 completado!"
+text = "¡Nivel 2 completado!"
 horizontal_alignment = 1
 
 [node name="SubLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=1218257156]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.35, 0.22, 0.08, 1)
 theme_override_font_sizes/font_size = 19
-autowrap_mode = 3
 
 [node name="NextBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=344557677]
 custom_minimum_size = Vector2(0, 64)
