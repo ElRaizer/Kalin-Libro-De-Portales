@@ -200,7 +200,7 @@ func _on_wrong() -> void:
 
 # ─── Completar nivel ────────────────────────────────────────────────────────
 func _on_level_complete() -> void:
-	GameManager.complete_level(1, 2)
+	GameManager.complete_level(2, 1)
 	complete_pan.visible = true
 
 func _safe_navigate(key: String) -> void:
@@ -208,6 +208,6 @@ func _safe_navigate(key: String) -> void:
 	GameManager.go_to_scene(key)
 
 func _on_menu_pressed() -> void: _safe_navigate("main_menu")
-func _on_next_level_pressed() -> void: _safe_navigate("world1_level3")
+func _on_next_level_pressed() -> void: _safe_navigate("world3_level1")
 func _on_book_pressed() -> void: libro.show_book()
 func _on_replay_pressed() -> void: get_tree().reload_current_scene()
