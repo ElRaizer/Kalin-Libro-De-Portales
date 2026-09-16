@@ -1,7 +1,6 @@
 ## MainMenu.gd — Menú principal con mapa de niveles y progreso
 extends Node2D
 
-@onready var bg:         TextureRect  = $Background
 @onready var magic_lbl:  Label        = $UI/TopBar/MagicLabel
 @onready var book_btn:   Button       = $UI/Center/VBox/BookBtn
 @onready var libro:      CanvasLayer  = $LibroHechizos
@@ -10,8 +9,6 @@ extends Node2D
 @onready var play_btn:   Button = $UI/Center/VBox/PlayBtn
 
 func _ready() -> void:
-	var bg_tex: Texture2D = load("res://Arte/backgrounds/bg_menu.svg") as Texture2D
-	if bg_tex: bg.texture = bg_tex
 	_refresh_ui()
 	GameManager.magic_points_changed.connect(func(_v): _refresh_ui())
 	GameManager.level_completed.connect(func(_w,_l): _refresh_ui())

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://mxrpsjfly155"]
 
-[ext_resource type="Script" uid="uid://dwrfc1d4in16" path="res://scripts/world1/Level1.gd" id="1"]
+[ext_resource type="Script" uid="uid://dwrfc1d4in16" path="res://scripts/world1/W1_Level1.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="2"]
 [ext_resource type="Texture2D" uid="uid://bedp7h6bqksto" path="res://Arte/backgrounds/bg_level1.svg" id="3_bg"]
 [ext_resource type="PackedScene" uid="uid://dyxnxjtjkfis3" path="res://scenes/components/GridBoard.tscn" id="3_eeq0b"]
@@ -68,8 +68,6 @@ offset_top = 4.0
 offset_right = 1274.0
 offset_bottom = 56.0
 color = Color(0, 0, 0, 0.42)
-
-[node name="GridRoot" type="Node2D" parent="." unique_id=257330901]
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1199167839]
 

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bol8dmmsix32s"]
 
-[ext_resource type="Script" uid="uid://cdepgbhyy3q8o" path="res://scripts/world1/Level7.gd" id="1_pykdd"]
+[ext_resource type="Script" uid="uid://cdepgbhyy3q8o" path="res://scripts/world1/W1_Level4.gd" id="1_pykdd"]
 [ext_resource type="Texture2D" uid="uid://bo5g7pqwxq2ea" path="res://Arte/backgrounds/bg_level_agua.svg" id="2_bt008"]
 [ext_resource type="PackedScene" uid="uid://dyxnxjtjkfis3" path="res://scenes/components/GridBoard.tscn" id="3_4nq6g"]
 [ext_resource type="Script" uid="uid://kfbwe7mv5uhc" path="res://scripts/components/GridWordData.gd" id="4_hp5qc"]
@@ -47,8 +47,8 @@ destination_cell = Vector2i(8, 5)
 
 [node name="Level4" type="Node2D" unique_id=1178559565]
 script = ExtResource("1_pykdd")
-level_number = 7
-next_scene_key = "main_menu"
+level_number = 4
+next_scene_key = "world2_level1"
 default_instruction = "Haz clic en un animal y arrastra hasta su casa.
 Conecta los tres para completar el nivel."
 selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
@@ -71,15 +71,6 @@ offset_right = 1274.0
 offset_bottom = 56.0
 color = Color(0, 0, 0, 0.42)
 
-[node name="GridRoot" type="Node2D" parent="." unique_id=249328003]
-
-[node name="SelectionRing" type="ColorRect" parent="GridRoot" unique_id=521781177]
-visible = false
-z_index = -1
-offset_right = 90.0
-offset_bottom = 90.0
-color = Color(1, 0.85, 0.2, 0.9)
-
 [node name="UI" type="CanvasLayer" parent="." unique_id=1372569740]
 
 [node name="TopBar" type="HBoxContainer" parent="UI" unique_id=1007768478]
@@ -99,7 +90,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 1, 0.95, 1)
 theme_override_font_sizes/font_size = 20
-text = "Nivel 7 -- Agua y Cielo"
+text = "Nivel 4 -- Agua y Cielo"
 horizontal_alignment = 1
 
 [node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=2015739604]
@@ -207,13 +198,12 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.35, 0.22, 0.08, 1)
 theme_override_font_sizes/font_size = 19
-autowrap_mode = 3
 
 [node name="NextBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=2004425663]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
-text = "Volver al menú principal"
+text = "Siguiente nivel →"
 
 [node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=528317992]
 custom_minimum_size = Vector2(0, 52)
