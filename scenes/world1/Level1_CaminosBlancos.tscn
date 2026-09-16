@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://mxrpsjfly155"]
 
-[ext_resource type="Script" uid="uid://dwrfc1d4in16" path="res://scripts/world1/Level1.gd" id="1"]
+[ext_resource type="Script" uid="uid://dwrfc1d4in16" path="res://scripts/world1/W1_Level1.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="2"]
 [ext_resource type="Texture2D" uid="uid://bedp7h6bqksto" path="res://Arte/backgrounds/bg_level1.svg" id="3_bg"]
 [ext_resource type="PackedScene" uid="uid://dyxnxjtjkfis3" path="res://scenes/components/GridBoard.tscn" id="3_eeq0b"]

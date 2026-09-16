@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://d2rruddd7xe0j"]
 
-[ext_resource type="Script" uid="uid://ucencs5cmj0i" path="res://scripts/world1/Level6.gd" id="1_rj3ji"]
+[ext_resource type="Script" uid="uid://ucencs5cmj0i" path="res://scripts/world1/W1_Level3.gd" id="1_rj3ji"]
 [ext_resource type="Texture2D" uid="uid://l6c2nufcba36" path="res://Arte/backgrounds/bg_level_monte.svg" id="2_8v1o3"]
 [ext_resource type="PackedScene" uid="uid://dyxnxjtjkfis3" path="res://scenes/components/GridBoard.tscn" id="3_fl1ur"]
 [ext_resource type="Script" uid="uid://kfbwe7mv5uhc" path="res://scripts/components/GridWordData.gd" id="4_ambyd"]
@@ -90,7 +90,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 1, 0.95, 1)
 theme_override_font_sizes/font_size = 20
-text = "Nivel 6 -- Los Guardianes del Monte"
+text = "Nivel 3 -- Los Guardianes del Monte"
 horizontal_alignment = 1
 
 [node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=1855233094]

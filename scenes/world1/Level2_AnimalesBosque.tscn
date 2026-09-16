@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bodvu0ariclhy"]
 
-[ext_resource type="Script" uid="uid://ccr8me8ku7y38" path="res://scripts/world1/Level5.gd" id="1_x3wq0"]
+[ext_resource type="Script" uid="uid://ccr8me8ku7y38" path="res://scripts/world1/W1_Level2.gd" id="1_x3wq0"]
 [ext_resource type="Texture2D" uid="uid://l6c2nufcba36" path="res://Arte/backgrounds/bg_level_monte.svg" id="2_0hjrh"]
 [ext_resource type="PackedScene" uid="uid://dyxnxjtjkfis3" path="res://scenes/components/GridBoard.tscn" id="3_412pb"]
 [ext_resource type="Script" uid="uid://kfbwe7mv5uhc" path="res://scripts/components/GridWordData.gd" id="4_232h8"]
@@ -90,7 +90,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 1, 0.95, 1)
 theme_override_font_sizes/font_size = 20
-text = "Nivel 5 -- Los Animales del Bosque"
+text = "Nivel 2 -- Los Animales del Bosque"
 horizontal_alignment = 1
 
 [node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=288747922]
