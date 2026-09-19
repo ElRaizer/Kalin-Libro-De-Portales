@@ -48,6 +48,7 @@ No se requieren complementos ni dependencias externas.
 ## Documentación
 
 - [INSTRUCCIONES.md](INSTRUCCIONES.md): instalación, estructura técnica y mantenimiento.
+- [AUDITORIA_BUENAS_PRACTICAS.md](AUDITORIA_BUENAS_PRACTICAS.md): cumplimiento, correcciones y pendientes de diseño.
 - [VOCABULARIO.md](VOCABULARIO.md): grafías adoptadas, normalizaciones y decisiones del GDD.
 - [Arte/audio/README.md](Arte/audio/README.md): preparación y nombres de los audios pendientes.
 

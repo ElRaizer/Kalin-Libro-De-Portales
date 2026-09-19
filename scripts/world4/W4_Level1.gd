@@ -1,18 +1,17 @@
 ## Mundo 4, nivel 1 — In k'a'at (Yo Quiero)
-## FIXES: await guardado, navegación segura, instrucciones visibles
 extends Node2D
 
-const FOODS := [
+const FOODS: Array[Dictionary] = [
 	{ "maya":"ja'",    "color":Color(0.25,0.60,0.90) },
 	{ "maya":"ja'as",  "color":Color(0.92,0.78,0.15) },
 	{ "maya":"pak'al", "color":Color(0.85,0.25,0.25) },
 	{ "maya":"K'úum",  "color":Color(0.88,0.50,0.10) },
 ]
-const RES_BG    := "res://Arte/backgrounds/bg_level1.svg"
-const RES_KALIN := "res://Arte/sprites/kalin_normal.svg"
+const BACKGROUND_TEXTURE: Texture2D = preload("res://Arte/backgrounds/bg_level1.svg")
+const KALIN_TEXTURE: Texture2D = preload("res://Arte/sprites/kalin_normal.svg")
 
 var learned_count: int = 0
-var food_buttons: Array = []
+var food_buttons: Array[Button] = []
 var selected_foods: Dictionary = {}
 var _completing: bool = false
 
@@ -27,15 +26,15 @@ var _completing: bool = false
 @onready var libro:       CanvasLayer    = $LibroHechizos
 
 func _ready() -> void:
-	bg.texture = load(RES_BG)
-	kalin_img.texture = load(RES_KALIN)
+	bg.texture = BACKGROUND_TEXTURE
+	kalin_img.texture = KALIN_TEXTURE
 	_build_food_buttons()
 	phrase_lbl.text = "In k'a'at ..."
 	phrase_lbl.add_theme_color_override("font_color", Color(0.55, 0.55, 0.55))
-	hint_lbl.text   = "Haz clic en un alimento para aprender a pedirlo en maya."
-	progress.text   = "Aprendidos: 0 / 4"
+	hint_lbl.text = "Haz clic en un alimento para aprender a pedirlo en maya."
+	progress.text = "Aprendidos: 0 / %d" % FOODS.size()
 	complete_pan.visible = false
-	GameManager.magic_points_changed.connect(func(_v): magic_lbl.text = "%d pts" % GameManager.magic_points)
+	GameManager.magic_points_changed.connect(_on_magic_points_changed)
 	magic_lbl.text = "%d pts" % GameManager.magic_points
 
 func _build_food_buttons() -> void:
@@ -47,34 +46,41 @@ func _build_food_buttons() -> void:
 		btn.text = "%s\n%s\n(%s)" % [vocab.get("emoji", "?"), vocab.get("spanish", ""), f.maya]
 		btn.add_theme_font_size_override("font_size", 22)
 		var st: StyleBoxFlat = StyleBoxFlat.new()
-		st.bg_color = f.color;  st.set_border_width_all(3)
+		st.bg_color = f.color
+		st.set_border_width_all(3)
 		st.border_color = f.color.darkened(0.3)
-		st.corner_radius_top_left=12; st.corner_radius_top_right=12
-		st.corner_radius_bottom_left=12; st.corner_radius_bottom_right=12
+		st.corner_radius_top_left = 12
+		st.corner_radius_top_right = 12
+		st.corner_radius_bottom_left = 12
+		st.corner_radius_bottom_right = 12
 		btn.add_theme_stylebox_override("normal", st)
 		btn.add_theme_color_override("font_color", Color.WHITE)
-		food_grid.add_child(btn);  food_buttons.append(btn)
-		var ci: int = i
-		btn.pressed.connect(func(): _on_food_pressed(ci))
+		food_grid.add_child(btn)
+		food_buttons.append(btn)
+		btn.pressed.connect(_on_food_pressed.bind(i))
 
-func _on_food_pressed(idx: int) -> void:
-	if _completing: return
-	var f: Dictionary = FOODS[idx]
+func _on_food_pressed(index: int) -> void:
+	if _completing:
+		return
+	var f: Dictionary = FOODS[index]
 	var vocab: Dictionary = GameManager.get_vocabulary_entry(f.maya)
 	phrase_lbl.text = "In k'a'at %s" % f.maya
 	phrase_lbl.add_theme_color_override("font_color", Color(0.10, 0.08, 0.45))
 	hint_lbl.text = "Yo quiero %s  (%s en maya)" % [vocab.get("spanish", ""), f.maya]
 	GameManager.learn_word(f.maya)
-	if not selected_foods.has(idx):
-		selected_foods[idx] = true
+	if not selected_foods.has(index):
+		selected_foods[index] = true
 		learned_count += 1
 		# Marcar botón aprendido
 		var st: StyleBoxFlat = StyleBoxFlat.new()
-		st.bg_color = FOODS[idx].color.darkened(0.25)
-		st.set_border_width_all(4);  st.border_color = Color.WHITE
-		st.corner_radius_top_left=12; st.corner_radius_top_right=12
-		st.corner_radius_bottom_left=12; st.corner_radius_bottom_right=12
-		food_buttons[idx].add_theme_stylebox_override("normal", st)
+		st.bg_color = FOODS[index].color.darkened(0.25)
+		st.set_border_width_all(4)
+		st.border_color = Color.WHITE
+		st.corner_radius_top_left = 12
+		st.corner_radius_top_right = 12
+		st.corner_radius_bottom_left = 12
+		st.corner_radius_bottom_right = 12
+		food_buttons[index].add_theme_stylebox_override("normal", st)
 		progress.text = "Aprendidos: %d / %d" % [learned_count, FOODS.size()]
 	# Animar Kalin
 	var tw: Tween = create_tween()
@@ -83,15 +89,29 @@ func _on_food_pressed(idx: int) -> void:
 	if learned_count >= FOODS.size() and not _completing:
 		_completing = true
 		await get_tree().create_timer(1.5).timeout
-		if not is_inside_tree(): return    # FIX: guarda await
+		if not is_inside_tree():
+			return
 		_on_level_complete()
 
 func _on_level_complete() -> void:
-	GameManager.complete_level(4, 1);  complete_pan.visible = true
+	GameManager.complete_level(4, 1)
+	complete_pan.visible = true
+
+func _on_magic_points_changed(new_total: int) -> void:
+	magic_lbl.text = "%d pts" % new_total
 
 func _safe_navigate(key: String) -> void:
-	_completing = true;  GameManager.go_to_scene(key)
-func _on_menu_pressed()   -> void: _safe_navigate("main_menu")
-func _on_next_level_pressed() -> void: _safe_navigate("main_menu")
-func _on_book_pressed()   -> void: libro.show_book()
-func _on_replay_pressed() -> void: get_tree().reload_current_scene()
+	_completing = true
+	GameManager.go_to_scene(key)
+
+func _on_menu_pressed() -> void:
+	_safe_navigate("main_menu")
+
+func _on_next_level_pressed() -> void:
+	_safe_navigate("main_menu")
+
+func _on_book_pressed() -> void:
+	libro.show_book()
+
+func _on_replay_pressed() -> void:
+	get_tree().reload_current_scene()

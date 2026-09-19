@@ -3,8 +3,6 @@
 ## adjetivo. La primera vuelta ofrece traducciones; la segunda las retira.
 extends Node2D
 
-const RES_BG := "res://Arte/backgrounds/bg_level1.svg"
-
 const NOUNS: Array[Dictionary] = [
 	{ "maya": "mayak",  "spanish": "mesa",   "emoji": "🪑" },
 	{ "maya": "lak",    "spanish": "plato",  "emoji": "🍽️" },
@@ -37,14 +35,13 @@ const COLOR_SUCCESS := Color("2e8b57")
 const COLOR_ERROR := Color("b93c3c")
 
 var round_plan: Array[int] = []
-var round_index := 0
-var selected_noun := ""
-var selected_adjective := ""
+var round_index: int = 0
+var selected_noun: String = ""
+var selected_adjective: String = ""
 var noun_buttons: Dictionary = {}
 var adjective_buttons: Dictionary = {}
-var _resolving := false
+var _resolving: bool = false
 
-@onready var background: TextureRect = $Background
 @onready var spell_panel: Panel = $UI/SpellPanel
 @onready var choices_panel: Panel = $UI/ChoicesPanel
 @onready var complete_panel: Panel = $UI/CompletePanel
@@ -68,7 +65,6 @@ var _resolving := false
 @onready var libro: CanvasLayer = $LibroHechizos
 
 func _ready() -> void:
-	background.texture = load(RES_BG)
 	_build_round_plan()
 	_build_choice_buttons()
 	cast_button.pressed.connect(_on_cast_pressed)

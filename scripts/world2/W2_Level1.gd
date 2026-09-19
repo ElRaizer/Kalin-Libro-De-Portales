@@ -11,10 +11,8 @@
 ##   mayak (mesa), lak (plato), ch'áak (cama), chan (silla), janal (comida)
 extends Node2D
 
-const RES_BG := "res://Arte/backgrounds/bg_level1.svg"
-
 # Objeto solicitado, animal que lo pide, y refuerzo gramatical.
-const OBJECTS := [
+const OBJECTS: Array[Dictionary] = [
 	{ "maya": "mayak",
 	  "animal_spr": "res://Arte/sprites/animal_miis.svg",  "animal": "Miis",
 	  "peticion": "Necesito un lugar para comer.",
@@ -41,18 +39,16 @@ const TOTAL_ROUNDS := 10   # 5 objetos x 2 fases
 
 # ─── Estado ──────────────────────────────────────────────────────────────────
 var round_order: Array[int] = []
-var round_index := 0
-var current_phase := 0            # 0 = imagen+palabra, 1 = solo imagen
-var _completing := false
+var round_index: int = 0
+var current_phase: int = 0            # 0 = imagen+palabra, 1 = solo imagen
+var _completing: bool = false
 var _choice_buttons: Array[Button] = []
 
 # ─── Nodos ───────────────────────────────────────────────────────────────────
-@onready var bg:           TextureRect   = $Background
 @onready var animal_spr:   TextureRect   = $UI/RequestPanel/AnimalSprite
 @onready var need_lbl:     Label         = $UI/RequestPanel/VBox/NeedLbl
 @onready var word_lbl:     Label         = $UI/RequestPanel/VBox/WordLbl
 @onready var choices_grid: GridContainer = $UI/ChoicesGrid
-@onready var feedback_pan: Panel         = $UI/FeedbackPanel
 @onready var feedback_lbl: Label         = $UI/FeedbackPanel/FeedbackLbl
 @onready var phase_lbl:    Label         = $UI/StatusPanel/StatusVBox/PhaseLbl
 @onready var progress_lbl: Label         = $UI/StatusPanel/StatusVBox/ProgressLbl
@@ -62,14 +58,13 @@ var _choice_buttons: Array[Button] = []
 
 # ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
-	bg.texture = load(RES_BG)
 	for i in range(OBJECTS.size()):
 		round_order.append(i)
 	round_order.shuffle()
 	complete_pan.visible = false
 	feedback_lbl.text = ""
 	magic_lbl.text = "%d pts mágicos" % GameManager.magic_points
-	GameManager.magic_points_changed.connect(func(_v): magic_lbl.text = "%d pts mágicos" % GameManager.magic_points)
+	GameManager.magic_points_changed.connect(_on_magic_points_changed)
 	_show_round()
 
 # ─── Rondas ───────────────────────────────────────────────────────────────────
@@ -81,7 +76,7 @@ func _show_round() -> void:
 	if round_index >= TOTAL_ROUNDS:
 		return
 	feedback_lbl.text = ""
-	var obj := _current_object()
+	var obj: Dictionary = _current_object()
 	var vocab: Dictionary = GameManager.get_vocabulary_entry(obj.maya)
 	current_phase = 0 if round_index < round_order.size() else 1
 	animal_spr.texture = load(obj.animal_spr)
@@ -101,41 +96,42 @@ func _show_round() -> void:
 	progress_lbl.text = "Palabras en el libro: %d / %d" % [_learned_count(), OBJECTS.size()]
 
 func _learned_count() -> int:
-	var c := 0
-	for o in OBJECTS:
-		if GameManager.has_learned_word(o.maya):
-			c += 1
-	return c
+	var count: int = 0
+	for object_data: Dictionary in OBJECTS:
+		if GameManager.has_learned_word(object_data.maya):
+			count += 1
+	return count
 
 func _build_choices() -> void:
 	for child in choices_grid.get_children():
 		child.queue_free()
 	_choice_buttons.clear()
-	var pool: Array = OBJECTS.duplicate()
+	var pool: Array[Dictionary] = OBJECTS.duplicate()
 	pool.shuffle()
 	for obj: Dictionary in pool:
-		var btn := Button.new()
+		var btn: Button = Button.new()
 		btn.text = obj.maya
 		btn.custom_minimum_size = Vector2(230, 90)
 		btn.add_theme_font_size_override("font_size", 24)
-		var st := StyleBoxFlat.new()
-		st.bg_color = obj.color
-		st.set_border_width_all(3)
-		st.border_color = obj.color.darkened(0.3)
-		st.corner_radius_top_left = 12;    st.corner_radius_top_right = 12
-		st.corner_radius_bottom_left = 12; st.corner_radius_bottom_right = 12
-		btn.add_theme_stylebox_override("normal", st)
+		var style: StyleBoxFlat = StyleBoxFlat.new()
+		style.bg_color = obj.color
+		style.set_border_width_all(3)
+		style.border_color = obj.color.darkened(0.3)
+		style.corner_radius_top_left = 12
+		style.corner_radius_top_right = 12
+		style.corner_radius_bottom_left = 12
+		style.corner_radius_bottom_right = 12
+		btn.add_theme_stylebox_override("normal", style)
 		btn.add_theme_color_override("font_color", Color.WHITE)
 		choices_grid.add_child(btn)
 		_choice_buttons.append(btn)
-		var maya_word: String = obj.maya
-		btn.pressed.connect(func(): _on_choice_pressed(maya_word))
+		btn.pressed.connect(_on_choice_pressed.bind(str(obj.maya)))
 
 # ─── Selección ────────────────────────────────────────────────────────────────
 func _on_choice_pressed(maya_word: String) -> void:
 	if _completing:
 		return
-	var obj := _current_object()
+	var obj: Dictionary = _current_object()
 	if maya_word == obj.maya:
 		_on_correct(obj)
 	else:
@@ -150,9 +146,9 @@ func _on_correct(obj: Dictionary) -> void:
 		obj.maya, vocab.get("traduccion", ""), vocab.get("estructura", "")
 	]
 	feedback_lbl.add_theme_color_override("font_color", Color(0.12, 0.45, 0.15))
-	var tw := create_tween()
-	tw.tween_property(animal_spr, "scale", Vector2(1.18, 1.18), 0.12)
-	tw.tween_property(animal_spr, "scale", Vector2(1.0, 1.0), 0.18)
+	var tween: Tween = create_tween()
+	tween.tween_property(animal_spr, "scale", Vector2(1.18, 1.18), 0.12)
+	tween.tween_property(animal_spr, "scale", Vector2(1.0, 1.0), 0.18)
 	await get_tree().create_timer(1.4).timeout
 	if not is_inside_tree():
 		return
@@ -166,22 +162,32 @@ func _on_correct(obj: Dictionary) -> void:
 func _on_wrong() -> void:
 	feedback_lbl.text = "Ese hechizo no es el correcto... intenta de nuevo."
 	feedback_lbl.add_theme_color_override("font_color", Color(0.6, 0.15, 0.15))
-	var tw := create_tween()
-	tw.tween_property(animal_spr, "position:x", animal_spr.position.x - 10, 0.05)
-	tw.tween_property(animal_spr, "position:x", animal_spr.position.x + 20, 0.05)
-	tw.tween_property(animal_spr, "position:x", animal_spr.position.x - 10, 0.05)
-	tw.tween_property(animal_spr, "position:x", animal_spr.position.x, 0.05)
+	var tween: Tween = create_tween()
+	tween.tween_property(animal_spr, "position:x", animal_spr.position.x - 10, 0.05)
+	tween.tween_property(animal_spr, "position:x", animal_spr.position.x + 20, 0.05)
+	tween.tween_property(animal_spr, "position:x", animal_spr.position.x - 10, 0.05)
+	tween.tween_property(animal_spr, "position:x", animal_spr.position.x, 0.05)
 
 # ─── Completar nivel ────────────────────────────────────────────────────────
 func _on_level_complete() -> void:
 	GameManager.complete_level(2, 1)
 	complete_pan.visible = true
 
+func _on_magic_points_changed(new_total: int) -> void:
+	magic_lbl.text = "%d pts mágicos" % new_total
+
 func _safe_navigate(key: String) -> void:
 	_completing = true
 	GameManager.go_to_scene(key)
 
-func _on_menu_pressed() -> void: _safe_navigate("main_menu")
-func _on_next_level_pressed() -> void: _safe_navigate("world3_level1")
-func _on_book_pressed() -> void: libro.show_book()
-func _on_replay_pressed() -> void: get_tree().reload_current_scene()
+func _on_menu_pressed() -> void:
+	_safe_navigate("main_menu")
+
+func _on_next_level_pressed() -> void:
+	_safe_navigate("world3_level1")
+
+func _on_book_pressed() -> void:
+	libro.show_book()
+
+func _on_replay_pressed() -> void:
+	get_tree().reload_current_scene()

@@ -32,13 +32,19 @@ func _ready() -> void:
 	complete_pan.visible = false
 	_refresh_hud()
 	_set_default_instruction()
+	_set_mouse_passthrough(dialogue)
 	GameManager.magic_points_changed.connect(_on_magic_points_changed)
 	grid_board.word_selected.connect(_on_word_selected)
 	grid_board.word_connected.connect(_on_word_connected)
 	grid_board.drawing_stopped.connect(_on_drawing_stopped)
 
-func _input(event: InputEvent) -> void:
-	if _dialogue_open and event is InputEventMouseButton and event.pressed:
+func _unhandled_input(event: InputEvent) -> void:
+	if (
+		_dialogue_open
+		and event is InputEventMouseButton
+		and event.pressed
+		and event.button_index == MOUSE_BUTTON_LEFT
+	):
 		_close_dialogue()
 		get_viewport().set_input_as_handled()
 
@@ -126,6 +132,12 @@ func _set_default_instruction() -> void:
 
 func _set_instr(text: String) -> void:
 	instr_lbl.text = text
+
+func _set_mouse_passthrough(control: Control) -> void:
+	control.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	for child: Node in control.get_children():
+		if child is Control:
+			_set_mouse_passthrough(child)
 
 func _refresh_hud() -> void:
 	magic_lbl.text = "%d pts mágicos" % GameManager.magic_points

@@ -130,11 +130,12 @@ El cargador migra variantes antiguas —por ejemplo, `K'uum`— a la clave canó
 
 El progreso se guarda automáticamente como `user://kalin_save.json`. Incluye:
 
+- versión del formato;
 - puntos mágicos;
 - palabras aprendidas;
 - identificadores `w<numero>_l<numero>` de los niveles completados.
 
-El botón **Reiniciar progreso** elimina ese archivo. Al modificar el formato de guardado, se debe conservar una migración para las partidas existentes.
+El botón **Reiniciar progreso** elimina ese archivo. Los datos inválidos se descartan y un JSON dañado genera una advertencia sin impedir que el juego inicie. Al modificar el formato de guardado, incrementa `SAVE_VERSION` y conserva una migración para las partidas existentes.
 
 ## Audio pendiente
 
@@ -142,7 +143,7 @@ Los audios todavía no están grabados. Cuando estén disponibles, colócalos en
 
 ## Comprobación antes de integrar cambios
 
-La validación automática de catálogo, rutas, alias y nombres de audio se ejecuta desde la raíz con:
+La validación automática de catálogo, rutas, escenas, tableros, alias y nombres de audio se ejecuta desde la raíz con:
 
 ```powershell
 godot_console.exe --headless --path . --script res://tests/validate_project.gd

@@ -5,7 +5,9 @@ var failures: Array[String] = []
 
 func _initialize() -> void:
 	_validate_level_order()
+	_validate_scene_registry()
 	_validate_vocabulary()
+	_validate_save_sanitization()
 	_validate_theme()
 	_validate_world3()
 	await _validate_world3_runtime()
@@ -44,6 +46,30 @@ func _validate_level_order() -> void:
 		if instance == null:
 			failures.append("No se pudo instanciar la escena: %s" % scene_path)
 		else:
+			var board: GridBoard = instance.find_child("GridBoard", true, false) as GridBoard
+			if board != null:
+				for issue: String in board.get_configuration_issues():
+					failures.append("%s: %s" % [scene_path, issue])
+			instance.free()
+
+func _validate_scene_registry() -> void:
+	var seen_paths: Dictionary = {}
+	for scene_key: String in GameManagerScript.SCENE_PATHS:
+		var scene_path: String = GameManagerScript.SCENE_PATHS[scene_key]
+		if seen_paths.has(scene_path):
+			failures.append("Ruta de escena duplicada: %s" % scene_path)
+		seen_paths[scene_path] = true
+		if not ResourceLoader.exists(scene_path, "PackedScene"):
+			failures.append("La escena registrada no existe: %s (%s)" % [scene_path, scene_key])
+			continue
+		var packed_scene: PackedScene = load(scene_path) as PackedScene
+		if packed_scene == null:
+			failures.append("La escena registrada no se puede cargar: %s" % scene_path)
+			continue
+		var instance: Node = packed_scene.instantiate()
+		if instance == null:
+			failures.append("La escena registrada no se puede instanciar: %s" % scene_path)
+		else:
 			instance.free()
 
 func _validate_vocabulary() -> void:
@@ -74,6 +100,17 @@ func _validate_vocabulary() -> void:
 			failures.append("No se migra la variante %s a %s" % [old_word, canonical_word])
 	if manager.get_audio_filename("K'úum") != "Kuum.ogg":
 		failures.append("El nombre de audio de K'úum debe ser Kuum.ogg")
+	manager.free()
+
+func _validate_save_sanitization() -> void:
+	var manager: Node = GameManagerScript.new()
+	var sanitized: Array[String] = manager._sanitize_completed_levels(
+		["w1_l1", "w1_l1", "etapa_inexistente", 42]
+	)
+	if sanitized != ["w1_l1"]:
+		failures.append("El guardado no descarta niveles inválidos o duplicados")
+	if not manager._sanitize_completed_levels("dato_invalido").is_empty():
+		failures.append("El guardado acepta una lista de niveles con tipo inválido")
 	manager.free()
 
 func _validate_theme() -> void:

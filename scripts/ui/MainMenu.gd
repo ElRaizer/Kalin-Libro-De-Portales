@@ -10,8 +10,9 @@ extends Node2D
 
 func _ready() -> void:
 	_refresh_ui()
-	GameManager.magic_points_changed.connect(func(_v): _refresh_ui())
-	GameManager.level_completed.connect(func(_w,_l): _refresh_ui())
+	GameManager.magic_points_changed.connect(_on_progress_changed)
+	GameManager.level_completed.connect(_on_level_completed)
+	GameManager.progress_reset.connect(_refresh_ui)
 
 func _refresh_ui() -> void:
 	magic_lbl.text = "%d puntos mágicos" % GameManager.magic_points
@@ -33,8 +34,17 @@ func _on_play_pressed() -> void:
 		next = GameManager.LEVEL_ORDER[0].scene_key
 	GameManager.go_to_scene(next)
 
-func _on_book_pressed()  -> void: libro.show_book()
+func _on_progress_changed(_new_total: int) -> void:
+	_refresh_ui()
+
+func _on_level_completed(_world: int, _level: int) -> void:
+	_refresh_ui()
+
+func _on_book_pressed() -> void:
+	libro.show_book()
+
 func _on_reset_pressed() -> void:
 	GameManager.reset_save()
-	_refresh_ui()
-func _on_quit_pressed()  -> void: get_tree().quit()
+
+func _on_quit_pressed() -> void:
+	get_tree().quit()

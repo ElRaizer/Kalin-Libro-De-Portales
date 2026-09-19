@@ -12,6 +12,7 @@ extends Node
 signal word_learned(word_data: Dictionary)
 signal magic_points_changed(new_total: int)
 signal level_completed(world: int, level: int)
+signal progress_reset
 
 # ─── Estado global ───────────────────────────────────────────────────────────
 var magic_points: int = 0
@@ -130,6 +131,8 @@ const VOCABULARY_ALIASES: Dictionary = {
 # ─── Constantes de recompensa ────────────────────────────────────────────────
 const MAGIC_PER_WORD:  int = 10
 const MAGIC_PER_LEVEL: int = 50
+const SAVE_PATH: String = "user://kalin_save.json"
+const SAVE_VERSION: int = 1
 
 # ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
@@ -228,10 +231,12 @@ func all_levels_completed() -> bool:
 
 ## Cambia a una escena por clave.
 func go_to_scene(key: String) -> void:
-	if key in SCENE_PATHS:
-		get_tree().change_scene_to_file(SCENE_PATHS[key])
-	else:
+	if key not in SCENE_PATHS:
 		push_error("GameManager: clave de escena desconocida '%s'" % key)
+		return
+	var error: Error = get_tree().change_scene_to_file(SCENE_PATHS[key])
+	if error != OK:
+		push_error("GameManager: no se pudo abrir '%s' (error %d)" % [SCENE_PATHS[key], error])
 
 ## Cambia al nivel indicado.
 func go_to_level(world: int, level: int) -> void:
@@ -243,8 +248,16 @@ func reset_save() -> void:
 	words_learned = {}
 	completed_levels = []
 	magic_points_changed.emit(0)
-	if FileAccess.file_exists("user://kalin_save.json"):
-		DirAccess.open("user://").remove("kalin_save.json")
+	progress_reset.emit()
+	if not FileAccess.file_exists(SAVE_PATH):
+		return
+	var user_directory: DirAccess = DirAccess.open("user://")
+	if user_directory == null:
+		push_warning("GameManager: no se pudo abrir user:// para borrar el progreso")
+		return
+	var error: Error = user_directory.remove(SAVE_PATH.get_file())
+	if error != OK:
+		push_warning("GameManager: no se pudo borrar el progreso (error %d)" % error)
 
 # ─── Internos ────────────────────────────────────────────────────────────────
 
@@ -254,36 +267,58 @@ func _add_magic(amount: int) -> void:
 
 func _save() -> void:
 	var data: Dictionary = {
+		"version": SAVE_VERSION,
 		"magic_points": magic_points,
 		"words_learned": words_learned,
 		"completed_levels": completed_levels,
 	}
-	var f: FileAccess = FileAccess.open("user://kalin_save.json", FileAccess.WRITE)
-	if f:
-		f.store_string(JSON.stringify(data, "\t"))
-		f.close()
+	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if file == null:
+		push_warning("GameManager: no se pudo abrir el archivo de progreso (error %d)" % FileAccess.get_open_error())
+		return
+	file.store_string(JSON.stringify(data, "\t"))
+	var error: Error = file.get_error()
+	file.close()
+	if error != OK:
+		push_warning("GameManager: no se pudo guardar el progreso completo (error %d)" % error)
 
 func _load_save() -> void:
-	if not FileAccess.file_exists("user://kalin_save.json"):
+	if not FileAccess.file_exists(SAVE_PATH):
 		return
-	var f: FileAccess = FileAccess.open("user://kalin_save.json", FileAccess.READ)
-	if not f:
+	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if file == null:
+		push_warning("GameManager: no se pudo leer el progreso (error %d)" % FileAccess.get_open_error())
 		return
-	var result = JSON.parse_string(f.get_as_text())
-	f.close()
+	var json: JSON = JSON.new()
+	var parse_error: Error = json.parse(file.get_as_text())
+	file.close()
+	if parse_error != OK:
+		push_warning(
+			"GameManager: el progreso está dañado (línea %d: %s)" % [
+				json.get_error_line(), json.get_error_message()
+			]
+		)
+		return
+	var result: Variant = json.data
 	if result is Dictionary:
+		var loaded_version: int = int(result.get("version", 0))
+		if loaded_version > SAVE_VERSION:
+			push_warning(
+				"GameManager: el progreso usa una versión más reciente (%d)" % loaded_version
+			)
+			return
 		# JSON devuelve números como float y arrays/dicts SIN tipo,
 		# así que convertimos explícitamente para respetar los tipos declarados.
-		magic_points = int(result.get("magic_points", 0))
+		magic_points = maxi(int(result.get("magic_points", 0)), 0)
 
 		# completed_levels es Array[String]: usamos assign() para convertir
 		# el Array genérico que entrega JSON en un Array tipado sin crashear.
-		completed_levels.assign(result.get("completed_levels", []))
+		completed_levels = _sanitize_completed_levels(result.get("completed_levels", []))
 
 		# Reconstruir y migrar claves antiguas a la grafía canónica. Los datos de
 		# VOCABULARY reemplazan copias antiguas para evitar contenido duplicado.
 		words_learned = {}
-		var loaded_words = result.get("words_learned", {})
+		var loaded_words: Variant = result.get("words_learned", {})
 		if loaded_words is Dictionary:
 			for old_key in loaded_words:
 				var canonical_key: String = _resolve_vocab_key(old_key)
@@ -296,6 +331,19 @@ func _load_save() -> void:
 		_migrate_completed_stage_from_words(4, 1, ["ja'", "ja'as", "pak'al", "K'úum"])
 
 	magic_points_changed.emit(magic_points)
+
+func _sanitize_completed_levels(value: Variant) -> Array[String]:
+	var sanitized: Array[String] = []
+	if value is not Array:
+		return sanitized
+	var valid_keys: Dictionary = {}
+	for level_data: Dictionary in LEVEL_ORDER:
+		valid_keys["w%d_l%d" % [level_data.world, level_data.level]] = true
+	for item: Variant in value:
+		var key: String = str(item)
+		if valid_keys.has(key) and key not in sanitized:
+			sanitized.append(key)
+	return sanitized
 
 func _migrate_completed_stage_from_words(world: int, level: int, required_words: Array[String]) -> void:
 	var progress_key: String = "w%d_l%d" % [world, level]

@@ -37,7 +37,8 @@ func show_book() -> void:
 
 func hide_book() -> void:
 	visible = false
-	if audio_player.playing: audio_player.stop()
+	if audio_player.playing:
+		audio_player.stop()
 
 # ─── Poblar tarjetas ─────────────────────────────────────────────────────────
 func _populate() -> void:
@@ -60,7 +61,8 @@ func _populate() -> void:
 			by_stage[stage_key] = {"world": world, "level": lvl, "words": []}
 		by_stage[stage_key].words.append(word)
 
-	var stages: Array = by_stage.keys(); stages.sort()
+	var stages: Array = by_stage.keys()
+	stages.sort()
 	for stage_key: String in stages:
 		var stage: Dictionary = by_stage[stage_key]
 		word_grid.add_child(_make_separator("Mundo %d · Nivel %d" % [stage.world, stage.level]))
@@ -156,11 +158,16 @@ func _audio_path(maya_word: String) -> String:
 func _show_notice(msg: String) -> void:
 	audio_notice.text    = msg
 	audio_notice.visible = true
-	if _notice_tween: _notice_tween.kill()
+	if _notice_tween:
+		_notice_tween.kill()
 	_notice_tween = create_tween()
 	_notice_tween.tween_interval(2.2)
 	_notice_tween.tween_property(audio_notice, "modulate:a", 0.0, 0.5)
-	_notice_tween.tween_callback(func(): audio_notice.visible = false; audio_notice.modulate.a = 1.0)
+	_notice_tween.tween_callback(_hide_notice)
+
+func _hide_notice() -> void:
+	audio_notice.visible = false
+	audio_notice.modulate.a = 1.0
 
 # ─── Separador de nivel ───────────────────────────────────────────────────────
 func _make_separator(title: String) -> Label:
@@ -174,9 +181,11 @@ func _make_separator(title: String) -> Label:
 
 # ─── Señales ─────────────────────────────────────────────────────────────────
 func _on_word_learned(_data: Dictionary) -> void:
-	if visible: _populate()
+	if visible:
+		_populate()
 
-func _input(event: InputEvent) -> void:
-	if visible and event is InputEventKey:
-		if event.pressed and event.keycode == KEY_ESCAPE:
+func _unhandled_input(event: InputEvent) -> void:
+	if visible and event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_ESCAPE:
 			hide_book()
+			get_viewport().set_input_as_handled()
