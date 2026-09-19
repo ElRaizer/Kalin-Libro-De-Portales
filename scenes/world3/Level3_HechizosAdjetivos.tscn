@@ -44,6 +44,7 @@ destination_cell = Vector2i(8, 5)
 
 [node name="Level3" type="Node2D" unique_id=760811558]
 script = ExtResource("2_script")
+world_number = 3
 next_scene_key = "world4_level1"
 default_instruction = "Conecta cada adjetivo maya con su significado en español.
 Arrastra de izquierda a derecha."
@@ -95,7 +96,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 1, 0.95, 1)
 theme_override_font_sizes/font_size = 20
-text = "Nivel 3 -- Adjetivos Magicos"
+text = "Mundo 3 · Nivel 1 — Adjetivos Mágicos"
 horizontal_alignment = 1
 
 [node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=630770439]
@@ -103,7 +104,7 @@ custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
 theme_override_font_sizes/font_size = 18
-text = "0 pts magicos"
+text = "0 pts mágicos"
 horizontal_alignment = 2
 
 [node name="BookBtn" type="Button" parent="UI/TopBar" unique_id=971020177]
@@ -196,7 +197,7 @@ theme_override_constants/separation = 20
 layout_mode = 2
 theme_override_colors/font_color = Color(0.1, 0.5, 0.1, 1)
 theme_override_font_sizes/font_size = 36
-text = "¡Nivel 3 completado!"
+text = "¡Mundo 3 · Nivel 1 completado!"
 horizontal_alignment = 1
 
 [node name="SubLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=1635014680]
@@ -209,7 +210,7 @@ autowrap_mode = 3
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
-text = "Siguiente nivel →"
+text = "Siguiente mundo →"
 
 [node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=150706908]
 custom_minimum_size = Vector2(0, 52)

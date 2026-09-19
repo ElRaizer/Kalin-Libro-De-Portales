@@ -1,4 +1,4 @@
-## Level2.gd v3 — La Casa Maya (Objetos del hogar)
+## Mundo 2, nivel 1 — La Casa Maya (Objetos del hogar)
 ## Mecánica nueva (reemplaza el antiguo puzzle de caminos, que era idéntico
 ## al del Nivel 1): "Lanzar el hechizo correcto".
 ##
@@ -7,7 +7,7 @@
 ##   Fase 1 (Aprende):   se muestra la imagen Y la palabra en maya.
 ##   Fase 2 (Recuerda):  solo se muestra la imagen — sin apoyo escrito,
 ##                       tal como pide el GDD para el nivel avanzado.
-## Vocabulario (ya validado en GameManager.VOCABULARY, nivel 2):
+## Vocabulario centralizado en GameManager.VOCABULARY, mundo 2 nivel 1:
 ##   mayak (mesa), lak (plato), ch'áak (cama), chan (silla), janal (comida)
 extends Node2D
 
@@ -15,30 +15,25 @@ const RES_BG := "res://Arte/backgrounds/bg_level1.svg"
 
 # Objeto solicitado, animal que lo pide, y refuerzo gramatical.
 const OBJECTS := [
-	{ "maya": "mayak",  "spanish": "Mesa",   "emoji": "🪑",
-	  "animal_spr": "res://Arte/sprites/animal_miis.svg",  "animal": "Míis",
+	{ "maya": "mayak",
+	  "animal_spr": "res://Arte/sprites/animal_miis.svg",  "animal": "Miis",
 	  "peticion": "Necesito un lugar para comer.",
-	  "estructura": "Ti' yaan jun mayak", "traduccion": "Hay una mesa",
 	  "color": Color(0.85, 0.42, 0.18) },
-	{ "maya": "lak",    "spanish": "Plato",  "emoji": "🍽️",
-	  "animal_spr": "res://Arte/sprites/animal_kaax.svg",  "animal": "Káax",
+	{ "maya": "lak",
+	  "animal_spr": "res://Arte/sprites/animal_kaax.svg",  "animal": "Kaax",
 	  "peticion": "Necesito algo para servir mi comida.",
-	  "estructura": "Ti' yaan jun lak", "traduccion": "Hay un plato",
 	  "color": Color(0.30, 0.55, 0.82) },
-	{ "maya": "ch'áak", "spanish": "Cama",   "emoji": "🛏️",
+	{ "maya": "ch'áak",
 	  "animal_spr": "res://Arte/sprites/animal_peek.svg",  "animal": "Peek'",
 	  "peticion": "Necesito un lugar para dormir.",
-	  "estructura": "Ti' yaan jun ch'áak", "traduccion": "Hay una cama",
 	  "color": Color(0.55, 0.35, 0.75) },
-	{ "maya": "chan",   "spanish": "Silla",  "emoji": "💺",
-	  "animal_spr": "res://Arte/sprites/animal_aak.svg",   "animal": "Aak'",
+	{ "maya": "chan",
+	  "animal_spr": "res://Arte/sprites/animal_aak.svg",   "animal": "Áak",
 	  "peticion": "Necesito algo para sentarme.",
-	  "estructura": "Ti' yaan jun chan", "traduccion": "Hay una silla",
 	  "color": Color(0.22, 0.62, 0.28) },
-	{ "maya": "janal",  "spanish": "Comida", "emoji": "🍲",
+	{ "maya": "janal",
 	  "animal_spr": "res://Arte/sprites/animal_keej.svg",  "animal": "Kéej",
 	  "peticion": "Necesito algo para comer.",
-	  "estructura": "Ti' yaan jun janal", "traduccion": "Hay comida",
 	  "color": Color(0.80, 0.25, 0.20) },
 ]
 
@@ -76,8 +71,8 @@ func _ready() -> void:
 	round_order.shuffle()
 	complete_pan.visible = false
 	feedback_lbl.text = ""
-	magic_lbl.text = "%d pts magicos" % GameManager.magic_points
-	GameManager.magic_points_changed.connect(func(_v): magic_lbl.text = "%d pts magicos" % GameManager.magic_points)
+	magic_lbl.text = "%d pts mágicos" % GameManager.magic_points
+	GameManager.magic_points_changed.connect(func(_v): magic_lbl.text = "%d pts mágicos" % GameManager.magic_points)
 	_show_round()
 
 ## Mismo estilo visual (crema/café + barra oscura) que el resto de niveles,
@@ -112,6 +107,7 @@ func _show_round() -> void:
 		return
 	feedback_lbl.text = ""
 	var obj := _current_object()
+	var vocab: Dictionary = GameManager.get_vocabulary_entry(obj.maya)
 	current_phase = 0 if round_index < round_order.size() else 1
 	animal_spr.texture = load(obj.animal_spr)
 	animal_spr.modulate = Color.WHITE
@@ -120,11 +116,11 @@ func _show_round() -> void:
 	if current_phase == 0:
 		phase_lbl.text = "Fase 1 · Aprende — Ronda %d / %d" % [round_index + 1, TOTAL_ROUNDS]
 		need_lbl.text = "%s dice: \"%s\"" % [obj.animal, obj.peticion]
-		word_lbl.text = "%s   %s   (%s)" % [obj.emoji, obj.spanish, obj.maya]
+		word_lbl.text = "%s   %s   (%s)" % [vocab.get("emoji", "?"), vocab.get("spanish", ""), obj.maya]
 	else:
 		phase_lbl.text = "Fase 2 · Recuerda sin ayuda — Ronda %d / %d" % [round_index + 1, TOTAL_ROUNDS]
 		need_lbl.text = "%s te mira en silencio, esperando su hechizo..." % obj.animal
-		word_lbl.text = obj.emoji   # solo la imagen: sin palabra escrita
+		word_lbl.text = vocab.get("emoji", "?")   # solo la imagen: sin palabra escrita
 	word_lbl.add_theme_color_override("font_color", obj.color.darkened(0.15))
 	_build_choices()
 	progress_lbl.text = "Palabras en el libro: %d / %d" % [_learned_count(), OBJECTS.size()]
@@ -132,7 +128,7 @@ func _show_round() -> void:
 func _learned_count() -> int:
 	var c := 0
 	for o in OBJECTS:
-		if GameManager.words_learned.has(o.maya):
+		if GameManager.has_learned_word(o.maya):
 			c += 1
 	return c
 
@@ -174,7 +170,10 @@ func _on_correct(obj: Dictionary) -> void:
 	for b in _choice_buttons:
 		b.disabled = true
 	GameManager.learn_word(obj.maya)
-	feedback_lbl.text = "¡Hechizo lanzado!  %s  =  %s   →  \"%s\"" % [obj.maya, obj.traduccion, obj.estructura]
+	var vocab: Dictionary = GameManager.get_vocabulary_entry(obj.maya)
+	feedback_lbl.text = "¡Hechizo lanzado!  %s  =  %s   →  \"%s\"" % [
+		obj.maya, vocab.get("traduccion", ""), vocab.get("estructura", "")
+	]
 	feedback_lbl.add_theme_color_override("font_color", Color(0.12, 0.45, 0.15))
 	var tw := create_tween()
 	tw.tween_property(animal_spr, "scale", Vector2(1.18, 1.18), 0.12)

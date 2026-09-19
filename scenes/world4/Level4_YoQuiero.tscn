@@ -38,14 +38,14 @@ offset_bottom = 52.0
 custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "<- Menu"
+text = "← Menú"
 
 [node name="TitleLabel" type="Label" parent="UI/TopBar" unique_id=902629495]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 1, 0.95, 1)
 theme_override_font_sizes/font_size = 20
-text = "Nivel 4 -- In k'a'at (Yo Quiero)"
+text = "Mundo 4 · Nivel 1 — In k'a'at (Yo Quiero)"
 horizontal_alignment = 1
 
 [node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=2033341721]
@@ -136,14 +136,14 @@ theme_override_constants/separation = 22
 layout_mode = 2
 theme_override_colors/font_color = Color(0.1, 0.5, 0.1, 1)
 theme_override_font_sizes/font_size = 34
-text = "Nivel 4 Completado!"
+text = "¡Mundo 4 completado!"
 horizontal_alignment = 1
 
 [node name="SubLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=1727507983]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "Ya sabes pedir comida en maya.
-Ahora vamos por mas animales!"
+text = "Ya sabes pedir alimentos en maya.
+Volvamos al menú principal."
 horizontal_alignment = 1
 autowrap_mode = 3
 
@@ -151,13 +151,13 @@ autowrap_mode = 3
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Siguiente Nivel ->"
+text = "Terminar y volver al menú"
 
 [node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=1743210482]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Volver al Menu Principal"
+text = "Volver al menú principal"
 
 [node name="ReplayBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=776841963]
 custom_minimum_size = Vector2(0, 52)

@@ -1,18 +1,19 @@
-## Level4.gd v2 — In k'a'at (Yo Quiero)
+## Mundo 4, nivel 1 — In k'a'at (Yo Quiero)
 ## FIXES: await guardado, navegación segura, instrucciones visibles
 extends Node2D
 
 const FOODS := [
-	{ "maya":"ja'",    "spanish":"Agua",    "emoji":"💧", "color":Color(0.25,0.60,0.90) },
-	{ "maya":"Ja'as",  "spanish":"Platano", "emoji":"🍌", "color":Color(0.92,0.78,0.15) },
-	{ "maya":"pak'al", "spanish":"Fruta",   "emoji":"🍎", "color":Color(0.85,0.25,0.25) },
-	{ "maya":"K'uum",  "spanish":"Calabaza","emoji":"🎃", "color":Color(0.88,0.50,0.10) },
+	{ "maya":"ja'",    "color":Color(0.25,0.60,0.90) },
+	{ "maya":"ja'as",  "color":Color(0.92,0.78,0.15) },
+	{ "maya":"pak'al", "color":Color(0.85,0.25,0.25) },
+	{ "maya":"K'úum",  "color":Color(0.88,0.50,0.10) },
 ]
 const RES_BG    := "res://Arte/backgrounds/bg_level1.svg"
 const RES_KALIN := "res://Arte/sprites/kalin_normal.svg"
 
 var learned_count: int = 0
 var food_buttons: Array = []
+var selected_foods: Dictionary = {}
 var _completing: bool = false
 
 @onready var bg:          TextureRect    = $Background
@@ -54,9 +55,10 @@ func _apply_friendly_theme() -> void:
 func _build_food_buttons() -> void:
 	for i in range(FOODS.size()):
 		var f: Dictionary = FOODS[i]
+		var vocab: Dictionary = GameManager.get_vocabulary_entry(f.maya)
 		var btn: Button = Button.new()
 		btn.custom_minimum_size = Vector2(240, 130)
-		btn.text = "%s\n%s\n(%s)" % [f.emoji, f.spanish, f.maya]
+		btn.text = "%s\n%s\n(%s)" % [vocab.get("emoji", "?"), vocab.get("spanish", ""), f.maya]
 		btn.add_theme_font_size_override("font_size", 22)
 		var st: StyleBoxFlat = StyleBoxFlat.new()
 		st.bg_color = f.color;  st.set_border_width_all(3)
@@ -72,11 +74,13 @@ func _build_food_buttons() -> void:
 func _on_food_pressed(idx: int) -> void:
 	if _completing: return
 	var f: Dictionary = FOODS[idx]
+	var vocab: Dictionary = GameManager.get_vocabulary_entry(f.maya)
 	phrase_lbl.text = "In k'a'at %s" % f.maya
 	phrase_lbl.add_theme_color_override("font_color", Color(0.10, 0.08, 0.45))
-	hint_lbl.text = "Yo quiero %s  (%s en maya)" % [f.spanish, f.maya]
-	if not GameManager.words_learned.has(f.maya):
-		GameManager.learn_word(f.maya)
+	hint_lbl.text = "Yo quiero %s  (%s en maya)" % [vocab.get("spanish", ""), f.maya]
+	GameManager.learn_word(f.maya)
+	if not selected_foods.has(idx):
+		selected_foods[idx] = true
 		learned_count += 1
 		# Marcar botón aprendido
 		var st: StyleBoxFlat = StyleBoxFlat.new()
@@ -97,11 +101,11 @@ func _on_food_pressed(idx: int) -> void:
 		_on_level_complete()
 
 func _on_level_complete() -> void:
-	GameManager.complete_level(1, 4);  complete_pan.visible = true
+	GameManager.complete_level(4, 1);  complete_pan.visible = true
 
 func _safe_navigate(key: String) -> void:
 	_completing = true;  GameManager.go_to_scene(key)
 func _on_menu_pressed()   -> void: _safe_navigate("main_menu")
-func _on_next_level_pressed() -> void: _safe_navigate("world1_level5")
+func _on_next_level_pressed() -> void: _safe_navigate("main_menu")
 func _on_book_pressed()   -> void: libro.show_book()
 func _on_replay_pressed() -> void: get_tree().reload_current_scene()

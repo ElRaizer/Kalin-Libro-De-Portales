@@ -20,8 +20,8 @@ const CARD_BG       := Color(0.96, 0.92, 0.78)
 const CARD_BORDER   := Color(0.55, 0.38, 0.18)
 
 ## Convención de nombres de archivo de audio:
-## res://Arte/audio/<maya_word_sin_apostrofe>.ogg
-## Ejemplo: "Peek'" → "Peek.ogg",  "Miis" → "Miis.ogg"
+## res://Arte/audio/<maya_word_ascii>.ogg
+## Ejemplo: "Peek'" → "Peek.ogg", "K'úum" → "Kuum.ogg"
 const AUDIO_BASE := "res://Arte/audio/"
 
 # ─── Estado ──────────────────────────────────────────────────────────────────
@@ -67,19 +67,23 @@ func _populate() -> void:
 		learned.size(), GameManager.VOCABULARY.size()
 	]
 
-	# Agrupar por nivel
-	var by_level: Dictionary = {}
+	# Agrupar por mundo y nivel para respetar la estructura de mecánicas.
+	var by_stage: Dictionary = {}
 	for word: String in learned:
+		var world: int = learned[word].get("world", 0)
 		var lvl: int = learned[word].get("level", 0)
-		if lvl not in by_level: by_level[lvl] = []
-		by_level[lvl].append(word)
+		var stage_key: String = "%03d_%03d" % [world, lvl]
+		if stage_key not in by_stage:
+			by_stage[stage_key] = {"world": world, "level": lvl, "words": []}
+		by_stage[stage_key].words.append(word)
 
-	var levels: Array = by_level.keys(); levels.sort()
-	for lvl in levels:
-		word_grid.add_child(_make_separator("Nivel %d" % lvl))
+	var stages: Array = by_stage.keys(); stages.sort()
+	for stage_key: String in stages:
+		var stage: Dictionary = by_stage[stage_key]
+		word_grid.add_child(_make_separator("Mundo %d · Nivel %d" % [stage.world, stage.level]))
 		for _i in range(2):
 			word_grid.add_child(Control.new())   # relleno de columnas
-		for word: String in by_level[lvl]:
+		for word: String in stage.words:
 			word_grid.add_child(_make_card(word, learned[word]))
 
 # ─── Tarjeta individual ───────────────────────────────────────────────────────
@@ -153,8 +157,8 @@ func _make_card(maya_word: String, data: Dictionary) -> Panel:
 		audio_btn.pressed.connect(func(): _play_audio(maya_word))
 	else:
 		audio_btn.add_theme_color_override("font_color", Color(0.55, 0.45, 0.30))
-		audio_btn.tooltip_text = "El archivo de audio sera agregado proximamente."
-		audio_btn.pressed.connect(func(): _show_notice("Audio de \"%s\" proximamente" % maya_word))
+		audio_btn.tooltip_text = "El archivo de audio será agregado próximamente."
+		audio_btn.pressed.connect(func(): _show_notice("Audio de \"%s\" próximamente" % maya_word))
 
 	vbox.add_child(emoji_lbl)
 	vbox.add_child(maya_lbl)
@@ -176,10 +180,9 @@ func _play_audio(maya_word: String) -> void:
 		audio_player.play()
 
 ## Devuelve la ruta del archivo de audio para una palabra maya.
-## Elimina apóstrofes y espacios para obtener el nombre de archivo.
+## Elimina acentos y apóstrofos para obtener un nombre portable.
 func _audio_path(maya_word: String) -> String:
-	var clean: String = maya_word.replace("'", "").replace(" ", "_")
-	return AUDIO_BASE + clean + ".ogg"
+	return AUDIO_BASE + GameManager.get_audio_filename(maya_word)
 
 # ─── Aviso flotante ──────────────────────────────────────────────────────────
 func _show_notice(msg: String) -> void:

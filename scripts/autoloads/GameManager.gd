@@ -21,71 +21,71 @@ var completed_levels: Array[String] = []    # [ "w1_l1", "w1_l2", ... ]
 # ─── Vocabulario completo del juego ─────────────────────────────────────────
 # Indexado por palabra en maya yucateco
 const VOCABULARY: Dictionary = {
-	# Nivel 1 — Animales (estructura: In k'aaba'e' ___)
+	# Mundo 1, nivel 1 — Animales (estructura: In k'aaba'e' ___)
 	"Peek'":    { "spanish": "Perro",    "emoji": "🐶", "world": 1, "level": 1,
 				  "estructura": "In k'aaba'e' Peek'",    "traduccion": "Me llamo Perro" },
-	"Míis":     { "spanish": "Gato",     "emoji": "🐱", "world": 1, "level": 1,
-				  "estructura": "In k'aaba'e' Míis",     "traduccion": "Me llamo Gato" },
-	"Káax":     { "spanish": "Gallina",  "emoji": "🐔", "world": 1, "level": 1,
-				  "estructura": "In k'aaba'e' Káax",     "traduccion": "Me llamo Gallina" },
-	"Aak'":     { "spanish": "Tortuga",  "emoji": "🐢", "world": 1, "level": 7,
-				  "estructura": "In k'aaba'e' Aak'",     "traduccion": "Me llamo Tortuga" },
-	"Kéej":     { "spanish": "Venado",   "emoji": "🦌", "world": 1, "level": 5,
+	"Miis":     { "spanish": "Gato",     "emoji": "🐱", "world": 1, "level": 1,
+				  "estructura": "In k'aaba'e' Miis",     "traduccion": "Me llamo Gato" },
+	"Kaax":     { "spanish": "Gallina",  "emoji": "🐔", "world": 1, "level": 1,
+				  "estructura": "In k'aaba'e' Kaax",     "traduccion": "Me llamo Gallina" },
+	"Áak":      { "spanish": "Tortuga",  "emoji": "🐢", "world": 1, "level": 4,
+				  "estructura": "In k'aaba'e' Áak",      "traduccion": "Me llamo Tortuga" },
+	"Kéej":     { "spanish": "Venado",   "emoji": "🦌", "world": 1, "level": 2,
 				  "estructura": "In k'aaba'e' Kéej",     "traduccion": "Me llamo Venado" },
-	"K'éek'en": { "spanish": "Cerdo",    "emoji": "🐷", "world": 1, "level": 5,
+	"K'éek'en": { "spanish": "Cerdo",    "emoji": "🐷", "world": 1, "level": 2,
 				  "estructura": "In k'aaba'e' K'éek'en", "traduccion": "Me llamo Cerdo" },
-	# Extras nivel 1
-	"Ma'ax":    { "spanish": "Mono",     "emoji": "🐒", "world": 1, "level": 5,
+	# Mundo 1, nivel 2 — Animales del bosque
+	"Ma'ax":    { "spanish": "Mono",     "emoji": "🐒", "world": 1, "level": 2,
 				  "estructura": "In k'aaba'e' Ma'ax",    "traduccion": "Me llamo Mono" },
-	"T'uut":    { "spanish": "Loro",     "emoji": "🦜", "world": 1, "level": 1,
-				  "estructura": "In k'aaba'e' T'uut",    "traduccion": "Me llamo Loro" },
+	"T'uut'":   { "spanish": "Loro",     "emoji": "🦜", "world": 1, "level": 1,
+				  "estructura": "In k'aaba'e' T'uut'",   "traduccion": "Me llamo Loro" },
 
-	# Nivel 2 — Objetos del hogar (sustantivos)
-	"mayak":    { "spanish": "Mesa",     "emoji": "🪑", "world": 1, "level": 2,
-				  "estructura": "mayak",                 "traduccion": "Mesa" },
-	"lak":      { "spanish": "Plato",    "emoji": "🍽️", "world": 1, "level": 2,
-				  "estructura": "lak",                   "traduccion": "Plato" },
-	"ch'áak":   { "spanish": "Cama",     "emoji": "🛏️", "world": 1, "level": 2,
-				  "estructura": "ch'áak",                "traduccion": "Cama" },
-	"chan":      { "spanish": "Silla",    "emoji": "💺",  "world": 1, "level": 2,
-				  "estructura": "chan",                   "traduccion": "Silla" },
-	"janal":    { "spanish": "Comida",   "emoji": "🍲",  "world": 1, "level": 2,
-				  "estructura": "janal",                  "traduccion": "Comida" },
+	# Mundo 2, nivel 1 — Objetos del hogar (sustantivos)
+	"mayak":    { "spanish": "Mesa",     "emoji": "🪑", "world": 2, "level": 1,
+				  "estructura": "Ti' yaan jun mayak",    "traduccion": "Hay una mesa" },
+	"lak":      { "spanish": "Plato",    "emoji": "🍽️", "world": 2, "level": 1,
+				  "estructura": "Ti' yaan jun lak",      "traduccion": "Hay un plato" },
+	"ch'áak":   { "spanish": "Cama",     "emoji": "🛏️", "world": 2, "level": 1,
+				  "estructura": "Ti' yaan jun ch'áak",   "traduccion": "Hay una cama" },
+	"chan":     { "spanish": "Silla",    "emoji": "💺",  "world": 2, "level": 1,
+				  "estructura": "Ti' yaan jun chan",     "traduccion": "Hay una silla" },
+	"janal":    { "spanish": "Comida",   "emoji": "🍲",  "world": 2, "level": 1,
+				  "estructura": "Ti' yaan jun janal",    "traduccion": "Hay comida" },
 
-	# Nivel 3 — Adjetivos
-	"mejen":    { "spanish": "Pequeño/a", "emoji": "🔹", "world": 1, "level": 3,
+	# Mundo 3, nivel 1 — Adjetivos
+	"mejen":    { "spanish": "Pequeño/a", "emoji": "🔹", "world": 3, "level": 1,
 				  "estructura": "In [sust.]e' mejen",    "traduccion": "Mi [cosa] es pequeña" },
-	"nojoch":   { "spanish": "Grande",    "emoji": "🔷", "world": 1, "level": 3,
+	"nojoch":   { "spanish": "Grande",    "emoji": "🔷", "world": 3, "level": 1,
 				  "estructura": "In [sust.]e' nojoch",   "traduccion": "Mi [cosa] es grande" },
-	"Jats'uts": { "spanish": "Bonito/a",  "emoji": "✨",  "world": 1, "level": 3,
+	"Jats'uts": { "spanish": "Bonito/a",  "emoji": "✨",  "world": 3, "level": 1,
 				  "estructura": "In [sust.]e' Jats'uts", "traduccion": "Mi [cosa] es bonita" },
-	"ki'":      { "spanish": "Delicioso", "emoji": "😋", "world": 1, "level": 3,
+	"ki'":      { "spanish": "Delicioso", "emoji": "😋", "world": 3, "level": 1,
 				  "estructura": "In [sust.]e' ki'",      "traduccion": "Mi [cosa] es deliciosa" },
-	"jach'":    { "spanish": "Fuerte",    "emoji": "💪", "world": 1, "level": 3,
+	"jach'":    { "spanish": "Fuerte",    "emoji": "💪", "world": 3, "level": 1,
 				  "estructura": "In [sust.]e' jach'",    "traduccion": "Mi [cosa] es fuerte" },
 
-	# Nivel 4 — Alimentos / In k'a'at
-	"ja'":      { "spanish": "Agua",     "emoji": "💧", "world": 1, "level": 4,
+	# Mundo 4, nivel 1 — Alimentos / In k'a'at
+	"ja'":      { "spanish": "Agua",     "emoji": "💧", "world": 4, "level": 1,
 				  "estructura": "In k'a'at ja'",         "traduccion": "Yo quiero agua" },
-	"Ja'as":    { "spanish": "Plátano",  "emoji": "🍌", "world": 1, "level": 4,
-				  "estructura": "In k'a'at Ja'as",       "traduccion": "Yo quiero plátano" },
-	"pak'al":   { "spanish": "Fruta",    "emoji": "🍎", "world": 1, "level": 4,
+	"ja'as":    { "spanish": "Plátano",  "emoji": "🍌", "world": 4, "level": 1,
+				  "estructura": "In k'a'at ja'as",       "traduccion": "Yo quiero plátano" },
+	"pak'al":   { "spanish": "Fruta",    "emoji": "🍎", "world": 4, "level": 1,
 				  "estructura": "In k'a'at pak'al",      "traduccion": "Yo quiero fruta" },
-	"K'úum":    { "spanish": "Calabaza", "emoji": "🎃", "world": 1, "level": 4,
+	"K'úum":    { "spanish": "Calabaza", "emoji": "🎃", "world": 4, "level": 1,
 				  "estructura": "In k'a'at K'úum",       "traduccion": "Yo quiero calabaza" },
 
-	# Nivel 6 — Animales del monte (listos para el próximo nivel)
-	"Kuuts":    { "spanish": "Pavo",     "emoji": "🦃", "world": 1, "level": 6,
+	# Mundo 1, nivel 3 — Guardianes del monte
+	"Kuuts":    { "spanish": "Pavo",     "emoji": "🦃", "world": 1, "level": 3,
 				  "estructura": "In k'aaba'e' Kuuts",    "traduccion": "Me llamo Pavo" },
-	"Báalam":   { "spanish": "Jaguar",   "emoji": "🐆", "world": 1, "level": 6,
+	"Báalam":   { "spanish": "Jaguar",   "emoji": "🐆", "world": 1, "level": 3,
 				  "estructura": "In k'aaba'e' Báalam",   "traduccion": "Me llamo Jaguar" },
-	"T'u'ul":   { "spanish": "Conejo",   "emoji": "🐇", "world": 1, "level": 6,
+	"T'u'ul":   { "spanish": "Conejo",   "emoji": "🐇", "world": 1, "level": 3,
 				  "estructura": "In k'aaba'e' T'u'ul",   "traduccion": "Me llamo Conejo" },
 
-	# Nivel 7 — Agua y Cielo
-	"Kay":      { "spanish": "Pez",      "emoji": "🐟", "world": 1, "level": 7,
+	# Mundo 1, nivel 4 — Agua y cielo
+	"Kay":      { "spanish": "Pez",      "emoji": "🐟", "world": 1, "level": 4,
 				  "estructura": "In k'aaba'e' Kay",      "traduccion": "Me llamo Pez" },
-	"Ch'íich'": { "spanish": "Pájaro",   "emoji": "🐦", "world": 1, "level": 7,
+	"Ch'íich'": { "spanish": "Pájaro",   "emoji": "🐦", "world": 1, "level": 4,
 				  "estructura": "In k'aaba'e' Ch'íich'", "traduccion": "Me llamo Pájaro" },
 }
 
@@ -97,9 +97,34 @@ const SCENE_PATHS: Dictionary = {
 	"world1_level2":   "res://scenes/world1/Level2_AnimalesBosque.tscn",
 	"world1_level3":   "res://scenes/world1/Level3_GuardianesMonte.tscn",
 	"world1_level4":   "res://scenes/world1/Level4_AguaYCielo.tscn",
-	"world2_level1":   "res://scenes/World2/Level2_ConstruyendoPalabras.tscn",
+	"world2_level1":   "res://scenes/world2/Level2_ConstruyendoPalabras.tscn",
 	"world3_level1":   "res://scenes/world3/Level3_HechizosAdjetivos.tscn",
 	"world4_level1":   "res://scenes/world4/Level4_YoQuiero.tscn"
+}
+
+## Orden canónico de progreso. Cada mundo representa una mecánica distinta;
+## sus niveles son variaciones de esa misma mecánica.
+const LEVEL_ORDER: Array[Dictionary] = [
+	{ "world": 1, "level": 1, "scene_key": "world1_level1", "name": "Los Caminos Blancos" },
+	{ "world": 1, "level": 2, "scene_key": "world1_level2", "name": "Los Animales del Bosque" },
+	{ "world": 1, "level": 3, "scene_key": "world1_level3", "name": "Los Guardianes del Monte" },
+	{ "world": 1, "level": 4, "scene_key": "world1_level4", "name": "Agua y Cielo" },
+	{ "world": 2, "level": 1, "scene_key": "world2_level1", "name": "La Casa Maya" },
+	{ "world": 3, "level": 1, "scene_key": "world3_level1", "name": "Hechizos de Adjetivos" },
+	{ "world": 4, "level": 1, "scene_key": "world4_level1", "name": "Yo Quiero" },
+]
+
+## Variantes antiguas que pueden existir en escenas o partidas guardadas.
+## Toda palabra aprendida se almacena usando la clave canónica de VOCABULARY.
+const VOCABULARY_ALIASES: Dictionary = {
+	"Míis": "Miis",
+	"Káax": "Kaax",
+	"Aak": "Áak",
+	"Aak'": "Áak",
+	"Áak'": "Áak",
+	"K'uum": "K'úum",
+	"Ja'as": "ja'as",
+	"T'uut": "T'uut'",
 }
 
 # ─── Constantes de recompensa ────────────────────────────────────────────────
@@ -113,7 +138,7 @@ func _ready() -> void:
 # ─── API pública ─────────────────────────────────────────────────────────────
 
 ## Registra una palabra maya como aprendida. Emite word_learned y suma puntos.
-## Tolera variaciones de acentos: "Miis" encuentra "Míis", etc.
+## Tolera variantes históricas de acentos y apóstrofos.
 func learn_word(maya_word: String) -> void:
 	# Buscar la clave real en el vocabulario (tolerante a acentos)
 	var key: String = _resolve_vocab_key(maya_word)
@@ -127,11 +152,32 @@ func learn_word(maya_word: String) -> void:
 	word_learned.emit(words_learned[key])
 	_save()
 
+## Indica si una palabra ya fue aprendida, aceptando grafías antiguas.
+func has_learned_word(maya_word: String) -> bool:
+	var key: String = _resolve_vocab_key(maya_word)
+	return key != "" and key in words_learned
+
+## Devuelve los datos de la fuente única de vocabulario.
+func get_vocabulary_entry(maya_word: String) -> Dictionary:
+	var key: String = _resolve_vocab_key(maya_word)
+	if key == "":
+		return {}
+	return VOCABULARY[key]
+
+## Nombre técnico estable para archivos de audio: usa la grafía canónica pero
+## elimina acentos, apóstrofes y espacios (ej.: K'úum -> Kuum.ogg).
+func get_audio_filename(maya_word: String) -> String:
+	var key: String = _resolve_vocab_key(maya_word)
+	var source: String = key if key != "" else maya_word
+	return _strip_accents(source).replace("'", "").replace("’", "").replace(" ", "_") + ".ogg"
+
 ## Devuelve la clave exacta del VOCABULARY que corresponde a una palabra,
 ## ignorando diferencias de acentos. Devuelve "" si no existe.
 func _resolve_vocab_key(word: String) -> String:
 	if word in VOCABULARY:
 		return word
+	if word in VOCABULARY_ALIASES:
+		return VOCABULARY_ALIASES[word]
 	var normalized: String = _strip_accents(word).to_lower()
 	for k in VOCABULARY.keys():
 		if _strip_accents(k).to_lower() == normalized:
@@ -165,10 +211,20 @@ func is_level_completed(world: int, level: int) -> bool:
 
 ## Regresa el siguiente nivel sin completar (para botón "Continuar").
 func next_unlocked_scene() -> String:
-	for lvl in range(1, 8):
-		if not is_level_completed(1, lvl):
-			return "world1_level%d" % lvl
+	for level_data: Dictionary in LEVEL_ORDER:
+		if not is_level_completed(level_data.world, level_data.level):
+			return level_data.scene_key
 	return "main_menu"
+
+## Devuelve los datos de presentación asociados con una clave de escena.
+func get_level_info(scene_key: String) -> Dictionary:
+	for level_data: Dictionary in LEVEL_ORDER:
+		if level_data.scene_key == scene_key:
+			return level_data
+	return {}
+
+func all_levels_completed() -> bool:
+	return next_unlocked_scene() == "main_menu"
 
 ## Cambia a una escena por clave.
 func go_to_scene(key: String) -> void:
@@ -224,15 +280,28 @@ func _load_save() -> void:
 		# el Array genérico que entrega JSON en un Array tipado sin crashear.
 		completed_levels.assign(result.get("completed_levels", []))
 
-		# words_learned: reconstruimos para asegurar que "level"/"world" sean int.
+		# Reconstruir y migrar claves antiguas a la grafía canónica. Los datos de
+		# VOCABULARY reemplazan copias antiguas para evitar contenido duplicado.
 		words_learned = {}
 		var loaded_words = result.get("words_learned", {})
 		if loaded_words is Dictionary:
-			for key in loaded_words:
-				var entry = loaded_words[key]
-				if entry is Dictionary:
-					if entry.has("level"): entry["level"] = int(entry["level"])
-					if entry.has("world"): entry["world"] = int(entry["world"])
-					words_learned[key] = entry
+			for old_key in loaded_words:
+				var canonical_key: String = _resolve_vocab_key(old_key)
+				if canonical_key != "":
+					words_learned[canonical_key] = VOCABULARY[canonical_key].duplicate()
+
+		# Versiones anteriores guardaban los mundos 3 y 4 con identificadores del
+		# Mundo 1. Si todo su vocabulario estaba aprendido, recuperar el progreso.
+		_migrate_completed_stage_from_words(3, 1, ["mejen", "nojoch", "ki'"])
+		_migrate_completed_stage_from_words(4, 1, ["ja'", "ja'as", "pak'al", "K'úum"])
 
 	magic_points_changed.emit(magic_points)
+
+func _migrate_completed_stage_from_words(world: int, level: int, required_words: Array[String]) -> void:
+	var progress_key: String = "w%d_l%d" % [world, level]
+	if progress_key in completed_levels:
+		return
+	for maya_word in required_words:
+		if not has_learned_word(maya_word):
+			return
+	completed_levels.append(progress_key)

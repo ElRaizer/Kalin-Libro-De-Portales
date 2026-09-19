@@ -33,7 +33,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.93, 0.6, 1)
 theme_override_font_sizes/font_size = 20
-text = "Nivel 2 — La Casa Maya (Objetos)"
+text = "Mundo 2 · Nivel 1 — La Casa Maya"
 horizontal_alignment = 1
 
 [node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=890323001]
@@ -158,7 +158,7 @@ theme_override_constants/separation = 18
 layout_mode = 2
 theme_override_colors/font_color = Color(0.1, 0.5, 0.1, 1)
 theme_override_font_sizes/font_size = 36
-text = "¡Nivel 2 completado!"
+text = "¡Mundo 2 · Nivel 1 completado!"
 horizontal_alignment = 1
 
 [node name="SubLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=1758343003]
@@ -166,7 +166,7 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.35, 0.22, 0.08, 1)
 theme_override_font_sizes/font_size = 18
 text = "Aprendiste a lanzar hechizos para construir la casa maya.
-+50 puntos magicos"
++50 puntos mágicos"
 horizontal_alignment = 1
 autowrap_mode = 3
 
@@ -174,13 +174,13 @@ autowrap_mode = 3
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Siguiente Nivel ->"
+text = "Siguiente mundo →"
 
 [node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=405089185]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "Volver al Menu"
+text = "Volver al menú"
 
 [node name="ReplayBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=873583459]
 custom_minimum_size = Vector2(0, 48)

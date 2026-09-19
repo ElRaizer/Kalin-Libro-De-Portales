@@ -48,7 +48,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
 theme_override_font_sizes/font_size = 20
-text = "0 puntos magicos"
+text = "0 puntos mágicos"
 horizontal_alignment = 2
 
 [node name="TitleLabel" type="Label" parent="UI" unique_id=1645217108]
@@ -148,7 +148,7 @@ theme_override_constants/separation = 16
 custom_minimum_size = Vector2(440, 76)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-text = "Jugar - Nivel 1"
+text = "Jugar — Mundo 1, Nivel 1"
 
 [node name="BookBtn" type="Button" parent="UI/Center/VBox" unique_id=2105956837]
 custom_minimum_size = Vector2(440, 64)
