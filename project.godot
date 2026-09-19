@@ -21,6 +21,7 @@ config/features=PackedStringArray("4.6", "Forward Plus")
 
 [autoload]
 
+WindowManager="*res://scripts/autoloads/WindowManager.gd"
 GameManager="*res://scripts/autoloads/GameManager.gd"
 
 [display]

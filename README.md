@@ -6,6 +6,7 @@ Videojuego educativo desarrollado en Godot para practicar vocabulario y estructu
 
 - Motor: **Godot 4.6**.
 - Resolución de diseño: **1280 × 720**.
+- Ventana redimensionable entre **960 × 540** y **1920 × 1080**, con escalado proporcional 16:9.
 - Escena principal: `res://scenes/Intro.tscn`.
 - Progreso local con guardado automático.
 - Siete escenas jugables distribuidas en cuatro mundos.

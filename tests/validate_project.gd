@@ -1,9 +1,11 @@
 extends SceneTree
 
 const GameManagerScript = preload("res://scripts/autoloads/GameManager.gd")
+const WindowManagerScript = preload("res://scripts/autoloads/WindowManager.gd")
 var failures: Array[String] = []
 
 func _initialize() -> void:
+	_validate_display_configuration()
 	_validate_level_order()
 	_validate_scene_registry()
 	_validate_vocabulary()
@@ -18,6 +20,22 @@ func _initialize() -> void:
 		for failure in failures:
 			push_error(failure)
 		quit(1)
+
+func _validate_display_configuration() -> void:
+	if ProjectSettings.get_setting("display/window/size/viewport_width") != 1280:
+		failures.append("El ancho de diseño debe ser 1280")
+	if ProjectSettings.get_setting("display/window/size/viewport_height") != 720:
+		failures.append("El alto de diseño debe ser 720")
+	if ProjectSettings.get_setting("display/window/stretch/mode") != "canvas_items":
+		failures.append("El modo de escalado debe ser canvas_items")
+	if ProjectSettings.get_setting("display/window/stretch/aspect") != "keep":
+		failures.append("El escalado debe conservar la relación de aspecto")
+	if not ProjectSettings.get_setting("display/window/size/resizable"):
+		failures.append("La ventana debe poder redimensionarse")
+	if WindowManagerScript.MIN_WINDOW_SIZE != Vector2i(960, 540):
+		failures.append("El tamaño mínimo de ventana debe ser 960 × 540")
+	if WindowManagerScript.MAX_WINDOW_SIZE != Vector2i(1920, 1080):
+		failures.append("El tamaño máximo de ventana debe ser 1920 × 1080")
 
 func _validate_level_order() -> void:
 	var seen_progress: Dictionary = {}
