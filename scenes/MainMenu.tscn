@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://dx4ol5egx4y1m" path="res://scripts/ui/MainMenu.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="2"]
 [ext_resource type="Texture2D" uid="uid://8oxnqwhv7jl6" path="res://Arte/backgrounds/bg_menu.svg" id="2_2wh52"]
+[ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="3_theme"]
 
 [node name="MainMenu" type="Node2D" unique_id=2139944658]
 script = ExtResource("1")
@@ -14,27 +15,6 @@ texture = ExtResource("2_2wh52")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="TitleBG" type="ColorRect" parent="." unique_id=1661208751]
-offset_left = 120.0
-offset_top = 55.0
-offset_right = 1160.0
-offset_bottom = 205.0
-color = Color(0, 0, 0, 0.4)
-
-[node name="TopBarBG" type="ColorRect" parent="." unique_id=1044897161]
-offset_left = 15.0
-offset_top = 6.0
-offset_right = 1265.0
-offset_bottom = 46.0
-color = Color(0, 0, 0, 0.42)
-
-[node name="LevelsRowBG" type="ColorRect" parent="." unique_id=512001085]
-offset_left = 70.0
-offset_top = 210.0
-offset_right = 1210.0
-offset_bottom = 274.0
-color = Color(0, 0, 0, 0.42)
-
 [node name="UI" type="CanvasLayer" parent="." unique_id=1069379391]
 
 [node name="TopBar" type="HBoxContainer" parent="UI" unique_id=589700876]
@@ -42,6 +22,7 @@ offset_left = 20.0
 offset_top = 10.0
 offset_right = 1260.0
 offset_bottom = 50.0
+theme = ExtResource("3_theme")
 
 [node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=1894398251]
 layout_mode = 2
@@ -53,92 +34,89 @@ horizontal_alignment = 2
 
 [node name="TitleLabel" type="Label" parent="UI" unique_id=1645217108]
 offset_left = 120.0
-offset_top = 68.0
+offset_top = 62.0
 offset_right = 1160.0
-offset_bottom = 148.0
-theme_override_colors/font_color = Color(1, 1, 0.95, 1)
-theme_override_font_sizes/font_size = 50
+offset_bottom = 132.0
+theme_override_colors/font_color = Color(1, 0.91, 0.55, 1)
+theme_override_font_sizes/font_size = 46
 text = "Kalin y el Libro de los Portales"
 horizontal_alignment = 1
 
 [node name="SubLabel" type="Label" parent="UI" unique_id=1097430836]
 offset_left = 120.0
-offset_top = 155.0
+offset_top = 128.0
 offset_right = 1160.0
-offset_bottom = 200.0
-theme_override_colors/font_color = Color(0.88, 1, 0.88, 1)
-theme_override_font_sizes/font_size = 22
+offset_bottom = 168.0
+theme_override_colors/font_color = Color(0.78, 1, 0.9, 1)
+theme_override_font_sizes/font_size = 21
 text = "Aprende lengua maya yucateca"
 horizontal_alignment = 1
 
-[node name="LevelsRow" type="HBoxContainer" parent="UI" unique_id=1139198106]
-offset_left = 80.0
-offset_top = 215.0
-offset_right = 1200.0
-offset_bottom = 270.0
-theme_override_constants/separation = 12
+[node name="LevelsGrid" type="GridContainer" parent="UI"]
+offset_left = 130.0
+offset_top = 190.0
+offset_right = 1150.0
+offset_bottom = 350.0
+theme = ExtResource("3_theme")
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 10
+columns = 4
 
-[node name="L1Lbl" type="Label" parent="UI/LevelsRow" unique_id=485235237]
+[node name="Level1Button" type="Button" parent="UI/LevelsGrid"]
+custom_minimum_size = Vector2(246, 70)
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.97, 0.95, 0.85, 1)
-theme_override_font_sizes/font_size = 15
-text = "1: Animales"
-horizontal_alignment = 1
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 16
+text = "▶  1. Los Caminos Blancos"
 
-[node name="L2Lbl" type="Label" parent="UI/LevelsRow" unique_id=1157310671]
+[node name="Level2Button" type="Button" parent="UI/LevelsGrid"]
+custom_minimum_size = Vector2(246, 70)
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.97, 0.95, 0.85, 1)
-theme_override_font_sizes/font_size = 15
-text = "2: Objetos"
-horizontal_alignment = 1
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 16
+text = "🔒  2. Los Animales del Bosque"
 
-[node name="L3Lbl" type="Label" parent="UI/LevelsRow" unique_id=1063593639]
+[node name="Level3Button" type="Button" parent="UI/LevelsGrid"]
+custom_minimum_size = Vector2(246, 70)
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.97, 0.95, 0.85, 1)
-theme_override_font_sizes/font_size = 15
-text = "3: Adjetivos"
-horizontal_alignment = 1
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 16
+text = "🔒  3. Los Guardianes del Monte"
 
-[node name="L4Lbl" type="Label" parent="UI/LevelsRow" unique_id=1075227931]
+[node name="Level4Button" type="Button" parent="UI/LevelsGrid"]
+custom_minimum_size = Vector2(246, 70)
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.97, 0.95, 0.85, 1)
-theme_override_font_sizes/font_size = 15
-text = "4: Yo Quiero"
-horizontal_alignment = 1
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 16
+text = "🔒  4. Agua y Cielo"
 
-[node name="L5Lbl" type="Label" parent="UI/LevelsRow" unique_id=1978845452]
+[node name="Level5Button" type="Button" parent="UI/LevelsGrid"]
+custom_minimum_size = Vector2(246, 70)
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.97, 0.95, 0.85, 1)
-theme_override_font_sizes/font_size = 15
-text = "5: Bosque"
-horizontal_alignment = 1
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 16
+text = "🔒  5. La Casa Maya"
 
-[node name="L6Lbl" type="Label" parent="UI/LevelsRow" unique_id=575276618]
+[node name="Level6Button" type="Button" parent="UI/LevelsGrid"]
+custom_minimum_size = Vector2(246, 70)
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.97, 0.95, 0.85, 1)
-theme_override_font_sizes/font_size = 15
-text = "6: Guardianes"
-horizontal_alignment = 1
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 16
+text = "🔒  6. Hechizos de Adjetivos"
 
-[node name="L7Lbl" type="Label" parent="UI/LevelsRow" unique_id=13806114]
+[node name="Level7Button" type="Button" parent="UI/LevelsGrid"]
+custom_minimum_size = Vector2(246, 70)
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.97, 0.95, 0.85, 1)
-theme_override_font_sizes/font_size = 15
-text = "7: Agua y Cielo"
-horizontal_alignment = 1
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 16
+text = "🔒  7. Yo Quiero"
 
 [node name="Center" type="CenterContainer" parent="UI" unique_id=1672652378]
 offset_left = 340.0
-offset_top = 280.0
+offset_top = 375.0
 offset_right = 940.0
-offset_bottom = 650.0
+offset_bottom = 700.0
+theme = ExtResource("3_theme")
 
 [node name="VBox" type="VBoxContainer" parent="UI/Center" unique_id=53778132]
 layout_mode = 2
@@ -147,24 +125,28 @@ theme_override_constants/separation = 16
 [node name="PlayBtn" type="Button" parent="UI/Center/VBox" unique_id=942120593]
 custom_minimum_size = Vector2(440, 76)
 layout_mode = 2
+theme_type_variation = &"KalinPrimaryButton"
 theme_override_font_sizes/font_size = 30
-text = "Jugar — Mundo 1, Nivel 1"
+text = "Comenzar aventura"
 
 [node name="BookBtn" type="Button" parent="UI/Center/VBox" unique_id=2105956837]
 custom_minimum_size = Vector2(440, 64)
 layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 20
 text = "Libro de Hechizos  (0 palabras)"
 
 [node name="ResetBtn" type="Button" parent="UI/Center/VBox" unique_id=345391258]
 custom_minimum_size = Vector2(440, 52)
 layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 18
 text = "Reiniciar progreso"
 
 [node name="QuitBtn" type="Button" parent="UI/Center/VBox" unique_id=258813198]
 custom_minimum_size = Vector2(440, 52)
 layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 18
 text = "Salir"
 

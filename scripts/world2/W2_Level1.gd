@@ -53,6 +53,7 @@ var _choice_buttons: Array[Button] = []
 @onready var phase_lbl:    Label         = $UI/StatusPanel/StatusVBox/PhaseLbl
 @onready var progress_lbl: Label         = $UI/StatusPanel/StatusVBox/ProgressLbl
 @onready var complete_pan: Panel         = $UI/CompletePanel
+@onready var complete_shade: ColorRect   = $UI/CompleteShade
 @onready var magic_lbl:    Label         = $UI/TopBar/MagicLabel
 @onready var libro:        CanvasLayer   = $LibroHechizos
 
@@ -62,6 +63,7 @@ func _ready() -> void:
 		round_order.append(i)
 	round_order.shuffle()
 	complete_pan.visible = false
+	complete_shade.visible = false
 	feedback_lbl.text = ""
 	magic_lbl.text = "%d pts mágicos" % GameManager.magic_points
 	GameManager.magic_points_changed.connect(_on_magic_points_changed)
@@ -112,17 +114,8 @@ func _build_choices() -> void:
 		var btn: Button = Button.new()
 		btn.text = obj.maya
 		btn.custom_minimum_size = Vector2(230, 90)
+		btn.theme_type_variation = &"KalinNounButton"
 		btn.add_theme_font_size_override("font_size", 24)
-		var style: StyleBoxFlat = StyleBoxFlat.new()
-		style.bg_color = obj.color
-		style.set_border_width_all(3)
-		style.border_color = obj.color.darkened(0.3)
-		style.corner_radius_top_left = 12
-		style.corner_radius_top_right = 12
-		style.corner_radius_bottom_left = 12
-		style.corner_radius_bottom_right = 12
-		btn.add_theme_stylebox_override("normal", style)
-		btn.add_theme_color_override("font_color", Color.WHITE)
 		choices_grid.add_child(btn)
 		_choice_buttons.append(btn)
 		btn.pressed.connect(_on_choice_pressed.bind(str(obj.maya)))
@@ -171,7 +164,10 @@ func _on_wrong() -> void:
 # ─── Completar nivel ────────────────────────────────────────────────────────
 func _on_level_complete() -> void:
 	GameManager.complete_level(2, 1)
+	complete_shade.visible = true
 	complete_pan.visible = true
+	complete_pan.modulate.a = 0.0
+	create_tween().tween_property(complete_pan, "modulate:a", 1.0, 0.25)
 
 func _on_magic_points_changed(new_total: int) -> void:
 	magic_lbl.text = "%d pts mágicos" % new_total

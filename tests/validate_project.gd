@@ -127,7 +127,7 @@ func _validate_theme() -> void:
 	for variation: StringName in panel_variations:
 		if not theme.has_stylebox(&"panel", variation):
 			failures.append("Falta la variación visual %s" % variation)
-	for variation: StringName in [&"KalinPrimaryButton", &"KalinNounButton", &"KalinAdjectiveButton", &"KalinAudioButton"]:
+	for variation: StringName in [&"KalinPrimaryButton", &"KalinSecondaryButton", &"KalinNounButton", &"KalinAdjectiveButton", &"KalinAudioButton"]:
 		if not theme.has_stylebox(&"normal", variation):
 			failures.append("Falta la variación de botón %s" % variation)
 	for variation: StringName in [&"KalinNounSlot", &"KalinAdjectiveSlot"]:

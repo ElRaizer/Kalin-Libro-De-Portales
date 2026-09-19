@@ -25,11 +25,14 @@ var _dialogue_serial: int = 0
 @onready var magic_lbl: Label = $UI/TopBar/MagicLabel
 @onready var instr_lbl: Label = $UI/InstrPanel/InstrLbl
 @onready var complete_pan: Panel = $UI/CompletePanel
+@onready var complete_shade: ColorRect = get_node_or_null("UI/CompleteShade") as ColorRect
 @onready var libro: CanvasLayer = $LibroHechizos
 
 func _ready() -> void:
 	dialogue.visible = false
 	complete_pan.visible = false
+	if complete_shade:
+		complete_shade.visible = false
 	_refresh_hud()
 	_set_default_instruction()
 	_set_mouse_passthrough(dialogue)
@@ -109,13 +112,19 @@ func _close_dialogue() -> void:
 
 func _on_level_complete() -> void:
 	GameManager.complete_level(world_number, level_number)
+	if complete_shade:
+		complete_shade.visible = true
 	complete_pan.visible = true
+	complete_pan.modulate.a = 0.0
+	create_tween().tween_property(complete_pan, "modulate:a", 1.0, 0.25)
 	_set_instr("Nivel completado. Pulsa el botón para continuar.")
 
 func _safe_navigate(key: String) -> void:
 	grid_board.set_interaction_enabled(false)
 	_dialogue_open = false
 	dialogue.visible = false
+	if complete_shade:
+		complete_shade.visible = false
 	GameManager.go_to_scene(key)
 
 func _on_next_level_pressed() -> void:

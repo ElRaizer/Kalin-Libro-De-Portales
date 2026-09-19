@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://buun81673e5ys" path="res://Arte/sprites/animal_keek_en.svg" id="6_ewa0y"]
 [ext_resource type="Texture2D" uid="uid://b6g6we4pi072b" path="res://Arte/sprites/animal_maax.svg" id="7_7kf12"]
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="8_ei417"]
+[ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="9_theme"]
 
 [sub_resource type="Resource" id="Animal_keej"]
 script = ExtResource("4_232h8")
@@ -64,12 +65,14 @@ stretch_mode = 6
 obstacles = Array[Vector2i]([Vector2i(2, 1), Vector2i(5, 1), Vector2i(3, 3), Vector2i(6, 3), Vector2i(2, 5), Vector2i(5, 5)])
 words = Array[ExtResource("4_232h8")]([SubResource("Animal_keej"), SubResource("Animal_keeken"), SubResource("Animal_maax")])
 
-[node name="TopBarBG" type="ColorRect" parent="." unique_id=630875024]
+[node name="TopBarBG" type="Panel" parent="." unique_id=630875024]
 offset_left = 6.0
 offset_top = 4.0
 offset_right = 1274.0
 offset_bottom = 56.0
-color = Color(0, 0, 0, 0.42)
+mouse_filter = 2
+theme = ExtResource("9_theme")
+theme_type_variation = &"KalinTopBarPanel"
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1231194149]
 
@@ -78,8 +81,11 @@ offset_left = 10.0
 offset_top = 8.0
 offset_right = 1270.0
 offset_bottom = 52.0
+theme = ExtResource("9_theme")
+theme_override_constants/separation = 10
 
 [node name="BackBtn" type="Button" parent="UI/TopBar" unique_id=647687210]
+theme_type_variation = &"KalinSecondaryButton"
 custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
@@ -102,16 +108,19 @@ text = "0 pts mágicos"
 horizontal_alignment = 2
 
 [node name="BookBtn" type="Button" parent="UI/TopBar" unique_id=195491766]
+theme_type_variation = &"KalinSecondaryButton"
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "Libro"
+text = "📖 Libro"
 
 [node name="InstrPanel" type="Panel" parent="UI" unique_id=384251869]
 offset_left = 50.0
 offset_top = 648.0
 offset_right = 1230.0
 offset_bottom = 708.0
+theme = ExtResource("9_theme")
+theme_type_variation = &"KalinDarkStatusPanel"
 
 [node name="InstrLbl" type="Label" parent="UI/InstrPanel" unique_id=2073039374]
 layout_mode = 1
@@ -137,6 +146,8 @@ offset_left = 230.0
 offset_top = 235.0
 offset_right = 1050.0
 offset_bottom = 435.0
+theme = ExtResource("9_theme")
+theme_type_variation = &"KalinRequestPanel"
 
 [node name="WordIcon" type="TextureRect" parent="UI/DialoguePanel" unique_id=1945484226]
 layout_mode = 0
@@ -172,12 +183,20 @@ theme_override_font_sizes/font_size = 12
 text = "(Clic para cerrar)"
 horizontal_alignment = 1
 
+[node name="CompleteShade" type="ColorRect" parent="UI"]
+visible = false
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0.02, 0.08, 0.07, 0.72)
+
 [node name="CompletePanel" type="Panel" parent="UI" unique_id=1160110116]
 visible = false
 offset_left = 290.0
 offset_top = 170.0
 offset_right = 990.0
 offset_bottom = 548.0
+theme = ExtResource("9_theme")
+theme_type_variation = &"KalinCompletionPanel"
 
 [node name="VBox" type="VBoxContainer" parent="UI/CompletePanel" unique_id=332735557]
 layout_mode = 0
@@ -200,12 +219,14 @@ theme_override_colors/font_color = Color(0.35, 0.22, 0.08, 1)
 theme_override_font_sizes/font_size = 19
 
 [node name="NextBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=344557677]
+theme_type_variation = &"KalinPrimaryButton"
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
 text = "Siguiente nivel →"
 
 [node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=1667436909]
+theme_type_variation = &"KalinSecondaryButton"
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
