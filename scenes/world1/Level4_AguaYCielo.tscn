@@ -50,8 +50,7 @@ destination_cell = Vector2i(8, 5)
 script = ExtResource("1_pykdd")
 level_number = 4
 next_scene_key = "world2_level1"
-default_instruction = "Haz clic en un animal y arrastra hasta su casa.
-Conecta los tres para completar el nivel."
+default_instruction = "Haz clic en un animal y arrastra hasta su casa. Conecta los tres para completar el nivel."
 selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
 
 [node name="Background" type="TextureRect" parent="." unique_id=1104198232]

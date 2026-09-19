@@ -9,7 +9,7 @@ class_name GridPathLevel
 @export var next_scene_key: String = "world1_level2"
 
 @export_category("Instrucciones")
-@export_multiline var default_instruction: String = "Haz clic en una ficha y arrastra hasta su destino.\nConecta las tres para completar el nivel."
+@export_multiline var default_instruction: String = "Haz clic en una ficha y arrastra hasta su destino. Conecta las tres para completar el nivel."
 @export var selection_instruction: String = "Arrastra desde \"%s\" hasta \"%s\"."
 
 var _completing: bool = false

@@ -12,6 +12,7 @@ func _initialize() -> void:
 	_validate_save_sanitization()
 	_validate_theme()
 	_validate_world3()
+	await _validate_world1_instruction_layout()
 	await _validate_world3_runtime()
 	if failures.is_empty():
 		print("Validación del proyecto: OK")
@@ -151,6 +152,29 @@ func _validate_theme() -> void:
 	for variation: StringName in [&"KalinNounSlot", &"KalinAdjectiveSlot"]:
 		if not theme.has_stylebox(&"normal", variation):
 			failures.append("Falta la variación de espacio de frase %s" % variation)
+
+func _validate_world1_instruction_layout() -> void:
+	var level_paths: Array[String] = [
+		"res://scenes/world1/Level1_CaminosBlancos.tscn",
+		"res://scenes/world1/Level2_AnimalesBosque.tscn",
+		"res://scenes/world1/Level3_GuardianesMonte.tscn",
+		"res://scenes/world1/Level4_AguaYCielo.tscn",
+	]
+	for level_path: String in level_paths:
+		var packed_scene := load(level_path) as PackedScene
+		if packed_scene == null:
+			failures.append("No se pudo comprobar la instrucción de %s" % level_path)
+			continue
+		var level := packed_scene.instantiate()
+		root.add_child(level)
+		await process_frame
+		var instruction := level.get_node_or_null("UI/InstrPanel/InstrLbl") as Label
+		if instruction == null:
+			failures.append("Falta el texto de instrucciones en %s" % level_path)
+		elif instruction.text.contains("\n") or instruction.get_line_count() != 1:
+			failures.append("La instrucción debe mostrarse en una sola línea en %s" % level_path)
+		level.queue_free()
+		await process_frame
 
 func _validate_world3() -> void:
 	var world3_script: Script = load("res://scripts/world3/W3_Level1.gd") as Script
