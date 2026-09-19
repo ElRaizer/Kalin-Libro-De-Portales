@@ -206,7 +206,7 @@ func _load_texture_async(rect: TextureRect, path: String) -> void:
 		rect.texture = tex
 
 func _on_skip() -> void:
-	_go_to_level1()
+	GameManager.go_to_scene("main_menu")
 
 func _go_to_level1() -> void:
 	# Mark intro as seen
