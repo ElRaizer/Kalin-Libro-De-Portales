@@ -35,12 +35,12 @@ destination_cell = Vector2i(8, 3)
 
 [sub_resource type="Resource" id="Animal_aak"]
 script = ExtResource("4_hp5qc")
-maya_word = "Aak'"
+maya_word = "Áak"
 spanish_word = "Tortuga"
-phrase = "In k'aaba'e' Aak'"
-explanation = "Me llamo Tortuga — en maya: Aak'"
+phrase = "In k'aaba'e' Áak"
+explanation = "Me llamo Tortuga — en maya: Áak"
 sprite = ExtResource("7_31hbf")
-destination_text = "Aak'"
+destination_text = "Áak"
 color = Color(0.32, 0.52, 0.24, 1)
 start_cell = Vector2i(0, 5)
 destination_cell = Vector2i(8, 5)
@@ -90,7 +90,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 1, 0.95, 1)
 theme_override_font_sizes/font_size = 20
-text = "Nivel 4 -- Agua y Cielo"
+text = "Mundo 1 · Nivel 4 — Agua y Cielo"
 horizontal_alignment = 1
 
 [node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=2015739604]
@@ -98,7 +98,7 @@ custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
 theme_override_font_sizes/font_size = 18
-text = "0 pts magicos"
+text = "0 pts mágicos"
 horizontal_alignment = 2
 
 [node name="BookBtn" type="Button" parent="UI/TopBar" unique_id=22365311]

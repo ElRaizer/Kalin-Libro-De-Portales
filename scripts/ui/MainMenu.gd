@@ -14,21 +14,24 @@ func _ready() -> void:
 	GameManager.level_completed.connect(func(_w,_l): _refresh_ui())
 
 func _refresh_ui() -> void:
-	magic_lbl.text = "%d puntos magicos" % GameManager.magic_points
+	magic_lbl.text = "%d puntos mágicos" % GameManager.magic_points
 	var word_count: int = GameManager.words_learned.size()
 	book_btn.text  = "Libro de Hechizos  (%d palabras)" % word_count
 	# Texto del botón Jugar según progreso
 	var next: String = GameManager.next_unlocked_scene()
 	if next == "main_menu":
-		play_btn.text = "Completado! Jugar de nuevo"
+		play_btn.text = "¡Completado! Jugar de nuevo"
 	elif GameManager.completed_levels.is_empty():
-		play_btn.text = "Jugar - Nivel 1"
+		play_btn.text = "Jugar — Mundo 1, Nivel 1"
 	else:
-		var nums: Dictionary = {"world1_level1":1,"world1_level2":2,"world1_level3":3,"world1_level4":4,"world1_level5":5,"world1_level6":6,"world1_level7":7}
-		play_btn.text = "Continuar - Nivel %d" % nums.get(next, 1)
+		var info: Dictionary = GameManager.get_level_info(next)
+		play_btn.text = "Continuar — Mundo %d, Nivel %d" % [info.get("world", 1), info.get("level", 1)]
 
 func _on_play_pressed() -> void:
-	GameManager.go_to_scene(GameManager.next_unlocked_scene())
+	var next: String = GameManager.next_unlocked_scene()
+	if next == "main_menu":
+		next = GameManager.LEVEL_ORDER[0].scene_key
+	GameManager.go_to_scene(next)
 
 func _on_book_pressed()  -> void: libro.show_book()
 func _on_reset_pressed() -> void:

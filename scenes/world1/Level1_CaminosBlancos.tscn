@@ -81,14 +81,14 @@ offset_bottom = 52.0
 custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "<- Menu"
+text = "← Menú"
 
 [node name="TitleLabel" type="Label" parent="UI/TopBar" unique_id=592108300]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 1, 0.95, 1)
 theme_override_font_sizes/font_size = 20
-text = "Nivel 1 — Sak Beh (Animales)"
+text = "Mundo 1 · Nivel 1 — Sak Beh (Animales)"
 horizontal_alignment = 1
 
 [node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=262575093]
@@ -96,7 +96,7 @@ custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
 theme_override_font_sizes/font_size = 18
-text = "0 pts magicos"
+text = "0 pts mágicos"
 horizontal_alignment = 2
 
 [node name="BookBtn" type="Button" parent="UI/TopBar" unique_id=474306232]
@@ -188,7 +188,7 @@ theme_override_constants/separation = 20
 layout_mode = 2
 theme_override_colors/font_color = Color(0.1, 0.5, 0.1, 1)
 theme_override_font_sizes/font_size = 36
-text = "Nivel 1 Completado!"
+text = "¡Mundo 1 · Nivel 1 completado!"
 horizontal_alignment = 1
 
 [node name="SubLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=1818714009]
@@ -201,13 +201,13 @@ autowrap_mode = 3
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
-text = "Siguiente Nivel ->"
+text = "Siguiente nivel →"
 
 [node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=1971928640]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
-text = "Volver al Menu"
+text = "Volver al menú"
 
 [node name="LibroHechizos" parent="." unique_id=1934346366 instance=ExtResource("2")]
 visible = false

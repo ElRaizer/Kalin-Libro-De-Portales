@@ -90,7 +90,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 1, 0.95, 1)
 theme_override_font_sizes/font_size = 20
-text = "Nivel 2 -- Los Animales del Bosque"
+text = "Mundo 1 · Nivel 2 — Los Animales del Bosque"
 horizontal_alignment = 1
 
 [node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=288747922]
@@ -98,7 +98,7 @@ custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
 theme_override_font_sizes/font_size = 18
-text = "0 pts magicos"
+text = "0 pts mágicos"
 horizontal_alignment = 2
 
 [node name="BookBtn" type="Button" parent="UI/TopBar" unique_id=195491766]
@@ -191,7 +191,7 @@ theme_override_constants/separation = 20
 layout_mode = 2
 theme_override_colors/font_color = Color(0.1, 0.5, 0.1, 1)
 theme_override_font_sizes/font_size = 36
-text = "¡Nivel 2 completado!"
+text = "¡Mundo 1 · Nivel 2 completado!"
 horizontal_alignment = 1
 
 [node name="SubLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=1218257156]
