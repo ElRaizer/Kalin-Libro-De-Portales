@@ -4,6 +4,7 @@ extends Node2D
 class_name GridPathLevel
 
 @export_category("Progreso y navegación")
+@export_range(1, 99, 1) var world_number: int = 1
 @export_range(1, 99, 1) var level_number: int = 1
 @export var next_scene_key: String = "world1_level2"
 
@@ -101,7 +102,7 @@ func _close_dialogue() -> void:
 		grid_board.set_interaction_enabled(true)
 
 func _on_level_complete() -> void:
-	GameManager.complete_level(1, level_number)
+	GameManager.complete_level(world_number, level_number)
 	complete_pan.visible = true
 	_set_instr("Nivel completado. Pulsa el botón para continuar.")
 
