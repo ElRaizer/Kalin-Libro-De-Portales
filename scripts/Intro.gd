@@ -96,12 +96,14 @@ func _input(event: InputEvent) -> void:
 		# se excluyen para que un clic en "Saltar intro" no avance dos veces.
 		if get_viewport().gui_get_hovered_control() is BaseButton:
 			return
-		_advance()
 		get_viewport().set_input_as_handled()
+		# Atender el evento antes de avanzar: el último panel cambia de escena y
+		# este nodo deja de tener un Viewport inmediatamente.
+		_advance()
 	elif event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode in [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER]:
-			_advance()
 			get_viewport().set_input_as_handled()
+			_advance()
 
 # ─── Navegación ──────────────────────────────────────────────────────────────
 
