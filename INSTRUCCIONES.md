@@ -61,28 +61,26 @@ Kalin-Libro-De-Portales/
 │   └── world4/
 │       └── Level4_YoQuiero.tscn
 └── scripts/
-    ├── Intro.gd
-    ├── autoloads/
-    │   └── GameManager.gd
-    ├── components/
-    │   ├── GridAnimalData.gd
-    │   ├── GridBoard.gd
-    │   └── GridWordData.gd
-    ├── ui/
-    │   ├── LibroHechizos.gd
-    │   └── MainMenu.gd
-    ├── world1/
-    │   ├── GridPathLevel.gd
-    │   └── W1_Level1.gd ... W1_Level4.gd
-    ├── world2/
-    │   └── W2_Level1.gd
-    ├── world3/
-    │   └── W3_Level1.gd
-    └── world4/
-        └── W4_Level1.gd
+	├── Intro.gd
+	├── autoloads/
+	│   └── GameManager.gd
+	├── components/
+	│   ├── GridAnimalData.gd
+	│   ├── GridBoard.gd
+	│   └── GridWordData.gd
+	├── ui/
+	│   ├── LibroHechizos.gd
+	│   └── MainMenu.gd
+	├── world1/
+	│   ├── GridPathLevel.gd
+	│   └── W1_Level1.gd ... W1_Level4.gd
+	├── world2/
+	│   └── W2_Level1.gd
+	├── world3/
+	│   └── W3_Level1.gd
+	└── world4/
+		└── W4_Level1.gd
 ```
-
-La carpeta `World2` conserva por ahora una mayúscula inicial; las rutas deben respetar exactamente ese nombre, especialmente al trabajar en Linux.
 
 ## Progresión por mundos
 

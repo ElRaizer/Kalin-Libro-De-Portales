@@ -97,7 +97,7 @@ const SCENE_PATHS: Dictionary = {
 	"world1_level2":   "res://scenes/world1/Level2_AnimalesBosque.tscn",
 	"world1_level3":   "res://scenes/world1/Level3_GuardianesMonte.tscn",
 	"world1_level4":   "res://scenes/world1/Level4_AguaYCielo.tscn",
-	"world2_level1":   "res://scenes/World2/Level2_ConstruyendoPalabras.tscn",
+	"world2_level1":   "res://scenes/world2/Level2_ConstruyendoPalabras.tscn",
 	"world3_level1":   "res://scenes/world3/Level3_HechizosAdjetivos.tscn",
 	"world4_level1":   "res://scenes/world4/Level4_YoQuiero.tscn"
 }
