@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/LibroHechizos.gd" id="1"]
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="2_theme"]
 
 [node name="LibroHechizos" type="CanvasLayer"]
 layer = 10
@@ -14,6 +15,8 @@ color = Color(0.05, 0.03, 0.01, 0.82)
 
 ; ── Panel principal ──────────────────────────────────────────────────────────
 [node name="Panel" type="Panel" parent="BG"]
+theme = ExtResource("2_theme")
+theme_type_variation = &"KalinCreamPanel"
 offset_left = 60.0
 offset_top = 40.0
 offset_right = 1220.0

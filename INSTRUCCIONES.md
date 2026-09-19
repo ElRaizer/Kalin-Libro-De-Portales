@@ -36,6 +36,8 @@ Kalin-Libro-De-Portales/
 ├── README.md
 ├── INSTRUCCIONES.md
 ├── VOCABULARIO.md
+├── themes/
+│   └── kalin_theme.tres
 ├── Arte/
 │   ├── audio/
 │   │   └── README.md
@@ -81,6 +83,22 @@ Kalin-Libro-De-Portales/
 	└── world4/
 		└── W4_Level1.gd
 ```
+
+## Sistema visual compartido
+
+Los estilos estáticos viven en `res://themes/kalin_theme.tres`. Este recurso se
+puede abrir y modificar desde el Inspector de Godot y contiene variaciones con
+nombres semánticos, entre ellas:
+
+- `KalinCreamPanel`, `KalinDialoguePanel` y `KalinCompletionPanel` para paneles.
+- `KalinPrimaryButton`, `KalinNounButton` y `KalinAdjectiveButton` para botones.
+- `KalinNounSlot` y `KalinAdjectiveSlot` para los espacios de construcción de frases.
+- `KalinBookCard` y `KalinAudioButton` para el Libro de Hechizos.
+
+Al crear una interfaz nueva, asigna `kalin_theme.tres` al `Control` superior y
+elige la variante adecuada en **Theme Type Variation**. Conserva en los scripts
+solamente los cambios que dependan del estado del juego, como colores asociados
+a una respuesta concreta, selección, acierto, error o bloqueo.
 
 ## Progresión por mundos
 

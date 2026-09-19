@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://wnfpjdvc4was" path="res://scripts/world4/W4_Level1.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="2"]
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="3_theme"]
 
 [node name="Level4" type="Node2D" unique_id=2129817451]
 script = ExtResource("1")
@@ -71,6 +72,8 @@ expand_mode = 1
 stretch_mode = 6
 
 [node name="PhraseBox" type="Panel" parent="UI" unique_id=1776809619]
+theme = ExtResource("3_theme")
+theme_type_variation = &"KalinCreamPanel"
 offset_left = 200.0
 offset_top = 65.0
 offset_right = 1060.0
@@ -118,6 +121,8 @@ theme_override_constants/v_separation = 20
 columns = 2
 
 [node name="CompletePanel" type="Panel" parent="UI" unique_id=1740172705]
+theme = ExtResource("3_theme")
+theme_type_variation = &"KalinCreamPanel"
 visible = false
 offset_left = 280.0
 offset_top = 170.0

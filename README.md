@@ -24,7 +24,7 @@ Cada **mundo** representa una mecánica. Los **niveles** de un mismo mundo reuti
 | 1 | 3 | Los Guardianes del Monte | Báalam, Kuuts y T'u'ul |
 | 1 | 4 | Agua y Cielo | Kay, Ch'íich' y Áak |
 | 2 | 1 | La Casa Maya | Selección del hechizo correcto para objetos del hogar |
-| 3 | 1 | Hechizos de Adjetivos | Vocabulario descriptivo |
+| 3 | 1 | Hechizos de Adjetivos | Construcción de frases con sustantivo y adjetivo en dos fases |
 | 4 | 1 | Yo Quiero | Estructura *In k'a'at* y alimentos |
 
 El orden de progreso es Mundo 1 completo → Mundo 2 → Mundo 3 → Mundo 4. Al terminar el contenido disponible, el juego regresa al menú principal.
@@ -41,8 +41,8 @@ No se requieren complementos ni dependencias externas.
 ## Controles
 
 - Introducción: clic izquierdo, `Espacio` o `Enter` para avanzar.
-- Mundo 1 y Mundo 3: clic y arrastre para conectar fichas.
-- Mundos 2 y 4: clic para elegir una respuesta.
+- Mundo 1: clic y arrastre para conectar fichas.
+- Mundos 2, 3 y 4: clic para elegir palabras o respuestas.
 - Libro de hechizos: botón de la interfaz; `Esc` para cerrarlo.
 
 ## Documentación
@@ -55,7 +55,7 @@ No se requieren complementos ni dependencias externas.
 
 - Grabar, revisar e integrar las pronunciaciones.
 - Diseñar más niveles para los mundos 2, 3 y 4.
-- Diferenciar por completo la mecánica del Mundo 3 de los caminos del Mundo 1.
+- Ampliar las variaciones y la dificultad de los mundos 2, 3 y 4.
 - Crear el cierre narrativo y el portal de regreso planteados por el GDD.
 - Validar textos y pronunciaciones con una persona hablante o especialista en maya yucateco.
 - Realizar pruebas de accesibilidad, teclado, pantallas distintas a 1280 × 720 y exportaciones objetivo.

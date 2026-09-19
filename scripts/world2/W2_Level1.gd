@@ -59,13 +59,10 @@ var _choice_buttons: Array[Button] = []
 @onready var complete_pan: Panel         = $UI/CompletePanel
 @onready var magic_lbl:    Label         = $UI/TopBar/MagicLabel
 @onready var libro:        CanvasLayer   = $LibroHechizos
-@onready var request_pan:  Panel         = $UI/RequestPanel
-@onready var status_pan:   Panel         = $UI/StatusPanel
 
 # ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
 	bg.texture = load(RES_BG)
-	_apply_theme()
 	for i in range(OBJECTS.size()):
 		round_order.append(i)
 	round_order.shuffle()
@@ -74,28 +71,6 @@ func _ready() -> void:
 	magic_lbl.text = "%d pts mágicos" % GameManager.magic_points
 	GameManager.magic_points_changed.connect(func(_v): magic_lbl.text = "%d pts mágicos" % GameManager.magic_points)
 	_show_round()
-
-## Mismo estilo visual (crema/café + barra oscura) que el resto de niveles,
-## para que la escena se vea consistente aunque la mecánica sea distinta.
-func _apply_theme() -> void:
-	var cream := StyleBoxFlat.new()
-	cream.bg_color = Color(0.98, 0.94, 0.84, 0.97)
-	cream.border_color = Color(0.45, 0.30, 0.15)
-	cream.set_border_width_all(4)
-	cream.corner_radius_top_left = 14;     cream.corner_radius_top_right = 14
-	cream.corner_radius_bottom_left = 14;  cream.corner_radius_bottom_right = 14
-	for panel in [request_pan, complete_pan, feedback_pan]:
-		panel.add_theme_stylebox_override("panel", cream)
-
-	var dark := StyleBoxFlat.new()
-	dark.bg_color = Color(0.10, 0.14, 0.10, 0.82)
-	dark.border_color = Color(1.0, 0.85, 0.35, 0.9)
-	dark.set_border_width_all(2)
-	dark.corner_radius_top_left = 10;    dark.corner_radius_top_right = 10
-	dark.corner_radius_bottom_left = 10; dark.corner_radius_bottom_right = 10
-	status_pan.add_theme_stylebox_override("panel", dark)
-	phase_lbl.add_theme_color_override("font_color", Color(1, 0.98, 0.9))
-	progress_lbl.add_theme_color_override("font_color", Color(0.85, 0.95, 0.8))
 
 # ─── Rondas ───────────────────────────────────────────────────────────────────
 func _current_object() -> Dictionary:

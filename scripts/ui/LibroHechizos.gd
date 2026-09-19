@@ -6,7 +6,6 @@
 extends CanvasLayer
 
 # ─── Nodos ───────────────────────────────────────────────────────────────────
-@onready var main_panel:     Panel         = $BG/Panel
 @onready var word_grid:      GridContainer = $BG/Panel/Scroll/WordGrid
 @onready var close_btn:      Button        = $BG/Panel/CloseBtn
 @onready var empty_label:    Label         = $BG/Panel/EmptyLabel
@@ -16,8 +15,6 @@ extends CanvasLayer
 
 # ─── Constantes visuales ─────────────────────────────────────────────────────
 const CARD_SIZE     := Vector2(220, 155)
-const CARD_BG       := Color(0.96, 0.92, 0.78)
-const CARD_BORDER   := Color(0.55, 0.38, 0.18)
 
 ## Convención de nombres de archivo de audio:
 ## res://Arte/audio/<maya_word_ascii>.ogg
@@ -30,23 +27,9 @@ var _notice_tween: Tween
 # ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
 	visible = false
-	_apply_friendly_theme()
 	close_btn.pressed.connect(hide_book)
 	GameManager.word_learned.connect(_on_word_learned)
 	audio_notice.visible = false
-
-## El titulo, el contador de palabras y la etiqueta vacia usan tonos cafe
-## oscuros (pensados para un fondo claro), asi que el panel principal debe
-## ser explicitamente crema — si no, con el tema por defecto de Godot ese
-## texto oscuro podria perderse contra un panel oscuro.
-func _apply_friendly_theme() -> void:
-	var cream := StyleBoxFlat.new()
-	cream.bg_color = Color(0.98, 0.94, 0.84, 0.98)
-	cream.border_color = Color(0.45, 0.30, 0.15)
-	cream.set_border_width_all(4)
-	cream.corner_radius_top_left = 14;     cream.corner_radius_top_right = 14
-	cream.corner_radius_bottom_left = 14;  cream.corner_radius_bottom_right = 14
-	main_panel.add_theme_stylebox_override("panel", cream)
 
 func show_book() -> void:
 	_populate()
@@ -91,15 +74,7 @@ func _make_card(maya_word: String, data: Dictionary) -> Panel:
 	var card: Panel = Panel.new()
 	card.custom_minimum_size = CARD_SIZE
 
-	var style: StyleBoxFlat = StyleBoxFlat.new()
-	style.bg_color   = CARD_BG
-	style.border_color = CARD_BORDER
-	style.set_border_width_all(2)
-	style.corner_radius_top_left     = 8
-	style.corner_radius_top_right    = 8
-	style.corner_radius_bottom_left  = 8
-	style.corner_radius_bottom_right = 8
-	card.add_theme_stylebox_override("panel", style)
+	card.theme_type_variation = &"KalinBookCard"
 
 	var vbox: VBoxContainer = VBoxContainer.new()
 	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -145,14 +120,7 @@ func _make_card(maya_word: String, data: Dictionary) -> Panel:
 
 	# Color del botón según disponibilidad
 	if audio_exists:
-		var btn_style: StyleBoxFlat = StyleBoxFlat.new()
-		btn_style.bg_color     = Color(0.25, 0.55, 0.82)
-		btn_style.corner_radius_top_left     = 5
-		btn_style.corner_radius_top_right    = 5
-		btn_style.corner_radius_bottom_left  = 5
-		btn_style.corner_radius_bottom_right = 5
-		audio_btn.add_theme_stylebox_override("normal", btn_style)
-		audio_btn.add_theme_color_override("font_color", Color.WHITE)
+		audio_btn.theme_type_variation = &"KalinAudioButton"
 		# Conectar con la palabra capturada en lambda
 		audio_btn.pressed.connect(func(): _play_audio(maya_word))
 	else:

@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cf0u3j8ouco0h" path="res://scripts/world2/W2_Level1.gd" id="1_xq8dk"]
 [ext_resource type="Texture2D" uid="uid://bedp7h6bqksto" path="res://Arte/backgrounds/bg_level1.svg" id="2_1drb2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="3_si73q"]
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="4_theme"]
 
 [node name="Level2" type="Node2D" unique_id=159115184]
 script = ExtResource("1_xq8dk")
@@ -51,6 +52,8 @@ theme_override_font_sizes/font_size = 18
 text = "Libro"
 
 [node name="RequestPanel" type="Panel" parent="UI" unique_id=1140750888]
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinCreamPanel"
 offset_left = 140.0
 offset_top = 68.0
 offset_right = 1140.0
@@ -94,6 +97,8 @@ theme_override_constants/v_separation = 20
 columns = 3
 
 [node name="FeedbackPanel" type="Panel" parent="UI" unique_id=1856786680]
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinCreamPanel"
 offset_left = 240.0
 offset_top = 564.0
 offset_right = 1040.0
@@ -116,6 +121,8 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="StatusPanel" type="Panel" parent="UI" unique_id=208093274]
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinDarkStatusPanel"
 offset_left = 50.0
 offset_top = 648.0
 offset_right = 1230.0
@@ -133,13 +140,17 @@ theme_override_constants/separation = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 0.98, 0.9, 1)
 
 [node name="ProgressLbl" type="Label" parent="UI/StatusPanel/StatusVBox" unique_id=1746035281]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.85, 0.95, 0.8, 1)
 
 [node name="CompletePanel" type="Panel" parent="UI" unique_id=1552579625]
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinCreamPanel"
 visible = false
 offset_left = 290.0
 offset_top = 170.0
