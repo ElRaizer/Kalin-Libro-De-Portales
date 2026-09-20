@@ -112,6 +112,67 @@ func _ready() -> void:
 	else:
 		start_game()
 
+func _get_configuration_warnings() -> PackedStringArray:
+	return get_configuration_issues()
+
+## Devuelve problemas de configuración que pueden revisarse tanto en el
+## editor como desde las pruebas automatizadas.
+func get_configuration_issues() -> PackedStringArray:
+	var issues: PackedStringArray = []
+	if empty_tile == null:
+		issues.append("Asigna una textura a empty_tile.")
+	if obstacle_tile == null and not obstacles.is_empty():
+		issues.append("Asigna una textura a obstacle_tile cuando existan obstáculos.")
+	if words.is_empty():
+		issues.append("Agrega al menos una palabra al tablero.")
+
+	var occupied_cells: Dictionary = {}
+	var maya_words: Dictionary = {}
+	for obstacle: Vector2i in obstacles:
+		if not is_valid_cell(obstacle):
+			issues.append("El obstáculo %s está fuera del tablero." % obstacle)
+			continue
+		if occupied_cells.has(obstacle):
+			issues.append("La celda %s está ocupada más de una vez." % obstacle)
+		occupied_cells[obstacle] = "obstáculo"
+
+	for index: int in words.size():
+		var word: GridWordData = words[index]
+		if word == null:
+			issues.append("La palabra %d no tiene un recurso asignado." % (index + 1))
+			continue
+		if word.maya_word.strip_edges().is_empty():
+			issues.append("La palabra %d no tiene texto maya." % (index + 1))
+		elif maya_words.has(word.maya_word):
+			issues.append("La palabra maya '%s' está duplicada." % word.maya_word)
+		else:
+			maya_words[word.maya_word] = true
+		_validate_word_cell(word.start_cell, "inicio de '%s'" % word.maya_word, occupied_cells, issues)
+		_validate_word_cell(
+			word.destination_cell,
+			"destino de '%s'" % word.maya_word,
+			occupied_cells,
+			issues
+		)
+		if word.start_cell == word.destination_cell:
+			issues.append("'%s' empieza y termina en la misma celda." % word.maya_word)
+	return issues
+
+func _validate_word_cell(
+	cell: Vector2i,
+	label: String,
+	occupied_cells: Dictionary,
+	issues: PackedStringArray
+) -> void:
+	if not is_valid_cell(cell):
+		issues.append("El %s (%s) está fuera del tablero." % [label, cell])
+		return
+	if occupied_cells.has(cell):
+		issues.append(
+			"La celda %s se comparte entre %s y %s." % [cell, occupied_cells[cell], label]
+		)
+	occupied_cells[cell] = label
+
 func _exit_tree() -> void:
 	for word in _watched_words:
 		if is_instance_valid(word) and word.changed.is_connected(_schedule_rebuild):
@@ -244,6 +305,8 @@ func _add_panel_label(panel: Panel, text: String, vertical: VerticalAlignment, f
 	panel.add_child(label)
 
 func _schedule_rebuild() -> void:
+	if Engine.is_editor_hint() and is_inside_tree():
+		update_configuration_warnings()
 	if _rebuild_queued or not is_inside_tree():
 		return
 	_rebuild_queued = true
@@ -256,7 +319,8 @@ func _watch_word_changes() -> void:
 	_watched_words.clear()
 	for word in words:
 		if is_instance_valid(word):
-			word.changed.connect(_schedule_rebuild)
+			if not word.changed.is_connected(_schedule_rebuild):
+				word.changed.connect(_schedule_rebuild)
 			_watched_words.append(word)
 
 func _setup_game_state() -> void:

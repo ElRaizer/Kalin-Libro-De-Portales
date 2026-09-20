@@ -36,6 +36,8 @@ Kalin-Libro-De-Portales/
 ├── README.md
 ├── INSTRUCCIONES.md
 ├── VOCABULARIO.md
+├── themes/
+│   └── kalin_theme.tres
 ├── Arte/
 │   ├── audio/
 │   │   └── README.md
@@ -46,7 +48,9 @@ Kalin-Libro-De-Portales/
 │   ├── Intro.tscn
 │   ├── MainMenu.tscn
 │   ├── components/
-│   │   └── GridBoard.tscn
+│   │   ├── GridBoard.tscn
+│   │   ├── LevelHeader.tscn
+│   │   └── CompletionOverlay.tscn
 │   ├── ui/
 │   │   └── LibroHechizos.tscn
 │   ├── world1/
@@ -58,8 +62,10 @@ Kalin-Libro-De-Portales/
 │   │   └── Level2_ConstruyendoPalabras.tscn
 │   ├── world3/
 │   │   └── Level3_HechizosAdjetivos.tscn
-│   └── world4/
-│       └── Level4_YoQuiero.tscn
+│   ├── world4/
+│   │   └── Level4_YoQuiero.tscn
+│   └── world5/
+│       └── Level5_PortalDeRegreso.tscn
 └── scripts/
 	├── Intro.gd
 	├── autoloads/
@@ -78,9 +84,27 @@ Kalin-Libro-De-Portales/
 	│   └── W2_Level1.gd
 	├── world3/
 	│   └── W3_Level1.gd
-	└── world4/
-		└── W4_Level1.gd
+	├── world4/
+	│   └── W4_Level1.gd
+	└── world5/
+		└── W5_Level1.gd
 ```
+
+## Sistema visual compartido
+
+Los estilos estáticos viven en `res://themes/kalin_theme.tres`. Este recurso se
+puede abrir y modificar desde el Inspector de Godot y contiene variaciones con
+nombres semánticos, entre ellas:
+
+- `KalinCreamPanel`, `KalinDialoguePanel` y `KalinCompletionPanel` para paneles.
+- `KalinPrimaryButton`, `KalinNounButton` y `KalinAdjectiveButton` para botones.
+- `KalinNounSlot` y `KalinAdjectiveSlot` para los espacios de construcción de frases.
+- `KalinBookCard` y `KalinAudioButton` para el Libro de Hechizos.
+
+Al crear una interfaz nueva, asigna `kalin_theme.tres` al `Control` superior y
+elige la variante adecuada en **Theme Type Variation**. Conserva en los scripts
+solamente los cambios que dependan del estado del juego, como colores asociados
+a una respuesta concreta, selección, acierto, error o bloqueo.
 
 ## Progresión por mundos
 
@@ -89,7 +113,8 @@ El orden oficial vive en `GameManager.LEVEL_ORDER`:
 1. Mundo 1, niveles 1–4: caminos de animales.
 2. Mundo 2, nivel 1: lanzamiento del hechizo correcto.
 3. Mundo 3, nivel 1: adjetivos.
-4. Mundo 4, nivel 1: *In k'a'at*.
+4. Mundo 4, nivel 1: *In k'a'at* en fases guiada y de recuerdo.
+5. Mundo 5, nivel 1: recapitulación, cortesía y portal de regreso.
 
 Cada nivel debe llamar `GameManager.complete_level(mundo, nivel)` con su identidad real. El botón **Continuar** consulta el primer elemento incompleto de `LEVEL_ORDER`; no construye nombres de escena suponiendo que todos pertenecen al Mundo 1.
 
@@ -112,11 +137,12 @@ El cargador migra variantes antiguas —por ejemplo, `K'uum`— a la clave canó
 
 El progreso se guarda automáticamente como `user://kalin_save.json`. Incluye:
 
+- versión del formato;
 - puntos mágicos;
 - palabras aprendidas;
 - identificadores `w<numero>_l<numero>` de los niveles completados.
 
-El botón **Reiniciar progreso** elimina ese archivo. Al modificar el formato de guardado, se debe conservar una migración para las partidas existentes.
+El botón **Reiniciar progreso** elimina ese archivo. Los datos inválidos se descartan y un JSON dañado genera una advertencia sin impedir que el juego inicie. Al modificar el formato de guardado, incrementa `SAVE_VERSION` y conserva una migración para las partidas existentes.
 
 ## Audio pendiente
 
@@ -124,10 +150,11 @@ Los audios todavía no están grabados. Cuando estén disponibles, colócalos en
 
 ## Comprobación antes de integrar cambios
 
-La validación automática de catálogo, rutas, alias y nombres de audio se ejecuta desde la raíz con:
+La validación automática de catálogo, rutas, escenas, tableros, alias y nombres de audio se ejecuta desde la raíz con:
 
 ```powershell
 godot_console.exe --headless --path . --script res://tests/validate_project.gd
+godot_console.exe --headless --path . --script res://tests/validate_learning_flow.gd
 ```
 
 1. Abrir el proyecto con Godot 4.6 y comprobar que no existan errores de análisis.
@@ -136,4 +163,5 @@ godot_console.exe --headless --path . --script res://tests/validate_project.gd
 4. Volver al menú entre niveles y comprobar **Continuar**.
 5. Cerrar y abrir el juego para verificar el guardado.
 6. Repetir el Mundo 4 con las palabras ya aprendidas.
-7. Abrir el libro y comprobar la agrupación por mundo y nivel.
+7. Completar el Mundo 5 y confirmar que el portal llegue al 100 %.
+8. Abrir el libro y comprobar ilustraciones, marcadores futuros y navegación por páginas.

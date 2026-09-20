@@ -13,7 +13,6 @@ const PANELS := [
 		"kalin_x":  800,
 		"text":     "En las tierras de la Península de Yucatán...",
 		"subtext":  "",
-		"auto_wait": 0.0,
 	},
 	{
 		"bg":       "res://Arte/backgrounds/bg_intro_room.svg",
@@ -21,7 +20,6 @@ const PANELS := [
 		"kalin_x":  760,
 		"text":     "Kalin era un joven aprendiz de hechicero.\nPasaba sus noches estudiando su mágico Libro de Hechizos.",
 		"subtext":  "",
-		"auto_wait": 0.0,
 	},
 	{
 		"bg":       "res://Arte/backgrounds/bg_intro_room.svg",
@@ -29,7 +27,6 @@ const PANELS := [
 		"kalin_x":  760,
 		"text":     "Una noche, el libro brilló con una luz extraña...\nlas páginas comenzaron a moverse solas.",
 		"subtext":  "",
-		"auto_wait": 0.0,
 	},
 	{
 		"bg":       "res://Arte/backgrounds/bg_intro_portal.svg",
@@ -37,7 +34,6 @@ const PANELS := [
 		"kalin_x":  200,
 		"text":     "¡De repente, un portal mágico se abrió!\n¡Las páginas volaron por todos lados!",
 		"subtext":  "",
-		"auto_wait": 0.0,
 	},
 	{
 		"bg":       "res://Arte/backgrounds/bg_intro_portal.svg",
@@ -45,7 +41,6 @@ const PANELS := [
 		"kalin_x":  200,
 		"text":     "Kalin fue absorbido por el portal.\nSus palabras mágicas se dispersaron por el mundo...",
 		"subtext":  "\"¡Mis hechizos!  ¡Noooo!\"",
-		"auto_wait": 0.0,
 	},
 	{
 		"bg":       "res://Arte/backgrounds/bg_level1.svg",
@@ -53,7 +48,6 @@ const PANELS := [
 		"kalin_x":  840,
 		"text":     "Kalin despertó en una isla desconocida.\nAnimales extraños lo rodeaban...",
 		"subtext":  "",
-		"auto_wait": 0.0,
 	},
 	{
 		"bg":       "res://Arte/backgrounds/bg_level1.svg",
@@ -61,7 +55,6 @@ const PANELS := [
 		"kalin_x":  840,
 		"text":     "Un perro se acercó y dijo algo incomprensible:\n\"In k'aaba'e'  Peek'!\"",
 		"subtext":  "Kalin no entendía nada... ¡necesitaba recuperar su libro!",
-		"auto_wait": 0.0,
 	},
 	{
 		"bg":       "res://Arte/backgrounds/bg_level1.svg",
@@ -69,7 +62,6 @@ const PANELS := [
 		"kalin_x":  840,
 		"text":     "Para volver a casa, Kalin debe:\nRecolectar palabras en lengua maya y reescribir su libro.",
 		"subtext":  "¡Ayúdalo a conectar los caminos y aprender maya!",
-		"auto_wait": 0.0,
 	},
 ]
 
@@ -78,7 +70,6 @@ var panel_index: int = 0
 var is_animating: bool = false
 var text_revealed: bool = false
 var full_text: String = ""
-var text_timer: float = 0.0
 const CHAR_DELAY := 0.025   # segundos entre caracteres (typewriter)
 
 # ─── Nodos ───────────────────────────────────────────────────────────────────
@@ -91,33 +82,27 @@ const CHAR_DELAY := 0.025   # segundos entre caracteres (typewriter)
 @onready var panel_num_lbl:Label        = $UI/PanelNumber
 @onready var skip_btn:     Button       = $UI/SkipBtn
 @onready var typewriter_timer: Timer    = $TypewriterTimer
-@onready var bg_tween:     Tween        = null
 
 # ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
-	_apply_friendly_theme()
 	skip_btn.pressed.connect(_on_skip)
 	typewriter_timer.wait_time = CHAR_DELAY
 	typewriter_timer.timeout.connect(_typewriter_tick)
 	_show_panel(0)
 
-## El texto del dialogo (MainText/SubText) usa colores claros/blancos, asi
-## que el panel detras debe ser oscuro explicitamente — si no, con el tema
-## por defecto de Godot el texto claro podria perderse.
-func _apply_friendly_theme() -> void:
-	var dark := StyleBoxFlat.new()
-	dark.bg_color = Color(0.05, 0.05, 0.08, 0.88)
-	dark.border_color = Color(1.0, 0.85, 0.35, 0.85)
-	dark.set_border_width_all(2)
-	dark.corner_radius_top_left = 12;    dark.corner_radius_top_right = 12
-	dark.corner_radius_bottom_left = 12; dark.corner_radius_bottom_right = 12
-	dialogue_box.add_theme_stylebox_override("panel", dark)
-
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		# `_input` permite avanzar incluso sobre paneles decorativos. Los botones
+		# se excluyen para que un clic en "Saltar intro" no avance dos veces.
+		if get_viewport().gui_get_hovered_control() is BaseButton:
+			return
+		get_viewport().set_input_as_handled()
+		# Atender el evento antes de avanzar: el último panel cambia de escena y
+		# este nodo deja de tener un Viewport inmediatamente.
 		_advance()
-	elif event is InputEventKey and event.pressed:
+	elif event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode in [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER]:
+			get_viewport().set_input_as_handled()
 			_advance()
 
 # ─── Navegación ──────────────────────────────────────────────────────────────
@@ -145,11 +130,11 @@ func _show_panel(idx: int) -> void:
 	panel_num_lbl.text = "%d / %d" % [idx + 1, PANELS.size()]
 
 	# Fondo
-	_load_texture_async(bg_rect, p.bg)
+	_set_texture_from_path(bg_rect, p.bg)
 
 	# Kalin sprite
 	if p.kalin != "":
-		_load_texture_async(kalin_sprite, p.kalin)
+		_set_texture_from_path(kalin_sprite, p.kalin)
 		kalin_sprite.position.x = p.kalin_x
 		kalin_sprite.visible = true
 		# Subtle entrance animation
@@ -197,7 +182,7 @@ func _finish_typewriter() -> void:
 
 # ─── Utilidades ──────────────────────────────────────────────────────────────
 
-func _load_texture_async(rect: TextureRect, path: String) -> void:
+func _set_texture_from_path(rect: TextureRect, path: String) -> void:
 	if path == "":
 		rect.texture = null
 		return

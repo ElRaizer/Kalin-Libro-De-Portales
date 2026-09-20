@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://c82xhit3gbmdq" path="res://Arte/sprites/animal_peek.svg" id="4_peek"]
 [ext_resource type="Texture2D" uid="uid://bjtthugdl1hx" path="res://Arte/sprites/animal_miis.svg" id="5_miis"]
 [ext_resource type="Texture2D" uid="uid://bt5cevfxvdhq8" path="res://Arte/sprites/animal_kaax.svg" id="6_kaax"]
+[ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="9_theme"]
 
 [sub_resource type="Resource" id="Resource_emkns"]
 script = ExtResource("4_japx6")
@@ -47,8 +48,7 @@ destination_cell = Vector2i(8, 5)
 
 [node name="Level1" type="Node2D" unique_id=307257646]
 script = ExtResource("1")
-default_instruction = "Haz clic en un animal y arrastra hasta su casa.
-Conecta los tres para completar el nivel."
+default_instruction = "Haz clic en un animal y arrastra hasta su casa. Conecta los tres para completar el nivel."
 selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
 
 [node name="Background" type="TextureRect" parent="." unique_id=1713056734]
@@ -62,12 +62,14 @@ stretch_mode = 6
 obstacles = Array[Vector2i]([Vector2i(3, 1), Vector2i(5, 3), Vector2i(3, 5)])
 words = Array[ExtResource("4_japx6")]([SubResource("Resource_emkns"), SubResource("Resource_81r1v"), SubResource("Resource_s82b0")])
 
-[node name="TopBarBG" type="ColorRect" parent="." unique_id=234391001]
+[node name="TopBarBG" type="Panel" parent="." unique_id=234391001]
 offset_left = 6.0
 offset_top = 4.0
 offset_right = 1274.0
 offset_bottom = 56.0
-color = Color(0, 0, 0, 0.42)
+mouse_filter = 2
+theme = ExtResource("9_theme")
+theme_type_variation = &"KalinTopBarPanel"
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1199167839]
 
@@ -76,10 +78,13 @@ offset_left = 10.0
 offset_top = 8.0
 offset_right = 1270.0
 offset_bottom = 52.0
+theme = ExtResource("9_theme")
+theme_override_constants/separation = 10
 
 [node name="BackBtn" type="Button" parent="UI/TopBar" unique_id=1354905614]
 custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 18
 text = "← Menú"
 
@@ -102,14 +107,17 @@ horizontal_alignment = 2
 [node name="BookBtn" type="Button" parent="UI/TopBar" unique_id=474306232]
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 18
-text = "Libro"
+text = "📖 Libro"
 
 [node name="InstrPanel" type="Panel" parent="UI" unique_id=155146390]
 offset_left = 50.0
 offset_top = 648.0
 offset_right = 1230.0
 offset_bottom = 708.0
+theme = ExtResource("9_theme")
+theme_type_variation = &"KalinDarkStatusPanel"
 
 [node name="InstrLbl" type="Label" parent="UI/InstrPanel" unique_id=1946983556]
 layout_mode = 1
@@ -135,6 +143,8 @@ offset_left = 230.0
 offset_top = 235.0
 offset_right = 1050.0
 offset_bottom = 435.0
+theme = ExtResource("9_theme")
+theme_type_variation = &"KalinRequestPanel"
 
 [node name="WordIcon" type="TextureRect" parent="UI/DialoguePanel" unique_id=224845456]
 layout_mode = 0
@@ -169,12 +179,20 @@ theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
 theme_override_font_sizes/font_size = 12
 text = "(Clic para cerrar)"
 
+[node name="CompleteShade" type="ColorRect" parent="UI" unique_id=498045470]
+visible = false
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0.02, 0.08, 0.07, 0.72)
+
 [node name="CompletePanel" type="Panel" parent="UI" unique_id=1026106708]
 visible = false
 offset_left = 290.0
 offset_top = 170.0
 offset_right = 990.0
 offset_bottom = 548.0
+theme = ExtResource("9_theme")
+theme_type_variation = &"KalinCompletionPanel"
 
 [node name="VBox" type="VBoxContainer" parent="UI/CompletePanel" unique_id=1714877896]
 layout_mode = 0
@@ -200,12 +218,14 @@ autowrap_mode = 3
 [node name="NextBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=1004652]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
+theme_type_variation = &"KalinPrimaryButton"
 theme_override_font_sizes/font_size = 26
 text = "Siguiente nivel →"
 
 [node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=1971928640]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 22
 text = "Volver al menú"
 

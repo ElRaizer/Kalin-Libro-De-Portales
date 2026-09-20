@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://c87t5la8dgloe"]
 
 [ext_resource type="Script" uid="uid://cx3c0h35fvlvx" path="res://scripts/Intro.gd" id="1"]
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="2_theme"]
 
 [node name="Intro" type="Node2D" unique_id=86612476]
 script = ExtResource("1")
@@ -58,6 +59,8 @@ theme_override_font_sizes/font_size = 15
 text = "Saltar intro"
 
 [node name="DialogueBox" type="Panel" parent="UI" unique_id=188706975]
+theme = ExtResource("2_theme")
+theme_type_variation = &"KalinDialoguePanel"
 offset_left = 60.0
 offset_top = 500.0
 offset_right = 1220.0

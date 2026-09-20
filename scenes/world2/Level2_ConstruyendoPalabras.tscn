@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cf0u3j8ouco0h" path="res://scripts/world2/W2_Level1.gd" id="1_xq8dk"]
 [ext_resource type="Texture2D" uid="uid://bedp7h6bqksto" path="res://Arte/backgrounds/bg_level1.svg" id="2_1drb2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="3_si73q"]
+[ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="4_theme"]
 
 [node name="Level2" type="Node2D" unique_id=159115184]
 script = ExtResource("1_xq8dk")
@@ -14,6 +15,15 @@ texture = ExtResource("2_1drb2")
 expand_mode = 1
 stretch_mode = 6
 
+[node name="TopBarBG" type="Panel" parent="."]
+offset_left = 6.0
+offset_top = 4.0
+offset_right = 1274.0
+offset_bottom = 56.0
+mouse_filter = 2
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinTopBarPanel"
+
 [node name="UI" type="CanvasLayer" parent="." unique_id=689509921]
 
 [node name="TopBar" type="HBoxContainer" parent="UI" unique_id=1787355346]
@@ -21,8 +31,11 @@ offset_left = 10.0
 offset_top = 8.0
 offset_right = 1270.0
 offset_bottom = 52.0
+theme = ExtResource("4_theme")
+theme_override_constants/separation = 10
 
 [node name="BackBtn" type="Button" parent="UI/TopBar" unique_id=2026468759]
+theme_type_variation = &"KalinSecondaryButton"
 custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
@@ -45,16 +58,19 @@ text = "0 pts mágicos"
 horizontal_alignment = 2
 
 [node name="BookBtn" type="Button" parent="UI/TopBar" unique_id=1736513423]
+theme_type_variation = &"KalinSecondaryButton"
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "Libro"
+text = "📖 Libro"
 
 [node name="RequestPanel" type="Panel" parent="UI" unique_id=1140750888]
 offset_left = 140.0
 offset_top = 68.0
 offset_right = 1140.0
 offset_bottom = 278.0
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinRequestPanel"
 
 [node name="AnimalSprite" type="TextureRect" parent="UI/RequestPanel" unique_id=418525348]
 layout_mode = 0
@@ -89,6 +105,7 @@ offset_left = 250.0
 offset_top = 298.0
 offset_right = 1030.0
 offset_bottom = 560.0
+theme = ExtResource("4_theme")
 theme_override_constants/h_separation = 20
 theme_override_constants/v_separation = 20
 columns = 3
@@ -98,6 +115,8 @@ offset_left = 240.0
 offset_top = 564.0
 offset_right = 1040.0
 offset_bottom = 610.0
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinFeedbackPanel"
 
 [node name="FeedbackLbl" type="Label" parent="UI/FeedbackPanel" unique_id=1235306111]
 layout_mode = 1
@@ -120,6 +139,8 @@ offset_left = 50.0
 offset_top = 648.0
 offset_right = 1230.0
 offset_bottom = 708.0
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinDarkStatusPanel"
 
 [node name="StatusVBox" type="VBoxContainer" parent="UI/StatusPanel" unique_id=1265502615]
 layout_mode = 0
@@ -131,13 +152,21 @@ theme_override_constants/separation = 2
 
 [node name="PhaseLbl" type="Label" parent="UI/StatusPanel/StatusVBox" unique_id=1028964085]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.98, 0.9, 1)
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
 [node name="ProgressLbl" type="Label" parent="UI/StatusPanel/StatusVBox" unique_id=1746035281]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.95, 0.8, 1)
 theme_override_font_sizes/font_size = 14
 horizontal_alignment = 1
+
+[node name="CompleteShade" type="ColorRect" parent="UI"]
+visible = false
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0.02, 0.08, 0.07, 0.72)
 
 [node name="CompletePanel" type="Panel" parent="UI" unique_id=1552579625]
 visible = false
@@ -145,6 +174,8 @@ offset_left = 290.0
 offset_top = 170.0
 offset_right = 990.0
 offset_bottom = 548.0
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinCompletionPanel"
 
 [node name="VBox" type="VBoxContainer" parent="UI/CompletePanel" unique_id=2123195852]
 layout_mode = 0
@@ -171,18 +202,21 @@ horizontal_alignment = 1
 autowrap_mode = 3
 
 [node name="NextBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=195117774]
+theme_type_variation = &"KalinPrimaryButton"
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Siguiente mundo →"
 
 [node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=405089185]
+theme_type_variation = &"KalinSecondaryButton"
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Volver al menú"
 
 [node name="ReplayBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=873583459]
+theme_type_variation = &"KalinSecondaryButton"
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18

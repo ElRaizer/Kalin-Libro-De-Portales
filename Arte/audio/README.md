@@ -32,8 +32,14 @@ La interfaz conserva la grafía canónica. El nombre técnico del archivo elimin
 | ja'as | `jaas.ogg` |
 | pak'al | `pakal.ogg` |
 | K'úum | `Kuum.ogg` |
+| Jats'uts | `Jatsuts.ogg` |
+| jach' | `jach.ogg` |
+| Bix a beel | `Bix_a_beel.ogg` |
+| Yuum bo'otik | `Yuum_bootik.ogg` |
+| Ka xi'ik tech jats'uts | `Ka_xiik_tech_jatsuts.ogg` |
+| Tak ti' uláak' k'iin | `Tak_ti_ulaak_kiin.ogg` |
 
-Las entradas reservadas `Jats'uts`, `jach'` y `T'uut'` usarán `Jatsuts.ogg`, `jach.ogg` y `Tuut.ogg` cuando se incorporen a una escena.
+La entrada reservada `T'uut'` usará `Tuut.ogg` cuando se incorpore a una escena.
 
 ## Grabación recomendada
 

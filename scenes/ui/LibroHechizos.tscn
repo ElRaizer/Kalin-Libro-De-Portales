@@ -1,98 +1,343 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://scripts/ui/LibroHechizos.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/ui/LibroHechizos.gd" id="1_script"]
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="2_theme"]
 
 [node name="LibroHechizos" type="CanvasLayer"]
 layer = 10
-script = ExtResource("1")
+script = ExtResource("1_script")
 
-; ── Fondo oscuro semitransparente ─────────────────────────────────────────────
 [node name="BG" type="ColorRect" parent="."]
 offset_right = 1280.0
 offset_bottom = 720.0
-color = Color(0.05, 0.03, 0.01, 0.82)
+color = Color(0.025, 0.015, 0.04, 0.88)
 
-; ── Panel principal ──────────────────────────────────────────────────────────
-[node name="Panel" type="Panel" parent="BG"]
-offset_left = 60.0
-offset_top = 40.0
-offset_right = 1220.0
-offset_bottom = 680.0
+[node name="Book" type="Panel" parent="BG"]
+offset_left = 42.0
+offset_top = 24.0
+offset_right = 1238.0
+offset_bottom = 696.0
+theme = ExtResource("2_theme")
+theme_type_variation = &"KalinCreamPanel"
 
-; ── Encabezado ───────────────────────────────────────────────────────────────
-[node name="Header" type="HBoxContainer" parent="BG/Panel"]
-offset_left = 16.0
+[node name="Header" type="HBoxContainer" parent="BG/Book"]
+layout_mode = 0
+offset_left = 24.0
 offset_top = 14.0
-offset_right = 1144.0
-offset_bottom = 50.0
+offset_right = 1085.0
+offset_bottom = 52.0
+theme_override_constants/separation = 16
 
-[node name="TitleLbl" type="Label" parent="BG/Panel/Header"]
+[node name="Title" type="Label" parent="BG/Book/Header"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.32, 0.17, 0.05, 1)
+theme_override_font_sizes/font_size = 27
 text = "Libro de Hechizos Maya"
-theme_override_font_sizes/font_size = 26
-theme_override_colors/font_color = Color(0.55, 0.35, 0.08, 1)
 
-[node name="WordCount" type="Label" parent="BG/Panel/Header"]
+[node name="WordCount" type="Label" parent="BG/Book/Header"]
 layout_mode = 2
-text = "Palabras aprendidas: 0 / 32"
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.45, 0.45, 0.45, 1)
+theme_override_colors/font_color = Color(0.48, 0.34, 0.17, 1)
+theme_override_font_sizes/font_size = 15
+text = "0 entradas recuperadas"
+vertical_alignment = 1
 
-; ── Botón cerrar ─────────────────────────────────────────────────────────────
-[node name="CloseBtn" type="Button" parent="BG/Panel"]
-offset_left = 1070.0
+[node name="CloseButton" type="Button" parent="BG/Book"]
+layout_mode = 0
+offset_left = 1090.0
 offset_top = 10.0
-offset_right = 1150.0
-offset_bottom = 50.0
-text = "Cerrar X"
-theme_override_font_sizes/font_size = 16
+offset_right = 1174.0
+offset_bottom = 52.0
+theme_type_variation = &"KalinSecondaryButton"
+text = "Cerrar"
 
-; ── Separador horizontal ─────────────────────────────────────────────────────
-[node name="HSep" type="HSeparator" parent="BG/Panel"]
-offset_left = 12.0
-offset_top = 54.0
-offset_right = 1148.0
-offset_bottom = 60.0
+[node name="Pages" type="HBoxContainer" parent="BG/Book"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 66.0
+offset_right = 1168.0
+offset_bottom = 584.0
+theme_override_constants/separation = 20
+alignment = 1
 
-; ── Contenedor con scroll ────────────────────────────────────────────────────
-[node name="Scroll" type="ScrollContainer" parent="BG/Panel"]
-offset_left = 12.0
-offset_top = 64.0
-offset_right = 1148.0
-offset_bottom = 622.0
-
-[node name="WordGrid" type="GridContainer" parent="BG/Panel/Scroll"]
+[node name="LeftPage" type="Panel" parent="BG/Book/Pages"]
+custom_minimum_size = Vector2(545, 510)
 layout_mode = 2
-size_flags_horizontal = 3
-columns = 3
-theme_override_constants/h_separation = 12
-theme_override_constants/v_separation = 12
+theme_type_variation = &"KalinBookCard"
 
-; ── Etiqueta vacía ───────────────────────────────────────────────────────────
-[node name="EmptyLabel" type="Label" parent="BG/Panel"]
-visible = false
-offset_left = 0.0
-offset_top = 280.0
-offset_right = 1160.0
-offset_bottom = 340.0
-text = "Aún no has aprendido palabras. Completa niveles para llenar tu libro."
+[node name="Content" type="VBoxContainer" parent="BG/Book/Pages/LeftPage"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 16.0
+offset_right = 523.0
+offset_bottom = 492.0
+theme_override_constants/separation = 7
+
+[node name="StageLabel" type="Label" parent="BG/Book/Pages/LeftPage/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.56, 0.38, 0.14, 1)
+theme_override_font_sizes/font_size = 14
+text = "Mundo 1 · Nivel 1"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.5, 0.4, 0.2, 1)
+
+[node name="Illustration" type="Panel" parent="BG/Book/Pages/LeftPage/Content"]
+custom_minimum_size = Vector2(0, 170)
+layout_mode = 2
+theme_type_variation = &"KalinCreamPanel"
+
+[node name="ContextSprite" type="TextureRect" parent="BG/Book/Pages/LeftPage/Content/Illustration"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 477.0
+offset_bottom = 162.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Placeholder" type="Label" parent="BG/Book/Pages/LeftPage/Content/Illustration"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 18.0
+offset_right = 477.0
+offset_bottom = 152.0
+theme_override_colors/font_color = Color(0.57, 0.43, 0.25, 1)
+theme_override_font_sizes/font_size = 24
+text = "✦\nIlustración futura"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MayaLabel" type="Label" parent="BG/Book/Pages/LeftPage/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16, 0.35, 0.31, 1)
+theme_override_font_sizes/font_size = 28
+text = "Palabra maya"
+horizontal_alignment = 1
+
+[node name="SpanishLabel" type="Label" parent="BG/Book/Pages/LeftPage/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.37, 0.24, 0.10, 1)
+theme_override_font_sizes/font_size = 17
+text = "Traducción"
+horizontal_alignment = 1
+
+[node name="ExampleLabel" type="Label" parent="BG/Book/Pages/LeftPage/Content"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.30, 0.20, 0.10, 1)
+theme_override_font_sizes/font_size = 16
+text = "Ejemplo"
+horizontal_alignment = 1
+vertical_alignment = 1
 autowrap_mode = 3
 
-; ── Aviso de audio (aparece y desaparece) ────────────────────────────────────
+[node name="TranslationLabel" type="Label" parent="BG/Book/Pages/LeftPage/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.47, 0.35, 0.20, 1)
+theme_override_font_sizes/font_size = 14
+text = "Significado del ejemplo"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="DiagramLabel" type="Label" parent="BG/Book/Pages/LeftPage/Content"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.28, 0.58, 1)
+theme_override_font_sizes/font_size = 13
+text = "[ estructura ]  →  [ visual ]"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="AudioButton" type="Button" parent="BG/Book/Pages/LeftPage/Content"]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+theme_type_variation = &"KalinAudioButton"
+disabled = true
+text = "Audio próximamente"
+
+[node name="LockedPage" type="Label" parent="BG/Book/Pages/LeftPage"]
+visible = false
+layout_mode = 0
+offset_left = 40.0
+offset_top = 190.0
+offset_right = 505.0
+offset_bottom = 310.0
+theme_override_colors/font_color = Color(0.55, 0.42, 0.25, 1)
+theme_override_font_sizes/font_size = 19
+text = "La página está en blanco"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="RightPage" type="Panel" parent="BG/Book/Pages"]
+custom_minimum_size = Vector2(545, 510)
+layout_mode = 2
+theme_type_variation = &"KalinBookCard"
+
+[node name="Content" type="VBoxContainer" parent="BG/Book/Pages/RightPage"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 16.0
+offset_right = 523.0
+offset_bottom = 492.0
+theme_override_constants/separation = 7
+
+[node name="StageLabel" type="Label" parent="BG/Book/Pages/RightPage/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.56, 0.38, 0.14, 1)
+theme_override_font_sizes/font_size = 14
+text = "Mundo 1 · Nivel 1"
+horizontal_alignment = 1
+
+[node name="Illustration" type="Panel" parent="BG/Book/Pages/RightPage/Content"]
+custom_minimum_size = Vector2(0, 170)
+layout_mode = 2
+theme_type_variation = &"KalinCreamPanel"
+
+[node name="ContextSprite" type="TextureRect" parent="BG/Book/Pages/RightPage/Content/Illustration"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 477.0
+offset_bottom = 162.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Placeholder" type="Label" parent="BG/Book/Pages/RightPage/Content/Illustration"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 18.0
+offset_right = 477.0
+offset_bottom = 152.0
+theme_override_colors/font_color = Color(0.57, 0.43, 0.25, 1)
+theme_override_font_sizes/font_size = 24
+text = "✦\nIlustración futura"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MayaLabel" type="Label" parent="BG/Book/Pages/RightPage/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16, 0.35, 0.31, 1)
+theme_override_font_sizes/font_size = 28
+text = "Palabra maya"
+horizontal_alignment = 1
+
+[node name="SpanishLabel" type="Label" parent="BG/Book/Pages/RightPage/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.37, 0.24, 0.10, 1)
+theme_override_font_sizes/font_size = 17
+text = "Traducción"
+horizontal_alignment = 1
+
+[node name="ExampleLabel" type="Label" parent="BG/Book/Pages/RightPage/Content"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.30, 0.20, 0.10, 1)
+theme_override_font_sizes/font_size = 16
+text = "Ejemplo"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="TranslationLabel" type="Label" parent="BG/Book/Pages/RightPage/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.47, 0.35, 0.20, 1)
+theme_override_font_sizes/font_size = 14
+text = "Significado del ejemplo"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="DiagramLabel" type="Label" parent="BG/Book/Pages/RightPage/Content"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.28, 0.58, 1)
+theme_override_font_sizes/font_size = 13
+text = "[ estructura ]  →  [ visual ]"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="AudioButton" type="Button" parent="BG/Book/Pages/RightPage/Content"]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+theme_type_variation = &"KalinAudioButton"
+disabled = true
+text = "Audio próximamente"
+
+[node name="LockedPage" type="Label" parent="BG/Book/Pages/RightPage"]
+visible = false
+layout_mode = 0
+offset_left = 40.0
+offset_top = 190.0
+offset_right = 505.0
+offset_bottom = 310.0
+theme_override_colors/font_color = Color(0.55, 0.42, 0.25, 1)
+theme_override_font_sizes/font_size = 19
+text = "La siguiente página aún está en blanco..."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Spine" type="ColorRect" parent="BG/Book"]
+layout_mode = 0
+offset_left = 591.0
+offset_top = 66.0
+offset_right = 605.0
+offset_bottom = 576.0
+color = Color(0.39, 0.22, 0.09, 0.62)
+mouse_filter = 2
+
+[node name="EmptyLabel" type="Label" parent="BG/Book"]
+visible = false
+layout_mode = 0
+offset_left = 170.0
+offset_top = 260.0
+offset_right = 1026.0
+offset_bottom = 390.0
+theme_override_colors/font_color = Color(0.47, 0.32, 0.15, 1)
+theme_override_font_sizes/font_size = 22
+text = "El libro todavía está en blanco.\nCompleta desafíos para recuperar sus páginas."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Footer" type="HBoxContainer" parent="BG/Book"]
+layout_mode = 0
+offset_left = 230.0
+offset_top = 600.0
+offset_right = 966.0
+offset_bottom = 650.0
+theme_override_constants/separation = 18
+
+[node name="PreviousButton" type="Button" parent="BG/Book/Footer"]
+custom_minimum_size = Vector2(180, 44)
+layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
+text = "Página anterior"
+
+[node name="PageLabel" type="Label" parent="BG/Book/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.36, 0.23, 0.10, 1)
+theme_override_font_sizes/font_size = 16
+text = "Pliego 1 de 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextButton" type="Button" parent="BG/Book/Footer"]
+custom_minimum_size = Vector2(180, 44)
+layout_mode = 2
+theme_type_variation = &"KalinPrimaryButton"
+text = "Página siguiente"
+
 [node name="AudioNotice" type="Label" parent="BG"]
 visible = false
-offset_left = 340.0
-offset_top = 630.0
-offset_right = 940.0
-offset_bottom = 665.0
+offset_left = 360.0
+offset_top = 654.0
+offset_right = 920.0
+offset_bottom = 690.0
+theme_override_colors/font_color = Color(1, 0.87, 0.4, 1)
+theme_override_font_sizes/font_size = 15
 text = "Audio próximamente"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 15
-theme_override_colors/font_color = Color(0.9, 0.75, 0.3, 1)
 
-; ── Reproductor de audio ─────────────────────────────────────────────────────
 [node name="AudioPlayer" type="AudioStreamPlayer" parent="."]
