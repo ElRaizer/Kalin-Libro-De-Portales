@@ -75,6 +75,18 @@ const VOCABULARY: Dictionary = {
 	"K'úum":    { "spanish": "Calabaza", "emoji": "🎃", "world": 4, "level": 1,
 				  "estructura": "In k'a'at K'úum",       "traduccion": "Yo quiero calabaza" },
 
+	# Mundo 5, nivel 1 — Frases de cortesía y cierre. La fuente inicial es el
+	# Prontuario de frases de cortesía en maya del INALI; la pronunciación y la
+	# variante final todavía deben revisarse con una persona hablante.
+	"Bix a beel": { "spanish": "Buenos días", "emoji": "☀️", "world": 5, "level": 1,
+				  "estructura": "Bix a beel", "traduccion": "Buenos días" },
+	"Yuum bo'otik": { "spanish": "Muchas gracias", "emoji": "🙏", "world": 5, "level": 1,
+				  "estructura": "Yuum bo'otik", "traduccion": "Muchas gracias" },
+	"Ka xi'ik tech jats'uts": { "spanish": "Que te vaya bien", "emoji": "🌿", "world": 5, "level": 1,
+				  "estructura": "Ka xi'ik tech jats'uts", "traduccion": "Que te vaya bien" },
+	"Tak ti' uláak' k'iin": { "spanish": "Adiós, nos vemos", "emoji": "👋", "world": 5, "level": 1,
+				  "estructura": "Tak ti' uláak' k'iin", "traduccion": "Adiós, nos vemos" },
+
 	# Mundo 1, nivel 3 — Guardianes del monte
 	"Kuuts":    { "spanish": "Pavo",     "emoji": "🦃", "world": 1, "level": 3,
 				  "estructura": "In k'aaba'e' Kuuts",    "traduccion": "Me llamo Pavo" },
@@ -100,7 +112,8 @@ const SCENE_PATHS: Dictionary = {
 	"world1_level4":   "res://scenes/world1/Level4_AguaYCielo.tscn",
 	"world2_level1":   "res://scenes/world2/Level2_ConstruyendoPalabras.tscn",
 	"world3_level1":   "res://scenes/world3/Level3_HechizosAdjetivos.tscn",
-	"world4_level1":   "res://scenes/world4/Level4_YoQuiero.tscn"
+	"world4_level1":   "res://scenes/world4/Level4_YoQuiero.tscn",
+	"world5_level1":   "res://scenes/world5/Level5_PortalDeRegreso.tscn"
 }
 
 ## Orden canónico de progreso. Cada mundo representa una mecánica distinta;
@@ -113,7 +126,33 @@ const LEVEL_ORDER: Array[Dictionary] = [
 	{ "world": 2, "level": 1, "scene_key": "world2_level1", "name": "La Casa Maya" },
 	{ "world": 3, "level": 1, "scene_key": "world3_level1", "name": "Hechizos de Adjetivos" },
 	{ "world": 4, "level": 1, "scene_key": "world4_level1", "name": "Yo Quiero" },
+	{ "world": 5, "level": 1, "scene_key": "world5_level1", "name": "El Portal de Regreso" },
 ]
+
+## Entradas preparadas para contenido futuro que no cuentan para completar el
+## libro mientras no exista una escena donde se puedan aprender.
+const FUTURE_VOCABULARY: Array[String] = ["T'uut'"]
+
+## Ilustraciones disponibles para el libro. La interfaz reserva un espacio
+## visual para cualquier entrada que todavía no tenga sprite.
+const BOOK_ILLUSTRATIONS: Dictionary = {
+	"Peek'": "res://Arte/sprites/animal_peek.svg",
+	"Miis": "res://Arte/sprites/animal_miis.svg",
+	"Kaax": "res://Arte/sprites/animal_kaax.svg",
+	"Áak": "res://Arte/sprites/animal_aak.svg",
+	"Kéej": "res://Arte/sprites/animal_keej.svg",
+	"K'éek'en": "res://Arte/sprites/animal_keek_en.svg",
+	"Ma'ax": "res://Arte/sprites/animal_maax.svg",
+	"Kuuts": "res://Arte/sprites/animal_kuuts.svg",
+	"Báalam": "res://Arte/sprites/animal_baalam.svg",
+	"T'u'ul": "res://Arte/sprites/animal_tuul.svg",
+	"Kay": "res://Arte/sprites/animal_kay.svg",
+	"Ch'íich'": "res://Arte/sprites/animal_chiich.svg",
+	"Bix a beel": "res://Arte/sprites/kalin_normal.svg",
+	"Yuum bo'otik": "res://Arte/sprites/kalin_normal.svg",
+	"Ka xi'ik tech jats'uts": "res://Arte/sprites/kalin_normal.svg",
+	"Tak ti' uláak' k'iin": "res://Arte/sprites/kalin_normal.svg",
+}
 
 ## Variantes antiguas que pueden existir en escenas o partidas guardadas.
 ## Toda palabra aprendida se almacena usando la clave canónica de VOCABULARY.
@@ -166,6 +205,22 @@ func get_vocabulary_entry(maya_word: String) -> Dictionary:
 	if key == "":
 		return {}
 	return VOCABULARY[key]
+
+## Vocabulario que puede obtenerse en las escenas disponibles. Mantener esta
+## cuenta separada evita que entradas reservadas impidan completar el libro.
+func get_learnable_vocabulary_keys() -> Array[String]:
+	var keys: Array[String] = []
+	for maya_word: String in VOCABULARY:
+		if maya_word not in FUTURE_VOCABULARY:
+			keys.append(maya_word)
+	return keys
+
+func get_learnable_word_count() -> int:
+	return get_learnable_vocabulary_keys().size()
+
+func get_book_illustration(maya_word: String) -> String:
+	var key: String = _resolve_vocab_key(maya_word)
+	return str(BOOK_ILLUSTRATIONS.get(key, ""))
 
 ## Nombre técnico estable para archivos de audio: usa la grafía canónica pero
 ## elimina acentos, apóstrofes y espacios (ej.: K'úum -> Kuum.ogg).
