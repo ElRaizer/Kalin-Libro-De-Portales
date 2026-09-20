@@ -48,7 +48,9 @@ Kalin-Libro-De-Portales/
 │   ├── Intro.tscn
 │   ├── MainMenu.tscn
 │   ├── components/
-│   │   └── GridBoard.tscn
+│   │   ├── GridBoard.tscn
+│   │   ├── LevelHeader.tscn
+│   │   └── CompletionOverlay.tscn
 │   ├── ui/
 │   │   └── LibroHechizos.tscn
 │   ├── world1/
@@ -60,8 +62,10 @@ Kalin-Libro-De-Portales/
 │   │   └── Level2_ConstruyendoPalabras.tscn
 │   ├── world3/
 │   │   └── Level3_HechizosAdjetivos.tscn
-│   └── world4/
-│       └── Level4_YoQuiero.tscn
+│   ├── world4/
+│   │   └── Level4_YoQuiero.tscn
+│   └── world5/
+│       └── Level5_PortalDeRegreso.tscn
 └── scripts/
 	├── Intro.gd
 	├── autoloads/
@@ -80,8 +84,10 @@ Kalin-Libro-De-Portales/
 	│   └── W2_Level1.gd
 	├── world3/
 	│   └── W3_Level1.gd
-	└── world4/
-		└── W4_Level1.gd
+	├── world4/
+	│   └── W4_Level1.gd
+	└── world5/
+		└── W5_Level1.gd
 ```
 
 ## Sistema visual compartido
@@ -107,7 +113,8 @@ El orden oficial vive en `GameManager.LEVEL_ORDER`:
 1. Mundo 1, niveles 1–4: caminos de animales.
 2. Mundo 2, nivel 1: lanzamiento del hechizo correcto.
 3. Mundo 3, nivel 1: adjetivos.
-4. Mundo 4, nivel 1: *In k'a'at*.
+4. Mundo 4, nivel 1: *In k'a'at* en fases guiada y de recuerdo.
+5. Mundo 5, nivel 1: recapitulación, cortesía y portal de regreso.
 
 Cada nivel debe llamar `GameManager.complete_level(mundo, nivel)` con su identidad real. El botón **Continuar** consulta el primer elemento incompleto de `LEVEL_ORDER`; no construye nombres de escena suponiendo que todos pertenecen al Mundo 1.
 
@@ -147,6 +154,7 @@ La validación automática de catálogo, rutas, escenas, tableros, alias y nombr
 
 ```powershell
 godot_console.exe --headless --path . --script res://tests/validate_project.gd
+godot_console.exe --headless --path . --script res://tests/validate_learning_flow.gd
 ```
 
 1. Abrir el proyecto con Godot 4.6 y comprobar que no existan errores de análisis.
@@ -155,4 +163,5 @@ godot_console.exe --headless --path . --script res://tests/validate_project.gd
 4. Volver al menú entre niveles y comprobar **Continuar**.
 5. Cerrar y abrir el juego para verificar el guardado.
 6. Repetir el Mundo 4 con las palabras ya aprendidas.
-7. Abrir el libro y comprobar la agrupación por mundo y nivel.
+7. Completar el Mundo 5 y confirmar que el portal llegue al 100 %.
+8. Abrir el libro y comprobar ilustraciones, marcadores futuros y navegación por páginas.

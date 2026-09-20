@@ -34,10 +34,16 @@ Las palabras `Peek'`, `Kéej`, `K'éek'en`, `Ma'ax`, `Báalam`, `Kuuts`, `T'u'ul
 | 2 | 1 | `mayak`, `lak`, `ch'áak`, `chan`, `janal` |
 | 3 | 1 | `mejen`, `nojoch`, `Jats'uts`, `ki'`, `jach'` |
 | 4 | 1 | `ja'`, `ja'as`, `pak'al`, `K'úum` |
+| 5 | 1 | `Bix a beel`, `Yuum bo'otik`, `Ka xi'ik tech jats'uts`, `Tak ti' uláak' k'iin` |
 
 `Jats'uts` y `jach'` se incorporaron al Mundo 3 durante la reconstrucción de su
 mecánica de sustantivos y adjetivos. `T'uut'` permanece en el catálogo para
-contenido futuro, aunque todavía no se enseña en una escena jugable.
+contenido futuro, no se enseña en una escena jugable y no cuenta para completar
+el Libro de Hechizos.
+
+Las frases de cortesía del Mundo 5 se tomaron inicialmente del Prontuario de
+frases de cortesía en maya del INALI. Deben revisarse con una persona hablante
+antes de grabar su pronunciación o considerar definitivo el contenido.
 
 ## Decisiones conservadas del GDD
 
