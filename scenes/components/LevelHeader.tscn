@@ -1,0 +1,52 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/components/LevelHeader.gd" id="1_script"]
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="2_theme"]
+
+[node name="LevelHeader" type="Panel"]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 1264.0
+offset_bottom = 68.0
+theme = ExtResource("2_theme")
+theme_type_variation = &"KalinTopBarPanel"
+script = ExtResource("1_script")
+
+[node name="Bar" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 7.0
+offset_right = 1236.0
+offset_bottom = 49.0
+theme_override_constants/separation = 12
+
+[node name="MenuButton" type="Button" parent="Bar"]
+custom_minimum_size = Vector2(118, 40)
+layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
+text = "Menú"
+
+[node name="TitleLabel" type="Label" parent="Bar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.96, 0.78, 1)
+theme_override_font_sizes/font_size = 21
+text = "Nivel"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MagicLabel" type="Label" parent="Bar"]
+custom_minimum_size = Vector2(210, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.35, 1)
+theme_override_font_sizes/font_size = 17
+text = "0 puntos mágicos"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="BookButton" type="Button" parent="Bar"]
+custom_minimum_size = Vector2(118, 40)
+layout_mode = 2
+theme_type_variation = &"KalinPrimaryButton"
+text = "Libro"
+
