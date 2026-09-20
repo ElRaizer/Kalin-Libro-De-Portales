@@ -1,191 +1,184 @@
-## LibroHechizos.gd  v2
-## Panel de vocabulario maya aprendido.
-## Cada tarjeta tiene un botón de audio que reproduce el .ogg si existe,
-## o muestra un aviso de "próximamente" si el archivo aún no está disponible.
-
+## Libro de Hechizos paginado. Cada pliego muestra dos entradas con contexto,
+## ejemplo de uso, estructura e ilustración o un espacio para arte futuro.
 extends CanvasLayer
 
-# ─── Nodos ───────────────────────────────────────────────────────────────────
-@onready var word_grid:      GridContainer = $BG/Panel/Scroll/WordGrid
-@onready var close_btn:      Button        = $BG/Panel/CloseBtn
-@onready var empty_label:    Label         = $BG/Panel/EmptyLabel
-@onready var word_count_lbl: Label         = $BG/Panel/Header/WordCount
-@onready var audio_player:   AudioStreamPlayer = $AudioPlayer
-@onready var audio_notice:   Label         = $BG/AudioNotice
-
-# ─── Constantes visuales ─────────────────────────────────────────────────────
-const CARD_SIZE     := Vector2(220, 155)
-
-## Convención de nombres de archivo de audio:
-## res://Arte/audio/<maya_word_ascii>.ogg
-## Ejemplo: "Peek'" → "Peek.ogg", "K'úum" → "Kuum.ogg"
 const AUDIO_BASE := "res://Arte/audio/"
+const WORDS_PER_SPREAD := 2
 
-# ─── Estado ──────────────────────────────────────────────────────────────────
+@onready var close_button: Button = $BG/Book/CloseButton
+@onready var previous_button: Button = $BG/Book/Footer/PreviousButton
+@onready var next_button: Button = $BG/Book/Footer/NextButton
+@onready var page_label: Label = $BG/Book/Footer/PageLabel
+@onready var word_count_label: Label = $BG/Book/Header/WordCount
+@onready var empty_label: Label = $BG/Book/EmptyLabel
+@onready var left_page: Panel = $BG/Book/Pages/LeftPage
+@onready var right_page: Panel = $BG/Book/Pages/RightPage
+@onready var audio_player: AudioStreamPlayer = $AudioPlayer
+@onready var audio_notice: Label = $BG/AudioNotice
+
+var _entries: Array[String] = []
+var _spread_index: int = 0
+var _visible_words: Array[String] = ["", ""]
 var _notice_tween: Tween
 
-# ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
 	visible = false
-	close_btn.pressed.connect(hide_book)
+	close_button.pressed.connect(hide_book)
+	previous_button.pressed.connect(_previous_spread)
+	next_button.pressed.connect(_next_spread)
+	left_page.get_node("Content/AudioButton").pressed.connect(_play_visible_audio.bind(0))
+	right_page.get_node("Content/AudioButton").pressed.connect(_play_visible_audio.bind(1))
 	GameManager.word_learned.connect(_on_word_learned)
 	audio_notice.visible = false
 
 func show_book() -> void:
-	_populate()
+	_collect_entries()
+	_spread_index = clampi(_spread_index, 0, maxi(_spread_count() - 1, 0))
+	_render_spread()
 	visible = true
+	close_button.grab_focus()
 
 func hide_book() -> void:
 	visible = false
 	if audio_player.playing:
 		audio_player.stop()
 
-# ─── Poblar tarjetas ─────────────────────────────────────────────────────────
-func _populate() -> void:
-	for child in word_grid.get_children():
-		child.queue_free()
-
-	var learned: Dictionary = GameManager.words_learned
-	empty_label.visible  = learned.is_empty()
-	word_count_lbl.text  = "Palabras aprendidas: %d / %d" % [
-		learned.size(), GameManager.VOCABULARY.size()
+func _collect_entries() -> void:
+	_entries.clear()
+	for maya_word: String in GameManager.words_learned:
+		if maya_word not in GameManager.FUTURE_VOCABULARY:
+			_entries.append(maya_word)
+	_entries.sort_custom(_sort_entries)
+	word_count_label.text = "%d de %d entradas recuperadas" % [
+		_entries.size(), GameManager.get_learnable_word_count()
 	]
 
-	# Agrupar por mundo y nivel para respetar la estructura de mecánicas.
-	var by_stage: Dictionary = {}
-	for word: String in learned:
-		var world: int = learned[word].get("world", 0)
-		var lvl: int = learned[word].get("level", 0)
-		var stage_key: String = "%03d_%03d" % [world, lvl]
-		if stage_key not in by_stage:
-			by_stage[stage_key] = {"world": world, "level": lvl, "words": []}
-		by_stage[stage_key].words.append(word)
+func _sort_entries(a: String, b: String) -> bool:
+	var a_data := GameManager.get_vocabulary_entry(a)
+	var b_data := GameManager.get_vocabulary_entry(b)
+	var a_stage := int(a_data.get("world", 0)) * 100 + int(a_data.get("level", 0))
+	var b_stage := int(b_data.get("world", 0)) * 100 + int(b_data.get("level", 0))
+	return a.to_lower() < b.to_lower() if a_stage == b_stage else a_stage < b_stage
 
-	var stages: Array = by_stage.keys()
-	stages.sort()
-	for stage_key: String in stages:
-		var stage: Dictionary = by_stage[stage_key]
-		word_grid.add_child(_make_separator("Mundo %d · Nivel %d" % [stage.world, stage.level]))
-		for _i in range(2):
-			word_grid.add_child(Control.new())   # relleno de columnas
-		for word: String in stage.words:
-			word_grid.add_child(_make_card(word, learned[word]))
+func _spread_count() -> int:
+	return ceili(float(_entries.size()) / WORDS_PER_SPREAD)
 
-# ─── Tarjeta individual ───────────────────────────────────────────────────────
-func _make_card(maya_word: String, data: Dictionary) -> Panel:
-	var card: Panel = Panel.new()
-	card.custom_minimum_size = CARD_SIZE
-
-	card.theme_type_variation = &"KalinBookCard"
-
-	var vbox: VBoxContainer = VBoxContainer.new()
-	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	vbox.add_theme_constant_override("separation", 3)
-
-	# Emoji
-	var emoji_lbl: Label = Label.new()
-	emoji_lbl.text = data.get("emoji", "?")
-	emoji_lbl.add_theme_font_size_override("font_size", 36)
-	emoji_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-
-	# Palabra maya
-	var maya_lbl: Label = Label.new()
-	maya_lbl.text = maya_word
-	maya_lbl.add_theme_font_size_override("font_size", 20)
-	maya_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	maya_lbl.add_theme_color_override("font_color", Color(0.18, 0.08, 0.0))
-
-	# Traduccion
-	var es_lbl: Label = Label.new()
-	es_lbl.text = data.get("spanish", "")
-	es_lbl.add_theme_font_size_override("font_size", 13)
-	es_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	es_lbl.add_theme_color_override("font_color", Color(0.40, 0.28, 0.08))
-
-	# Estructura de frase
-	var struct_lbl: Label = Label.new()
-	struct_lbl.text = data.get("estructura", "")
-	struct_lbl.add_theme_font_size_override("font_size", 11)
-	struct_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	struct_lbl.add_theme_color_override("font_color", Color(0.25, 0.48, 0.18))
-	struct_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-
-	# ── Botón de audio ──────────────────────────────────────────────────────
-	var audio_file: String = _audio_path(maya_word)
-	var audio_exists: bool = ResourceLoader.exists(audio_file)
-
-	var audio_btn: Button = Button.new()
-	audio_btn.text = "Escuchar" if audio_exists else "Audio pronto"
-	audio_btn.disabled = not audio_exists
-	audio_btn.add_theme_font_size_override("font_size", 12)
-	audio_btn.custom_minimum_size = Vector2(0, 28)
-
-	# Color del botón según disponibilidad
-	if audio_exists:
-		audio_btn.theme_type_variation = &"KalinAudioButton"
-		# Conectar con la palabra capturada en lambda
-		audio_btn.pressed.connect(func(): _play_audio(maya_word))
-	else:
-		audio_btn.add_theme_color_override("font_color", Color(0.55, 0.45, 0.30))
-		audio_btn.tooltip_text = "El archivo de audio será agregado próximamente."
-		audio_btn.pressed.connect(func(): _show_notice("Audio de \"%s\" próximamente" % maya_word))
-
-	vbox.add_child(emoji_lbl)
-	vbox.add_child(maya_lbl)
-	vbox.add_child(es_lbl)
-	vbox.add_child(struct_lbl)
-	vbox.add_child(audio_btn)
-	card.add_child(vbox)
-	return card
-
-# ─── Reproducir audio ─────────────────────────────────────────────────────────
-func _play_audio(maya_word: String) -> void:
-	var path: String = _audio_path(maya_word)
-	if not ResourceLoader.exists(path):
-		_show_notice("Audio de \"%s\" no encontrado" % maya_word)
+func _render_spread() -> void:
+	var empty := _entries.is_empty()
+	empty_label.visible = empty
+	left_page.visible = not empty
+	right_page.visible = not empty
+	previous_button.disabled = empty or _spread_index <= 0
+	next_button.disabled = empty or _spread_index >= _spread_count() - 1
+	if empty:
+		page_label.text = "El libro espera su primera palabra"
 		return
-	var stream: AudioStream = load(path) as AudioStream
+	var first_index := _spread_index * WORDS_PER_SPREAD
+	_render_page(left_page, first_index, 0)
+	_render_page(right_page, first_index + 1, 1)
+	page_label.text = "Pliego %d de %d" % [_spread_index + 1, _spread_count()]
+
+func _render_page(page: Panel, entry_index: int, visible_slot: int) -> void:
+	var content := page.get_node("Content") as VBoxContainer
+	var locked := page.get_node("LockedPage") as Label
+	if entry_index >= _entries.size():
+		content.visible = false
+		locked.visible = true
+		locked.text = "La siguiente página aún está en blanco..."
+		_visible_words[visible_slot] = ""
+		return
+	content.visible = true
+	locked.visible = false
+	var maya_word := _entries[entry_index]
+	var data := GameManager.get_vocabulary_entry(maya_word)
+	_visible_words[visible_slot] = maya_word
+	(content.get_node("StageLabel") as Label).text = "Mundo %d · Nivel %d" % [data.world, data.level]
+	(content.get_node("MayaLabel") as Label).text = maya_word
+	(content.get_node("SpanishLabel") as Label).text = str(data.get("spanish", ""))
+	(content.get_node("ExampleLabel") as Label).text = "Ejemplo\n%s" % str(data.get("estructura", ""))
+	(content.get_node("TranslationLabel") as Label).text = str(data.get("traduccion", ""))
+	(content.get_node("DiagramLabel") as Label).text = _structure_diagram(str(data.get("estructura", maya_word)))
+	var illustration := content.get_node("Illustration/ContextSprite") as TextureRect
+	var placeholder := content.get_node("Illustration/Placeholder") as Label
+	var image_path := GameManager.get_book_illustration(maya_word)
+	if image_path != "" and ResourceLoader.exists(image_path):
+		illustration.texture = load(image_path)
+		illustration.visible = true
+		placeholder.visible = false
+	else:
+		illustration.texture = null
+		illustration.visible = false
+		placeholder.visible = true
+		placeholder.text = "%s\nIlustración futura" % str(data.get("emoji", "✦"))
+	var audio_button := content.get_node("AudioButton") as Button
+	var audio_exists := ResourceLoader.exists(_audio_path(maya_word))
+	audio_button.disabled = not audio_exists
+	audio_button.text = "Escuchar pronunciación" if audio_exists else "Audio próximamente"
+	audio_button.tooltip_text = "La grabación se integrará en una etapa posterior." if not audio_exists else ""
+
+func _structure_diagram(example: String) -> String:
+	var tokens := example.split(" ", false)
+	if tokens.size() <= 1:
+		return "[ %s ]" % example
+	var boxes: Array[String] = []
+	for token: String in tokens:
+		boxes.append("[ %s ]" % token)
+	return "  →  ".join(boxes)
+
+func _previous_spread() -> void:
+	if _spread_index <= 0:
+		return
+	_spread_index -= 1
+	_render_spread()
+
+func _next_spread() -> void:
+	if _spread_index >= _spread_count() - 1:
+		return
+	_spread_index += 1
+	_render_spread()
+
+func _play_visible_audio(slot: int) -> void:
+	if slot < 0 or slot >= _visible_words.size() or _visible_words[slot] == "":
+		return
+	var maya_word := _visible_words[slot]
+	var path := _audio_path(maya_word)
+	if not ResourceLoader.exists(path):
+		_show_notice("Audio de \"%s\" próximamente" % maya_word)
+		return
+	var stream := load(path) as AudioStream
 	if stream:
 		audio_player.stream = stream
 		audio_player.play()
 
-## Devuelve la ruta del archivo de audio para una palabra maya.
-## Elimina acentos y apóstrofos para obtener un nombre portable.
 func _audio_path(maya_word: String) -> String:
 	return AUDIO_BASE + GameManager.get_audio_filename(maya_word)
 
-# ─── Aviso flotante ──────────────────────────────────────────────────────────
-func _show_notice(msg: String) -> void:
-	audio_notice.text    = msg
+func _show_notice(message: String) -> void:
+	audio_notice.text = message
 	audio_notice.visible = true
+	audio_notice.modulate.a = 1.0
 	if _notice_tween:
 		_notice_tween.kill()
 	_notice_tween = create_tween()
-	_notice_tween.tween_interval(2.2)
-	_notice_tween.tween_property(audio_notice, "modulate:a", 0.0, 0.5)
-	_notice_tween.tween_callback(_hide_notice)
+	_notice_tween.tween_interval(2.0)
+	_notice_tween.tween_property(audio_notice, "modulate:a", 0.0, 0.4)
+	_notice_tween.tween_callback(func(): audio_notice.visible = false)
 
-func _hide_notice() -> void:
-	audio_notice.visible = false
-	audio_notice.modulate.a = 1.0
-
-# ─── Separador de nivel ───────────────────────────────────────────────────────
-func _make_separator(title: String) -> Label:
-	var lbl: Label = Label.new()
-	lbl.text = "-- %s --" % title
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	lbl.add_theme_font_size_override("font_size", 16)
-	lbl.add_theme_color_override("font_color", Color(0.6, 0.4, 0.1))
-	lbl.custom_minimum_size.y = 28
-	return lbl
-
-# ─── Señales ─────────────────────────────────────────────────────────────────
 func _on_word_learned(_data: Dictionary) -> void:
 	if visible:
-		_populate()
+		_collect_entries()
+		_render_spread()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if visible and event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_ESCAPE:
+	if not visible or event is not InputEventKey or not event.pressed or event.echo:
+		return
+	match event.keycode:
+		KEY_ESCAPE:
 			hide_book()
-			get_viewport().set_input_as_handled()
+		KEY_LEFT:
+			_previous_spread()
+		KEY_RIGHT:
+			_next_spread()
+		_:
+			return
+	get_viewport().set_input_as_handled()
