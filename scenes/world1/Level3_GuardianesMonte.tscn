@@ -84,9 +84,9 @@ theme = ExtResource("9_theme")
 theme_override_constants/separation = 10
 
 [node name="BackBtn" type="Button" parent="UI/TopBar" unique_id=883022758]
-theme_type_variation = &"KalinSecondaryButton"
 custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 18
 text = "← Menú"
 
@@ -107,9 +107,9 @@ text = "0 pts mágicos"
 horizontal_alignment = 2
 
 [node name="BookBtn" type="Button" parent="UI/TopBar" unique_id=100148469]
-theme_type_variation = &"KalinSecondaryButton"
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 18
 text = "📖 Libro"
 
@@ -182,7 +182,7 @@ theme_override_font_sizes/font_size = 12
 text = "(Clic para cerrar)"
 horizontal_alignment = 1
 
-[node name="CompleteShade" type="ColorRect" parent="UI"]
+[node name="CompleteShade" type="ColorRect" parent="UI" unique_id=658090983]
 visible = false
 offset_right = 1280.0
 offset_bottom = 720.0
@@ -218,16 +218,16 @@ theme_override_colors/font_color = Color(0.35, 0.22, 0.08, 1)
 theme_override_font_sizes/font_size = 19
 
 [node name="NextBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=2147042489]
-theme_type_variation = &"KalinPrimaryButton"
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
+theme_type_variation = &"KalinPrimaryButton"
 theme_override_font_sizes/font_size = 26
 text = "Siguiente nivel →"
 
 [node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=743317021]
-theme_type_variation = &"KalinSecondaryButton"
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 22
 text = "Volver al menú"
 

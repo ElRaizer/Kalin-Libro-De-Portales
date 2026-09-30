@@ -5,7 +5,9 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="3_book"]
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="4_theme"]
 [ext_resource type="PackedScene" path="res://scenes/components/LevelHeader.tscn" id="5_header"]
-[ext_resource type="PackedScene" path="res://scenes/components/CompletionOverlay.tscn" id="6_complete"]
+[ext_resource type="PackedScene" uid="uid://d2drg7vtn5ctw" path="res://scenes/components/CompletionOverlay.tscn" id="6_complete"]
+[ext_resource type="Script" uid="uid://3tucogv2ix4h" path="res://scripts/components/DraggableWordButton.gd" id="7_drag_button"]
+[ext_resource type="Script" uid="uid://bc3tppmuyyvks" path="res://scripts/components/WordDropSlot.gd" id="8_drop_slot"]
 
 [node name="Level4" type="Node2D" unique_id=1962404994]
 script = ExtResource("1_script")
@@ -122,6 +124,8 @@ theme_override_font_sizes/font_size = 21
 text = "alimento"
 horizontal_alignment = 1
 vertical_alignment = 1
+script = ExtResource("8_drop_slot")
+accepted_kind = "food"
 
 [node name="ModifierSlot" type="Label" parent="UI/SpellPanel/Content/Sentence" unique_id=2138717891]
 custom_minimum_size = Vector2(210, 48)
@@ -132,6 +136,8 @@ theme_override_font_sizes/font_size = 21
 text = "cualidad"
 horizontal_alignment = 1
 vertical_alignment = 1
+script = ExtResource("8_drop_slot")
+accepted_kind = "modifier"
 
 [node name="ChoicesPanel" type="Panel" parent="UI" unique_id=980889088]
 offset_left = 380.0
@@ -157,8 +163,69 @@ text = "1  Elige el alimento"
 
 [node name="FoodGrid" type="GridContainer" parent="UI/ChoicesPanel/Content" unique_id=1829724368]
 layout_mode = 2
+size_flags_horizontal = 4
 theme_override_constants/h_separation = 8
 columns = 5
+
+[node name="JaButton" type="Button" parent="UI/ChoicesPanel/Content/FoodGrid" unique_id=1076074617]
+custom_minimum_size = Vector2(150, 58)
+layout_mode = 2
+theme_type_variation = &"KalinNounButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "💧  ja'
+agua"
+script = ExtResource("7_drag_button")
+word_value = "ja'"
+word_kind = "food"
+
+[node name="JaasButton" type="Button" parent="UI/ChoicesPanel/Content/FoodGrid" unique_id=821667956]
+custom_minimum_size = Vector2(150, 58)
+layout_mode = 2
+theme_type_variation = &"KalinNounButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "🍌  ja'as
+plátano"
+script = ExtResource("7_drag_button")
+word_value = "ja'as"
+word_kind = "food"
+
+[node name="PakalButton" type="Button" parent="UI/ChoicesPanel/Content/FoodGrid" unique_id=1248275243]
+custom_minimum_size = Vector2(150, 58)
+layout_mode = 2
+theme_type_variation = &"KalinNounButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "🍎  pak'al
+fruta"
+script = ExtResource("7_drag_button")
+word_value = "pak'al"
+word_kind = "food"
+
+[node name="KuumButton" type="Button" parent="UI/ChoicesPanel/Content/FoodGrid" unique_id=1416858828]
+custom_minimum_size = Vector2(150, 58)
+layout_mode = 2
+theme_type_variation = &"KalinNounButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "🎃  K'úum
+calabaza"
+script = ExtResource("7_drag_button")
+word_value = "K'úum"
+word_kind = "food"
+
+[node name="JanalButton" type="Button" parent="UI/ChoicesPanel/Content/FoodGrid" unique_id=1461897973]
+custom_minimum_size = Vector2(150, 58)
+layout_mode = 2
+theme_type_variation = &"KalinNounButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "🍲  janal
+comida"
+script = ExtResource("7_drag_button")
+word_value = "janal"
+word_kind = "food"
 
 [node name="ModifierHeading" type="Label" parent="UI/ChoicesPanel/Content" unique_id=2019465740]
 layout_mode = 2
@@ -168,8 +235,44 @@ text = "2  Elige la cualidad"
 
 [node name="ModifierGrid" type="GridContainer" parent="UI/ChoicesPanel/Content" unique_id=1809395240]
 layout_mode = 2
+size_flags_horizontal = 4
 theme_override_constants/h_separation = 10
 columns = 3
+
+[node name="NoModifierButton" type="Button" parent="UI/ChoicesPanel/Content/ModifierGrid" unique_id=513387801]
+custom_minimum_size = Vector2(165, 52)
+layout_mode = 2
+theme_type_variation = &"KalinAdjectiveButton"
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+text = "—
+sin cualidad"
+script = ExtResource("7_drag_button")
+word_kind = "modifier"
+
+[node name="MejenButton" type="Button" parent="UI/ChoicesPanel/Content/ModifierGrid" unique_id=229303534]
+custom_minimum_size = Vector2(165, 52)
+layout_mode = 2
+theme_type_variation = &"KalinAdjectiveButton"
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+text = "◌  mejen
+pequeño/a"
+script = ExtResource("7_drag_button")
+word_value = "mejen"
+word_kind = "modifier"
+
+[node name="NojochButton" type="Button" parent="UI/ChoicesPanel/Content/ModifierGrid" unique_id=503373917]
+custom_minimum_size = Vector2(165, 52)
+layout_mode = 2
+theme_type_variation = &"KalinAdjectiveButton"
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+text = "⬢  nojoch
+grande"
+script = ExtResource("7_drag_button")
+word_value = "nojoch"
+word_kind = "modifier"
 
 [node name="ServeButton" type="Button" parent="UI/ChoicesPanel/Content" unique_id=898787245]
 custom_minimum_size = Vector2(0, 46)

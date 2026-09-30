@@ -58,6 +58,7 @@ var _resolving: bool = false
 @onready var libro: CanvasLayer = $LibroHechizos
 
 func _ready() -> void:
+	_setup_drop_slots()
 	header.menu_pressed.connect(_on_menu_pressed)
 	header.book_pressed.connect(_on_book_pressed)
 	completion.next_pressed.connect(_on_next_level_pressed)
@@ -81,24 +82,20 @@ func _build_round_plan() -> void:
 		round_plan.append({"challenge": index, "guided": false})
 
 func _build_choice_buttons() -> void:
-	for food: Dictionary in FOODS:
-		var button := Button.new()
-		button.custom_minimum_size = Vector2(150, 58)
-		button.toggle_mode = true
-		button.theme_type_variation = &"KalinNounButton"
-		button.add_theme_font_size_override("font_size", 17)
-		button.pressed.connect(_select_food.bind(str(food.maya)))
-		food_grid.add_child(button)
-		food_buttons[food.maya] = button
-	for modifier: Dictionary in MODIFIERS:
-		var button := Button.new()
-		button.custom_minimum_size = Vector2(165, 52)
-		button.toggle_mode = true
-		button.theme_type_variation = &"KalinAdjectiveButton"
-		button.add_theme_font_size_override("font_size", 16)
-		button.pressed.connect(_select_modifier.bind(str(modifier.maya)))
-		modifier_grid.add_child(button)
-		modifier_buttons[modifier.maya] = button
+	for child: Node in food_grid.get_children():
+		if child is DraggableWordButton:
+			var button := child as DraggableWordButton
+			food_buttons[button.word_value] = button
+			button.pressed.connect(_select_food.bind(button.word_value))
+	for child: Node in modifier_grid.get_children():
+		if child is DraggableWordButton:
+			var button := child as DraggableWordButton
+			modifier_buttons[button.word_value] = button
+			button.pressed.connect(_select_modifier.bind(button.word_value))
+
+func _setup_drop_slots() -> void:
+	food_slot.connect("word_dropped", _select_food)
+	modifier_slot.connect("word_dropped", _select_modifier)
 
 func _current_challenge() -> Dictionary:
 	return CHALLENGES[int(round_plan[round_index].challenge)]
@@ -122,12 +119,12 @@ func _show_round() -> void:
 	var modifier := _modifier_data(challenge.modifier)
 	if guided:
 		request_label.text = "%s pide: %s" % [challenge.animal_spanish, challenge.translation]
-		instruction_label.text = "Construye la petición con apoyo en español."
+		instruction_label.text = "Haz clic o arrastra cada palabra a su recuadro."
 	else:
 		request_label.text = "Observa la pista y recuerda la petición en maya."
-		instruction_label.text = "Sin traducción: elige alimento y cualidad de memoria."
+		instruction_label.text = "Sin traducción: haz clic o arrastra alimento y cualidad."
 	visual_clue.text = "%s  %s" % [food.emoji, modifier.symbol]
-	feedback_label.text = "Selecciona un alimento y una cualidad para formar la petición."
+	feedback_label.text = "Selecciona o arrastra un alimento y una cualidad para formar la petición."
 	feedback_label.add_theme_color_override("font_color", Color("5b4630"))
 	food_slot.text = "alimento"
 	modifier_slot.text = "cualidad"
@@ -153,6 +150,7 @@ func _select_food(value: String) -> void:
 	selected_food = value
 	food_slot.text = value
 	_update_button_states()
+	_celebrate_selection(food_slot)
 
 func _select_modifier(value: String) -> void:
 	if _resolving:
@@ -160,6 +158,13 @@ func _select_modifier(value: String) -> void:
 	selected_modifier = value
 	modifier_slot.text = _modifier_display(value)
 	_update_button_states()
+	_celebrate_selection(modifier_slot)
+
+func _celebrate_selection(slot: Control) -> void:
+	if slot.has_method("pop"):
+		slot.pop()
+	feedback_label.text = "¡Colocado! Completa la petición y sírvela."
+	feedback_label.add_theme_color_override("font_color", Color("5b4630"))
 
 func _update_button_states() -> void:
 	for value: String in food_buttons:
@@ -191,6 +196,7 @@ func _on_serve_pressed() -> void:
 	modifier_slot.text = _modifier_display(challenge.modifier)
 	feedback_label.text = "¡Petición entendida!  %s  ·  %s" % [challenge.phrase, challenge.translation]
 	feedback_label.add_theme_color_override("font_color", COLOR_SUCCESS)
+	_success_burst($UI/SpellPanel)
 	var tween := create_tween()
 	tween.tween_property(animal_sprite, "scale", Vector2(1.08, 1.08), 0.12)
 	tween.tween_property(animal_sprite, "scale", Vector2.ONE, 0.18)
@@ -210,6 +216,31 @@ func _show_incorrect_feedback(challenge: Dictionary) -> void:
 	else:
 		feedback_label.text = "El alimento es correcto; revisa su tamaño o elige sin cualidad."
 	feedback_label.add_theme_color_override("font_color", COLOR_ERROR)
+	_shake_choices()
+
+func _shake_choices() -> void:
+	var panel: Control = $UI/ChoicesPanel
+	var original_x := panel.position.x
+	var tween := create_tween()
+	tween.tween_property(panel, "position:x", original_x - 9.0, 0.05)
+	tween.tween_property(panel, "position:x", original_x + 9.0, 0.05)
+	tween.tween_property(panel, "position:x", original_x, 0.07)
+
+func _success_burst(origin: Control) -> void:
+	for index: int in range(9):
+		var sparkle := Label.new()
+		sparkle.text = "✦"
+		sparkle.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		sparkle.add_theme_font_size_override("font_size", 18 + index % 3 * 4)
+		sparkle.add_theme_color_override("font_color", Color("ffd85a"))
+		$UI.add_child(sparkle)
+		sparkle.position = origin.position + origin.size * 0.5
+		var angle := TAU * float(index) / 9.0
+		var target := sparkle.position + Vector2.from_angle(angle) * (62.0 + index * 5.0)
+		var tween := create_tween().set_parallel(true).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tween.tween_property(sparkle, "position", target, 0.45)
+		tween.tween_property(sparkle, "modulate:a", 0.0, 0.45)
+		tween.chain().tween_callback(sparkle.queue_free)
 
 func _finish_level() -> void:
 	_resolving = true
