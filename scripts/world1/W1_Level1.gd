@@ -1,2 +1,2 @@
-## Configuración del nivel 1. La lógica común vive en GridPathLevel.gd.
+## Nivel introductorio: tablero abierto para aprender a trazar caminos.
 extends "res://scripts/world1/GridPathLevel.gd"

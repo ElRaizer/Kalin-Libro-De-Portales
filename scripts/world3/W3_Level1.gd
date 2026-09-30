@@ -65,8 +65,10 @@ var _resolving: bool = false
 @onready var libro: CanvasLayer = $LibroHechizos
 
 func _ready() -> void:
+	_setup_drop_slots()
 	_build_round_plan()
 	_build_choice_buttons()
+	_configure_keyboard_navigation()
 	cast_button.pressed.connect(_on_cast_pressed)
 	GameManager.magic_points_changed.connect(_on_magic_points_changed)
 	_on_magic_points_changed(GameManager.magic_points)
@@ -84,26 +86,43 @@ func _build_round_plan() -> void:
 	round_plan.append_array(challenge_rounds)
 
 func _build_choice_buttons() -> void:
-	for noun: Dictionary in NOUNS:
-		var word: String = noun.maya
-		var button := _make_word_button(&"KalinNounButton")
-		noun_grid.add_child(button)
-		noun_buttons[word] = button
-		button.pressed.connect(_select_noun.bind(word))
-	for adjective: Dictionary in ADJECTIVES:
-		var word: String = adjective.maya
-		var button := _make_word_button(&"KalinAdjectiveButton")
-		adjective_grid.add_child(button)
-		adjective_buttons[word] = button
-		button.pressed.connect(_select_adjective.bind(word))
+	for child: Node in noun_grid.get_children():
+		if child is DraggableWordButton:
+			var button := child as DraggableWordButton
+			noun_buttons[button.word_value] = button
+			button.pressed.connect(_select_noun.bind(button.word_value))
+	for child: Node in adjective_grid.get_children():
+		if child is DraggableWordButton:
+			var button := child as DraggableWordButton
+			adjective_buttons[button.word_value] = button
+			button.pressed.connect(_select_adjective.bind(button.word_value))
 
-func _make_word_button(variation: StringName) -> Button:
-	var button := Button.new()
-	button.custom_minimum_size = Vector2(136, 58)
-	button.toggle_mode = true
-	button.theme_type_variation = variation
-	button.add_theme_font_size_override("font_size", 17)
-	return button
+func _configure_keyboard_navigation() -> void:
+	var nouns: Array[Button] = []
+	var adjectives: Array[Button] = []
+	for child: Node in noun_grid.get_children():
+		if child is Button:
+			nouns.append(child as Button)
+	for child: Node in adjective_grid.get_children():
+		if child is Button:
+			adjectives.append(child as Button)
+	_configure_horizontal_row(nouns)
+	_configure_horizontal_row(adjectives)
+	for index: int in range(mini(nouns.size(), adjectives.size())):
+		nouns[index].focus_neighbor_bottom = nouns[index].get_path_to(adjectives[index])
+		adjectives[index].focus_neighbor_top = adjectives[index].get_path_to(nouns[index])
+		adjectives[index].focus_neighbor_bottom = adjectives[index].get_path_to(cast_button)
+
+func _configure_horizontal_row(buttons: Array[Button]) -> void:
+	if buttons.is_empty():
+		return
+	for index: int in range(buttons.size()):
+		buttons[index].focus_neighbor_left = buttons[index].get_path_to(buttons[posmod(index - 1, buttons.size())])
+		buttons[index].focus_neighbor_right = buttons[index].get_path_to(buttons[(index + 1) % buttons.size()])
+
+func _setup_drop_slots() -> void:
+	noun_slot.connect("word_dropped", _select_noun)
+	adjective_slot.connect("word_dropped", _select_adjective)
 
 func _show_round() -> void:
 	if round_index >= round_plan.size():
@@ -124,15 +143,17 @@ func _show_round() -> void:
 	request_label.text = "%s necesita que completes este hechizo:" % challenge.animal_spanish
 	if guided:
 		target_badge.text = "%s  %s" % [_noun_emoji(challenge.noun), challenge.translation]
-		instruction_label.text = "Selecciona las dos palabras por su significado y lanza el hechizo."
+		instruction_label.text = "Haz clic o arrastra cada palabra a su recuadro y lanza el hechizo."
 	else:
 		target_badge.text = "%s  %s" % [_noun_emoji(challenge.noun), _challenge_prompt(challenge)]
-		instruction_label.text = "Forma la frase sin traducciones en las opciones."
+		instruction_label.text = "Haz clic o arrastra para formar la frase sin traducciones."
 	translation_label.text = "La traducción aparecerá cuando el hechizo sea correcto."
 	_update_slots()
 	_update_choice_labels()
 	_set_choices_enabled(true)
 	progress_label.text = "Ronda %d de %d" % [round_index + 1, round_plan.size()]
+	if not noun_buttons.is_empty():
+		(noun_buttons.values()[0] as Button).grab_focus()
 
 func _current_challenge() -> Dictionary:
 	return CHALLENGES[round_plan[round_index]]
@@ -160,6 +181,7 @@ func _select_noun(word: String) -> void:
 	selected_noun = word
 	_update_slots()
 	_update_button_states()
+	_celebrate_selection(noun_slot)
 
 func _select_adjective(word: String) -> void:
 	if _resolving:
@@ -167,6 +189,13 @@ func _select_adjective(word: String) -> void:
 	selected_adjective = word
 	_update_slots()
 	_update_button_states()
+	_celebrate_selection(adjective_slot)
+
+func _celebrate_selection(slot: Control) -> void:
+	if slot.has_method("pop"):
+		slot.pop()
+	feedback_label.text = "¡Bien! Completa el otro espacio o lanza el hechizo."
+	feedback_label.add_theme_color_override("font_color", COLOR_INK)
 
 func _update_slots() -> void:
 	noun_slot.text = selected_noun + "e'" if selected_noun != "" else "sustantivo + e'"
@@ -204,6 +233,7 @@ func _on_cast_pressed() -> void:
 	translation_label.add_theme_color_override("font_color", COLOR_SUCCESS)
 	feedback_label.text = "¡Hechizo correcto! El objeto fue creado a la medida."
 	feedback_label.add_theme_color_override("font_color", COLOR_SUCCESS)
+	_success_burst(spell_panel)
 	var tween := create_tween()
 	tween.tween_property(spell_panel, "scale", Vector2(1.025, 1.025), 0.12)
 	tween.tween_property(spell_panel, "scale", Vector2.ONE, 0.18)
@@ -228,6 +258,32 @@ func _show_incorrect_feedback(challenge: Dictionary) -> void:
 	tween.tween_property(choices_panel, "position:x", original_x - 8.0, 0.05)
 	tween.tween_property(choices_panel, "position:x", original_x + 8.0, 0.05)
 	tween.tween_property(choices_panel, "position:x", original_x, 0.06)
+	_pulse_error_slots(noun_ok, adjective_ok)
+
+func _pulse_error_slots(noun_ok: bool, adjective_ok: bool) -> void:
+	for slot: Control in [noun_slot, adjective_slot]:
+		var is_ok := noun_ok if slot == noun_slot else adjective_ok
+		if is_ok:
+			continue
+		var tween := create_tween()
+		tween.tween_property(slot, "modulate", Color(1.25, 0.55, 0.55, 1.0), 0.08)
+		tween.tween_property(slot, "modulate", Color.WHITE, 0.2)
+
+func _success_burst(origin: Control) -> void:
+	for index: int in range(9):
+		var sparkle := Label.new()
+		sparkle.text = "✦"
+		sparkle.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		sparkle.add_theme_font_size_override("font_size", 18 + index % 3 * 4)
+		sparkle.add_theme_color_override("font_color", Color("ffd85a"))
+		$UI.add_child(sparkle)
+		sparkle.position = origin.position + origin.size * 0.5
+		var angle := TAU * float(index) / 9.0
+		var target := sparkle.position + Vector2.from_angle(angle) * (62.0 + index * 5.0)
+		var tween := create_tween().set_parallel(true).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tween.tween_property(sparkle, "position", target, 0.45)
+		tween.tween_property(sparkle, "modulate:a", 0.0, 0.45)
+		tween.chain().tween_callback(sparkle.queue_free)
 
 func _phrase_noun(phrase: String) -> String:
 	var parts := phrase.split(" ")
@@ -256,6 +312,7 @@ func _finish_level() -> void:
 	complete_panel.modulate.a = 0.0
 	var tween := create_tween()
 	tween.tween_property(complete_panel, "modulate:a", 1.0, 0.3)
+	$UI/CompletePanel/Content/NextButton.grab_focus()
 
 func _on_magic_points_changed(value: int) -> void:
 	magic_label.text = "%d pts mágicos" % value

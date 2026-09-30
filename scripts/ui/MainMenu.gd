@@ -13,6 +13,7 @@ var level_buttons: Array[Button] = []
 func _ready() -> void:
 	_setup_level_buttons()
 	_refresh_ui()
+	play_btn.grab_focus()
 	GameManager.magic_points_changed.connect(_on_progress_changed)
 	GameManager.level_completed.connect(_on_level_completed)
 	GameManager.progress_reset.connect(_refresh_ui)

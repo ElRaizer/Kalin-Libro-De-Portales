@@ -3,7 +3,9 @@
 [ext_resource type="Script" uid="uid://cmj8x3eg7tafw" path="res://scripts/world3/W3_Level1.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://bedp7h6bqksto" path="res://Arte/backgrounds/bg_level1.svg" id="2_bg"]
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="3_book"]
-[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="4_theme"]
+[ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="4_theme"]
+[ext_resource type="Script" uid="uid://3tucogv2ix4h" path="res://scripts/components/DraggableWordButton.gd" id="5_drag_button"]
+[ext_resource type="Script" uid="uid://bc3tppmuyyvks" path="res://scripts/components/WordDropSlot.gd" id="6_drop_slot"]
 
 [node name="Level3" type="Node2D" unique_id=1006187822]
 script = ExtResource("1_script")
@@ -24,12 +26,12 @@ color = Color(0.035, 0.18, 0.17, 0.32)
 [node name="UI" type="CanvasLayer" parent="." unique_id=1144917037]
 
 [node name="TopBar" type="Panel" parent="UI" unique_id=1381639702]
-theme = ExtResource("4_theme")
-theme_type_variation = &"KalinTopBarPanel"
 offset_left = 14.0
 offset_top = 10.0
 offset_right = 1266.0
 offset_bottom = 64.0
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinTopBarPanel"
 
 [node name="Bar" type="HBoxContainer" parent="UI/TopBar" unique_id=190388967]
 layout_mode = 1
@@ -75,12 +77,12 @@ theme_override_font_sizes/font_size = 17
 text = "📖 Libro"
 
 [node name="RequestPanel" type="Panel" parent="UI" unique_id=1734585076]
-theme = ExtResource("4_theme")
-theme_type_variation = &"KalinRequestPanel"
 offset_left = 28.0
 offset_top = 80.0
 offset_right = 364.0
 offset_bottom = 622.0
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinRequestPanel"
 
 [node name="Content" type="VBoxContainer" parent="UI/RequestPanel" unique_id=2128916540]
 layout_mode = 1
@@ -138,13 +140,13 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="SpellPanel" type="Panel" parent="UI" unique_id=1435142878]
-theme = ExtResource("4_theme")
-theme_type_variation = &"KalinSpellPanel"
 offset_left = 384.0
 offset_top = 80.0
 offset_right = 1252.0
 offset_bottom = 282.0
 pivot_offset = Vector2(434, 101)
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinSpellPanel"
 
 [node name="Content" type="VBoxContainer" parent="UI/SpellPanel" unique_id=1678517578]
 layout_mode = 1
@@ -182,24 +184,27 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="NounSlot" type="Label" parent="UI/SpellPanel/Content/Sentence" unique_id=2051599248]
-theme_type_variation = &"KalinNounSlot"
 custom_minimum_size = Vector2(285, 68)
 layout_mode = 2
+theme_type_variation = &"KalinNounSlot"
 theme_override_colors/font_color = Color(0.04, 0.34, 0.32, 1)
 theme_override_font_sizes/font_size = 25
 text = "sustantivo + e'"
 horizontal_alignment = 1
 vertical_alignment = 1
+script = ExtResource("6_drop_slot")
 
 [node name="AdjectiveSlot" type="Label" parent="UI/SpellPanel/Content/Sentence" unique_id=2089037557]
-theme_type_variation = &"KalinAdjectiveSlot"
 custom_minimum_size = Vector2(285, 68)
 layout_mode = 2
+theme_type_variation = &"KalinAdjectiveSlot"
 theme_override_colors/font_color = Color(0.31, 0.18, 0.46, 1)
 theme_override_font_sizes/font_size = 25
 text = "adjetivo"
 horizontal_alignment = 1
 vertical_alignment = 1
+script = ExtResource("6_drop_slot")
+accepted_kind = "adjective"
 
 [node name="TranslationLabel" type="Label" parent="UI/SpellPanel/Content" unique_id=1464579550]
 custom_minimum_size = Vector2(0, 56)
@@ -212,12 +217,12 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="ChoicesPanel" type="Panel" parent="UI" unique_id=13194181]
-theme = ExtResource("4_theme")
-theme_type_variation = &"KalinChoicesPanel"
 offset_left = 384.0
 offset_top = 296.0
 offset_right = 1252.0
 offset_bottom = 540.0
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinChoicesPanel"
 
 [node name="Content" type="VBoxContainer" parent="UI/ChoicesPanel" unique_id=587962582]
 layout_mode = 1
@@ -240,9 +245,65 @@ text = "1. ELIGE EL OBJETO"
 
 [node name="NounGrid" type="GridContainer" parent="UI/ChoicesPanel/Content" unique_id=192325553]
 layout_mode = 2
+size_flags_horizontal = 4
 size_flags_vertical = 3
 theme_override_constants/h_separation = 10
 columns = 5
+
+[node name="MayakButton" type="Button" parent="UI/ChoicesPanel/Content/NounGrid" unique_id=1459634447]
+custom_minimum_size = Vector2(136, 58)
+layout_mode = 2
+theme_type_variation = &"KalinNounButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "mayak
+Mesa"
+script = ExtResource("5_drag_button")
+word_value = "mayak"
+
+[node name="LakButton" type="Button" parent="UI/ChoicesPanel/Content/NounGrid" unique_id=1143857389]
+custom_minimum_size = Vector2(136, 58)
+layout_mode = 2
+theme_type_variation = &"KalinNounButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "lak
+Plato"
+script = ExtResource("5_drag_button")
+word_value = "lak"
+
+[node name="ChaakButton" type="Button" parent="UI/ChoicesPanel/Content/NounGrid" unique_id=1148462815]
+custom_minimum_size = Vector2(136, 58)
+layout_mode = 2
+theme_type_variation = &"KalinNounButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "ch'áak
+Cama"
+script = ExtResource("5_drag_button")
+word_value = "ch'áak"
+
+[node name="ChanButton" type="Button" parent="UI/ChoicesPanel/Content/NounGrid" unique_id=801170274]
+custom_minimum_size = Vector2(136, 58)
+layout_mode = 2
+theme_type_variation = &"KalinNounButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "chan
+Silla"
+script = ExtResource("5_drag_button")
+word_value = "chan"
+
+[node name="JanalButton" type="Button" parent="UI/ChoicesPanel/Content/NounGrid" unique_id=1590516451]
+custom_minimum_size = Vector2(136, 58)
+layout_mode = 2
+theme_type_variation = &"KalinNounButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "janal
+Comida"
+script = ExtResource("5_drag_button")
+word_value = "janal"
 
 [node name="AdjectiveHeading" type="Label" parent="UI/ChoicesPanel/Content" unique_id=1931576845]
 layout_mode = 2
@@ -252,24 +313,85 @@ text = "2. ELIGE LA CUALIDAD"
 
 [node name="AdjectiveGrid" type="GridContainer" parent="UI/ChoicesPanel/Content" unique_id=2134978598]
 layout_mode = 2
+size_flags_horizontal = 4
 size_flags_vertical = 3
 theme_override_constants/h_separation = 10
 columns = 5
 
+[node name="MejenButton" type="Button" parent="UI/ChoicesPanel/Content/AdjectiveGrid" unique_id=402339599]
+custom_minimum_size = Vector2(136, 58)
+layout_mode = 2
+theme_type_variation = &"KalinAdjectiveButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "mejen
+Pequeña"
+script = ExtResource("5_drag_button")
+word_value = "mejen"
+word_kind = "adjective"
+
+[node name="NojochButton" type="Button" parent="UI/ChoicesPanel/Content/AdjectiveGrid" unique_id=1362829747]
+custom_minimum_size = Vector2(136, 58)
+layout_mode = 2
+theme_type_variation = &"KalinAdjectiveButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "nojoch
+Grande"
+script = ExtResource("5_drag_button")
+word_value = "nojoch"
+word_kind = "adjective"
+
+[node name="JatsutsButton" type="Button" parent="UI/ChoicesPanel/Content/AdjectiveGrid" unique_id=163146066]
+custom_minimum_size = Vector2(136, 58)
+layout_mode = 2
+theme_type_variation = &"KalinAdjectiveButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "Jats'uts
+Bonita"
+script = ExtResource("5_drag_button")
+word_value = "Jats'uts"
+word_kind = "adjective"
+
+[node name="KiButton" type="Button" parent="UI/ChoicesPanel/Content/AdjectiveGrid" unique_id=223998846]
+custom_minimum_size = Vector2(136, 58)
+layout_mode = 2
+theme_type_variation = &"KalinAdjectiveButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "ki'
+Deliciosa"
+script = ExtResource("5_drag_button")
+word_value = "ki'"
+word_kind = "adjective"
+
+[node name="JachButton" type="Button" parent="UI/ChoicesPanel/Content/AdjectiveGrid" unique_id=536984818]
+custom_minimum_size = Vector2(136, 58)
+layout_mode = 2
+theme_type_variation = &"KalinAdjectiveButton"
+theme_override_font_sizes/font_size = 17
+toggle_mode = true
+text = "jach'
+Fuerte"
+script = ExtResource("5_drag_button")
+word_value = "jach'"
+word_kind = "adjective"
+
 [node name="CastButton" type="Button" parent="UI/ChoicesPanel/Content" unique_id=1488227754]
-theme_type_variation = &"KalinPrimaryButton"
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
+theme_type_variation = &"KalinPrimaryButton"
 theme_override_font_sizes/font_size = 19
 text = "✨ Lanzar hechizo"
 
 [node name="FeedbackPanel" type="Panel" parent="UI" unique_id=117290722]
-theme = ExtResource("4_theme")
-theme_type_variation = &"KalinFeedbackPanel"
 offset_left = 384.0
 offset_top = 550.0
 offset_right = 1252.0
 offset_bottom = 622.0
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinFeedbackPanel"
 
 [node name="FeedbackLabel" type="Label" parent="UI/FeedbackPanel" unique_id=1508617716]
 layout_mode = 1
@@ -290,12 +412,12 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="StatusPanel" type="Panel" parent="UI" unique_id=320159823]
-theme = ExtResource("4_theme")
-theme_type_variation = &"KalinTopBarPanel"
 offset_left = 28.0
 offset_top = 638.0
 offset_right = 1252.0
 offset_bottom = 706.0
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinTopBarPanel"
 
 [node name="StatusRow" type="HBoxContainer" parent="UI/StatusPanel" unique_id=445337347]
 layout_mode = 1
@@ -335,13 +457,13 @@ offset_bottom = 720.0
 color = Color(0.02, 0.08, 0.07, 0.72)
 
 [node name="CompletePanel" type="Panel" parent="UI" unique_id=206784819]
-theme = ExtResource("4_theme")
-theme_type_variation = &"KalinCompletionPanel"
 visible = false
 offset_left = 310.0
 offset_top = 132.0
 offset_right = 970.0
 offset_bottom = 588.0
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinCompletionPanel"
 
 [node name="Content" type="VBoxContainer" parent="UI/CompletePanel" unique_id=1543145103]
 layout_mode = 1
@@ -380,21 +502,23 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="NextButton" type="Button" parent="UI/CompletePanel/Content" unique_id=1699428236]
-theme_type_variation = &"KalinPrimaryButton"
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
+theme_type_variation = &"KalinPrimaryButton"
 theme_override_font_sizes/font_size = 22
 text = "Continuar a Yo Quiero →"
 
 [node name="ReplayButton" type="Button" parent="UI/CompletePanel/Content" unique_id=1212717226]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 18
 text = "Practicar de nuevo"
 
 [node name="MenuButton" type="Button" parent="UI/CompletePanel/Content" unique_id=384809273]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 18
 text = "Volver al menú"
 

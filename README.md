@@ -33,6 +33,10 @@ El orden de progreso es Mundo 1 completo → Mundo 2 → Mundo 3 → Mundo 4 →
 
 Los puntos mágicos son una puntuación acumulativa de desempeño: se obtienen al aprender vocabulario nuevo y completar niveles. No se consumen ni bloquean el avance.
 
+Los cuatro niveles del Mundo 1 usan tableros de 12 columnas y presentan una
+progresión propia: tutorial abierto, planificación de rutas sin cruces, memoria
+de obstáculos y recuerdo de destinos sin pistas textuales.
+
 ## Ejecutar el proyecto
 
 1. Instala Godot 4.6.
@@ -44,10 +48,11 @@ No se requieren complementos ni dependencias externas.
 
 ## Controles
 
-- Introducción: clic izquierdo, `Espacio` o `Enter` para avanzar.
-- Mundo 1: clic y arrastre para conectar fichas.
-- Mundos 2, 3, 4 y 5: clic para elegir palabras o respuestas.
-- Libro de hechizos: botón de la interfaz; flechas para cambiar de página y `Esc` para cerrarlo.
+- En todos los menús: `Tab` / `Shift+Tab` o flechas para mover el foco; `Enter` o `Espacio` para activar la opción resaltada.
+- Introducción: clic izquierdo, `Espacio` o `Enter` para avanzar; el botón permite saltarla con teclado.
+- Mundo 1: clic y arrastre, o flechas para mover el cursor del tablero. `Enter` / `Espacio` inicia el camino; las flechas lo trazan y `Esc` lo cancela.
+- Mundos 2, 3, 4 y 5: `Tab` / flechas para elegir una palabra o respuesta y `Enter` / `Espacio` para confirmarla.
+- Libro de hechizos: flechas izquierda/derecha para cambiar de página y `Esc` para cerrarlo. Al cerrar, el foco vuelve al control que abrió el libro.
 
 ## Documentación
 

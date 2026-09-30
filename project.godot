@@ -23,6 +23,7 @@ config/features=PackedStringArray("4.6", "Forward Plus")
 
 WindowManager="*res://scripts/autoloads/WindowManager.gd"
 GameManager="*res://scripts/autoloads/GameManager.gd"
+AccessibilityManager="*res://scripts/autoloads/AccessibilityManager.gd"
 
 [display]
 

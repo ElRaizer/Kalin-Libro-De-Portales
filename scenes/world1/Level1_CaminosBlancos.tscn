@@ -20,7 +20,7 @@ sprite = ExtResource("4_peek")
 destination_text = "Peek'"
 color = Color(0.9, 0.55, 0.2, 1)
 start_cell = Vector2i(0, 1)
-destination_cell = Vector2i(8, 1)
+destination_cell = Vector2i(11, 1)
 
 [sub_resource type="Resource" id="Resource_81r1v"]
 script = ExtResource("4_japx6")
@@ -32,7 +32,7 @@ sprite = ExtResource("5_miis")
 destination_text = "Miis"
 color = Color(0.55, 0.38, 0.85, 1)
 start_cell = Vector2i(0, 3)
-destination_cell = Vector2i(8, 3)
+destination_cell = Vector2i(11, 3)
 
 [sub_resource type="Resource" id="Resource_s82b0"]
 script = ExtResource("4_japx6")
@@ -44,11 +44,11 @@ sprite = ExtResource("6_kaax")
 destination_text = "Kaax"
 color = Color(0.25, 0.65, 0.3, 1)
 start_cell = Vector2i(0, 5)
-destination_cell = Vector2i(8, 5)
+destination_cell = Vector2i(11, 5)
 
 [node name="Level1" type="Node2D" unique_id=307257646]
 script = ExtResource("1")
-default_instruction = "Haz clic en un animal y arrastra hasta su casa. Conecta los tres para completar el nivel."
+default_instruction = "Tutorial: el tablero está abierto. Conecta cada animal con su palabra al otro lado."
 selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
 
 [node name="Background" type="TextureRect" parent="." unique_id=1713056734]
@@ -59,7 +59,9 @@ expand_mode = 1
 stretch_mode = 6
 
 [node name="GridBoard" parent="." unique_id=589564223 instance=ExtResource("3_eeq0b")]
-obstacles = Array[Vector2i]([Vector2i(3, 1), Vector2i(5, 3), Vector2i(3, 5)])
+columns = 12
+tile_size = 72
+grid_origin = Vector2(208, 88)
 words = Array[ExtResource("4_japx6")]([SubResource("Resource_emkns"), SubResource("Resource_81r1v"), SubResource("Resource_s82b0")])
 
 [node name="TopBarBG" type="Panel" parent="." unique_id=234391001]
