@@ -68,6 +68,7 @@ func _ready() -> void:
 	_setup_drop_slots()
 	_build_round_plan()
 	_build_choice_buttons()
+	_configure_keyboard_navigation()
 	cast_button.pressed.connect(_on_cast_pressed)
 	GameManager.magic_points_changed.connect(_on_magic_points_changed)
 	_on_magic_points_changed(GameManager.magic_points)
@@ -95,6 +96,29 @@ func _build_choice_buttons() -> void:
 			var button := child as DraggableWordButton
 			adjective_buttons[button.word_value] = button
 			button.pressed.connect(_select_adjective.bind(button.word_value))
+
+func _configure_keyboard_navigation() -> void:
+	var nouns: Array[Button] = []
+	var adjectives: Array[Button] = []
+	for child: Node in noun_grid.get_children():
+		if child is Button:
+			nouns.append(child as Button)
+	for child: Node in adjective_grid.get_children():
+		if child is Button:
+			adjectives.append(child as Button)
+	_configure_horizontal_row(nouns)
+	_configure_horizontal_row(adjectives)
+	for index: int in range(mini(nouns.size(), adjectives.size())):
+		nouns[index].focus_neighbor_bottom = nouns[index].get_path_to(adjectives[index])
+		adjectives[index].focus_neighbor_top = adjectives[index].get_path_to(nouns[index])
+		adjectives[index].focus_neighbor_bottom = adjectives[index].get_path_to(cast_button)
+
+func _configure_horizontal_row(buttons: Array[Button]) -> void:
+	if buttons.is_empty():
+		return
+	for index: int in range(buttons.size()):
+		buttons[index].focus_neighbor_left = buttons[index].get_path_to(buttons[posmod(index - 1, buttons.size())])
+		buttons[index].focus_neighbor_right = buttons[index].get_path_to(buttons[(index + 1) % buttons.size()])
 
 func _setup_drop_slots() -> void:
 	noun_slot.connect("word_dropped", _select_noun)
@@ -128,6 +152,8 @@ func _show_round() -> void:
 	_update_choice_labels()
 	_set_choices_enabled(true)
 	progress_label.text = "Ronda %d de %d" % [round_index + 1, round_plan.size()]
+	if not noun_buttons.is_empty():
+		(noun_buttons.values()[0] as Button).grab_focus()
 
 func _current_challenge() -> Dictionary:
 	return CHALLENGES[round_plan[round_index]]
@@ -286,6 +312,7 @@ func _finish_level() -> void:
 	complete_panel.modulate.a = 0.0
 	var tween := create_tween()
 	tween.tween_property(complete_panel, "modulate:a", 1.0, 0.3)
+	$UI/CompletePanel/Content/NextButton.grab_focus()
 
 func _on_magic_points_changed(value: int) -> void:
 	magic_label.text = "%d pts mágicos" % value

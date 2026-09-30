@@ -20,6 +20,7 @@ var _entries: Array[String] = []
 var _spread_index: int = 0
 var _visible_words: Array[String] = ["", ""]
 var _notice_tween: Tween
+var _previous_focus: Control
 
 func _ready() -> void:
 	visible = false
@@ -32,6 +33,7 @@ func _ready() -> void:
 	audio_notice.visible = false
 
 func show_book() -> void:
+	_previous_focus = get_viewport().gui_get_focus_owner()
 	_collect_entries()
 	_spread_index = clampi(_spread_index, 0, maxi(_spread_count() - 1, 0))
 	_render_spread()
@@ -42,6 +44,9 @@ func hide_book() -> void:
 	visible = false
 	if audio_player.playing:
 		audio_player.stop()
+	if is_instance_valid(_previous_focus) and _previous_focus.is_visible_in_tree():
+		_previous_focus.grab_focus()
+	_previous_focus = null
 
 func _collect_entries() -> void:
 	_entries.clear()

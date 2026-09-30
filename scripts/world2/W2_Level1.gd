@@ -119,6 +119,8 @@ func _build_choices() -> void:
 		choices_grid.add_child(btn)
 		_choice_buttons.append(btn)
 		btn.pressed.connect(_on_choice_pressed.bind(str(obj.maya)))
+	if not _choice_buttons.is_empty():
+		_choice_buttons[0].grab_focus()
 
 # ─── Selección ────────────────────────────────────────────────────────────────
 func _on_choice_pressed(maya_word: String) -> void:
@@ -168,6 +170,7 @@ func _on_level_complete() -> void:
 	complete_pan.visible = true
 	complete_pan.modulate.a = 0.0
 	create_tween().tween_property(complete_pan, "modulate:a", 1.0, 0.25)
+	$UI/CompletePanel/VBox/NextBtn.grab_focus()
 
 func _on_magic_points_changed(new_total: int) -> void:
 	magic_lbl.text = "%d pts mágicos" % new_total

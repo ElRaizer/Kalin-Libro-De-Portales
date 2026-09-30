@@ -66,6 +66,7 @@ func _ready() -> void:
 	completion.menu_pressed.connect(_on_menu_pressed)
 	_build_round_plan()
 	_build_choice_buttons()
+	_configure_keyboard_navigation()
 	_show_round()
 
 func _build_round_plan() -> void:
@@ -92,6 +93,30 @@ func _build_choice_buttons() -> void:
 			var button := child as DraggableWordButton
 			modifier_buttons[button.word_value] = button
 			button.pressed.connect(_select_modifier.bind(button.word_value))
+
+func _configure_keyboard_navigation() -> void:
+	var foods: Array[Button] = []
+	var modifiers: Array[Button] = []
+	for child: Node in food_grid.get_children():
+		if child is Button:
+			foods.append(child as Button)
+	for child: Node in modifier_grid.get_children():
+		if child is Button:
+			modifiers.append(child as Button)
+	_configure_horizontal_row(foods)
+	_configure_horizontal_row(modifiers)
+	for index: int in range(foods.size()):
+		var target := modifiers[mini(index, modifiers.size() - 1)]
+		foods[index].focus_neighbor_bottom = foods[index].get_path_to(target)
+	for button: Button in modifiers:
+		button.focus_neighbor_bottom = button.get_path_to(serve_button)
+
+func _configure_horizontal_row(buttons: Array[Button]) -> void:
+	if buttons.is_empty():
+		return
+	for index: int in range(buttons.size()):
+		buttons[index].focus_neighbor_left = buttons[index].get_path_to(buttons[posmod(index - 1, buttons.size())])
+		buttons[index].focus_neighbor_right = buttons[index].get_path_to(buttons[(index + 1) % buttons.size()])
 
 func _setup_drop_slots() -> void:
 	food_slot.connect("word_dropped", _select_food)
@@ -132,6 +157,8 @@ func _show_round() -> void:
 	_update_button_states()
 	_set_choices_enabled(true)
 	progress_label.text = "Ronda %d de %d" % [round_index + 1, round_plan.size()]
+	if not food_buttons.is_empty():
+		(food_buttons.values()[0] as Button).grab_focus()
 
 func _update_choice_labels(guided: bool) -> void:
 	for food: Dictionary in FOODS:

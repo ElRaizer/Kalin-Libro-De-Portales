@@ -44,10 +44,11 @@ No se requieren complementos ni dependencias externas.
 
 ## Controles
 
-- Introducción: clic izquierdo, `Espacio` o `Enter` para avanzar.
-- Mundo 1: clic y arrastre para conectar fichas.
-- Mundos 2, 3, 4 y 5: clic para elegir palabras o respuestas.
-- Libro de hechizos: botón de la interfaz; flechas para cambiar de página y `Esc` para cerrarlo.
+- En todos los menús: `Tab` / `Shift+Tab` o flechas para mover el foco; `Enter` o `Espacio` para activar la opción resaltada.
+- Introducción: clic izquierdo, `Espacio` o `Enter` para avanzar; el botón permite saltarla con teclado.
+- Mundo 1: clic y arrastre, o flechas para mover el cursor del tablero. `Enter` / `Espacio` inicia el camino; las flechas lo trazan y `Esc` lo cancela.
+- Mundos 2, 3, 4 y 5: `Tab` / flechas para elegir una palabra o respuesta y `Enter` / `Espacio` para confirmarla.
+- Libro de hechizos: flechas izquierda/derecha para cambiar de página y `Esc` para cerrarlo. Al cerrar, el foco vuelve al control que abrió el libro.
 
 ## Documentación
 

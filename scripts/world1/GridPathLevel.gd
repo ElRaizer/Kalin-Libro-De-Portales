@@ -44,9 +44,10 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if (
 		_dialogue_open
-		and event is InputEventMouseButton
-		and event.pressed
-		and event.button_index == MOUSE_BUTTON_LEFT
+		and (
+			(event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT)
+			or (event is InputEventKey and event.pressed and event.keycode in [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE, KEY_ESCAPE])
+		)
 	):
 		_close_dialogue()
 		get_viewport().set_input_as_handled()
@@ -118,6 +119,7 @@ func _on_level_complete() -> void:
 	complete_pan.modulate.a = 0.0
 	create_tween().tween_property(complete_pan, "modulate:a", 1.0, 0.25)
 	_set_instr("Nivel completado. Pulsa el botón para continuar.")
+	$UI/CompletePanel/VBox/NextBtn.grab_focus()
 
 func _safe_navigate(key: String) -> void:
 	grid_board.set_interaction_enabled(false)

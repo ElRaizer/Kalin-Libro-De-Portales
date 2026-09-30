@@ -103,8 +103,12 @@ var active_index: int = -1
 var last_cell: Vector2i = Vector2i(-1, -1)
 var input_enabled: bool = true
 var ring_tween: Tween
+var keyboard_cursor: Panel
+var keyboard_cell: Vector2i = Vector2i(-1, -1)
+var keyboard_visual_visible: bool = true
 
 func _ready() -> void:
+	add_to_group(&"keyboard_focus_visual")
 	selection_ring.visible = false
 	if Engine.is_editor_hint():
 		_watch_word_changes()
@@ -214,6 +218,7 @@ func rebuild_preview() -> void:
 			continue
 		_add_destination_preview(word, index)
 		_add_word_preview(word, index)
+	_add_keyboard_cursor()
 
 	_refresh_all_path_visuals()
 
@@ -236,6 +241,11 @@ func set_interaction_enabled(enabled: bool) -> void:
 	input_enabled = enabled
 	if not enabled:
 		_stop_drawing()
+	elif keyboard_cell != Vector2i(-1, -1):
+		keyboard_cell = _first_available_word_cell()
+		_update_keyboard_cursor()
+	if is_instance_valid(keyboard_cursor):
+		keyboard_cursor.visible = keyboard_visual_visible and enabled and keyboard_cell != Vector2i(-1, -1)
 
 func get_word_node(word_index: int) -> Control:
 	return word_nodes.get(word_index) as Control
@@ -362,6 +372,79 @@ func _unhandled_input(event: InputEvent) -> void:
 		if cell != last_cell:
 			_fill_gap(last_cell, cell)
 			last_cell = cell
+	elif event is InputEventKey and event.pressed and not event.echo:
+		if _handle_keyboard_input(event):
+			get_viewport().set_input_as_handled()
+
+func _handle_keyboard_input(event: InputEventKey) -> bool:
+	var direction := Vector2i.ZERO
+	if event.is_action_pressed(&"ui_left"):
+		direction = Vector2i.LEFT
+	elif event.is_action_pressed(&"ui_right"):
+		direction = Vector2i.RIGHT
+	elif event.is_action_pressed(&"ui_up"):
+		direction = Vector2i.UP
+	elif event.is_action_pressed(&"ui_down"):
+		direction = Vector2i.DOWN
+	elif event.is_action_pressed(&"ui_accept"):
+		_ensure_keyboard_cursor()
+		_handle_press(keyboard_cell)
+		return true
+	elif event.is_action_pressed(&"ui_cancel") and drawing:
+		_clear_path(active_index)
+		_stop_drawing()
+		return true
+	else:
+		return false
+
+	if keyboard_cell == Vector2i(-1, -1):
+		_ensure_keyboard_cursor()
+		return true
+	var next_cell := keyboard_cell + direction
+	if is_valid_cell(next_cell):
+		keyboard_cell = next_cell
+		_update_keyboard_cursor()
+		if drawing:
+			_try_cell(keyboard_cell)
+			last_cell = keyboard_cell
+	return true
+
+func _ensure_keyboard_cursor() -> void:
+	if keyboard_cell == Vector2i(-1, -1):
+		keyboard_cell = _first_available_word_cell()
+		_update_keyboard_cursor()
+
+func _first_available_word_cell() -> Vector2i:
+	for index: int in range(words.size()):
+		if index not in connected and is_instance_valid(words[index]):
+			return words[index].start_cell
+	return Vector2i.ZERO
+
+func _add_keyboard_cursor() -> void:
+	keyboard_cursor = Panel.new()
+	keyboard_cursor.name = "KeyboardCursor"
+	keyboard_cursor.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	keyboard_cursor.z_index = 20
+	var cursor_style := StyleBoxFlat.new()
+	cursor_style.bg_color = Color(0, 0, 0, 0)
+	cursor_style.border_color = Color("fff06a")
+	cursor_style.set_border_width_all(5)
+	cursor_style.set_corner_radius_all(8)
+	keyboard_cursor.add_theme_stylebox_override(&"panel", cursor_style)
+	preview_root.add_child(keyboard_cursor)
+	_update_keyboard_cursor()
+
+func _update_keyboard_cursor() -> void:
+	if not is_instance_valid(keyboard_cursor):
+		return
+	keyboard_cursor.visible = keyboard_visual_visible and input_enabled and keyboard_cell != Vector2i(-1, -1)
+	if keyboard_cursor.visible:
+		keyboard_cursor.position = cell_to_local_position(keyboard_cell) + Vector2(1, 1)
+		keyboard_cursor.size = Vector2(tile_size - 2, tile_size - 2)
+
+func set_keyboard_visual_visible(value: bool) -> void:
+	keyboard_visual_visible = value
+	_update_keyboard_cursor()
 
 func _handle_press(cell: Vector2i) -> void:
 	if not is_valid_cell(cell):
