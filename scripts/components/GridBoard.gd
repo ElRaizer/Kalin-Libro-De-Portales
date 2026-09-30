@@ -98,6 +98,7 @@ var tile_rects: Dictionary = {}
 var word_nodes: Dictionary = {}
 var path_lines: Dictionary = {}
 var path_tips: Dictionary = {}
+var destination_nodes: Dictionary = {}
 var drawing: bool = false
 var active_index: int = -1
 var last_cell: Vector2i = Vector2i(-1, -1)
@@ -195,6 +196,7 @@ func rebuild_preview() -> void:
 	word_nodes.clear()
 	path_lines.clear()
 	path_tips.clear()
+	destination_nodes.clear()
 
 	if Engine.is_editor_hint() and not show_preview_in_editor:
 		return
@@ -284,6 +286,31 @@ func _add_destination_preview(word: GridWordData, index: int) -> void:
 	destination.z_index = 1
 	_add_panel_label(destination, word.get_destination_text(), VERTICAL_ALIGNMENT_CENTER, 12, Color(0.12, 0.06, 0.0))
 	preview_root.add_child(destination)
+	destination_nodes[index] = destination
+
+## Oculta solamente la apariencia de los obstáculos. Las celdas continúan
+## bloqueadas, por lo que puede usarse como un reto de memoria sin cambiar la
+## solución del tablero mientras el jugador está trazando un camino.
+func set_obstacle_clues_visible(visible: bool) -> void:
+	for obstacle: Vector2i in obstacles:
+		var tile := tile_rects.get(obstacle) as TextureRect
+		if tile:
+			tile.texture = obstacle_tile if visible else empty_tile
+
+## Sustituye las palabras y colores de los destinos por una pista neutra. Las
+## posiciones no cambian: el jugador debe recordar qué animal iba en cada una.
+func conceal_destination_clues() -> void:
+	for destination: Panel in destination_nodes.values():
+		var label := destination.get_child(0) as Label
+		if label:
+			label.text = "?"
+			label.add_theme_font_size_override("font_size", 24)
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color("e7dcc2")
+		style.border_color = Color("766d62")
+		style.set_border_width_all(3)
+		style.set_corner_radius_all(6)
+		destination.add_theme_stylebox_override("panel", style)
 
 func _create_word_panel(word_color: Color, lightened: bool) -> Panel:
 	var panel: Panel = Panel.new()

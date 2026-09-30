@@ -70,6 +70,8 @@ func _validate_level_order() -> void:
 		else:
 			var board: GridBoard = instance.find_child("GridBoard", true, false) as GridBoard
 			if board != null:
+				if int(level_data.world) == 1 and board.columns != 12:
+					failures.append("%s debe usar el tablero ampliado de 12 columnas" % scene_path)
 				for issue: String in board.get_configuration_issues():
 					failures.append("%s: %s" % [scene_path, issue])
 			instance.free()

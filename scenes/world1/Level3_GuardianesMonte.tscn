@@ -20,7 +20,7 @@ sprite = ExtResource("5_oiyxb")
 destination_text = "Báalam"
 color = Color(0.8, 0.55, 0.12, 1)
 start_cell = Vector2i(0, 1)
-destination_cell = Vector2i(8, 1)
+destination_cell = Vector2i(11, 1)
 
 [sub_resource type="Resource" id="Animal_kuuts"]
 script = ExtResource("4_ambyd")
@@ -32,7 +32,7 @@ sprite = ExtResource("6_r0d7p")
 destination_text = "Kuuts"
 color = Color(0.38, 0.28, 0.55, 1)
 start_cell = Vector2i(0, 3)
-destination_cell = Vector2i(8, 3)
+destination_cell = Vector2i(11, 3)
 
 [sub_resource type="Resource" id="Animal_tuul"]
 script = ExtResource("4_ambyd")
@@ -44,13 +44,13 @@ sprite = ExtResource("7_ddrlm")
 destination_text = "T'u'ul"
 color = Color(0.3, 0.55, 0.45, 1)
 start_cell = Vector2i(0, 5)
-destination_cell = Vector2i(8, 5)
+destination_cell = Vector2i(11, 5)
 
 [node name="Level3" type="Node2D" unique_id=891629715]
 script = ExtResource("1_rj3ji")
 level_number = 3
 next_scene_key = "world1_level4"
-default_instruction = "Haz clic en un animal y arrastra hasta su casa. Conecta los tres para completar el nivel."
+default_instruction = "Memoriza los obstáculos antes de que desaparezcan y conecta los tres caminos."
 selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
 
 [node name="Background" type="TextureRect" parent="." unique_id=718946208]
@@ -61,7 +61,10 @@ expand_mode = 1
 stretch_mode = 6
 
 [node name="GridBoard" parent="." unique_id=1075655894 instance=ExtResource("3_fl1ur")]
-obstacles = Array[Vector2i]([Vector2i(3, 1), Vector2i(6, 1), Vector2i(2, 3), Vector2i(5, 3), Vector2i(7, 3), Vector2i(3, 5), Vector2i(6, 5)])
+columns = 12
+tile_size = 72
+grid_origin = Vector2(208, 88)
+obstacles = Array[Vector2i]([Vector2i(2, 1), Vector2i(5, 1), Vector2i(8, 1), Vector2i(2, 3), Vector2i(7, 4), Vector2i(9, 3), Vector2i(3, 5), Vector2i(6, 5), Vector2i(9, 5), Vector2i(4, 0), Vector2i(7, 2), Vector2i(4, 6)])
 words = Array[ExtResource("4_ambyd")]([SubResource("Animal_baalam"), SubResource("Animal_kuuts"), SubResource("Animal_tuul")])
 
 [node name="TopBarBG" type="Panel" parent="." unique_id=1893956046]
