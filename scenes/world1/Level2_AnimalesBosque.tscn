@@ -49,7 +49,7 @@ destination_cell = Vector2i(11, 5)
 [node name="Level2" type="Node2D" unique_id=94277612]
 script = ExtResource("1_x3wq0")
 level_number = 2
-next_scene_key = "world1_level3"
+next_scene_key = "world1_story3"
 default_instruction = "Planea los tres caminos: las rutas no pueden cruzarse ni compartir casillas."
 selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
 

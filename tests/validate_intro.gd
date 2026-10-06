@@ -21,8 +21,8 @@ func _initialize() -> void:
 	intro.call("_input", click)
 
 	await scene_changed
-	if current_scene == null or current_scene.scene_file_path != GameManager.SCENE_PATHS.world1_level1:
-		failures.append("La introducción no abrió el primer nivel después del panel final")
+	if current_scene == null or current_scene.scene_file_path != GameManager.SCENE_PATHS.world1_cine1:
+		failures.append("La introducción no abrió la cinemática del huracán después del panel final")
 
 	if failures.is_empty():
 		print("Validación de la introducción: OK")

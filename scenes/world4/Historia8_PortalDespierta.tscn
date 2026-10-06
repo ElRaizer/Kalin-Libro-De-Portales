@@ -1,0 +1,104 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_milpa.svg" id="5_bg_milpa"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_portal_isla.svg" id="6_bg_portal_isla"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Todos comieron y mi libro recuperó las páginas de In k'a'at!"
+background = ExtResource("5_bg_milpa")
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
+celebrate_page = true
+effects = 16
+
+[sub_resource type="Resource" id="Beat_2"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Áak"
+text = "¿Recuerdas lo que pidió Miis? «Quiero un plátano pequeño»: In k'a'at ja'as ___"
+actors = Array[String](["Miis", "Áak"])
+target_word = "mejen"
+options = Array[String](["nojoch", "mejen", "ki'"])
+reveal_phrase = "In k'a'at ja'as mejen"
+reveal_translation = "Quiero un plátano pequeño."
+
+[sub_resource type="Resource" id="Beat_3"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Miis"
+text = "Y Áak pidió una calabaza grande: In k'a'at ___ nojoch"
+actors = Array[String](["Miis", "Áak"])
+target_word = "K'úum"
+options = Array[String](["pak'al", "K'úum", "ja'as"])
+reveal_phrase = "In k'a'at K'úum nojoch"
+reveal_translation = "Quiero una calabaza grande."
+
+[sub_resource type="Resource" id="Beat_4"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Kéej"
+text = "Kaax solo quería fruta. ¿Cómo lo pidió? In k'a'at ___"
+actors = Array[String](["Kaax", "Kéej"])
+target_word = "pak'al"
+options = Array[String](["janal", "pak'al", "ja'"])
+
+[sub_resource type="Resource" id="Beat_5"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "De pronto, el libro de Kalin brilló y se abrió un portal de luz, igual al que lo trajo a la isla."
+background = ExtResource("6_bg_portal_isla")
+kalin_pose = 1
+actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
+effects = 24
+screen_shake = true
+flash = true
+
+[sub_resource type="Resource" id="Beat_6"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Es el camino a casa! Pero aún faltan páginas en mi libro... las de las palabras amables."
+kalin_pose = 1
+actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
+effects = 24
+
+[sub_resource type="Resource" id="Beat_7"]
+script = ExtResource("2_beat")
+speaker = "Peek'"
+text = "Nosotros te las enseñamos. Por la mañana, para saludar, decimos Bix a beel."
+actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
+effects = 24
+
+[sub_resource type="Resource" id="Beat_8"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Kaax"
+text = "Y cuando alguien nos ayuda mucho, le decimos «muchas gracias». ¿Cuál crees que es?"
+actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
+target_word = "Yuum bo'otik"
+options = Array[String](["Tak ti' uláak' k'iin", "Yuum bo'otik", "Bix a beel"])
+effects = 24
+
+[sub_resource type="Resource" id="Beat_9"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Yuum bo'otik, amigos! Vamos a recuperar los últimos fragmentos para abrir el portal."
+actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
+effects = 24
+
+[sub_resource type="Resource" id="Beat_10"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Solo faltaba un último tramo del camino: el Portal de Regreso."
+actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
+effects = 24
+title = "Mundo 5"
+subtitle = "El Portal de Regreso"
+auto_advance = 2.0
+
+[node name="Historia8" instance=ExtResource("1_base")]
+chapter_title = "Mundo 4 · Capítulo 8 — El portal despierta"
+next_scene_key = "world5_level1"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5"), SubResource("Beat_6"), SubResource("Beat_7"), SubResource("Beat_8"), SubResource("Beat_9"), SubResource("Beat_10")])

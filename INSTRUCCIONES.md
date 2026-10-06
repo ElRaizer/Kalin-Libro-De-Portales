@@ -42,6 +42,7 @@ Kalin-Libro-De-Portales/
 │   ├── audio/
 │   │   └── README.md
 │   ├── backgrounds/
+│   ├── efectos/
 │   ├── sprites/
 │   └── tiles/
 ├── scenes/
@@ -50,14 +51,18 @@ Kalin-Libro-De-Portales/
 │   ├── components/
 │   │   ├── GridBoard.tscn
 │   │   ├── LevelHeader.tscn
-│   │   └── CompletionOverlay.tscn
+│   │   ├── CompletionOverlay.tscn
+│   │   └── StoryScene.tscn
 │   ├── ui/
 │   │   └── LibroHechizos.tscn
 │   ├── world1/
 │   │   ├── Level1_CaminosBlancos.tscn
 │   │   ├── Level2_AnimalesBosque.tscn
 │   │   ├── Level3_GuardianesMonte.tscn
-│   │   └── Level4_AguaYCielo.tscn
+│   │   ├── Level4_AguaYCielo.tscn
+│   │   ├── Historia1_IslaAnimales.tscn ... Historia5_FiestaIsla.tscn
+│   │   ├── Cine1_NocheHuracan.tscn
+│   │   └── Cine2_CasaMayaVacia.tscn
 │   ├── World2/
 │   │   └── Level2_ConstruyendoPalabras.tscn
 │   ├── world3/
@@ -65,7 +70,9 @@ Kalin-Libro-De-Portales/
 │   ├── world4/
 │   │   └── Level4_YoQuiero.tscn
 │   └── world5/
-│       └── Level5_PortalDeRegreso.tscn
+│       ├── Level5_PortalDeRegreso.tscn
+│       ├── Historia9_Despedida.tscn
+│       └── Cine3_RegresoACasa.tscn
 └── scripts/
 	├── Intro.gd
 	├── autoloads/
@@ -73,7 +80,9 @@ Kalin-Libro-De-Portales/
 	├── components/
 	│   ├── GridAnimalData.gd
 	│   ├── GridBoard.gd
-	│   └── GridWordData.gd
+	│   ├── GridWordData.gd
+	│   ├── StoryBeat.gd
+	│   └── StoryScene.gd
 	├── ui/
 	│   ├── LibroHechizos.gd
 	│   └── MainMenu.gd
@@ -126,6 +135,81 @@ Para agregar un nivel:
 4. Configura la escena siguiente.
 5. Registra su vocabulario en `GameManager.VOCABULARY`.
 6. Prueba comenzar, terminar, salir al menú y usar **Continuar** con una partida nueva y una existente.
+
+## Capítulos de historia
+
+Los capítulos heredan `res://scenes/components/StoryScene.tscn` y no necesitan
+script propio. En el Inspector se configuran:
+
+- `chapter_title`: título visible del capítulo.
+- `next_scene_key`: escena que se abre al terminar o al pulsar **Saltar historia**.
+- `beats`: lista de recursos `StoryBeat`, uno por momento.
+
+Cada `StoryBeat` define:
+
+| Propiedad | Uso |
+|---|---|
+| `kind` | `DIALOGO` (se avanza con clic, Espacio o Enter), `CONOCER` (tocar a cada animal), `ADIVINAR` (elegir al animal nombrado) o `ELEGIR` (elegir una palabra maya entre botones). |
+| `speaker` | `Kalin`, `Narrador` o la palabra maya del animal que habla. |
+| `text` | Texto del diálogo. |
+| `background` | Fondo; si queda vacío se conserva el anterior. |
+| `kalin_pose` | `NORMAL`, `SORPRENDIDO` u `OCULTO`. |
+| `actors` | Palabras mayas de los animales en escena (máximo 4). |
+| `target_word` | Respuesta correcta en `ADIVINAR` o `ELEGIR`. En `ADIVINAR` no debe coincidir con `speaker`, porque su nombre en español delataría la respuesta. |
+| `options` | Palabras mayas que se ofrecen en `ELEGIR`; deben incluir `target_word`. |
+| `reveal_phrase`, `reveal_translation` | Frase completa que se muestra al acertar en `ELEGIR`. Es obligatoria para los adjetivos, cuya estructura en `VOCABULARY` usa el marcador `[sust.]`. |
+| `celebrate_page` | Muestra la animación "¡Página recuperada!", lanza páginas y chispas y hace saltar a Kalin. |
+
+Las propiedades de la categoría **Animación** convierten un capítulo en una
+cinemática. Todas son opcionales y, salvo `mood`, valen solo para su momento:
+
+| Propiedad | Uso |
+|---|---|
+| `mood` | Color ambiental: `DIA`, `ATARDECER`, `NOCHE`, `TORMENTA` o `AMANECER`. Cambia con una transición suave; `SIN_CAMBIO` conserva el anterior. Los colores están en `StoryScene.AMBIENT_COLORS`. |
+| `effects` | Casillas `Hojas`, `Lluvia`, `Muebles`, `Páginas` y `Chispas`. Se pueden combinar. Son nodos `CPUParticles2D` dentro de `Effects` en `StoryScene.tscn`, así que su cantidad, velocidad y textura se ajustan en el Inspector. |
+| `kalin_motion` | `QUIETO`, `ENTRA` (camina desde la izquierda), `SALTA`, `TIEMBLA`, `DORMIDO` (acostado; en el siguiente momento se levanta) o `CRUZA` (camina hacia el portal de `bg_portal_isla.svg` y desaparece). |
+| `screen_shake` | Sacude la pantalla, como un trueno. |
+| `flash` | Destello blanco, como un relámpago o la luz del portal. |
+| `title`, `subtitle` | Cartel central, por ejemplo "Mundo 3" y "Hechizos de Adjetivos". |
+| `auto_advance` | Segundos que espera, después de escribirse el texto, antes de avanzar solo. Con 0 espera al jugador. El clic, `Espacio` o `Enter` lo adelantan. |
+
+Cuando `background` cambia, el fondo nuevo entra con un fundido.
+
+Los capítulos 6 a 9 viven en `scenes/world2/` a `scenes/world5/` y usan a los
+seis animales de la aldea que también aparecen en los mundos 2, 3 y 4, con sus
+mismas peticiones. El capítulo 9 es el epílogo: se abre desde **Cerrar la
+aventura** al terminar el Mundo 5 y continúa con la cinemática de regreso a
+casa, que termina en el menú principal.
+
+Los animales se identifican por su palabra maya. La ilustración, la frase
+*In k'aaba'e' ___* y su traducción se leen de `GameManager`, así que un
+animal nuevo solo necesita estar en `VOCABULARY` y en `BOOK_ILLUSTRATIONS`.
+
+Las cinemáticas son escenas que heredan `StoryScene.tscn`, usan solo momentos
+`DIALOGO` con `auto_advance` y cambian el texto del nodo `UI/SkipButton` a
+**Saltar cinemática ▶▶**. Se registran con claves `worldN_cineM`:
+
+| Clave | Escena | Va después de | Continúa hacia |
+|---|---|---|---|
+| `world1_cine1` | `Cine1_NocheHuracan.tscn` | Introducción | `world1_story1` |
+| `world1_cine2` | `Cine2_CasaMayaVacia.tscn` | Capítulo 5 | `world2_level1` |
+| `world5_cine1` | `Cine3_RegresoACasa.tscn` | Capítulo 9 | `main_menu` |
+
+El último momento de una cinemática puede omitir `auto_advance` para esperar al
+jugador antes de cambiar de escena.
+
+Fondos y efectos nuevos (`Arte/backgrounds/` y `Arte/efectos/`) mantienen el
+estilo del proyecto: SVG de 1280 × 720, formas planas, degradados suaves y una
+viñeta ligera. Los fondos dejan libre la parte baja, donde va el cuadro de
+diálogo, y la zona izquierda, donde está Kalin.
+
+Para agregar un capítulo:
+
+1. Duplica un capítulo existente de `scenes/worldN/`.
+2. Edita sus momentos en el Inspector.
+3. Registra la escena en `GameManager.SCENE_PATHS` con una clave `worldN_storyM`.
+4. Cambia el `next_scene_key` del nivel anterior para que apunte al capítulo.
+5. Agrega `story_key` al nivel siguiente en `LEVEL_ORDER` para que **Continuar** lo muestre.
 
 ## Vocabulario
 

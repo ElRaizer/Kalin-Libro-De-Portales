@@ -194,5 +194,6 @@ func _on_skip() -> void:
 	GameManager.go_to_scene("main_menu")
 
 func _go_to_level1() -> void:
-	# Mark intro as seen
-	GameManager.go_to_level(1, 1)
+	# La intro continúa con la cinemática de la noche del huracán y luego con el
+	# primer capítulo de historia del Mundo 1.
+	GameManager.go_to_scene("world1_cine1")

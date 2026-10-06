@@ -1,0 +1,53 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level_monte.svg" id="3_bg_monte"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+speaker = "Kéej"
+text = "¡Qué bien dibujas caminos, Kalin! El bosque vuelve a estar tranquilo."
+background = ExtResource("3_bg_monte")
+actors = Array[String](["Kéej", "K'éek'en", "Ma'ax"])
+
+[sub_resource type="Resource" id="Beat_2"]
+script = ExtResource("2_beat")
+kind = 2
+speaker = "K'éek'en"
+text = "Juguemos otra vez: ¿quién de nosotros es Ma'ax?"
+actors = Array[String](["Kéej", "K'éek'en", "Ma'ax"])
+target_word = "Ma'ax"
+
+[sub_resource type="Resource" id="Beat_3"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Otra página recuperada! Mi libro ya se siente más pesado."
+actors = Array[String](["Kéej", "K'éek'en", "Ma'ax"])
+celebrate_page = true
+
+[sub_resource type="Resource" id="Beat_4"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "En lo alto del monte, entre la niebla, aparecieron los guardianes."
+kalin_pose = 1
+actors = Array[String](["Báalam", "Kuuts", "T'u'ul"])
+kalin_motion = 3
+
+[sub_resource type="Resource" id="Beat_5"]
+script = ExtResource("2_beat")
+kind = 1
+speaker = "Narrador"
+text = "Los guardianes cuidan el monte. Toca a cada uno para conocerlo."
+actors = Array[String](["Báalam", "Kuuts", "T'u'ul"])
+
+[sub_resource type="Resource" id="Beat_6"]
+script = ExtResource("2_beat")
+speaker = "Báalam"
+text = "La niebla esconde las rocas del monte. Míralas bien antes de que desaparezcan: seguirán ahí aunque no las veas."
+actors = Array[String](["Báalam", "Kuuts", "T'u'ul"])
+
+[node name="Historia3" instance=ExtResource("1_base")]
+chapter_title = "Mundo 1 · Capítulo 3 — Los guardianes del monte"
+next_scene_key = "world1_level3"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5"), SubResource("Beat_6")])

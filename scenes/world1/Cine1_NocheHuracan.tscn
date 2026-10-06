@@ -1,0 +1,64 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_noche_huracan.svg" id="3_bg_huracan"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level1.svg" id="4_bg_isla"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Esa noche, mientras Kalin caía por el portal, un huracán cruzó la isla de los animales."
+background = ExtResource("3_bg_huracan")
+kalin_pose = 2
+effects = 3
+screen_shake = true
+flash = true
+title = "Prólogo"
+subtitle = "La noche del huracán"
+auto_advance = 1.8
+
+[sub_resource type="Resource" id="Beat_2"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Las páginas de su libro se soltaron y cayeron entre la lluvia como estrellas de papel."
+kalin_pose = 2
+effects = 11
+flash = true
+auto_advance = 1.8
+
+[sub_resource type="Resource" id="Beat_3"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "El viento arrancó las hojas, levantó las olas y borró los Caminos Blancos, el Sak Beh."
+kalin_pose = 2
+effects = 3
+screen_shake = true
+auto_advance = 1.8
+
+[sub_resource type="Resource" id="Beat_4"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Al amanecer, la tormenta se fue. En la orilla, un joven aprendiz de hechicero dormía profundamente."
+background = ExtResource("4_bg_isla")
+mood = 5
+effects = 16
+kalin_motion = 4
+auto_advance = 2.2
+
+[sub_resource type="Resource" id="Beat_5"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Kalin abrió los ojos. Su aventura en la isla estaba a punto de comenzar."
+kalin_pose = 1
+mood = 1
+effects = 16
+auto_advance = 1.6
+
+[node name="Cine1" instance=ExtResource("1_base")]
+chapter_title = "Prólogo — La noche del huracán"
+next_scene_key = "world1_story1"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5")])
+
+[node name="SkipButton" parent="UI" index="1"]
+text = "Saltar cinemática ▶▶"

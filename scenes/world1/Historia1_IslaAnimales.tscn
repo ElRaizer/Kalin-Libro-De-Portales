@@ -1,0 +1,58 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level1.svg" id="3_bg_isla"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¿Dónde estoy? Mi Libro de Hechizos... ¡sus páginas están en blanco!"
+background = ExtResource("3_bg_isla")
+kalin_pose = 1
+actors = Array[String]([])
+
+[sub_resource type="Resource" id="Beat_2"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Tres animales se acercaron con curiosidad: uno movía la cola, otro las orejas y otro las plumas."
+kalin_pose = 1
+actors = Array[String](["Peek'", "Miis", "Kaax"])
+
+[sub_resource type="Resource" id="Beat_3"]
+script = ExtResource("2_beat")
+kind = 1
+speaker = "Narrador"
+text = "En esta isla los animales se presentan diciendo In k'aaba'e', que significa «me llamo». Toca a cada uno para saludarlo."
+actors = Array[String](["Peek'", "Miis", "Kaax"])
+
+[sub_resource type="Resource" id="Beat_4"]
+script = ExtResource("2_beat")
+speaker = "Peek'"
+text = "¡Hola, Kalin! Anoche pasó un huracán y borró los Caminos Blancos, el Sak Beh. Ya no sabemos volver a casa."
+actors = Array[String](["Peek'", "Miis", "Kaax"])
+
+[sub_resource type="Resource" id="Beat_5"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Yo los ayudo! Con mi magia puedo trazar caminos nuevos... y quizá mis palabras regresen al libro."
+actors = Array[String](["Peek'", "Miis", "Kaax"])
+
+[sub_resource type="Resource" id="Beat_6"]
+script = ExtResource("2_beat")
+kind = 2
+speaker = "Peek'"
+text = "Antes de irnos, un juego: ¿quién de nosotros es Miis?"
+actors = Array[String](["Peek'", "Miis", "Kaax"])
+target_word = "Miis"
+
+[sub_resource type="Resource" id="Beat_7"]
+script = ExtResource("2_beat")
+speaker = "Kaax"
+text = "¡Así se hace! Ahora traza un camino desde cada uno de nosotros hasta su casa."
+actors = Array[String](["Peek'", "Miis", "Kaax"])
+
+[node name="Historia1" instance=ExtResource("1_base")]
+chapter_title = "Mundo 1 · Capítulo 1 — La isla de los animales"
+next_scene_key = "world1_level1"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5"), SubResource("Beat_6"), SubResource("Beat_7")])

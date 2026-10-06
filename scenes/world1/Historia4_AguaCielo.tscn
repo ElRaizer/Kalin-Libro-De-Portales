@@ -1,0 +1,54 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level_agua.svg" id="3_bg_agua"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level_monte.svg" id="4_bg_monte"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+speaker = "Kuuts"
+text = "¡Recordaste todas las rocas! Los guardianes te damos las gracias."
+background = ExtResource("4_bg_monte")
+actors = Array[String](["Báalam", "Kuuts", "T'u'ul"])
+
+[sub_resource type="Resource" id="Beat_2"]
+script = ExtResource("2_beat")
+kind = 2
+speaker = "T'u'ul"
+text = "Antes de despedirnos: ¿quién de nosotros es Báalam?"
+actors = Array[String](["Báalam", "Kuuts", "T'u'ul"])
+target_word = "Báalam"
+
+[sub_resource type="Resource" id="Beat_3"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Una página más! Ya casi tengo a todos los animales de la isla."
+actors = Array[String](["Báalam", "Kuuts", "T'u'ul"])
+celebrate_page = true
+
+[sub_resource type="Resource" id="Beat_4"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Kalin bajó hasta la orilla. Un pez, un pájaro y una tortuga lo llamaban desde el agua y el cielo."
+background = ExtResource("3_bg_agua")
+actors = Array[String](["Kay", "Ch'íich'", "Áak"])
+kalin_motion = 1
+
+[sub_resource type="Resource" id="Beat_5"]
+script = ExtResource("2_beat")
+kind = 1
+speaker = "Narrador"
+text = "Toca a cada uno para saludarlo."
+actors = Array[String](["Kay", "Ch'íich'", "Áak"])
+
+[sub_resource type="Resource" id="Beat_6"]
+script = ExtResource("2_beat")
+speaker = "Áak"
+text = "Las olas se llevaron las señales de nuestras casas. Obsérvalas bien, porque después solo verás signos de pregunta."
+actors = Array[String](["Kay", "Ch'íich'", "Áak"])
+
+[node name="Historia4" instance=ExtResource("1_base")]
+chapter_title = "Mundo 1 · Capítulo 4 — Agua y cielo"
+next_scene_key = "world1_level4"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5"), SubResource("Beat_6")])

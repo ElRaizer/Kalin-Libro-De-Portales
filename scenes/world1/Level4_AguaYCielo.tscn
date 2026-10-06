@@ -49,7 +49,7 @@ destination_cell = Vector2i(11, 5)
 [node name="Level4" type="Node2D" unique_id=1178559565]
 script = ExtResource("1_pykdd")
 level_number = 4
-next_scene_key = "world2_level1"
+next_scene_key = "world1_story5"
 default_instruction = "Memoriza las tres casas antes de que sus pistas desaparezcan."
 selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
 

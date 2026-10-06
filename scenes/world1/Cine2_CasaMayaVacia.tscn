@@ -1,0 +1,71 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_atardecer.svg" id="3_bg_atardecer"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_casa_maya.svg" id="4_bg_casa"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Al caer la tarde, Kalin y sus amigos caminaron juntos hacia la Casa Maya."
+background = ExtResource("3_bg_atardecer")
+actors = Array[String](["Peek'", "Miis", "Kaax"])
+effects = 16
+kalin_motion = 1
+auto_advance = 1.8
+
+[sub_resource type="Resource" id="Beat_2"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "La puerta se abrió con un chirrido. Adentro no había nada."
+background = ExtResource("4_bg_casa")
+kalin_pose = 1
+actors = Array[String](["Peek'", "Miis", "Kaax"])
+effects = 1
+auto_advance = 1.8
+
+[sub_resource type="Resource" id="Beat_3"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡No queda ni una mesa, ni un plato, ni una cama!"
+kalin_pose = 1
+actors = Array[String](["Peek'", "Miis", "Kaax"])
+effects = 1
+kalin_motion = 3
+auto_advance = 1.8
+
+[sub_resource type="Resource" id="Beat_4"]
+script = ExtResource("2_beat")
+speaker = "Peek'"
+text = "El huracán se los llevó a todos. Pero tú tienes tu libro de hechizos, Kalin."
+actors = Array[String](["Peek'", "Miis", "Kaax"])
+auto_advance = 1.8
+
+[sub_resource type="Resource" id="Beat_5"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Entonces los construiré con magia! Cada mueble tendrá su nombre en maya."
+actors = Array[String](["Peek'", "Miis", "Kaax"])
+effects = 16
+kalin_motion = 2
+auto_advance = 1.8
+
+[sub_resource type="Resource" id="Beat_6"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Kalin abrió su libro y las páginas brillaron. Era hora de trabajar."
+actors = Array[String](["Peek'", "Miis", "Kaax"])
+effects = 24
+flash = true
+title = "Mundo 2"
+subtitle = "La Casa Maya"
+auto_advance = 2.0
+
+[node name="Cine2" instance=ExtResource("1_base")]
+chapter_title = "Mundo 2 · Intermedio — La Casa Maya vacía"
+next_scene_key = "world2_level1"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5"), SubResource("Beat_6")])
+
+[node name="SkipButton" parent="UI" index="1"]
+text = "Saltar cinemática ▶▶"

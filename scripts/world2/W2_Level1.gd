@@ -183,7 +183,7 @@ func _on_menu_pressed() -> void:
 	_safe_navigate("main_menu")
 
 func _on_next_level_pressed() -> void:
-	_safe_navigate("world3_level1")
+	_safe_navigate("world2_story1")
 
 func _on_book_pressed() -> void:
 	libro.show_book()

@@ -1,0 +1,69 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_portal_isla.svg" id="3_bg_portal_isla"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_intro_portal.svg" id="4_bg_portal"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_intro_room.svg" id="5_bg_cuarto"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Kalin abrió su libro y todas sus páginas brillaron al mismo tiempo."
+background = ExtResource("3_bg_portal_isla")
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
+effects = 24
+auto_advance = 1.8
+
+[sub_resource type="Resource" id="Beat_2"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Dio un paso, luego otro... y el portal lo envolvió en una luz dorada."
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
+effects = 24
+kalin_motion = 5
+auto_advance = 2.2
+
+[sub_resource type="Resource" id="Beat_3"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Las páginas volaron de regreso al libro, una por una."
+background = ExtResource("4_bg_portal")
+kalin_pose = 2
+effects = 24
+screen_shake = true
+flash = true
+auto_advance = 1.8
+
+[sub_resource type="Resource" id="Beat_4"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Kalin despertó en su cuarto, con el libro abierto entre las manos."
+background = ExtResource("5_bg_cuarto")
+effects = 16
+kalin_motion = 4
+auto_advance = 2.2
+
+[sub_resource type="Resource" id="Beat_5"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "Ya no es solo un libro de hechizos: es mi libro de maya. ¡Tak ti' uláak' k'iin, amigos!"
+kalin_pose = 1
+effects = 16
+
+[sub_resource type="Resource" id="Beat_6"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Fin. Gracias por ayudar a Kalin a aprender maya yucateco. Puedes repasar tus palabras en el Libro de Hechizos."
+effects = 16
+kalin_motion = 2
+title = "Fin"
+subtitle = "Tak ti' uláak' k'iin"
+
+[node name="Cine3" instance=ExtResource("1_base")]
+chapter_title = "Epílogo — Regreso a casa"
+next_scene_key = "main_menu"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5"), SubResource("Beat_6")])
+
+[node name="SkipButton" parent="UI" index="1"]
+text = "Saltar cinemática ▶▶"

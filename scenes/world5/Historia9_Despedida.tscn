@@ -1,0 +1,72 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_portal_isla.svg" id="5_bg_portal_isla"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "El portal brillaba con fuerza. Todos los animales de la isla vinieron a despedirse de Kalin."
+background = ExtResource("5_bg_portal_isla")
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
+effects = 16
+
+[sub_resource type="Resource" id="Beat_2"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Mi Libro de Hechizos está completo! Cada página guarda una palabra que aprendí con ustedes."
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
+celebrate_page = true
+effects = 16
+
+[sub_resource type="Resource" id="Beat_3"]
+script = ExtResource("2_beat")
+kind = 2
+speaker = "Kalin"
+text = "También llegaron los amigos del monte y del agua. Quiero despedirme de cada uno... ¿quién es Ch'íich'?"
+actors = Array[String](["Báalam", "Kay", "Ch'íich'", "Ma'ax"])
+target_word = "Ch'íich'"
+effects = 16
+
+[sub_resource type="Resource" id="Beat_4"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Miis"
+text = "Antes de irte, ¿cómo nos dices «muchas gracias»?"
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
+target_word = "Yuum bo'otik"
+options = Array[String](["Bix a beel", "Yuum bo'otik", "Tak ti' uláak' k'iin"])
+effects = 16
+
+[sub_resource type="Resource" id="Beat_5"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "Yuum bo'otik, Peek'. Yuum bo'otik, Miis, Kaax y Áak... ¡Yuum bo'otik a todos!"
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
+effects = 16
+
+[sub_resource type="Resource" id="Beat_6"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Peek'"
+text = "Nosotros te deseamos buen viaje. ¿Cómo se dice «que te vaya bien»?"
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
+target_word = "Ka xi'ik tech jats'uts"
+options = Array[String](["Bix a beel", "Ka xi'ik tech jats'uts", "janal"])
+effects = 16
+
+[sub_resource type="Resource" id="Beat_7"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Kaax"
+text = "Y para despedirnos hasta la próxima vez, decimos..."
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
+target_word = "Tak ti' uláak' k'iin"
+options = Array[String](["Yuum bo'otik", "Ka xi'ik tech jats'uts", "Tak ti' uláak' k'iin"])
+effects = 16
+
+[node name="Historia9" instance=ExtResource("1_base")]
+chapter_title = "Mundo 5 · Capítulo 9 — Tak ti' uláak' k'iin"
+next_scene_key = "world5_cine1"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5"), SubResource("Beat_6"), SubResource("Beat_7")])

@@ -1,0 +1,109 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_atardecer.svg" id="4_bg_atardecer"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_milpa.svg" id="5_bg_milpa"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Otra página! Ahora mi libro sabe describir: grande, pequeño, bonito, delicioso y fuerte."
+background = ExtResource("4_bg_atardecer")
+actors = Array[String](["Peek'", "Miis", "Áak", "K'éek'en"])
+celebrate_page = true
+effects = 16
+
+[sub_resource type="Resource" id="Beat_2"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Áak"
+text = "¿Recuerdas mi mesa? «Mi mesa es grande»: In mayake' ___"
+actors = Array[String](["Áak", "Miis"])
+target_word = "nojoch"
+options = Array[String](["mejen", "nojoch", "jach'"])
+reveal_phrase = "In mayake' nojoch"
+reveal_translation = "Mi mesa es grande."
+
+[sub_resource type="Resource" id="Beat_3"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Miis"
+text = "Y mi cama es pequeña: In ch'áake' ___"
+actors = Array[String](["Áak", "Miis"])
+target_word = "mejen"
+options = Array[String](["Jats'uts", "mejen", "nojoch"])
+reveal_phrase = "In ch'áake' mejen"
+reveal_translation = "Mi cama es pequeña."
+
+[sub_resource type="Resource" id="Beat_4"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Peek'"
+text = "Mi silla aguanta todos mis saltos. Mi silla es fuerte: In chan'e' ___"
+actors = Array[String](["Peek'", "Kaax"])
+target_word = "jach'"
+options = Array[String](["ki'", "mejen", "jach'"])
+reveal_phrase = "In chan'e' jach'"
+reveal_translation = "Mi silla es fuerte."
+
+[sub_resource type="Resource" id="Beat_5"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Kaax"
+text = "Mi plato es bonito: In lake' ___"
+actors = Array[String](["Peek'", "Kaax"])
+target_word = "Jats'uts"
+options = Array[String](["Jats'uts", "ki'", "nojoch"])
+reveal_phrase = "In lake' Jats'uts"
+reveal_translation = "Mi plato es bonito."
+
+[sub_resource type="Resource" id="Beat_6"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Construir tantos objetos dio mucha hambre. ¡A todos les rugió la panza!"
+actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
+screen_shake = true
+
+[sub_resource type="Resource" id="Beat_7"]
+script = ExtResource("2_beat")
+speaker = "K'éek'en"
+text = "Cuando queremos algo, decimos In k'a'at. Significa «yo quiero»."
+actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
+
+[sub_resource type="Resource" id="Beat_8"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Peek'"
+text = "Tengo mucha sed. ¿Cuál de estas palabras crees que es «agua»?"
+actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
+target_word = "ja'"
+options = Array[String](["janal", "ja'", "ja'as"])
+
+[sub_resource type="Resource" id="Beat_9"]
+script = ExtResource("2_beat")
+speaker = "Kéej"
+text = "¡Y yo quiero plátano! Pero ten cuidado: ja' y ja'as suenan muy parecido."
+actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
+
+[sub_resource type="Resource" id="Beat_10"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Les serviré todo lo que pidan! Escucharé con atención cada In k'a'at."
+actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
+
+[sub_resource type="Resource" id="Beat_11"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Al día siguiente, todos fueron juntos a la milpa a buscar su comida."
+background = ExtResource("5_bg_milpa")
+actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
+kalin_motion = 1
+title = "Mundo 4"
+subtitle = "Yo Quiero"
+auto_advance = 2.0
+
+[node name="Historia7" instance=ExtResource("1_base")]
+chapter_title = "Mundo 3 · Capítulo 7 — La aldea tiene hambre"
+next_scene_key = "world4_level1"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5"), SubResource("Beat_6"), SubResource("Beat_7"), SubResource("Beat_8"), SubResource("Beat_9"), SubResource("Beat_10"), SubResource("Beat_11")])
