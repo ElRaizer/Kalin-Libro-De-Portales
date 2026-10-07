@@ -15,6 +15,7 @@ func _initialize() -> void:
 	_validate_world4()
 	_validate_world5()
 	_validate_book_catalog()
+	await _validate_grid_path_recovery()
 	await _validate_world1_instruction_layout()
 	await _validate_world3_runtime()
 	if failures.is_empty():
@@ -180,6 +181,56 @@ func _validate_world1_instruction_layout() -> void:
 			failures.append("La instrucción debe mostrarse en una sola línea en %s" % level_path)
 		level.queue_free()
 		await process_frame
+
+func _validate_grid_path_recovery() -> void:
+	var board_scene := load("res://scenes/components/GridBoard.tscn") as PackedScene
+	if board_scene == null:
+		failures.append("No se pudo preparar la prueba del tablero de caminos")
+		return
+
+	var board := board_scene.instantiate() as GridBoard
+	var word := GridWordData.new()
+	word.maya_word = "Prueba"
+	word.spanish_word = "Prueba"
+	word.start_cell = Vector2i(0, 0)
+	word.destination_cell = Vector2i(2, 1)
+	board.columns = 3
+	board.rows = 2
+	board.obstacles = [Vector2i(1, 0), Vector2i(1, 1)]
+	board.words = [word]
+	root.add_child(board)
+	await process_frame
+
+	await board.fade_out_obstacle_clues(0.05)
+	var initially_hidden_tile := board.tile_rects[Vector2i(1, 0)] as TextureRect
+	if initially_hidden_tile.texture != board.empty_tile or not is_equal_approx(initially_hidden_tile.modulate.a, 1.0):
+		failures.append("Las rocas no terminan ocultas después del desvanecido general")
+	board.set_nearby_obstacle_reveal(true, 0.5)
+	board._handle_press(word.start_cell)
+	var obstacle_tile := board.tile_rects[Vector2i(1, 0)] as TextureRect
+	await create_timer(GridBoard.NEARBY_OBSTACLE_FADE_SECONDS + 0.05).timeout
+	if obstacle_tile.texture != board.obstacle_tile or not is_equal_approx(obstacle_tile.modulate.a, 0.5):
+		failures.append("La roca adyacente a la punta no se revela parcialmente")
+	board._extend_path(Vector2i(0, 1))
+	await create_timer(GridBoard.NEARBY_OBSTACLE_FADE_SECONDS + 0.05).timeout
+	if obstacle_tile.texture != board.empty_tile or not is_equal_approx(obstacle_tile.modulate.a, 1.0):
+		failures.append("La roca deja una pista visible cuando la punta se aleja")
+	var resumed_obstacle_tile := board.tile_rects[Vector2i(1, 1)] as TextureRect
+	board._stop_drawing()
+	await create_timer(GridBoard.NEARBY_OBSTACLE_FADE_SECONDS + 0.05).timeout
+	board._handle_press(Vector2i(0, 1))
+	await create_timer(GridBoard.NEARBY_OBSTACLE_FADE_SECONDS + 0.05).timeout
+	if resumed_obstacle_tile.texture != board.obstacle_tile or not is_equal_approx(resumed_obstacle_tile.modulate.a, 0.5):
+		failures.append("La roca adyacente no reaparece al retomar la punta de un camino")
+
+	board._finalize_connection(0)
+	board.set_interaction_enabled(true)
+	board._handle_press(word.start_cell)
+	if 0 in board.connected or not board.paths[0].is_empty() or not board.drawing:
+		failures.append("Elegir un animal conectado no reinicia únicamente su camino")
+
+	board.queue_free()
+	await process_frame
 
 func _validate_world3() -> void:
 	var world3_script: Script = load("res://scripts/world3/W3_Level1.gd") as Script

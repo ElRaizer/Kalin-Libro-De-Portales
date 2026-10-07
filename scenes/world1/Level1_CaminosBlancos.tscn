@@ -48,7 +48,7 @@ destination_cell = Vector2i(11, 5)
 
 [node name="Level1" type="Node2D" unique_id=307257646]
 script = ExtResource("1")
-default_instruction = "Tutorial: el tablero está abierto. Conecta cada animal con su palabra al otro lado."
+default_instruction = "Conecta cada animal con su casa. Toca uno ya conectado para rehacer sólo su camino."
 selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
 
 [node name="Background" type="TextureRect" parent="." unique_id=1713056734]

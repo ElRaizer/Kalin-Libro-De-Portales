@@ -10,6 +10,7 @@ class_name GridBoard
 
 signal word_selected(word: GridWordData)
 signal word_connected(word: GridWordData, word_index: int)
+signal path_reset(word: GridWordData, word_index: int)
 signal drawing_stopped
 
 enum Cell { EMPTY, OBSTACLE, WORD, DESTINATION, PATH }
@@ -107,6 +108,14 @@ var ring_tween: Tween
 var keyboard_cursor: Panel
 var keyboard_cell: Vector2i = Vector2i(-1, -1)
 var keyboard_visual_visible: bool = true
+var obstacle_clues_visible: bool = true
+var reveal_obstacles_near_tip: bool = false
+var nearby_obstacle_opacity: float = 0.5
+var revealed_obstacles: Array[Vector2i] = []
+var obstacle_reveal_tweens: Dictionary = {}
+
+const NEARBY_OBSTACLE_FADE_SECONDS := 0.22
+const ALL_OBSTACLES_FADE_SECONDS := 0.45
 
 func _ready() -> void:
 	add_to_group(&"keyboard_focus_visual")
@@ -292,10 +301,97 @@ func _add_destination_preview(word: GridWordData, index: int) -> void:
 ## bloqueadas, por lo que puede usarse como un reto de memoria sin cambiar la
 ## solución del tablero mientras el jugador está trazando un camino.
 func set_obstacle_clues_visible(visible: bool) -> void:
+	obstacle_clues_visible = visible
 	for obstacle: Vector2i in obstacles:
+		_kill_obstacle_reveal_tween(obstacle)
 		var tile := tile_rects.get(obstacle) as TextureRect
 		if tile:
 			tile.texture = obstacle_tile if visible else empty_tile
+			tile.modulate = Color.WHITE
+	revealed_obstacles.clear()
+	_update_nearby_obstacle_clues()
+
+## Oculta todas las pistas de obstáculos con una transición conjunta. El
+## estado bloqueado de las celdas no cambia durante ni después del efecto.
+func fade_out_obstacle_clues(duration: float = ALL_OBSTACLES_FADE_SECONDS) -> void:
+	obstacle_clues_visible = true
+	var tween := create_tween().set_parallel(true)
+	for obstacle: Vector2i in obstacles:
+		_kill_obstacle_reveal_tween(obstacle)
+		var tile := tile_rects.get(obstacle) as TextureRect
+		if tile:
+			tile.texture = obstacle_tile
+			tween.tween_property(tile, "modulate:a", 0.0, maxf(duration, 0.01)).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	await tween.finished
+	if not is_inside_tree():
+		return
+	set_obstacle_clues_visible(false)
+
+## Cuando las pistas generales están ocultas, revela con transparencia sólo
+## los obstáculos ortogonalmente adyacentes a la punta del camino activo.
+func set_nearby_obstacle_reveal(enabled: bool, opacity: float = 0.5) -> void:
+	reveal_obstacles_near_tip = enabled
+	nearby_obstacle_opacity = clampf(opacity, 0.1, 0.9)
+	_update_nearby_obstacle_clues()
+
+func _update_nearby_obstacle_clues() -> void:
+	var desired_obstacles: Array[Vector2i] = []
+	if not obstacle_clues_visible and reveal_obstacles_near_tip and drawing and active_index >= 0:
+		var tip_cell: Vector2i = words[active_index].start_cell
+		if not paths[active_index].is_empty():
+			tip_cell = paths[active_index].back()
+		for direction: Vector2i in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
+			var adjacent_cell := tip_cell + direction
+			if adjacent_cell in obstacles:
+				desired_obstacles.append(adjacent_cell)
+
+	var previous_obstacles := revealed_obstacles.duplicate()
+	revealed_obstacles = desired_obstacles
+	for obstacle: Vector2i in previous_obstacles:
+		if obstacle not in desired_obstacles:
+			_fade_out_nearby_obstacle(obstacle)
+	for obstacle: Vector2i in desired_obstacles:
+		if obstacle not in previous_obstacles:
+			_fade_in_nearby_obstacle(obstacle)
+
+func _fade_in_nearby_obstacle(cell: Vector2i) -> void:
+	var tile := tile_rects.get(cell) as TextureRect
+	if not tile:
+		return
+	_kill_obstacle_reveal_tween(cell)
+	if tile.texture != obstacle_tile:
+		tile.texture = obstacle_tile
+		tile.modulate = Color(1.0, 1.0, 1.0, 0.0)
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(tile, "modulate:a", nearby_obstacle_opacity, NEARBY_OBSTACLE_FADE_SECONDS)
+	obstacle_reveal_tweens[cell] = tween
+
+func _fade_out_nearby_obstacle(cell: Vector2i) -> void:
+	var tile := tile_rects.get(cell) as TextureRect
+	if not tile:
+		return
+	_kill_obstacle_reveal_tween(cell)
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(tile, "modulate:a", 0.0, NEARBY_OBSTACLE_FADE_SECONDS)
+	tween.tween_callback(_finish_hiding_nearby_obstacle.bind(cell))
+	obstacle_reveal_tweens[cell] = tween
+
+func _finish_hiding_nearby_obstacle(cell: Vector2i) -> void:
+	obstacle_reveal_tweens.erase(cell)
+	if cell in revealed_obstacles or obstacle_clues_visible:
+		return
+	var tile := tile_rects.get(cell) as TextureRect
+	if tile:
+		tile.texture = empty_tile
+		tile.modulate = Color.WHITE
+
+func _kill_obstacle_reveal_tween(cell: Vector2i) -> void:
+	var tween := obstacle_reveal_tweens.get(cell) as Tween
+	if tween and tween.is_valid():
+		tween.kill()
+	obstacle_reveal_tweens.erase(cell)
 
 ## Sustituye las palabras y colores de los destinos por una pista neutra. Las
 ## posiciones no cambian: el jugador debe recordar qué animal iba en cada una.
@@ -480,13 +576,14 @@ func _handle_press(cell: Vector2i) -> void:
 		Cell.WORD:
 			var index: int = tile_owner[cell]
 			if index in connected:
-				return
+				_reset_connected_path(index)
 			_clear_path(index)
 			active_index = index
 			drawing = true
 			last_cell = cell
 			_show_ring(index)
 			word_selected.emit(words[index])
+			_update_nearby_obstacle_clues()
 		Cell.EMPTY:
 			if drawing:
 				_extend_path(cell)
@@ -554,6 +651,7 @@ func _try_resume_path(cell: Vector2i) -> void:
 	last_cell = cell
 	_show_ring(index)
 	word_selected.emit(words[index])
+	_update_nearby_obstacle_clues()
 
 func _try_retract_path(cell: Vector2i) -> bool:
 	if active_index < 0 or paths.get(active_index, []).is_empty():
@@ -573,6 +671,7 @@ func _try_retract_path(cell: Vector2i) -> bool:
 	tile_owner.erase(removed_cell)
 	_reset_tile(removed_cell)
 	_refresh_path_line(active_index)
+	_update_nearby_obstacle_clues()
 	return true
 
 func _extend_path(cell: Vector2i) -> void:
@@ -593,6 +692,7 @@ func _extend_path(cell: Vector2i) -> void:
 	tile_owner[cell] = active_index
 	_set_path_tile_tint(cell, words[active_index].color)
 	_refresh_path_line(active_index)
+	_update_nearby_obstacle_clues()
 
 func _clear_path(index: int) -> void:
 	for cell: Vector2i in paths.get(index, []):
@@ -601,6 +701,15 @@ func _clear_path(index: int) -> void:
 		_reset_tile(cell)
 	paths[index] = []
 	_remove_path_line(index)
+	_update_nearby_obstacle_clues()
+
+func _reset_connected_path(index: int) -> void:
+	if index not in connected:
+		return
+	connected.erase(index)
+	_reset_tile(words[index].destination_cell)
+	_clear_path(index)
+	path_reset.emit(words[index], index)
 
 func _finalize_connection(index: int) -> void:
 	if index in connected:
@@ -613,6 +722,7 @@ func _finalize_connection(index: int) -> void:
 	drawing = false
 	active_index = -1
 	selection_ring.visible = false
+	_update_nearby_obstacle_clues()
 	input_enabled = false
 	word_connected.emit(words[index], index)
 
@@ -622,6 +732,7 @@ func _stop_drawing() -> void:
 	drawing = false
 	active_index = -1
 	selection_ring.visible = false
+	_update_nearby_obstacle_clues()
 	if ring_tween and ring_tween.is_valid():
 		ring_tween.kill()
 	drawing_stopped.emit()
