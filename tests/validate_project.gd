@@ -16,6 +16,7 @@ func _initialize() -> void:
 	_validate_world5()
 	_validate_book_catalog()
 	_validate_stories()
+	_validate_explorations()
 	await _validate_world1_instruction_layout()
 	await _validate_world3_runtime()
 	if failures.is_empty():
@@ -361,7 +362,8 @@ func _validate_story_effects_template() -> void:
 ## La historia debe encadenarse sin callejones: intro, cinemáticas y capítulos.
 func _validate_story_chain() -> void:
 	var expected: Dictionary = {
-		"world1_cine1": "world1_story1",
+		"world1_cine1": "world1_explore1",
+		"world1_explore1": "world1_story1",
 		"world1_story5": "world1_cine2",
 		"world1_cine2": "world2_level1",
 		"world5_story1": "world5_cine1",
@@ -373,6 +375,71 @@ func _validate_story_chain() -> void:
 		if story.next_scene_key != expected[scene_key]:
 			failures.append("%s debe continuar hacia %s, no hacia %s" % [scene_key, expected[scene_key], story.next_scene_key])
 		story.free()
+
+## Cada exploración necesita un sendero, objetos con diálogo y dibujo, una sola
+## meta al final del camino y continuar hacia una escena real.
+func _validate_explorations() -> void:
+	var found: int = 0
+	for scene_key: String in GameManagerScript.SCENE_PATHS:
+		if not scene_key.contains("_explore"):
+			continue
+		found += 1
+		var scene_path: String = GameManagerScript.SCENE_PATHS[scene_key]
+		var packed_scene := load(scene_path) as PackedScene
+		if packed_scene == null:
+			failures.append("No se pudo cargar la exploración %s" % scene_key)
+			continue
+		var exploration: Node = packed_scene.instantiate()
+		_validate_exploration(scene_path, exploration)
+		exploration.free()
+	if found == 0:
+		failures.append("No hay escenas de exploración registradas en SCENE_PATHS")
+	for action: String in ["kalin_izquierda", "kalin_derecha", "kalin_interactuar"]:
+		if not InputMap.has_action(action) or InputMap.action_get_events(action).is_empty():
+			failures.append("Falta la acción de entrada %s en project.godot" % action)
+
+func _validate_exploration(scene_path: String, exploration: Node) -> void:
+	if not GameManagerScript.SCENE_PATHS.has(exploration.next_scene_key):
+		failures.append("%s continúa hacia una escena inexistente: %s" % [scene_path, exploration.next_scene_key])
+	for node_path: String in ["Cielo", "Terreno", "Animales", "Kalin/Sprite", "Kalin/Camera", "Kalin/Magia", "UI/PromptButton", "UI/Flecha", "UI/DialogueBox/DialogueText", "UI/Fade"]:
+		if exploration.get_node_or_null(node_path) == null:
+			failures.append("%s no tiene el nodo %s" % [scene_path, node_path])
+	var sendero := exploration.get_node_or_null("Sendero") as Path2D
+	if sendero == null or sendero.curve == null or sendero.curve.point_count < 2:
+		failures.append("%s necesita un Path2D «Sendero» con al menos dos puntos" % scene_path)
+		return
+	var start_x: float = sendero.to_global(sendero.curve.get_point_position(0)).x
+	var end_x: float = sendero.to_global(sendero.curve.get_point_position(sendero.curve.point_count - 1)).x
+	var goals: int = 0
+	var goal_x: float = -INF
+	var last_spot_x: float = -INF
+	for child: Node in exploration.get_node("Spots").get_children():
+		var spot := child as ExplorationSpot
+		if spot == null:
+			failures.append("%s: %s no es un ExplorationSpot" % [scene_path, child.name])
+			continue
+		if spot.lines.is_empty():
+			failures.append("%s: %s no tiene diálogo" % [scene_path, spot.name])
+		for line: String in spot.lines:
+			if line.strip_edges() == "":
+				failures.append("%s: %s tiene una línea vacía" % [scene_path, spot.name])
+		if spot.position.x < start_x or spot.position.x > end_x:
+			failures.append("%s: %s está fuera del sendero" % [scene_path, spot.name])
+		if spot.blocks_path and spot.reaction != ExplorationSpot.Reaction.APARTAR:
+			failures.append("%s: el obstáculo %s debe apartarse al examinarlo" % [scene_path, spot.name])
+		if spot.is_goal:
+			goals += 1
+			goal_x = spot.position.x
+			if spot.blocks_path:
+				failures.append("%s: la meta no puede bloquear el camino" % scene_path)
+			continue
+		last_spot_x = maxf(last_spot_x, spot.position.x)
+		if (spot.get_node("Sprite") as Sprite2D).texture == null:
+			failures.append("%s: %s no tiene dibujo" % [scene_path, spot.name])
+	if goals != 1:
+		failures.append("%s debe tener exactamente una meta (tiene %d)" % [scene_path, goals])
+	elif last_spot_x > goal_x:
+		failures.append("%s: la meta debe ser el último punto del sendero" % scene_path)
 
 func _validate_story_beat(scene_path: String, beat: StoryBeat) -> void:
 	if beat.effects < 0 or beat.effects > 31:

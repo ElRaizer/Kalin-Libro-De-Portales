@@ -6,6 +6,7 @@ func _initialize() -> void:
 	await _validate_story_runtime()
 	await _validate_story_choice_runtime()
 	await _validate_cinematic_runtime()
+	await _validate_exploration_runtime()
 	await _validate_world4_runtime()
 	await _validate_world5_runtime()
 	await _validate_book_runtime()
@@ -57,6 +58,74 @@ func _validate_story_runtime() -> void:
 		failures.append("El primer capítulo debe incluir los momentos CONOCER y ADIVINAR")
 	story.queue_free()
 	await process_frame
+
+## Recorre la exploración de la orilla: el diálogo de entrada detiene a Kalin,
+## el tronco le impide pasar hasta examinarlo y llegar a la aldea abre la meta,
+## que lleva al Capítulo 1.
+func _validate_exploration_runtime() -> void:
+	var packed := load("res://scenes/world1/Exploracion1_OrillaIsla.tscn") as PackedScene
+	if packed == null:
+		failures.append("No se pudo cargar la exploración de la orilla")
+		return
+	var exploration := packed.instantiate()
+	root.add_child(exploration)
+	await process_frame
+	if not exploration.is_dialogue_open():
+		failures.append("La exploración debe empezar con el diálogo de entrada")
+	var start_x: float = exploration.kalin.position.x
+	exploration.walk(1.0, 0.5)
+	if exploration.kalin.position.x != start_x:
+		failures.append("Kalin no debe caminar mientras hay un diálogo abierto")
+	_close_exploration_dialogue(exploration)
+	var blocker: Node = null
+	for spot: Node in exploration.spots:
+		if spot.blocks_path:
+			blocker = spot
+			break
+	if blocker == null:
+		failures.append("La exploración de la orilla debe tener un obstáculo")
+		exploration.queue_free()
+		await process_frame
+		return
+	for step: int in range(300):
+		exploration.walk(1.0, 0.1)
+	if exploration.kalin.position.x > blocker.global_position.x - exploration.BLOCK_MARGIN + 0.5:
+		failures.append("Kalin atravesó el obstáculo sin examinarlo")
+	await process_frame
+	if not exploration.prompt_button.visible:
+		failures.append("Junto al obstáculo debe aparecer el botón para examinarlo")
+	exploration.open_spot(blocker)
+	_close_exploration_dialogue(exploration)
+	if not exploration._resolving:
+		failures.append("Apartar el obstáculo debe animarse")
+	var guard: int = 0
+	while exploration._resolving and guard < 600:
+		await process_frame
+		guard += 1
+	if blocker.is_blocking():
+		failures.append("El obstáculo sigue bloqueando después de examinarlo")
+	if exploration.discovered != 1:
+		failures.append("Examinar el obstáculo debe contar como descubrimiento")
+	for step: int in range(400):
+		exploration.walk(1.0, 0.1)
+		if exploration.is_dialogue_open():
+			break
+	if not exploration.is_dialogue_open():
+		failures.append("Llegar a la aldea debe abrir el diálogo de la meta")
+	_close_exploration_dialogue(exploration)
+	if not exploration._navigating:
+		failures.append("Terminar el diálogo de la meta debe continuar la historia")
+	if exploration.next_scene_key != "world1_story1":
+		failures.append("La exploración de la orilla debe llevar al Capítulo 1")
+	exploration.queue_free()
+	await process_frame
+
+func _close_exploration_dialogue(exploration: Node) -> void:
+	var guard: int = 0
+	while exploration.is_dialogue_open() and guard < 50:
+		exploration.advance_dialogue()
+		exploration.advance_dialogue()
+		guard += 1
 
 ## En ELEGIR, un error revela el significado de la palabra elegida y solo la
 ## respuesta correcta muestra la frase y permite continuar.
