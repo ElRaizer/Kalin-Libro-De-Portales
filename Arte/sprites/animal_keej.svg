@@ -1,5 +1,5 @@
 <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-  <ellipse cx="60" cy="115" rx="35" ry="7" fill="rgba(0,0,0,0.2)"/>
+  <ellipse cx="60" cy="115" rx="35" ry="7" fill="#000000" fill-opacity="0.2"/>
   <!-- astas -->
   <path d="M48 24 Q44 8 38 4 M44 14 Q36 12 32 6 M44 18 Q38 20 32 18" stroke="#9A6B36" stroke-width="3" fill="none" stroke-linecap="round"/>
   <path d="M72 24 Q76 8 82 4 M76 14 Q84 12 88 6 M76 18 Q82 20 88 18" stroke="#9A6B36" stroke-width="3" fill="none" stroke-linecap="round"/>

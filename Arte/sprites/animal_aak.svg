@@ -1,5 +1,5 @@
 <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-  <ellipse cx="60" cy="113" rx="40" ry="7" fill="rgba(0,0,0,0.2)"/>
+  <ellipse cx="60" cy="113" rx="40" ry="7" fill="#000000" fill-opacity="0.2"/>
   <!-- patas -->
   <ellipse cx="26" cy="96" rx="12" ry="10" fill="#7FA85A"/>
   <ellipse cx="94" cy="96" rx="12" ry="10" fill="#7FA85A"/>

@@ -1,5 +1,5 @@
 <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-  <ellipse cx="60" cy="115" rx="34" ry="7" fill="rgba(0,0,0,0.2)"/>
+  <ellipse cx="60" cy="115" rx="34" ry="7" fill="#000000" fill-opacity="0.2"/>
   <!-- abanico de plumas -->
   <path d="M60 78 L18 40 Q14 36 20 34 L34 40 Q30 30 38 30 L50 40 Q48 28 56 28 L60 40 Z" fill="#8A5A2C"/>
   <path d="M60 78 L102 40 Q106 36 100 34 L86 40 Q90 30 82 30 L70 40 Q72 28 64 28 L60 40 Z" fill="#8A5A2C"/>
