@@ -7,7 +7,7 @@
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¿Dónde estoy? Mi Libro de Hechizos... ¡sus páginas están en blanco!"
+text = "Mi Libro de Hechizos tiene todas sus páginas en blanco... ¿Alguien aquí podrá ayudarme?"
 background = ExtResource("3_bg_isla")
 kalin_pose = 1
 actors = Array[String]([])

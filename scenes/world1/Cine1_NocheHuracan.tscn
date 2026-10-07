@@ -57,7 +57,7 @@ auto_advance = 1.6
 
 [node name="Cine1" instance=ExtResource("1_base")]
 chapter_title = "Prólogo — La noche del huracán"
-next_scene_key = "world1_story1"
+next_scene_key = "world1_explore1"
 beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5")])
 
 [node name="SkipButton" parent="UI" index="1"]
