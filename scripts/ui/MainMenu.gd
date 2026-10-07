@@ -84,7 +84,9 @@ func _on_play_pressed() -> void:
 	var next: String = GameManager.next_unlocked_scene()
 	if next == "main_menu":
 		next = GameManager.LEVEL_ORDER[0].scene_key
-	GameManager.go_to_scene(next)
+	# Antes del nivel pendiente se muestra su capítulo de historia, si existe.
+	var info: Dictionary = GameManager.get_level_info(next)
+	GameManager.go_to_scene(info.get("story_key", next))
 
 func _on_progress_changed(_new_total: int) -> void:
 	_refresh_ui()

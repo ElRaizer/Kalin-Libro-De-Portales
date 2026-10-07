@@ -1,0 +1,110 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/ExplorationScene.tscn" id="1_base"]
+[ext_resource type="PackedScene" path="res://scenes/components/ExplorationSpot.tscn" id="2_spot"]
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_concha.svg" id="3_concha"]
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_pagina.svg" id="4_pagina"]
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_tronco.svg" id="5_tronco"]
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_piedra_sakbeh.svg" id="6_piedra"]
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_huellas.svg" id="7_huellas"]
+[ext_resource type="Texture2D" path="res://Arte/sprites/animal_kaax.svg" id="8_kaax"]
+[ext_resource type="Texture2D" path="res://Arte/sprites/animal_peek.svg" id="9_peek"]
+[ext_resource type="Texture2D" path="res://Arte/sprites/animal_miis.svg" id="10_miis"]
+
+[node name="Exploracion1" instance=ExtResource("1_base")]
+chapter_title = "Mundo 1 · Exploración — La orilla de la isla"
+next_scene_key = "world1_story1"
+objective_text = "Sigue el sendero hasta las casas →"
+intro_lines = Array[String](["¡Uf! ¿Dónde estoy? Esto no es mi cuarto...", "Arena, palmeras y el mar. El huracán de anoche dejó todo revuelto.", "Allá lejos sale humo de una casa. ¡Quizá vive alguien! Seguiré el sendero."])
+intro_surprised = true
+
+[node name="Kaax" type="Sprite2D" parent="Animales" index="0"]
+position = Vector2(3320, 592)
+scale = Vector2(1.3, 1.3)
+texture = ExtResource("8_kaax")
+offset = Vector2(0, -58)
+
+[node name="Peek" type="Sprite2D" parent="Animales" index="1"]
+position = Vector2(3460, 598)
+scale = Vector2(1.4, 1.4)
+texture = ExtResource("9_peek")
+offset = Vector2(0, -58)
+
+[node name="Miis" type="Sprite2D" parent="Animales" index="2"]
+position = Vector2(3580, 590)
+scale = Vector2(1.3, 1.3)
+texture = ExtResource("10_miis")
+offset = Vector2(0, -58)
+
+[node name="Concha" parent="Spots" index="0" instance=ExtResource("2_spot")]
+position = Vector2(560, 626)
+lines = Array[String](["Una concha de caracol. Si la acerco al oído... ¡se oye el mar!", "Ojalá también pudiera escuchar los hechizos de mi libro."])
+
+[node name="Sprite" parent="Spots/Concha" index="0"]
+texture = ExtResource("3_concha")
+offset = Vector2(0, -45)
+
+[node name="Pagina" parent="Spots" index="1" instance=ExtResource("2_spot")]
+position = Vector2(900, 618)
+prompt = "Recoger"
+lines = Array[String](["¡Una página de mi Libro de Hechizos!", "Pero... está en blanco. El huracán borró sus palabras.", "La guardaré. Tal vez alguien de esta isla me ayude a recuperarlas."])
+surprised = true
+reaction = 2
+
+[node name="Sprite" parent="Spots/Pagina" index="0"]
+texture = ExtResource("4_pagina")
+offset = Vector2(0, -50)
+
+[node name="Tronco" parent="Spots" index="2" instance=ExtResource("2_spot")]
+position = Vector2(1500, 636)
+prompt = "Mover con magia"
+lines = Array[String](["Una palmera cayó con el viento y tapa el camino.", "Es muy grande para saltarla... ¡pero puedo usar un hechizo!", "Un poco de magia... ¡arriba!"])
+reach_radius = 190.0
+blocks_path = true
+reaction = 1
+
+[node name="Sprite" parent="Spots/Tronco" index="0"]
+scale = Vector2(1.25, 1.25)
+texture = ExtResource("5_tronco")
+offset = Vector2(0, -120)
+
+[node name="Brillo" parent="Spots/Tronco" index="1"]
+position = Vector2(0, -140)
+emission_rect_extents = Vector2(150, 70)
+
+[node name="Piedra" parent="Spots" index="3" instance=ExtResource("2_spot")]
+position = Vector2(2250, 562)
+lines = Array[String](["Losas blancas en el suelo... y una piedra con dibujos tallados.", "¡Es el Sak Beh, un Camino Blanco que une a los pueblos mayas!", "El huracán rompió muchas piedras. Así es muy fácil perderse."])
+
+[node name="Sprite" parent="Spots/Piedra" index="0"]
+scale = Vector2(1.15, 1.15)
+texture = ExtResource("6_piedra")
+offset = Vector2(0, -100)
+
+[node name="Brillo" parent="Spots/Piedra" index="1"]
+position = Vector2(0, -130)
+
+[node name="Huellas" parent="Spots" index="4" instance=ExtResource("2_spot")]
+position = Vector2(2700, 618)
+lines = Array[String](["¡Huellas! Unas son de patitas con almohadillas... y otras parecen de ave.", "Van hacia las casas. ¡Voy a seguirlas!"])
+
+[node name="Sprite" parent="Spots/Huellas" index="0"]
+texture = ExtResource("7_huellas")
+offset = Vector2(0, -40)
+
+[node name="Brillo" parent="Spots/Huellas" index="1"]
+position = Vector2(0, -30)
+emission_rect_extents = Vector2(110, 20)
+
+[node name="Aldea" parent="Spots" index="5" instance=ExtResource("2_spot")]
+position = Vector2(3360, 579)
+prompt = "Saludar"
+lines = Array[String](["¡Casas... y animales! Me miran con mucha curiosidad.", "Hola... ¿alguien puede ayudarme?"])
+surprised = true
+reach_radius = 170.0
+is_goal = true
+auto_trigger = true
+
+[node name="Brillo" parent="Spots/Aldea" index="1"]
+position = Vector2(110, -150)
+emission_rect_extents = Vector2(160, 50)

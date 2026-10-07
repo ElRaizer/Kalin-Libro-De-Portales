@@ -296,7 +296,7 @@ func _on_menu_pressed() -> void:
 
 func _on_next_level_pressed() -> void:
 	_resolving = true
-	GameManager.go_to_scene("world5_level1")
+	GameManager.go_to_scene("world4_story1")
 
 func _on_book_pressed() -> void:
 	libro.show_book()

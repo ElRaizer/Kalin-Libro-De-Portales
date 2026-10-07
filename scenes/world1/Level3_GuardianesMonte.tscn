@@ -49,7 +49,7 @@ destination_cell = Vector2i(11, 5)
 [node name="Level3" type="Node2D" unique_id=891629715]
 script = ExtResource("1_rj3ji")
 level_number = 3
-next_scene_key = "world1_level4"
+next_scene_key = "world1_story4"
 default_instruction = "Memoriza las rocas; cerca de la punta se verán tenues. Puedes rehacer cada camino."
 selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
 

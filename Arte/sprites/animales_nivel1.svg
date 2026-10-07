@@ -2,7 +2,7 @@
   <!-- PEEK' (Perro) — col 0-119 -->
   <g transform="translate(0,0)">
     <!-- Body shadow -->
-    <ellipse cx="60" cy="115" rx="38" ry="7" fill="rgba(0,0,0,0.2)"/>
+    <ellipse cx="60" cy="115" rx="38" ry="7" fill="#000000" fill-opacity="0.2"/>
     <!-- Body -->
     <ellipse cx="60" cy="72" rx="38" ry="32" fill="#D4985A"/>
     <!-- Belly -->
@@ -49,7 +49,7 @@
 
   <!-- MÍIS (Gato) — col 120-239 -->
   <g transform="translate(120,0)">
-    <ellipse cx="60" cy="115" rx="36" ry="7" fill="rgba(0,0,0,0.2)"/>
+    <ellipse cx="60" cy="115" rx="36" ry="7" fill="#000000" fill-opacity="0.2"/>
     <!-- Body -->
     <ellipse cx="60" cy="74" rx="34" ry="30" fill="#A8A8C0"/>
     <!-- Belly -->
@@ -100,7 +100,7 @@
 
   <!-- KÁAX (Gallina) — col 240-359 -->
   <g transform="translate(240,0)">
-    <ellipse cx="60" cy="115" rx="35" ry="7" fill="rgba(0,0,0,0.2)"/>
+    <ellipse cx="60" cy="115" rx="35" ry="7" fill="#000000" fill-opacity="0.2"/>
     <!-- Body (round, fluffy) -->
     <ellipse cx="60" cy="76" rx="36" ry="34" fill="#C85820"/>
     <!-- Belly (lighter) -->

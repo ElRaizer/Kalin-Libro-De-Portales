@@ -9,6 +9,7 @@ func _initialize() -> void:
 
 func _capture_all() -> void:
 	DirAccess.make_dir_absolute(ProjectSettings.globalize_path(OUTPUT_DIR))
+	await _capture_scene("res://scenes/world1/Exploracion1_OrillaIsla.tscn", "exploracion.png")
 	await _capture_scene("res://scenes/world4/Level4_YoQuiero.tscn", "world4.png")
 	await _capture_book()
 	await _capture_scene("res://scenes/world5/Level5_PortalDeRegreso.tscn", "world5.png")

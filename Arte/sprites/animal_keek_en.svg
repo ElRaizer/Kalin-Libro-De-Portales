@@ -1,5 +1,5 @@
 <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-  <ellipse cx="60" cy="115" rx="38" ry="7" fill="rgba(0,0,0,0.2)"/>
+  <ellipse cx="60" cy="115" rx="38" ry="7" fill="#000000" fill-opacity="0.2"/>
   <!-- cola rizada -->
   <path d="M94 80 Q108 78 106 66 Q104 58 96 62 Q102 68 94 72 Z" fill="#D87890"/>
   <!-- cuerpo -->

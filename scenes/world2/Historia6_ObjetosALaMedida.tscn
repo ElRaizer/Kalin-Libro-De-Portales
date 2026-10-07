@@ -1,0 +1,97 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_casa_maya.svg" id="4_bg_casa"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Gracias a los hechizos de Kalin, cada casa de la aldea volvió a tener muebles."
+background = ExtResource("4_bg_casa")
+actors = Array[String](["Miis", "Kaax", "Peek'", "Áak"])
+effects = 16
+
+[sub_resource type="Resource" id="Beat_2"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Mi libro brilla otra vez! Ya guarda las palabras de la casa maya."
+actors = Array[String](["Miis", "Kaax", "Peek'", "Áak"])
+celebrate_page = true
+
+[sub_resource type="Resource" id="Beat_3"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Miis"
+text = "Miis quiere comprobar tu magia: ¿cómo se dice «mesa» en maya?"
+actors = Array[String](["Miis", "Kaax"])
+target_word = "mayak"
+options = Array[String](["lak", "mayak", "chan"])
+
+[sub_resource type="Resource" id="Beat_4"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Kaax"
+text = "¿Y qué me diste para servir mi comida?"
+actors = Array[String](["Miis", "Kaax"])
+target_word = "lak"
+options = Array[String](["janal", "ch'áak", "lak"])
+
+[sub_resource type="Resource" id="Beat_5"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Peek'"
+text = "Yo ya duermo feliz. ¿Cómo se llama mi cama?"
+actors = Array[String](["Peek'", "Áak"])
+target_word = "ch'áak"
+options = Array[String](["ch'áak", "chan", "mayak"])
+
+[sub_resource type="Resource" id="Beat_6"]
+script = ExtResource("2_beat")
+speaker = "Áak"
+text = "Tengo un problema... mi caparazón no cabe en la mesa. ¡Es demasiado pequeña!"
+actors = Array[String](["Peek'", "Áak"])
+
+[sub_resource type="Resource" id="Beat_7"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "Entonces mis hechizos necesitan cualidades: grande, pequeño, bonito, delicioso y fuerte."
+actors = Array[String](["Peek'", "Áak"])
+
+[sub_resource type="Resource" id="Beat_8"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Áak"
+text = "Quiero una mesa grande. ¿Cuál de estas palabras crees que significa «grande»?"
+actors = Array[String](["Peek'", "Áak"])
+target_word = "nojoch"
+options = Array[String](["mejen", "nojoch", "ki'"])
+reveal_phrase = "In mayake' nojoch"
+reveal_translation = "Mi mesa es grande."
+
+[sub_resource type="Resource" id="Beat_9"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "En maya, la cualidad va después del objeto. Los animales hicieron fila para pedir objetos a su medida."
+actors = Array[String](["Áak", "K'éek'en", "Kéej", "Miis"])
+
+[sub_resource type="Resource" id="Beat_10"]
+script = ExtResource("2_beat")
+speaker = "K'éek'en"
+text = "¡Yo quiero que mi comida sea deliciosa! Escucha bien lo que te pida cada uno."
+actors = Array[String](["Áak", "K'éek'en", "Kéej", "Miis"])
+
+[sub_resource type="Resource" id="Beat_11"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Kalin abrió una página nueva de su libro: ahora aprendería a describir las cosas."
+actors = Array[String](["Áak", "K'éek'en", "Kéej", "Miis"])
+effects = 16
+title = "Mundo 3"
+subtitle = "Hechizos de Adjetivos"
+auto_advance = 2.0
+
+[node name="Historia6" instance=ExtResource("1_base")]
+chapter_title = "Mundo 2 · Capítulo 6 — Objetos a la medida"
+next_scene_key = "world3_level1"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5"), SubResource("Beat_6"), SubResource("Beat_7"), SubResource("Beat_8"), SubResource("Beat_9"), SubResource("Beat_10"), SubResource("Beat_11")])

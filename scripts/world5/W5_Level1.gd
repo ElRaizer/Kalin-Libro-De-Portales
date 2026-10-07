@@ -68,7 +68,7 @@ var _resolving: bool = false
 func _ready() -> void:
 	header.menu_pressed.connect(_on_menu_pressed)
 	header.book_pressed.connect(_on_book_pressed)
-	completion.next_pressed.connect(_on_menu_pressed)
+	completion.next_pressed.connect(_on_epilogue_pressed)
 	completion.replay_pressed.connect(_on_replay_pressed)
 	completion.menu_pressed.connect(_on_menu_pressed)
 	portal_energy.max_value = CHALLENGES.size()
@@ -145,6 +145,11 @@ func _finish_world() -> void:
 func _on_menu_pressed() -> void:
 	_resolving = true
 	GameManager.go_to_scene("main_menu")
+
+## "Cerrar la aventura" abre el epílogo con la despedida de los animales.
+func _on_epilogue_pressed() -> void:
+	_resolving = true
+	GameManager.go_to_scene("world5_story1")
 
 func _on_book_pressed() -> void:
 	libro.show_book()

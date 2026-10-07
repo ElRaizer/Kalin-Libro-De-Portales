@@ -1,0 +1,382 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/components/StoryScene.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level1.svg" id="2_bg"]
+[ext_resource type="Texture2D" path="res://Arte/sprites/kalin_normal.svg" id="3_kalin"]
+[ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="4_theme"]
+[ext_resource type="Texture2D" path="res://Arte/efectos/fx_hoja.svg" id="5_hoja"]
+[ext_resource type="Texture2D" path="res://Arte/efectos/fx_lluvia.svg" id="6_lluvia"]
+[ext_resource type="Texture2D" path="res://Arte/efectos/fx_muebles.svg" id="7_muebles"]
+[ext_resource type="Texture2D" path="res://Arte/efectos/fx_pagina.svg" id="8_pagina"]
+[ext_resource type="Texture2D" path="res://Arte/efectos/fx_chispa.svg" id="9_chispa"]
+
+[sub_resource type="CanvasItemMaterial" id="Material_brillo"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_aparecer"]
+offsets = PackedFloat32Array(0, 0.15, 0.8, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
+[node name="StoryScene" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Ambient" type="CanvasModulate" parent="."]
+
+[node name="Background" type="TextureRect" parent="."]
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 1296.0
+offset_bottom = 736.0
+mouse_filter = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BackgroundNext" type="TextureRect" parent="."]
+visible = false
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 1296.0
+offset_bottom = 736.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Stage" type="Node2D" parent="."]
+
+[node name="Kalin" type="TextureRect" parent="Stage"]
+offset_left = 60.0
+offset_top = 170.0
+offset_right = 320.0
+offset_bottom = 640.0
+mouse_filter = 2
+pivot_offset = Vector2(130, 235)
+texture = ExtResource("3_kalin")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Actors" type="Control" parent="Stage"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+theme = ExtResource("4_theme")
+
+[node name="Effects" type="Node2D" parent="."]
+
+[node name="Hojas" type="CPUParticles2D" parent="Effects"]
+position = Vector2(1330, 340)
+emitting = false
+amount = 26
+lifetime = 3.0
+texture = ExtResource("5_hoja")
+emission_shape = 3
+emission_rect_extents = Vector2(20, 380)
+direction = Vector2(-1, 0.18)
+spread = 14.0
+gravity = Vector2(0, 40)
+initial_velocity_min = 420.0
+initial_velocity_max = 720.0
+angular_velocity_min = -300.0
+angular_velocity_max = 300.0
+scale_amount_min = 0.5
+scale_amount_max = 1.1
+
+[node name="Lluvia" type="CPUParticles2D" parent="Effects"]
+position = Vector2(740, -40)
+emitting = false
+amount = 150
+lifetime = 0.75
+texture = ExtResource("6_lluvia")
+emission_shape = 3
+emission_rect_extents = Vector2(900, 10)
+direction = Vector2(-0.34, 1)
+spread = 3.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 1100.0
+initial_velocity_max = 1400.0
+angle_min = 19.0
+angle_max = 19.0
+scale_amount_min = 0.8
+scale_amount_max = 1.2
+
+[node name="Muebles" type="CPUParticles2D" parent="Effects"]
+position = Vector2(1340, 420)
+emitting = false
+amount = 9
+lifetime = 3.4
+texture = ExtResource("7_muebles")
+emission_shape = 3
+emission_rect_extents = Vector2(20, 260)
+direction = Vector2(-1, -0.25)
+spread = 20.0
+gravity = Vector2(0, 200)
+initial_velocity_min = 380.0
+initial_velocity_max = 620.0
+angular_velocity_min = -280.0
+angular_velocity_max = 280.0
+scale_amount_min = 1.2
+scale_amount_max = 1.9
+anim_offset_max = 1.0
+particles_anim_h_frames = 4
+particles_anim_v_frames = 1
+
+[node name="Paginas" type="CPUParticles2D" parent="Effects"]
+position = Vector2(640, -60)
+emitting = false
+amount = 12
+lifetime = 7.0
+texture = ExtResource("8_pagina")
+emission_shape = 3
+emission_rect_extents = Vector2(640, 10)
+direction = Vector2(-0.15, 1)
+spread = 20.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 60.0
+initial_velocity_max = 110.0
+angular_velocity_min = -90.0
+angular_velocity_max = 90.0
+scale_amount_min = 0.7
+scale_amount_max = 1.2
+color_ramp = SubResource("Gradient_aparecer")
+
+[node name="Chispas" type="CPUParticles2D" parent="Effects"]
+material = SubResource("Material_brillo")
+position = Vector2(640, 560)
+emitting = false
+amount = 34
+lifetime = 3.2
+texture = ExtResource("9_chispa")
+emission_shape = 3
+emission_rect_extents = Vector2(640, 130)
+direction = Vector2(0, -1)
+spread = 25.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 15.0
+initial_velocity_max = 45.0
+angular_velocity_min = -60.0
+angular_velocity_max = 60.0
+scale_amount_min = 0.35
+scale_amount_max = 0.8
+color_ramp = SubResource("Gradient_aparecer")
+
+[node name="ConfetiPaginas" type="CPUParticles2D" parent="Effects"]
+position = Vector2(640, 330)
+emitting = false
+amount = 14
+lifetime = 1.8
+one_shot = true
+explosiveness = 0.95
+texture = ExtResource("8_pagina")
+emission_shape = 1
+emission_sphere_radius = 30.0
+direction = Vector2(0, -1)
+spread = 120.0
+gravity = Vector2(0, 700)
+initial_velocity_min = 320.0
+initial_velocity_max = 560.0
+angular_velocity_min = -360.0
+angular_velocity_max = 360.0
+scale_amount_min = 0.5
+scale_amount_max = 0.9
+
+[node name="ConfetiChispas" type="CPUParticles2D" parent="Effects"]
+material = SubResource("Material_brillo")
+position = Vector2(640, 330)
+emitting = false
+amount = 26
+lifetime = 1.6
+one_shot = true
+explosiveness = 0.95
+texture = ExtResource("9_chispa")
+emission_shape = 1
+emission_sphere_radius = 30.0
+direction = Vector2(0, -1)
+spread = 150.0
+gravity = Vector2(0, 300)
+initial_velocity_min = 200.0
+initial_velocity_max = 500.0
+scale_amount_min = 0.5
+scale_amount_max = 1.1
+color_ramp = SubResource("Gradient_aparecer")
+
+[node name="AutoTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="ChapterPanel" type="Panel" parent="UI"]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 580.0
+offset_bottom = 58.0
+mouse_filter = 2
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinTopBarPanel"
+
+[node name="ChapterLabel" type="Label" parent="UI/ChapterPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.93, 0.6, 1)
+theme_override_font_sizes/font_size = 19
+text = "Mundo 1 · Capítulo 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SkipButton" type="Button" parent="UI"]
+offset_left = 1060.0
+offset_top = 12.0
+offset_right = 1264.0
+offset_bottom = 58.0
+focus_mode = 0
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 17
+text = "Saltar historia ▶▶"
+
+[node name="WordBubble" type="Panel" parent="UI"]
+visible = false
+offset_left = 460.0
+offset_top = 74.0
+offset_right = 1220.0
+offset_bottom = 200.0
+mouse_filter = 2
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinRequestPanel"
+
+[node name="Content" type="VBoxContainer" parent="UI/WordBubble"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="MayaLabel" type="Label" parent="UI/WordBubble/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 38
+text = "In k'aaba'e' Peek'"
+horizontal_alignment = 1
+
+[node name="SpanishLabel" type="Label" parent="UI/WordBubble/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.36, 0.27, 0.19, 1)
+theme_override_font_sizes/font_size = 22
+text = "Me llamo Perro"
+horizontal_alignment = 1
+
+[node name="Choices" type="HBoxContainer" parent="UI"]
+visible = false
+offset_left = 440.0
+offset_top = 96.0
+offset_right = 1220.0
+offset_bottom = 180.0
+theme = ExtResource("4_theme")
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Celebration" type="Label" parent="UI"]
+visible = false
+offset_left = 290.0
+offset_top = 200.0
+offset_right = 990.0
+offset_bottom = 280.0
+theme_override_colors/font_color = Color(1, 0.88, 0.35, 1)
+theme_override_colors/font_outline_color = Color(0.25, 0.12, 0.02, 1)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 44
+text = "✨ ¡Página recuperada! ✨"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TitleCard" type="Panel" parent="UI"]
+modulate = Color(1, 1, 1, 0)
+offset_left = 240.0
+offset_top = 180.0
+offset_right = 1040.0
+offset_bottom = 380.0
+mouse_filter = 2
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinDialoguePanel"
+
+[node name="TitleLabel" type="Label" parent="UI/TitleCard"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 24.0
+offset_right = 780.0
+offset_bottom = 110.0
+theme_override_colors/font_color = Color(1, 0.86, 0.36, 1)
+theme_override_colors/font_outline_color = Color(0.25, 0.12, 0.02, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 60
+text = "Mundo 2"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="UI/TitleCard"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 116.0
+offset_right = 780.0
+offset_bottom = 176.0
+theme_override_colors/font_color = Color(0.96, 0.92, 0.8, 1)
+theme_override_font_sizes/font_size = 32
+text = "La Casa Maya"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DialogueBox" type="Panel" parent="UI"]
+offset_left = 60.0
+offset_top = 520.0
+offset_right = 1220.0
+offset_bottom = 705.0
+mouse_filter = 2
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinDialoguePanel"
+
+[node name="SpeakerLabel" type="Label" parent="UI/DialogueBox"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 10.0
+offset_right = 700.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(1, 0.85, 0.35, 1)
+theme_override_font_sizes/font_size = 21
+text = "Kalin"
+
+[node name="DialogueText" type="RichTextLabel" parent="UI/DialogueBox"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 42.0
+offset_right = 1136.0
+offset_bottom = 142.0
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.95, 0.92, 0.82, 1)
+theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
+text = "Texto del diálogo"
+
+[node name="HintLabel" type="Label" parent="UI/DialogueBox"]
+layout_mode = 0
+offset_left = 420.0
+offset_top = 146.0
+offset_right = 1136.0
+offset_bottom = 176.0
+theme_override_colors/font_color = Color(0.96, 0.9, 0.72, 1)
+theme_override_font_sizes/font_size = 17
+text = "▶ Continuar"
+horizontal_alignment = 2
+
+[node name="Flash" type="ColorRect" parent="UI"]
+modulate = Color(1, 1, 1, 0)
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(1, 1, 1, 1)

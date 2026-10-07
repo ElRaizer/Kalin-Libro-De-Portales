@@ -1,5 +1,5 @@
 <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-  <ellipse cx="60" cy="115" rx="35" ry="7" fill="rgba(0,0,0,0.2)"/>
+  <ellipse cx="60" cy="115" rx="35" ry="7" fill="#000000" fill-opacity="0.2"/>
   <!-- orejas largas -->
   <ellipse cx="46" cy="20" rx="9" ry="22" fill="#C4C4CE" transform="rotate(-10 46 20)"/>
   <ellipse cx="74" cy="20" rx="9" ry="22" fill="#C4C4CE" transform="rotate(10 74 20)"/>

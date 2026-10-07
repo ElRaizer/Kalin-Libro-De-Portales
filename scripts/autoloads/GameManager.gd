@@ -110,6 +110,19 @@ const SCENE_PATHS: Dictionary = {
 	"world1_level2":   "res://scenes/world1/Level2_AnimalesBosque.tscn",
 	"world1_level3":   "res://scenes/world1/Level3_GuardianesMonte.tscn",
 	"world1_level4":   "res://scenes/world1/Level4_AguaYCielo.tscn",
+	"world1_cine1":    "res://scenes/world1/Cine1_NocheHuracan.tscn",
+	"world1_explore1": "res://scenes/world1/Exploracion1_OrillaIsla.tscn",
+	"world1_story1":   "res://scenes/world1/Historia1_IslaAnimales.tscn",
+	"world1_story2":   "res://scenes/world1/Historia2_VocesBosque.tscn",
+	"world1_story3":   "res://scenes/world1/Historia3_GuardianesMonte.tscn",
+	"world1_story4":   "res://scenes/world1/Historia4_AguaCielo.tscn",
+	"world1_story5":   "res://scenes/world1/Historia5_FiestaIsla.tscn",
+	"world1_cine2":    "res://scenes/world1/Cine2_CasaMayaVacia.tscn",
+	"world2_story1":   "res://scenes/world2/Historia6_ObjetosALaMedida.tscn",
+	"world3_story1":   "res://scenes/world3/Historia7_HambreAldea.tscn",
+	"world4_story1":   "res://scenes/world4/Historia8_PortalDespierta.tscn",
+	"world5_story1":   "res://scenes/world5/Historia9_Despedida.tscn",
+	"world5_cine1":    "res://scenes/world5/Cine3_RegresoACasa.tscn",
 	"world2_level1":   "res://scenes/world2/Level2_ConstruyendoPalabras.tscn",
 	"world3_level1":   "res://scenes/world3/Level3_HechizosAdjetivos.tscn",
 	"world4_level1":   "res://scenes/world4/Level4_YoQuiero.tscn",
@@ -117,16 +130,17 @@ const SCENE_PATHS: Dictionary = {
 }
 
 ## Orden canónico de progreso. Cada mundo representa una mecánica distinta;
-## sus niveles son variaciones de esa misma mecánica.
+## sus niveles son variaciones de esa misma mecánica. "story_key" indica el
+## capítulo de historia que se muestra antes del nivel al usar Continuar.
 const LEVEL_ORDER: Array[Dictionary] = [
-	{ "world": 1, "level": 1, "scene_key": "world1_level1", "name": "Los Caminos Blancos" },
-	{ "world": 1, "level": 2, "scene_key": "world1_level2", "name": "Los Animales del Bosque" },
-	{ "world": 1, "level": 3, "scene_key": "world1_level3", "name": "Los Guardianes del Monte" },
-	{ "world": 1, "level": 4, "scene_key": "world1_level4", "name": "Agua y Cielo" },
-	{ "world": 2, "level": 1, "scene_key": "world2_level1", "name": "La Casa Maya" },
-	{ "world": 3, "level": 1, "scene_key": "world3_level1", "name": "Hechizos de Adjetivos" },
-	{ "world": 4, "level": 1, "scene_key": "world4_level1", "name": "Yo Quiero" },
-	{ "world": 5, "level": 1, "scene_key": "world5_level1", "name": "El Portal de Regreso" },
+	{ "world": 1, "level": 1, "scene_key": "world1_level1", "name": "Los Caminos Blancos", "story_key": "world1_cine1" },
+	{ "world": 1, "level": 2, "scene_key": "world1_level2", "name": "Los Animales del Bosque", "story_key": "world1_story2" },
+	{ "world": 1, "level": 3, "scene_key": "world1_level3", "name": "Los Guardianes del Monte", "story_key": "world1_story3" },
+	{ "world": 1, "level": 4, "scene_key": "world1_level4", "name": "Agua y Cielo", "story_key": "world1_story4" },
+	{ "world": 2, "level": 1, "scene_key": "world2_level1", "name": "La Casa Maya", "story_key": "world1_story5" },
+	{ "world": 3, "level": 1, "scene_key": "world3_level1", "name": "Hechizos de Adjetivos", "story_key": "world2_story1" },
+	{ "world": 4, "level": 1, "scene_key": "world4_level1", "name": "Yo Quiero", "story_key": "world3_story1" },
+	{ "world": 5, "level": 1, "scene_key": "world5_level1", "name": "El Portal de Regreso", "story_key": "world4_story1" },
 ]
 
 ## Entradas preparadas para contenido futuro que no cuentan para completar el

@@ -1,0 +1,68 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level1.svg" id="3_bg_isla"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "Todos los animales se reunieron en la aldea para celebrar a Kalin."
+background = ExtResource("3_bg_isla")
+actors = Array[String](["Peek'", "Kéej", "Báalam", "Kay"])
+effects = 16
+
+[sub_resource type="Resource" id="Beat_2"]
+script = ExtResource("2_beat")
+kind = 2
+speaker = "Peek'"
+text = "¡Juego de la fiesta! ¿Quién es Kéej?"
+actors = Array[String](["Peek'", "Kéej", "Báalam", "Kay"])
+target_word = "Kéej"
+effects = 16
+
+[sub_resource type="Resource" id="Beat_3"]
+script = ExtResource("2_beat")
+kind = 2
+speaker = "Miis"
+text = "Ahora nosotros. ¿Quién es Ch'íich'?"
+actors = Array[String](["Miis", "K'éek'en", "T'u'ul", "Ch'íich'"])
+target_word = "Ch'íich'"
+effects = 16
+
+[sub_resource type="Resource" id="Beat_4"]
+script = ExtResource("2_beat")
+kind = 2
+speaker = "Kaax"
+text = "¡La última! ¿Quién es Kuuts?"
+actors = Array[String](["Kaax", "Ma'ax", "Kuuts", "Áak"])
+target_word = "Kuuts"
+effects = 16
+
+[sub_resource type="Resource" id="Beat_5"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Mi libro recuperó todas las páginas de los animales! Gracias, amigos."
+kalin_pose = 1
+actors = Array[String](["Kaax", "Ma'ax", "Kuuts", "Áak"])
+celebrate_page = true
+effects = 16
+
+[sub_resource type="Resource" id="Beat_6"]
+script = ExtResource("2_beat")
+speaker = "Peek'"
+text = "Pero el huracán también se llevó nuestros muebles. No tenemos mesa, ni plato, ni cama..."
+actors = Array[String](["Peek'", "Miis", "Kaax"])
+mood = 2
+
+[sub_resource type="Resource" id="Beat_7"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Entonces aprenderé los hechizos para construirlos! Vamos a la Casa Maya."
+actors = Array[String](["Peek'", "Miis", "Kaax"])
+mood = 2
+
+[node name="Historia5" instance=ExtResource("1_base")]
+chapter_title = "Mundo 1 · Capítulo 5 — La fiesta de la isla"
+next_scene_key = "world1_cine2"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5"), SubResource("Beat_6"), SubResource("Beat_7")])
