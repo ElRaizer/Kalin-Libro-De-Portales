@@ -28,6 +28,14 @@ GameManager="*res://scripts/autoloads/GameManager.gd"
 
 `GameManager` conserva el catálogo canónico de vocabulario, el orden de los niveles, las palabras aprendidas, los puntos mágicos y el guardado local.
 
+`project.godot` también define tres acciones de entrada para las exploraciones (**Proyecto → Configuración del proyecto → Mapa de entrada**):
+
+| Acción | Teclas |
+|---|---|
+| `kalin_izquierda` | `←`, `A` |
+| `kalin_derecha` | `→`, `D` |
+| `kalin_interactuar` | `E`, `Espacio`, `Enter`, `Enter` del teclado numérico |
+
 ## Estructura actual
 
 ```text
@@ -43,6 +51,7 @@ Kalin-Libro-De-Portales/
 │   │   └── README.md
 │   ├── backgrounds/
 │   ├── efectos/
+│   ├── exploracion/
 │   ├── sprites/
 │   └── tiles/
 ├── scenes/
@@ -52,6 +61,8 @@ Kalin-Libro-De-Portales/
 │   │   ├── GridBoard.tscn
 │   │   ├── LevelHeader.tscn
 │   │   ├── CompletionOverlay.tscn
+│   │   ├── ExplorationScene.tscn
+│   │   ├── ExplorationSpot.tscn
 │   │   └── StoryScene.tscn
 │   ├── ui/
 │   │   └── LibroHechizos.tscn
@@ -61,6 +72,7 @@ Kalin-Libro-De-Portales/
 │   │   ├── Level3_GuardianesMonte.tscn
 │   │   ├── Level4_AguaYCielo.tscn
 │   │   ├── Historia1_IslaAnimales.tscn ... Historia5_FiestaIsla.tscn
+│   │   ├── Exploracion1_OrillaIsla.tscn
 │   │   ├── Cine1_NocheHuracan.tscn
 │   │   └── Cine2_CasaMayaVacia.tscn
 │   ├── World2/
@@ -81,6 +93,8 @@ Kalin-Libro-De-Portales/
 	│   ├── GridAnimalData.gd
 	│   ├── GridBoard.gd
 	│   ├── GridWordData.gd
+	│   ├── ExplorationScene.gd
+	│   ├── ExplorationSpot.gd
 	│   ├── StoryBeat.gd
 	│   └── StoryScene.gd
 	├── ui/
@@ -191,7 +205,7 @@ Las cinemáticas son escenas que heredan `StoryScene.tscn`, usan solo momentos
 
 | Clave | Escena | Va después de | Continúa hacia |
 |---|---|---|---|
-| `world1_cine1` | `Cine1_NocheHuracan.tscn` | Introducción | `world1_story1` |
+| `world1_cine1` | `Cine1_NocheHuracan.tscn` | Introducción | `world1_explore1` |
 | `world1_cine2` | `Cine2_CasaMayaVacia.tscn` | Capítulo 5 | `world2_level1` |
 | `world5_cine1` | `Cine3_RegresoACasa.tscn` | Capítulo 9 | `main_menu` |
 
@@ -210,6 +224,65 @@ Para agregar un capítulo:
 3. Registra la escena en `GameManager.SCENE_PATHS` con una clave `worldN_storyM`.
 4. Cambia el `next_scene_key` del nivel anterior para que apunte al capítulo.
 5. Agrega `story_key` al nivel siguiente en `LEVEL_ORDER` para que **Continuar** lo muestre.
+
+## Exploraciones
+
+Una exploración deja que el jugador camine con Kalin por un sendero lineal
+antes de un capítulo. La plantilla es `res://scenes/components/ExplorationScene.tscn`
+(script `ExplorationScene.gd`) y cada exploración la hereda sin script propio.
+La primera es `scenes/world1/Exploracion1_OrillaIsla.tscn` (clave
+`world1_explore1`): va entre `world1_cine1` y `world1_story1`.
+
+Estructura de la plantilla:
+
+| Nodo | Uso |
+|---|---|
+| `Cielo` (`Parallax2D`) | Cielo y mar lejanos; con `scroll_scale` 0.15 se mueven más despacio que el terreno. |
+| `Terreno` (`Sprite2D`) | Dibujo ancho por el que camina Kalin (`bg_isla_sendero.svg`, 3840 × 720). |
+| `Sendero` (`Path2D`) | Línea por la que van los pies de Kalin. Sus extremos marcan dónde empieza y termina el recorrido. Si cambias el terreno, mueve sus puntos en el editor para que sigan el camino dibujado. |
+| `Animales` | `Sprite2D` decorativos que saltan suavemente (por ejemplo, los animales que esperan en la meta). |
+| `Spots` | Instancias de `ExplorationSpot.tscn`, una por objeto. |
+| `Kalin` | Kalin con su `Camera2D` (los límites se calculan con el sendero) y las chispas de su magia. |
+| `UI` | Título, botón para saltar, panel de objetivo con contador de descubrimientos, ayuda de controles, botón flotante «E · Examinar», flecha que indica el camino y cuadro de diálogo (arriba, para no tapar el sendero). |
+
+En el Inspector de la exploración se configuran `chapter_title`,
+`next_scene_key`, `objective_text`, `walk_speed` y, en **Entrada**, el diálogo
+opcional con el que empieza (`intro_speaker`, `intro_lines`,
+`intro_surprised`).
+
+Cada `ExplorationSpot` define:
+
+| Propiedad | Uso |
+|---|---|
+| `prompt` | Texto del botón: «Examinar», «Recoger», «Mover con magia», «Saludar»... |
+| `speaker` | `Kalin`, `Narrador` o la palabra maya de un animal. |
+| `lines` | Líneas de diálogo; cada una es un globo. |
+| `surprised` | Kalin pone cara de sorpresa mientras habla. |
+| `reach_radius` | Distancia horizontal desde la que se puede examinar. |
+| `blocks_path` | Kalin no puede pasar hasta examinarlo. Debe usar la reacción `APARTAR`. |
+| `is_goal` | Al terminar su diálogo la exploración continúa hacia `next_scene_key`. Debe haber exactamente una meta y ser el último punto del sendero. |
+| `auto_trigger` | El diálogo se abre solo al llegar (útil para la meta). |
+| `reaction` | `NINGUNA` (deja de brillar), `APARTAR` (la magia lo levanta y lo quita) o `RECOGER` (vuela hacia Kalin). |
+
+El dibujo va en el nodo hijo `Sprite` de cada instancia (activa **Hijos
+editables**); su `offset` debe dejar la base del objeto en el origen para que
+se apoye en el sendero. Los objetos sin examinar brillan con el nodo `Brillo`.
+
+Para agregar una exploración:
+
+1. Crea una escena heredada de `ExplorationScene.tscn` en `scenes/worldN/` (o
+   duplica `Exploracion1_OrillaIsla.tscn`).
+2. Cambia las texturas de `Cielo/Imagen` y `Terreno`, y ajusta `Sendero`.
+3. Agrega instancias de `ExplorationSpot.tscn` dentro de `Spots`, con una meta al final.
+4. Regístrala en `GameManager.SCENE_PATHS` con una clave `worldN_exploreM`.
+5. Cambia el `next_scene_key` de la escena anterior para que apunte a ella.
+
+Arte de las exploraciones: el cielo (`bg_isla_cielo.svg`, 1700 × 720) debe ser
+más ancho que la pantalla para el parallax; el terreno deja transparente la
+parte alta para que se vea el cielo; los objetos viven en `Arte/exploracion/`.
+Se mantiene el estilo de formas planas y degradados suaves. Para sombras y
+transparencias usa `fill-opacity` en lugar de colores `rgba(...)`: el
+importador SVG de Godot dibuja `rgba(...)` como negro sólido.
 
 ## Vocabulario
 
@@ -241,11 +314,18 @@ godot_console.exe --headless --path . --script res://tests/validate_project.gd
 godot_console.exe --headless --path . --script res://tests/validate_learning_flow.gd
 ```
 
+`validate_project.gd` revisa también que cada exploración tenga sendero, objetos
+con diálogo y dibujo, una sola meta al final y las acciones de entrada.
+`validate_learning_flow.gd` recorre la exploración de la orilla: el diálogo de
+entrada detiene a Kalin, el tronco no deja pasar hasta examinarlo y llegar a la
+aldea lleva al Capítulo 1.
+
 1. Abrir el proyecto con Godot 4.6 y comprobar que no existan errores de análisis.
 2. Ejecutar la introducción y probar **Saltar intro**.
-3. Completar al menos un nivel de cada mundo.
-4. Volver al menú entre niveles y comprobar **Continuar**.
-5. Cerrar y abrir el juego para verificar el guardado.
-6. Repetir el Mundo 4 con las palabras ya aprendidas.
-7. Completar el Mundo 5 y confirmar que el portal llegue al 100 %.
-8. Abrir el libro y comprobar ilustraciones, marcadores futuros y navegación por páginas.
+3. Recorrer la exploración de la orilla con teclado y con clic, y comprobar que termina en el Capítulo 1.
+4. Completar al menos un nivel de cada mundo.
+5. Volver al menú entre niveles y comprobar **Continuar**.
+6. Cerrar y abrir el juego para verificar el guardado.
+7. Repetir el Mundo 4 con las palabras ya aprendidas.
+8. Completar el Mundo 5 y confirmar que el portal llegue al 100 %.
+9. Abrir el libro y comprobar ilustraciones, marcadores futuros y navegación por páginas.

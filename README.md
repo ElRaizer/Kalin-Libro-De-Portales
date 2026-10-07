@@ -11,6 +11,7 @@ Videojuego educativo desarrollado en Godot para practicar vocabulario y estructu
 - Progreso local con guardado automático.
 - Ocho escenas jugables distribuidas en cinco mundos.
 - Nueve capítulos de historia animados y tres cinemáticas que acompañan toda la aventura, desde la noche del huracán hasta el regreso de Kalin.
+- Una exploración libre de la isla antes del primer capítulo: el jugador camina con Kalin por la orilla, examina objetos y llega a la aldea de los animales.
 - Los audios de pronunciación están planeados, pero todavía no han sido grabados.
 
 El proyecto es un prototipo funcional en desarrollo. La navegación principal, el libro de hechizos y el guardado están implementados; todavía quedan mecánicas y contenido narrativo por ampliar.
@@ -50,7 +51,7 @@ repasa lo aprendido en el nivel anterior y presenta lo del siguiente.
 
 | Capítulo | Momento | Repasa | Presenta |
 |---:|---|---|---|
-| 1 | Después de la introducción | — | Peek', Miis y Kaax |
+| 1 | Después de la exploración de la orilla | — | Peek', Miis y Kaax |
 | 2 | Después del Mundo 1 · Nivel 1 | Peek', Miis y Kaax | Kéej, K'éek'en y Ma'ax |
 | 3 | Después del Mundo 1 · Nivel 2 | Kéej, K'éek'en y Ma'ax | Báalam, Kuuts y T'u'ul |
 | 4 | Después del Mundo 1 · Nivel 3 | Báalam, Kuuts y T'u'ul | Kay, Ch'íich' y Áak |
@@ -69,6 +70,23 @@ recupera páginas de su Libro de Hechizos.
 Los capítulos se pueden saltar con **Saltar historia** o `Esc`. **Continuar**
 en el menú muestra el capítulo que antecede al nivel pendiente.
 
+### Exploración de la isla
+
+Antes de conocer a los animales, el jugador recorre la isla con Kalin. La
+exploración **La orilla de la isla** va entre la cinemática del huracán y el
+Capítulo 1, y es lineal: el sendero empieza en la playa donde Kalin despertó,
+cruza el palmar y el Sak Beh roto y termina en la aldea.
+
+- La cámara sigue a Kalin y el cielo se mueve más despacio (parallax).
+- Los objetos que brillan se pueden examinar: una concha, una página en blanco
+  del Libro de Hechizos (Kalin la recoge), una piedra del Sak Beh y huellas de
+  animales. El panel inferior cuenta los descubrimientos.
+- Una palmera caída bloquea el camino; Kalin la aparta con un hechizo.
+- Al llegar a la aldea, Kaax, Peek' y Miis esperan junto a las casas y empieza
+  el Capítulo 1.
+
+La exploración se puede saltar con **Saltar exploración** o `Esc`.
+
 ### Cinemáticas y animaciones
 
 Además de los capítulos, tres cinemáticas cortas avanzan solas (un clic las
@@ -76,7 +94,7 @@ adelanta y **Saltar cinemática** las omite):
 
 | Cinemática | Momento | Qué muestra |
 |---|---|---|
-| Prólogo · La noche del huracán | Entre la introducción y el Capítulo 1 | El huracán con lluvia, viento y relámpagos; las páginas del libro caen como estrellas; Kalin despierta dormido en la orilla |
+| Prólogo · La noche del huracán | Entre la introducción y la exploración de la orilla | El huracán con lluvia, viento y relámpagos; las páginas del libro caen como estrellas; Kalin despierta dormido en la orilla |
 | Intermedio · La Casa Maya vacía | Entre el Capítulo 5 y el Mundo 2 | Kalin y sus amigos caminan al atardecer hasta la Casa Maya, la encuentran sin muebles y Kalin abre su libro |
 | Epílogo · Regreso a casa | Entre el Capítulo 9 y el menú | Kalin cruza el portal, las páginas vuelven al libro y despierta en su cuarto |
 
@@ -101,6 +119,7 @@ No se requieren complementos ni dependencias externas.
 
 - En todos los menús: `Tab` / `Shift+Tab` o flechas para mover el foco; `Enter` o `Espacio` para activar la opción resaltada.
 - Introducción: clic izquierdo, `Espacio` o `Enter` para avanzar; el botón permite saltarla con teclado.
+- Exploración: `←` `→` o `A` `D` para caminar; clic o toque para ir a un punto (o a un objeto, que se examina al llegar); `E`, `Espacio` o `Enter` para examinar y avanzar el diálogo; `Esc` para saltarla.
 - Mundo 1: clic y arrastre, o flechas para mover el cursor del tablero. `Enter` / `Espacio` inicia el camino; las flechas lo trazan y `Esc` lo cancela.
 - Mundos 2, 3, 4 y 5: `Tab` / flechas para elegir una palabra o respuesta y `Enter` / `Espacio` para confirmarla.
 - Libro de hechizos: flechas izquierda/derecha para cambiar de página y `Esc` para cerrarlo. Al cerrar, el foco vuelve al control que abrió el libro.

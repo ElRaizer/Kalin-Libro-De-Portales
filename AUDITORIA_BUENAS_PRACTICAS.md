@@ -14,12 +14,14 @@ autoloads, recursos y persistencia.
 | Estado global | Cumple | `GameManager` concentra progreso, guardado y navegación; no contiene lógica visual de niveles. |
 | Señales y acoplamiento | Cumple | El tablero comunica selección y conexión mediante señales; los niveles deciden narrativa y recompensas. |
 | Tipado de GDScript | Cumple parcialmente | La API principal y los nodos están tipados. Se corrigieron estados y colecciones importantes; algunos diccionarios de contenido siguen siendo dinámicos por diseño. |
-| Entrada y UI | Corregido | La entrada global pasó a `_unhandled_input()`, evitando que un clic en un botón también avance o cierre otra interfaz. |
+| Entrada y UI | Corregido | La entrada global pasó a `_unhandled_input()`, evitando que un clic en un botón también avance o cierre otra interfaz. Las exploraciones usan acciones del Mapa de entrada (`kalin_izquierda`, `kalin_derecha`, `kalin_interactuar`) en lugar de teclas fijas en el código. |
 | Persistencia | Corregido | El guardado ahora tiene versión, comprueba errores de apertura/escritura, informa JSON dañado y descarta niveles inválidos o duplicados. |
 | Configuración de componentes | Corregido | `GridBoard` muestra advertencias en el editor por texturas faltantes, palabras vacías, celdas fuera de rango, duplicados y solapamientos. |
 | Portabilidad | Corregido | Git registra `scenes/world2` con la misma capitalización usada por las rutas. Se añadieron reglas de fin de línea y editor. |
 | Carga de recursos | Mejorado | Se eliminaron cargas redundantes de fondos ya configurados en escenas y los recursos fijos del Mundo 4 usan `preload`. |
-| Pruebas automáticas | Mejorado | La validación comprueba todas las escenas registradas, las instancia y revisa la configuración de cada tablero. |
+| Pruebas automáticas | Mejorado | La validación comprueba todas las escenas registradas, las instancia y revisa la configuración de cada tablero. También revisa la estructura de las exploraciones y recorre la de la orilla (bloqueo, reacción y meta). |
+| Exploraciones | Cumple | `ExplorationScene` y `ExplorationSpot` se configuran desde el Inspector; los objetos avisan en el editor si les falta diálogo y la altura de Kalin sale del `Path2D` en vez de valores fijos. |
+| Arte SVG | Corregido | Las sombras de Kalin y los animales usaban `rgba(...)`, que el importador de Godot dibuja como negro sólido; ahora usan `fill-opacity`. |
 | Estilo GDScript | Mejorado | Se separaron varias instrucciones por línea, se sustituyeron cierres innecesarios por métodos/bind y se retiró estado muerto. |
 
 ## Decisiones que conviene conservar
