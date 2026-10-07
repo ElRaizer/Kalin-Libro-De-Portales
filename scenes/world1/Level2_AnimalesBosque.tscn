@@ -50,7 +50,7 @@ destination_cell = Vector2i(11, 5)
 script = ExtResource("1_x3wq0")
 level_number = 2
 next_scene_key = "world1_story3"
-default_instruction = "Planea los tres caminos: las rutas no pueden cruzarse ni compartir casillas."
+default_instruction = "Planea rutas sin cruces. Toca un animal conectado para rehacer sólo su camino."
 selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
 
 [node name="Background" type="TextureRect" parent="." unique_id=1459376502]
