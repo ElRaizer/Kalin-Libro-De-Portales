@@ -1,0 +1,223 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/components/ExplorationScene.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_isla_cielo.svg" id="2_cielo"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_isla_sendero.svg" id="3_terreno"]
+[ext_resource type="Texture2D" path="res://Arte/sprites/kalin_normal.svg" id="4_kalin"]
+[ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="5_theme"]
+[ext_resource type="Texture2D" path="res://Arte/efectos/fx_chispa.svg" id="6_chispa"]
+[ext_resource type="Texture2D" path="res://Arte/exploracion/ui_flecha_camino.svg" id="7_flecha"]
+
+[sub_resource type="Curve2D" id="Curve_sendero"]
+_data = {
+"points": PackedVector2Array(-66.6667, -2, 66.6667, 2, 120, 600, -133.333, 0.333333, 133.333, -0.333333, 520, 612, -133.333, 3.66667, 133.333, -3.66667, 920, 598, -133.333, -1, 133.333, 1, 1320, 590, -133.333, -0.333333, 133.333, 0.333333, 1720, 604, -133.333, 3.66667, 133.333, -3.66667, 2120, 592, -133.333, 0, 133.333, 0, 2520, 582, -133.333, 0.666667, 133.333, -0.666667, 2920, 592, -133.333, 1.33333, 133.333, -1.33333, 3320, 578, -66.6667, -1, 66.6667, 1, 3720, 584)
+}
+point_count = 10
+
+[sub_resource type="CanvasItemMaterial" id="Material_brillo"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_aparecer"]
+offsets = PackedFloat32Array(0, 0.15, 0.8, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
+[node name="ExplorationScene" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Cielo" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.15, 1)
+
+[node name="Imagen" type="Sprite2D" parent="Cielo"]
+texture = ExtResource("2_cielo")
+centered = false
+
+[node name="Terreno" type="Sprite2D" parent="."]
+texture = ExtResource("3_terreno")
+centered = false
+
+[node name="Sendero" type="Path2D" parent="."]
+curve = SubResource("Curve_sendero")
+
+[node name="Animales" type="Node2D" parent="."]
+
+[node name="Spots" type="Node2D" parent="."]
+
+[node name="Kalin" type="Node2D" parent="."]
+position = Vector2(120, 600)
+
+[node name="Sprite" type="Sprite2D" parent="Kalin"]
+scale = Vector2(0.72, 0.72)
+texture = ExtResource("4_kalin")
+offset = Vector2(0, -168)
+
+[node name="Camera" type="Camera2D" parent="Kalin"]
+position_smoothing_enabled = true
+position_smoothing_speed = 6.0
+
+[node name="Magia" type="CPUParticles2D" parent="Kalin"]
+material = SubResource("Material_brillo")
+position = Vector2(-40, -110)
+emitting = false
+amount = 30
+lifetime = 1.2
+one_shot = true
+explosiveness = 0.85
+texture = ExtResource("6_chispa")
+emission_shape = 1
+emission_sphere_radius = 24.0
+direction = Vector2(1, -0.6)
+spread = 50.0
+gravity = Vector2(0, 60)
+initial_velocity_min = 220.0
+initial_velocity_max = 420.0
+scale_amount_min = 0.5
+scale_amount_max = 1.1
+color_ramp = SubResource("Gradient_aparecer")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="ChapterPanel" type="Panel" parent="UI"]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 640.0
+offset_bottom = 58.0
+mouse_filter = 2
+theme = ExtResource("5_theme")
+theme_type_variation = &"KalinTopBarPanel"
+
+[node name="ChapterLabel" type="Label" parent="UI/ChapterPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 19
+text = "Mundo 1 · Exploración"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SkipButton" type="Button" parent="UI"]
+offset_left = 1040.0
+offset_top = 12.0
+offset_right = 1264.0
+offset_bottom = 58.0
+focus_mode = 0
+theme = ExtResource("5_theme")
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 17
+text = "Saltar exploración ▶▶"
+
+[node name="ObjectivePanel" type="Panel" parent="UI"]
+offset_left = 16.0
+offset_top = 630.0
+offset_right = 600.0
+offset_bottom = 706.0
+mouse_filter = 2
+theme = ExtResource("5_theme")
+theme_type_variation = &"KalinTopBarPanel"
+
+[node name="Content" type="VBoxContainer" parent="UI/ObjectivePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 6.0
+offset_right = -16.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="ObjectiveLabel" type="Label" parent="UI/ObjectivePanel/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "Sigue el sendero."
+
+[node name="CounterLabel" type="Label" parent="UI/ObjectivePanel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.35, 1)
+theme_override_font_sizes/font_size = 16
+text = "Descubrimientos: 0 / 0"
+
+[node name="ControlsLabel" type="Label" parent="UI"]
+offset_left = 640.0
+offset_top = 668.0
+offset_right = 1264.0
+offset_bottom = 704.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.07, 0.2, 0.15, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 16
+text = "← → / A D: caminar   ·   clic: ir   ·   E: examinar"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="PromptButton" type="Button" parent="UI"]
+offset_right = 200.0
+offset_bottom = 48.0
+focus_mode = 0
+theme = ExtResource("5_theme")
+theme_type_variation = &"KalinPrimaryButton"
+theme_override_font_sizes/font_size = 18
+text = "E · Examinar"
+
+[node name="Flecha" type="TextureRect" parent="UI"]
+offset_left = 1160.0
+offset_top = 330.0
+offset_right = 1240.0
+offset_bottom = 410.0
+mouse_filter = 2
+texture = ExtResource("7_flecha")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DialogueBox" type="Panel" parent="UI"]
+offset_left = 60.0
+offset_top = 72.0
+offset_right = 1220.0
+offset_bottom = 242.0
+mouse_filter = 2
+theme = ExtResource("5_theme")
+theme_type_variation = &"KalinDialoguePanel"
+
+[node name="SpeakerLabel" type="Label" parent="UI/DialogueBox"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 10.0
+offset_right = 700.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(1, 0.85, 0.35, 1)
+theme_override_font_sizes/font_size = 21
+text = "Kalin"
+
+[node name="DialogueText" type="RichTextLabel" parent="UI/DialogueBox"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 42.0
+offset_right = 1136.0
+offset_bottom = 132.0
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.95, 0.92, 0.82, 1)
+theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
+text = "Texto del diálogo"
+
+[node name="HintLabel" type="Label" parent="UI/DialogueBox"]
+layout_mode = 0
+offset_left = 420.0
+offset_top = 134.0
+offset_right = 1136.0
+offset_bottom = 162.0
+theme_override_colors/font_color = Color(0.96, 0.9, 0.72, 1)
+theme_override_font_sizes/font_size = 17
+text = "▶ Continuar"
+horizontal_alignment = 2
+
+[node name="Fade" type="ColorRect" parent="UI"]
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(0.03, 0.06, 0.1, 1)
