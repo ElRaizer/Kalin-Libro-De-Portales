@@ -3,25 +3,31 @@
 ## adjetivo. La primera vuelta ofrece traducciones; la segunda las retira.
 extends Node2D
 
-const NOUNS: Array[Dictionary] = [
+const UI_EFFECTS = preload("res://scripts/components/UIEffects.gd")
+const PHRASE_BUILDER = preload("res://scripts/components/PhraseBuilderController.gd")
+const EXERCISE_ENTRY = preload("res://scripts/data/ExerciseEntry.gd")
+
+const RAW_NOUNS: Array[Dictionary] = [
 	{ "maya": "mayak",  "spanish": "mesa",   "emoji": "🪑" },
 	{ "maya": "lak",    "spanish": "plato",  "emoji": "🍽️" },
 	{ "maya": "ch'áak", "spanish": "cama",   "emoji": "🛏️" },
 	{ "maya": "chan",   "spanish": "silla",  "emoji": "💺" },
 	{ "maya": "janal",  "spanish": "comida", "emoji": "🍲" },
 ]
+static var NOUNS: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_NOUNS)
 
-const ADJECTIVES: Array[Dictionary] = [
+const RAW_ADJECTIVES: Array[Dictionary] = [
 	{ "maya": "mejen",    "spanish": "pequeña" },
 	{ "maya": "nojoch",   "spanish": "grande" },
 	{ "maya": "Jats'uts", "spanish": "bonita" },
 	{ "maya": "ki'",      "spanish": "deliciosa" },
 	{ "maya": "jach'",    "spanish": "fuerte" },
 ]
+static var ADJECTIVES: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_ADJECTIVES)
 
 ## Peticiones definidas por el GDD. Las frases se guardan completas para no
 ## intentar inferir las uniones morfológicas desde el código.
-const CHALLENGES: Array[Dictionary] = [
+const RAW_CHALLENGES: Array[Dictionary] = [
 	{ "animal": "Peek'", "animal_spanish": "Perro", "sprite": "res://Arte/sprites/animal_peek.svg", "noun": "chan", "adjective": "jach'", "phrase": "In chan'e' jach'", "translation": "Mi silla es fuerte." },
 	{ "animal": "Miis", "animal_spanish": "Gato", "sprite": "res://Arte/sprites/animal_miis.svg", "noun": "ch'áak", "adjective": "mejen", "phrase": "In ch'áake' mejen", "translation": "Mi cama es pequeña." },
 	{ "animal": "Kaax", "animal_spanish": "Gallina", "sprite": "res://Arte/sprites/animal_kaax.svg", "noun": "lak", "adjective": "Jats'uts", "phrase": "In lake' Jats'uts", "translation": "Mi plato es bonito." },
@@ -29,6 +35,7 @@ const CHALLENGES: Array[Dictionary] = [
 	{ "animal": "K'éek'en", "animal_spanish": "Cerdo", "sprite": "res://Arte/sprites/animal_keek_en.svg", "noun": "janal", "adjective": "ki'", "phrase": "In janale' ki'", "translation": "Mi comida es deliciosa." },
 	{ "animal": "Kéej", "animal_spanish": "Venado", "sprite": "res://Arte/sprites/animal_keej.svg", "noun": "chan", "adjective": "Jats'uts", "phrase": "In chan'e' Jats'uts", "translation": "Mi silla es bonita." },
 ]
+static var CHALLENGES: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_CHALLENGES)
 
 const COLOR_INK := Color("3b2415")
 const COLOR_SUCCESS := Color("2e8b57")
@@ -44,8 +51,7 @@ var _resolving: bool = false
 
 @onready var spell_panel: Panel = $UI/SpellPanel
 @onready var choices_panel: Panel = $UI/ChoicesPanel
-@onready var complete_panel: Panel = $UI/CompletePanel
-@onready var complete_shade: ColorRect = $UI/CompleteShade
+@onready var completion: CompletionOverlay = $UI/CompletionOverlay
 @onready var animal_sprite: TextureRect = $UI/RequestPanel/Content/AnimalSprite
 @onready var animal_name: Label = $UI/RequestPanel/Content/AnimalName
 @onready var request_label: Label = $UI/RequestPanel/Content/RequestLabel
@@ -61,7 +67,6 @@ var _resolving: bool = false
 @onready var progress_label: Label = $UI/StatusPanel/StatusRow/ProgressLabel
 @onready var instruction_label: Label = $UI/StatusPanel/StatusRow/InstructionLabel
 @onready var magic_label: Label = $UI/TopBar/Bar/MagicLabel
-@onready var complete_summary: Label = $UI/CompletePanel/Content/SummaryLabel
 @onready var libro: CanvasLayer = $LibroHechizos
 
 func _ready() -> void:
@@ -72,53 +77,21 @@ func _ready() -> void:
 	cast_button.pressed.connect(_on_cast_pressed)
 	GameManager.magic_points_changed.connect(_on_magic_points_changed)
 	_on_magic_points_changed(GameManager.magic_points)
-	complete_panel.visible = false
-	complete_shade.visible = false
+	completion.next_pressed.connect(_on_next_level_pressed)
+	completion.replay_pressed.connect(_on_replay_pressed)
+	completion.menu_pressed.connect(_on_menu_pressed)
 	_show_round()
 
 func _build_round_plan() -> void:
-	for i in range(CHALLENGES.size()):
-		round_plan.append(i)
-	var challenge_rounds: Array[int] = []
-	for i in range(CHALLENGES.size()):
-		challenge_rounds.append(i)
-	challenge_rounds.shuffle()
-	round_plan.append_array(challenge_rounds)
+	for item: Dictionary in PHRASE_BUILDER.build_two_phase_plan(CHALLENGES.size()):
+		round_plan.append(int(item.challenge))
 
 func _build_choice_buttons() -> void:
-	for child: Node in noun_grid.get_children():
-		if child is DraggableWordButton:
-			var button := child as DraggableWordButton
-			noun_buttons[button.word_value] = button
-			button.pressed.connect(_select_noun.bind(button.word_value))
-	for child: Node in adjective_grid.get_children():
-		if child is DraggableWordButton:
-			var button := child as DraggableWordButton
-			adjective_buttons[button.word_value] = button
-			button.pressed.connect(_select_adjective.bind(button.word_value))
+	noun_buttons = PHRASE_BUILDER.collect_buttons(noun_grid, _select_noun)
+	adjective_buttons = PHRASE_BUILDER.collect_buttons(adjective_grid, _select_adjective)
 
 func _configure_keyboard_navigation() -> void:
-	var nouns: Array[Button] = []
-	var adjectives: Array[Button] = []
-	for child: Node in noun_grid.get_children():
-		if child is Button:
-			nouns.append(child as Button)
-	for child: Node in adjective_grid.get_children():
-		if child is Button:
-			adjectives.append(child as Button)
-	_configure_horizontal_row(nouns)
-	_configure_horizontal_row(adjectives)
-	for index: int in range(mini(nouns.size(), adjectives.size())):
-		nouns[index].focus_neighbor_bottom = nouns[index].get_path_to(adjectives[index])
-		adjectives[index].focus_neighbor_top = adjectives[index].get_path_to(nouns[index])
-		adjectives[index].focus_neighbor_bottom = adjectives[index].get_path_to(cast_button)
-
-func _configure_horizontal_row(buttons: Array[Button]) -> void:
-	if buttons.is_empty():
-		return
-	for index: int in range(buttons.size()):
-		buttons[index].focus_neighbor_left = buttons[index].get_path_to(buttons[posmod(index - 1, buttons.size())])
-		buttons[index].focus_neighbor_right = buttons[index].get_path_to(buttons[(index + 1) % buttons.size()])
+	PHRASE_BUILDER.configure_navigation(noun_grid, adjective_grid, cast_button)
 
 func _setup_drop_slots() -> void:
 	noun_slot.connect("word_dropped", _select_noun)
@@ -155,23 +128,23 @@ func _show_round() -> void:
 	if not noun_buttons.is_empty():
 		(noun_buttons.values()[0] as Button).grab_focus()
 
-func _current_challenge() -> Dictionary:
+func _current_challenge() -> ExerciseEntry:
 	return CHALLENGES[round_plan[round_index]]
 
 func _is_guided_phase() -> bool:
 	return round_index < CHALLENGES.size()
 
-func _challenge_prompt(challenge: Dictionary) -> String:
+func _challenge_prompt(challenge: ExerciseEntry) -> String:
 	var noun := _noun_data(challenge.noun)
 	var adjective := _adjective_data(challenge.adjective)
 	return "%s %s" % [str(noun.spanish).capitalize(), adjective.spanish]
 
 func _update_choice_labels() -> void:
 	var guided := _is_guided_phase()
-	for noun: Dictionary in NOUNS:
+	for noun: ExerciseEntry in NOUNS:
 		var button: Button = noun_buttons[noun.maya]
 		button.text = "%s\n%s" % [noun.maya, str(noun.spanish).capitalize()] if guided else noun.maya
-	for adjective: Dictionary in ADJECTIVES:
+	for adjective: ExerciseEntry in ADJECTIVES:
 		var button: Button = adjective_buttons[adjective.maya]
 		button.text = "%s\n%s" % [adjective.maya, str(adjective.spanish).capitalize()] if guided else adjective.maya
 
@@ -192,10 +165,7 @@ func _select_adjective(word: String) -> void:
 	_celebrate_selection(adjective_slot)
 
 func _celebrate_selection(slot: Control) -> void:
-	if slot.has_method("pop"):
-		slot.pop()
-	feedback_label.text = "¡Bien! Completa el otro espacio o lanza el hechizo."
-	feedback_label.add_theme_color_override("font_color", COLOR_INK)
+	PHRASE_BUILDER.celebrate(slot, feedback_label, "¡Bien! Completa el otro espacio o lanza el hechizo.", COLOR_INK)
 
 func _update_slots() -> void:
 	noun_slot.text = selected_noun + "e'" if selected_noun != "" else "sustantivo + e'"
@@ -203,16 +173,10 @@ func _update_slots() -> void:
 	cast_button.disabled = selected_noun == "" or selected_adjective == "" or _resolving
 
 func _update_button_states() -> void:
-	for word: String in noun_buttons:
-		(noun_buttons[word] as Button).button_pressed = word == selected_noun
-	for word: String in adjective_buttons:
-		(adjective_buttons[word] as Button).button_pressed = word == selected_adjective
+	PHRASE_BUILDER.set_button_states(noun_buttons, selected_noun, adjective_buttons, selected_adjective)
 
 func _set_choices_enabled(enabled: bool) -> void:
-	for button: Button in noun_buttons.values():
-		button.disabled = not enabled
-	for button: Button in adjective_buttons.values():
-		button.disabled = not enabled
+	PHRASE_BUILDER.set_enabled(noun_buttons, adjective_buttons, enabled)
 	_update_button_states()
 	cast_button.disabled = not enabled or selected_noun == "" or selected_adjective == ""
 
@@ -233,7 +197,7 @@ func _on_cast_pressed() -> void:
 	translation_label.add_theme_color_override("font_color", COLOR_SUCCESS)
 	feedback_label.text = "¡Hechizo correcto! El objeto fue creado a la medida."
 	feedback_label.add_theme_color_override("font_color", COLOR_SUCCESS)
-	_success_burst(spell_panel)
+	UI_EFFECTS.success_burst(self, $UI, spell_panel)
 	var tween := create_tween()
 	tween.tween_property(spell_panel, "scale", Vector2(1.025, 1.025), 0.12)
 	tween.tween_property(spell_panel, "scale", Vector2.ONE, 0.18)
@@ -243,7 +207,7 @@ func _on_cast_pressed() -> void:
 	round_index += 1
 	_show_round()
 
-func _show_incorrect_feedback(challenge: Dictionary) -> void:
+func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
 	var noun_ok: bool = selected_noun == str(challenge.noun)
 	var adjective_ok: bool = selected_adjective == str(challenge.adjective)
 	if not noun_ok and not adjective_ok:
@@ -269,50 +233,33 @@ func _pulse_error_slots(noun_ok: bool, adjective_ok: bool) -> void:
 		tween.tween_property(slot, "modulate", Color(1.25, 0.55, 0.55, 1.0), 0.08)
 		tween.tween_property(slot, "modulate", Color.WHITE, 0.2)
 
-func _success_burst(origin: Control) -> void:
-	for index: int in range(9):
-		var sparkle := Label.new()
-		sparkle.text = "✦"
-		sparkle.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		sparkle.add_theme_font_size_override("font_size", 18 + index % 3 * 4)
-		sparkle.add_theme_color_override("font_color", Color("ffd85a"))
-		$UI.add_child(sparkle)
-		sparkle.position = origin.position + origin.size * 0.5
-		var angle := TAU * float(index) / 9.0
-		var target := sparkle.position + Vector2.from_angle(angle) * (62.0 + index * 5.0)
-		var tween := create_tween().set_parallel(true).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		tween.tween_property(sparkle, "position", target, 0.45)
-		tween.tween_property(sparkle, "modulate:a", 0.0, 0.45)
-		tween.chain().tween_callback(sparkle.queue_free)
-
 func _phrase_noun(phrase: String) -> String:
 	var parts := phrase.split(" ")
 	return parts[1] if parts.size() > 1 else selected_noun
 
-func _noun_data(word: String) -> Dictionary:
-	for noun: Dictionary in NOUNS:
+func _noun_data(word: String) -> ExerciseEntry:
+	for noun: ExerciseEntry in NOUNS:
 		if noun.maya == word:
 			return noun
-	return {}
+	return null
 
-func _adjective_data(word: String) -> Dictionary:
-	for adjective: Dictionary in ADJECTIVES:
+func _adjective_data(word: String) -> ExerciseEntry:
+	for adjective: ExerciseEntry in ADJECTIVES:
 		if adjective.maya == word:
 			return adjective
-	return {}
+	return null
 
 func _noun_emoji(word: String) -> String:
-	return _noun_data(word).get("emoji", "✨")
+	var data := _noun_data(word)
+	return data.emoji if data != null and data.emoji != "" else "✨"
 
 func _finish_level() -> void:
 	GameManager.complete_level(3, 1)
-	complete_summary.text = "Construiste las seis frases del GDD en dos fases.\nLas cinco cualidades ya están en tu Libro de Hechizos.\n+%d puntos mágicos" % GameManager.MAGIC_PER_LEVEL
-	complete_shade.visible = true
-	complete_panel.visible = true
-	complete_panel.modulate.a = 0.0
-	var tween := create_tween()
-	tween.tween_property(complete_panel, "modulate:a", 1.0, 0.3)
-	$UI/CompletePanel/Content/NextButton.grab_focus()
+	completion.show_completion(
+		"¡Hechizos de adjetivos dominados!",
+		"Construiste las seis frases del GDD en dos fases.\nLas cinco cualidades ya están en tu Libro de Hechizos.",
+		"Continuar a Yo Quiero →"
+	)
 
 func _on_magic_points_changed(value: int) -> void:
 	magic_label.text = "%d pts mágicos" % value

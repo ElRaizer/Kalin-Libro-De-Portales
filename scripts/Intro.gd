@@ -5,8 +5,10 @@
 
 extends Node2D
 
+const INTRO_PANEL_DATA = preload("res://scripts/data/IntroPanelData.gd")
+
 # ─── Datos de los paneles narrativos ────────────────────────────────────────
-const PANELS := [
+const RAW_PANELS := [
 	{
 		"bg":       "res://Arte/backgrounds/bg_intro_room.svg",
 		"kalin":    "",                     # sin sprite en este panel
@@ -64,6 +66,7 @@ const PANELS := [
 		"subtext":  "¡Ayúdalo a conectar los caminos y aprender maya!",
 	},
 ]
+static var PANELS: Array[IntroPanelData] = INTRO_PANEL_DATA.from_dictionaries(RAW_PANELS)
 
 # ─── Estado ──────────────────────────────────────────────────────────────────
 var panel_index: int = 0
@@ -124,17 +127,17 @@ func _advance() -> void:
 func _show_panel(idx: int) -> void:
 	is_animating = true
 	text_revealed = false
-	var p: Dictionary = PANELS[idx]
+	var p: IntroPanelData = PANELS[idx]
 
 	# Número de panel
 	panel_num_lbl.text = "%d / %d" % [idx + 1, PANELS.size()]
 
 	# Fondo
-	_set_texture_from_path(bg_rect, p.bg)
+	_set_texture_from_path(bg_rect, p.background_path)
 
 	# Kalin sprite
-	if p.kalin != "":
-		_set_texture_from_path(kalin_sprite, p.kalin)
+	if p.kalin_path != "":
+		_set_texture_from_path(kalin_sprite, p.kalin_path)
 		kalin_sprite.position.x = p.kalin_x
 		kalin_sprite.visible = true
 		# Subtle entrance animation
@@ -146,7 +149,7 @@ func _show_panel(idx: int) -> void:
 
 	# Diálogo
 	main_text.text = ""
-	sub_text.text  = p.get("subtext", "")
+	sub_text.text  = p.subtext
 	full_text      = p.text
 	continue_lbl.visible = false
 

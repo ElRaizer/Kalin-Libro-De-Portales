@@ -1,8 +1,9 @@
 ## Mundo 5 — El Portal de Regreso
 ## Recapitulación de las estructuras aprendidas y cierre narrativo.
 extends Node2D
+const EXERCISE_ENTRY = preload("res://scripts/data/ExerciseEntry.gd")
 
-const CHALLENGES: Array[Dictionary] = [
+const RAW_CHALLENGES: Array[Dictionary] = [
 	{
 		"section": "IDENTIDAD", "prompt": "El libro pregunta cómo se presenta Peek'.",
 		"clue": "🐶  Me llamo Perro", "correct": "In k'aaba'e' Peek'",
@@ -44,6 +45,7 @@ const CHALLENGES: Array[Dictionary] = [
 		"options": ["Ka xi'ik tech jats'uts", "Yuum bo'otik", "Bix a beel"], "learn": "Ka xi'ik tech jats'uts"
 	},
 ]
+static var CHALLENGES: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_CHALLENGES)
 
 const COLOR_SUCCESS := Color("2e8b57")
 const COLOR_ERROR := Color("b93c3c")

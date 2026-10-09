@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://bedp7h6bqksto" path="res://Arte/backgrounds/bg_level1.svg" id="2_1drb2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="3_si73q"]
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="4_theme"]
+[ext_resource type="PackedScene" path="res://scenes/components/CompletionOverlay.tscn" id="5_complete"]
 
 [node name="Level2" type="Node2D" unique_id=159115184]
 script = ExtResource("1_xq8dk")
@@ -162,71 +163,10 @@ theme_override_colors/font_color = Color(0.85, 0.95, 0.8, 1)
 theme_override_font_sizes/font_size = 14
 horizontal_alignment = 1
 
-[node name="CompleteShade" type="ColorRect" parent="UI"]
-visible = false
-offset_right = 1280.0
-offset_bottom = 720.0
-color = Color(0.02, 0.08, 0.07, 0.72)
-
-[node name="CompletePanel" type="Panel" parent="UI" unique_id=1552579625]
-visible = false
-offset_left = 290.0
-offset_top = 170.0
-offset_right = 990.0
-offset_bottom = 548.0
-theme = ExtResource("4_theme")
-theme_type_variation = &"KalinCompletionPanel"
-
-[node name="VBox" type="VBoxContainer" parent="UI/CompletePanel" unique_id=2123195852]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 24.0
-offset_right = 676.0
-offset_bottom = 354.0
-theme_override_constants/separation = 18
-
-[node name="TitleLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=1053653155]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.1, 0.5, 0.1, 1)
-theme_override_font_sizes/font_size = 36
-text = "¡Mundo 2 · Nivel 1 completado!"
-horizontal_alignment = 1
-
-[node name="SubLbl" type="Label" parent="UI/CompletePanel/VBox" unique_id=1758343003]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.35, 0.22, 0.08, 1)
-theme_override_font_sizes/font_size = 18
-text = "Aprendiste a lanzar hechizos para construir la casa maya.
-+50 puntos mágicos"
-horizontal_alignment = 1
-autowrap_mode = 3
-
-[node name="NextBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=195117774]
-theme_type_variation = &"KalinPrimaryButton"
-custom_minimum_size = Vector2(0, 64)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "Siguiente mundo →"
-
-[node name="MenuBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=405089185]
-theme_type_variation = &"KalinSecondaryButton"
-custom_minimum_size = Vector2(0, 52)
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "Volver al menú"
-
-[node name="ReplayBtn" type="Button" parent="UI/CompletePanel/VBox" unique_id=873583459]
-theme_type_variation = &"KalinSecondaryButton"
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "Practicar de nuevo"
+[node name="CompletionOverlay" parent="UI" instance=ExtResource("5_complete")]
 
 [node name="LibroHechizos" parent="." unique_id=581325224 instance=ExtResource("3_si73q")]
 visible = false
 
 [connection signal="pressed" from="UI/TopBar/BackBtn" to="." method="_on_menu_pressed"]
 [connection signal="pressed" from="UI/TopBar/BookBtn" to="." method="_on_book_pressed"]
-[connection signal="pressed" from="UI/CompletePanel/VBox/NextBtn" to="." method="_on_next_level_pressed"]
-[connection signal="pressed" from="UI/CompletePanel/VBox/MenuBtn" to="." method="_on_menu_pressed"]
-[connection signal="pressed" from="UI/CompletePanel/VBox/ReplayBtn" to="." method="_on_replay_pressed"]

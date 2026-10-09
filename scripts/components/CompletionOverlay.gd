@@ -33,4 +33,3 @@ func show_completion(title: String, summary: String, next_text: String = "Contin
 
 func hide_overlay() -> void:
 	visible = false
-

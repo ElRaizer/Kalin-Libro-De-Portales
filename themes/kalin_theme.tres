@@ -267,6 +267,15 @@ corner_radius_top_right = 18
 corner_radius_bottom_right = 18
 corner_radius_bottom_left = 18
 
+[sub_resource type="StyleBoxEmpty" id="StoryActorNormal"]
+
+[sub_resource type="StyleBoxFlat" id="StoryActorHover"]
+bg_color = Color(1, 0.96, 0.82, 0.22)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
 [sub_resource type="StyleBoxFlat" id="TopBarPanel"]
 bg_color = Color(0.086, 0.247, 0.239, 1)
 border_width_left = 2
@@ -278,15 +287,6 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxEmpty" id="StoryActorNormal"]
-
-[sub_resource type="StyleBoxFlat" id="StoryActorHover"]
-bg_color = Color(1, 0.96, 0.82, 0.22)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
 
 [resource]
 KalinAdjectiveButton/base_type = &"Button"
@@ -352,10 +352,10 @@ KalinSpellPanel/base_type = &"Panel"
 KalinSpellPanel/styles/panel = SubResource("StyleBoxFlat_mgcwv")
 KalinStoryActor/base_type = &"Button"
 KalinStoryActor/colors/font_color = Color(1, 0.98, 0.9, 1)
-KalinStoryActor/colors/font_hover_color = Color(1, 0.98, 0.9, 1)
-KalinStoryActor/colors/font_pressed_color = Color(1, 0.98, 0.9, 1)
 KalinStoryActor/colors/font_focus_color = Color(1, 0.98, 0.9, 1)
+KalinStoryActor/colors/font_hover_color = Color(1, 0.98, 0.9, 1)
 KalinStoryActor/colors/font_outline_color = Color(0.16, 0.1, 0.05, 1)
+KalinStoryActor/colors/font_pressed_color = Color(1, 0.98, 0.9, 1)
 KalinStoryActor/constants/outline_size = 6
 KalinStoryActor/styles/disabled = SubResource("StoryActorNormal")
 KalinStoryActor/styles/focus = SubResource("KeyboardFocus")

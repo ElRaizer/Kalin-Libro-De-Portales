@@ -1,6 +1,7 @@
 extends SceneTree
 
 const GameManagerScript = preload("res://scripts/autoloads/GameManager.gd")
+const SaveRepositoryScript = preload("res://scripts/data/SaveRepository.gd")
 const WindowManagerScript = preload("res://scripts/autoloads/WindowManager.gd")
 var failures: Array[String] = []
 
@@ -10,16 +11,22 @@ func _initialize() -> void:
 	_validate_scene_registry()
 	_validate_vocabulary()
 	_validate_save_sanitization()
+	_validate_save_repository()
 	_validate_theme()
 	_validate_world3()
 	_validate_world4()
 	_validate_world5()
 	_validate_book_catalog()
-await _validate_grid_path_recovery()
-_validate_stories()
-_validate_explorations()
+	await _validate_grid_path_recovery()
+	_validate_stories()
+	_validate_explorations()
+	_validate_editor_warning_patterns()
 	await _validate_world1_instruction_layout()
 	await _validate_world3_runtime()
+	# Deja que SceneTree libere los temporizadores one-shot usados por las
+	# pruebas asíncronas antes de cerrar el proceso headless.
+	await process_frame
+	await process_frame
 	if failures.is_empty():
 		print("Validación del proyecto: OK")
 		quit(0)
@@ -140,6 +147,28 @@ func _validate_save_sanitization() -> void:
 		failures.append("El guardado acepta una lista de niveles con tipo inválido")
 	manager.free()
 
+func _validate_save_repository() -> void:
+	var test_path := "user://kalin_save_repository_test.json"
+	var repository: RefCounted = SaveRepositoryScript.new(test_path)
+	repository.delete_progress()
+	var expected: Dictionary = {
+		"magic_points": 70,
+		"words_learned": {"Miis": {"spanish": "Gato"}},
+		"completed_levels": ["w1_l1"],
+	}
+	var save_error: Error = repository.save_progress(expected)
+	if save_error != OK:
+		failures.append("El repositorio no pudo escribir un guardado de prueba")
+	else:
+		var loaded: Dictionary = repository.load_progress()
+		if loaded.get("magic_points") != 70 or loaded.get("completed_levels") != ["w1_l1"]:
+			failures.append("El repositorio no conserva correctamente el progreso")
+		if int(loaded.get("version", 0)) != SaveRepositoryScript.CURRENT_VERSION:
+			failures.append("El repositorio no guarda la versión del formato")
+	var delete_error: Error = repository.delete_progress()
+	if delete_error != OK or FileAccess.file_exists(test_path):
+		failures.append("El repositorio no eliminó su guardado de prueba")
+
 func _validate_theme() -> void:
 	var theme := load("res://themes/kalin_theme.tres") as Theme
 	if theme == null:
@@ -245,12 +274,12 @@ func _validate_world3() -> void:
 		failures.append("El Mundo 3 debe enseñar los cinco adjetivos definidos por el GDD")
 	var combinations: Dictionary = {}
 	var used_adjectives: Dictionary = {}
-	for challenge: Dictionary in world3_script.CHALLENGES:
+	for challenge: ExerciseEntry in world3_script.CHALLENGES:
 		for required_field: String in ["animal", "sprite", "noun", "adjective", "phrase", "translation"]:
-			if str(challenge.get(required_field, "")).is_empty():
+			if str(challenge.get(required_field)).is_empty():
 				failures.append("Petición del Mundo 3 sin campo obligatorio: %s" % required_field)
-		var noun: String = challenge.get("noun", "")
-		var adjective: String = challenge.get("adjective", "")
+		var noun: String = challenge.noun
+		var adjective: String = challenge.adjective
 		if not GameManagerScript.VOCABULARY.has(noun):
 			failures.append("Sustantivo desconocido en Mundo 3: %s" % noun)
 		if not GameManagerScript.VOCABULARY.has(adjective):
@@ -264,7 +293,7 @@ func _validate_world3() -> void:
 		used_adjectives[adjective] = true
 		if not ResourceLoader.exists(challenge.sprite):
 			failures.append("Sprite inexistente en Mundo 3: %s" % challenge.sprite)
-	for adjective: Dictionary in world3_script.ADJECTIVES:
+	for adjective: ExerciseEntry in world3_script.ADJECTIVES:
 		if not used_adjectives.has(adjective.maya):
 			failures.append("El adjetivo %s no se practica en ninguna petición" % adjective.maya)
 
@@ -279,9 +308,9 @@ func _validate_world4() -> void:
 		failures.append("El Mundo 4 debe ofrecer los cinco alimentos de sus peticiones")
 	if world4_script.MODIFIERS.size() != 3:
 		failures.append("El Mundo 4 debe permitir elegir sin cualidad, mejen o nojoch")
-	for challenge: Dictionary in world4_script.CHALLENGES:
-		for field: String in ["animal", "sprite", "food", "modifier", "phrase", "translation"]:
-			if not challenge.has(field):
+	for challenge: ExerciseEntry in world4_script.CHALLENGES:
+		for field: String in ["animal", "sprite", "food", "phrase", "translation"]:
+			if str(challenge.get(field)).is_empty():
 				failures.append("Petición del Mundo 4 sin campo obligatorio: %s" % field)
 		if not GameManagerScript.VOCABULARY.has(challenge.food):
 			failures.append("Alimento desconocido en Mundo 4: %s" % challenge.food)
@@ -297,9 +326,9 @@ func _validate_world5() -> void:
 		return
 	if world5_script.CHALLENGES.size() != 8:
 		failures.append("El Mundo 5 debe recuperar ocho fragmentos del portal")
-	for challenge: Dictionary in world5_script.CHALLENGES:
-		for field: String in ["section", "prompt", "clue", "correct", "options", "learn"]:
-			if not challenge.has(field):
+	for challenge: ExerciseEntry in world5_script.CHALLENGES:
+		for field: String in ["section", "prompt", "clue", "correct"]:
+			if str(challenge.get(field)).is_empty():
 				failures.append("Fragmento del Mundo 5 sin campo obligatorio: %s" % field)
 		if challenge.correct not in challenge.options:
 			failures.append("La respuesta correcta del Mundo 5 no aparece entre sus opciones")
@@ -527,3 +556,49 @@ func _validate_story_beat(scene_path: String, beat: StoryBeat) -> void:
 		var target_entry: Dictionary = GameManagerScript.VOCABULARY.get(beat.target_word, {})
 		if str(target_entry.get("estructura", "")).contains("[") and beat.reveal_phrase.is_empty():
 			failures.append("%s: %s necesita reveal_phrase con la frase completa" % [scene_path, beat.target_word])
+
+## Reproduce comprobaciones del editor que no se imprimen al ejecutar Godot
+## headless. Así, advertencias visuales comunes quedan protegidas en CI.
+func _validate_editor_warning_patterns() -> void:
+	for scene_path: String in _collect_scene_paths("res://scenes"):
+		var packed := load(scene_path) as PackedScene
+		if packed == null:
+			continue
+		var instance := packed.instantiate()
+		_validate_node_warning_patterns(scene_path, instance)
+		instance.free()
+
+func _collect_scene_paths(directory_path: String) -> Array[String]:
+	var paths: Array[String] = []
+	var directory := DirAccess.open(directory_path)
+	if directory == null:
+		failures.append("No se pudo recorrer el directorio de escenas: %s" % directory_path)
+		return paths
+	directory.list_dir_begin()
+	var entry := directory.get_next()
+	while entry != "":
+		var entry_path := directory_path.path_join(entry)
+		if directory.current_is_dir():
+			paths.append_array(_collect_scene_paths(entry_path))
+		elif entry.get_extension() == "tscn":
+			paths.append(entry_path)
+		entry = directory.get_next()
+	directory.list_dir_end()
+	return paths
+
+func _validate_node_warning_patterns(scene_path: String, node: Node) -> void:
+	if node is CPUParticles2D:
+		var particles := node as CPUParticles2D
+		if particles.texture == null:
+			failures.append("%s: %s no tiene textura de partículas" % [scene_path, node.get_path()])
+		var uses_flipbook: bool = not is_zero_approx(particles.anim_offset_min) or not is_zero_approx(particles.anim_offset_max)
+		if uses_flipbook:
+			var canvas_material := particles.material as CanvasItemMaterial
+			if canvas_material == null or not canvas_material.particles_animation:
+				failures.append("%s: %s necesita un CanvasItemMaterial con animación de partículas" % [scene_path, node.get_path()])
+	elif node is RichTextLabel:
+		var rich_text := node as RichTextLabel
+		if rich_text.fit_content and rich_text.get_parent() is not Container:
+			failures.append("%s: %s usa fit_content fuera de un Container" % [scene_path, node.get_path()])
+	for child: Node in node.get_children():
+		_validate_node_warning_patterns(scene_path, child)

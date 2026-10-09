@@ -3,23 +3,29 @@
 ## después presenta solamente pistas visuales para recuperar la frase maya.
 extends Node2D
 
-const FOODS: Array[Dictionary] = [
+const UI_EFFECTS = preload("res://scripts/components/UIEffects.gd")
+const PHRASE_BUILDER = preload("res://scripts/components/PhraseBuilderController.gd")
+const EXERCISE_ENTRY = preload("res://scripts/data/ExerciseEntry.gd")
+
+const RAW_FOODS: Array[Dictionary] = [
 	{ "maya": "ja'", "spanish": "agua", "emoji": "💧" },
 	{ "maya": "ja'as", "spanish": "plátano", "emoji": "🍌" },
 	{ "maya": "pak'al", "spanish": "fruta", "emoji": "🍎" },
 	{ "maya": "K'úum", "spanish": "calabaza", "emoji": "🎃" },
 	{ "maya": "janal", "spanish": "comida", "emoji": "🍲" },
 ]
+static var FOODS: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_FOODS)
 
-const MODIFIERS: Array[Dictionary] = [
+const RAW_MODIFIERS: Array[Dictionary] = [
 	{ "maya": "", "spanish": "sin cualidad", "symbol": "—" },
 	{ "maya": "mejen", "spanish": "pequeño/a", "symbol": "◌" },
 	{ "maya": "nojoch", "spanish": "grande", "symbol": "⬢" },
 ]
+static var MODIFIERS: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_MODIFIERS)
 
 ## Peticiones del GDD. Las frases completas evitan construir morfología desde
 ## el código y facilitan una posterior revisión lingüística.
-const CHALLENGES: Array[Dictionary] = [
+const RAW_CHALLENGES: Array[Dictionary] = [
 	{ "animal": "Peek'", "animal_spanish": "Perro", "sprite": "res://Arte/sprites/animal_peek.svg", "food": "ja'", "modifier": "", "phrase": "In k'a'at ja'", "translation": "Quiero agua" },
 	{ "animal": "Miis", "animal_spanish": "Gato", "sprite": "res://Arte/sprites/animal_miis.svg", "food": "ja'as", "modifier": "mejen", "phrase": "In k'a'at ja'as mejen", "translation": "Quiero un plátano pequeño" },
 	{ "animal": "Kaax", "animal_spanish": "Gallina", "sprite": "res://Arte/sprites/animal_kaax.svg", "food": "pak'al", "modifier": "", "phrase": "In k'a'at pak'al", "translation": "Quiero fruta" },
@@ -27,6 +33,7 @@ const CHALLENGES: Array[Dictionary] = [
 	{ "animal": "K'éek'en", "animal_spanish": "Cerdo", "sprite": "res://Arte/sprites/animal_keek_en.svg", "food": "janal", "modifier": "", "phrase": "In k'a'at janal", "translation": "Quiero comida" },
 	{ "animal": "Kéej", "animal_spanish": "Venado", "sprite": "res://Arte/sprites/animal_keej.svg", "food": "ja'as", "modifier": "", "phrase": "In k'a'at ja'as", "translation": "Quiero plátano" },
 ]
+static var CHALLENGES: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_CHALLENGES)
 
 const UNSET_MODIFIER := "__unset__"
 const COLOR_SUCCESS := Color("2e8b57")
@@ -70,59 +77,20 @@ func _ready() -> void:
 	_show_round()
 
 func _build_round_plan() -> void:
-	var guided: Array[int] = []
-	var recall: Array[int] = []
-	for index: int in range(CHALLENGES.size()):
-		guided.append(index)
-		recall.append(index)
-	guided.shuffle()
-	recall.shuffle()
-	for index: int in guided:
-		round_plan.append({"challenge": index, "guided": true})
-	for index: int in recall:
-		round_plan.append({"challenge": index, "guided": false})
+	round_plan = PHRASE_BUILDER.build_two_phase_plan(CHALLENGES.size(), true)
 
 func _build_choice_buttons() -> void:
-	for child: Node in food_grid.get_children():
-		if child is DraggableWordButton:
-			var button := child as DraggableWordButton
-			food_buttons[button.word_value] = button
-			button.pressed.connect(_select_food.bind(button.word_value))
-	for child: Node in modifier_grid.get_children():
-		if child is DraggableWordButton:
-			var button := child as DraggableWordButton
-			modifier_buttons[button.word_value] = button
-			button.pressed.connect(_select_modifier.bind(button.word_value))
+	food_buttons = PHRASE_BUILDER.collect_buttons(food_grid, _select_food)
+	modifier_buttons = PHRASE_BUILDER.collect_buttons(modifier_grid, _select_modifier)
 
 func _configure_keyboard_navigation() -> void:
-	var foods: Array[Button] = []
-	var modifiers: Array[Button] = []
-	for child: Node in food_grid.get_children():
-		if child is Button:
-			foods.append(child as Button)
-	for child: Node in modifier_grid.get_children():
-		if child is Button:
-			modifiers.append(child as Button)
-	_configure_horizontal_row(foods)
-	_configure_horizontal_row(modifiers)
-	for index: int in range(foods.size()):
-		var target := modifiers[mini(index, modifiers.size() - 1)]
-		foods[index].focus_neighbor_bottom = foods[index].get_path_to(target)
-	for button: Button in modifiers:
-		button.focus_neighbor_bottom = button.get_path_to(serve_button)
-
-func _configure_horizontal_row(buttons: Array[Button]) -> void:
-	if buttons.is_empty():
-		return
-	for index: int in range(buttons.size()):
-		buttons[index].focus_neighbor_left = buttons[index].get_path_to(buttons[posmod(index - 1, buttons.size())])
-		buttons[index].focus_neighbor_right = buttons[index].get_path_to(buttons[(index + 1) % buttons.size()])
+	PHRASE_BUILDER.configure_navigation(food_grid, modifier_grid, serve_button)
 
 func _setup_drop_slots() -> void:
 	food_slot.connect("word_dropped", _select_food)
 	modifier_slot.connect("word_dropped", _select_modifier)
 
-func _current_challenge() -> Dictionary:
+func _current_challenge() -> ExerciseEntry:
 	return CHALLENGES[int(round_plan[round_index].challenge)]
 
 func _is_guided_phase() -> bool:
@@ -161,10 +129,10 @@ func _show_round() -> void:
 		(food_buttons.values()[0] as Button).grab_focus()
 
 func _update_choice_labels(guided: bool) -> void:
-	for food: Dictionary in FOODS:
+	for food: ExerciseEntry in FOODS:
 		var button: Button = food_buttons[food.maya]
 		button.text = "%s  %s\n%s" % [food.emoji, food.maya, food.spanish] if guided else "%s  %s" % [food.emoji, food.maya]
-	for modifier: Dictionary in MODIFIERS:
+	for modifier: ExerciseEntry in MODIFIERS:
 		var button: Button = modifier_buttons[modifier.maya]
 		button.text = "%s  %s\n%s" % [modifier.symbol, _modifier_display(modifier.maya), modifier.spanish] if guided else "%s  %s" % [modifier.symbol, _modifier_display(modifier.maya)]
 
@@ -188,23 +156,14 @@ func _select_modifier(value: String) -> void:
 	_celebrate_selection(modifier_slot)
 
 func _celebrate_selection(slot: Control) -> void:
-	if slot.has_method("pop"):
-		slot.pop()
-	feedback_label.text = "¡Colocado! Completa la petición y sírvela."
-	feedback_label.add_theme_color_override("font_color", Color("5b4630"))
+	PHRASE_BUILDER.celebrate(slot, feedback_label, "¡Colocado! Completa la petición y sírvela.", Color("5b4630"))
 
 func _update_button_states() -> void:
-	for value: String in food_buttons:
-		(food_buttons[value] as Button).button_pressed = value == selected_food
-	for value: String in modifier_buttons:
-		(modifier_buttons[value] as Button).button_pressed = value == selected_modifier
+	PHRASE_BUILDER.set_button_states(food_buttons, selected_food, modifier_buttons, selected_modifier)
 	serve_button.disabled = selected_food == "" or selected_modifier == UNSET_MODIFIER or _resolving
 
 func _set_choices_enabled(enabled: bool) -> void:
-	for button: Button in food_buttons.values():
-		button.disabled = not enabled
-	for button: Button in modifier_buttons.values():
-		button.disabled = not enabled
+	PHRASE_BUILDER.set_enabled(food_buttons, modifier_buttons, enabled)
 	serve_button.disabled = not enabled or selected_food == "" or selected_modifier == UNSET_MODIFIER
 
 func _on_serve_pressed() -> void:
@@ -223,7 +182,7 @@ func _on_serve_pressed() -> void:
 	modifier_slot.text = _modifier_display(challenge.modifier)
 	feedback_label.text = "¡Petición entendida!  %s  ·  %s" % [challenge.phrase, challenge.translation]
 	feedback_label.add_theme_color_override("font_color", COLOR_SUCCESS)
-	_success_burst($UI/SpellPanel)
+	UI_EFFECTS.success_burst(self, $UI, $UI/SpellPanel)
 	var tween := create_tween()
 	tween.tween_property(animal_sprite, "scale", Vector2(1.08, 1.08), 0.12)
 	tween.tween_property(animal_sprite, "scale", Vector2.ONE, 0.18)
@@ -233,7 +192,7 @@ func _on_serve_pressed() -> void:
 	round_index += 1
 	_show_round()
 
-func _show_incorrect_feedback(challenge: Dictionary) -> void:
+func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
 	var food_ok := selected_food == str(challenge.food)
 	var modifier_ok := selected_modifier == str(challenge.modifier)
 	if not food_ok and not modifier_ok:
@@ -246,28 +205,7 @@ func _show_incorrect_feedback(challenge: Dictionary) -> void:
 	_shake_choices()
 
 func _shake_choices() -> void:
-	var panel: Control = $UI/ChoicesPanel
-	var original_x := panel.position.x
-	var tween := create_tween()
-	tween.tween_property(panel, "position:x", original_x - 9.0, 0.05)
-	tween.tween_property(panel, "position:x", original_x + 9.0, 0.05)
-	tween.tween_property(panel, "position:x", original_x, 0.07)
-
-func _success_burst(origin: Control) -> void:
-	for index: int in range(9):
-		var sparkle := Label.new()
-		sparkle.text = "✦"
-		sparkle.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		sparkle.add_theme_font_size_override("font_size", 18 + index % 3 * 4)
-		sparkle.add_theme_color_override("font_color", Color("ffd85a"))
-		$UI.add_child(sparkle)
-		sparkle.position = origin.position + origin.size * 0.5
-		var angle := TAU * float(index) / 9.0
-		var target := sparkle.position + Vector2.from_angle(angle) * (62.0 + index * 5.0)
-		var tween := create_tween().set_parallel(true).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		tween.tween_property(sparkle, "position", target, 0.45)
-		tween.tween_property(sparkle, "modulate:a", 0.0, 0.45)
-		tween.chain().tween_callback(sparkle.queue_free)
+	UI_EFFECTS.shake(self, $UI/ChoicesPanel)
 
 func _finish_level() -> void:
 	_resolving = true
@@ -278,14 +216,14 @@ func _finish_level() -> void:
 		"Ir al Portal de Regreso"
 	)
 
-func _food_data(value: String) -> Dictionary:
-	for food: Dictionary in FOODS:
+func _food_data(value: String) -> ExerciseEntry:
+	for food: ExerciseEntry in FOODS:
 		if food.maya == value:
 			return food
-	return {}
+	return null
 
-func _modifier_data(value: String) -> Dictionary:
-	for modifier: Dictionary in MODIFIERS:
+func _modifier_data(value: String) -> ExerciseEntry:
+	for modifier: ExerciseEntry in MODIFIERS:
 		if modifier.maya == value:
 			return modifier
 	return MODIFIERS[0]

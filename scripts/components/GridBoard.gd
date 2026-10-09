@@ -2,6 +2,11 @@
 extends Node2D
 class_name GridBoard
 
+const CONFIG_VALIDATOR = preload("res://scripts/components/GridBoardValidator.gd")
+const BOARD_RENDERER = preload("res://scripts/components/GridBoardRenderer.gd")
+const OBSTACLE_HINTS = preload("res://scripts/components/GridObstacleHints.gd")
+const PATH_CONTROLLER = preload("res://scripts/components/GridPathController.gd")
+
 ## Componente reutilizable para previsualizar un tablero de caminos en Godot.
 ## Sus propiedades se editan en el Inspector de cada instancia de GridBoard.
 ## También controla el arrastre y emite señales para que el nivel decida sus
@@ -113,6 +118,9 @@ var reveal_obstacles_near_tip: bool = false
 var nearby_obstacle_opacity: float = 0.5
 var revealed_obstacles: Array[Vector2i] = []
 var obstacle_reveal_tweens: Dictionary = {}
+var _renderer: RefCounted
+var _obstacle_hints: RefCounted
+var _path_controller: RefCounted
 
 const NEARBY_OBSTACLE_FADE_SECONDS := 0.22
 const ALL_OBSTACLES_FADE_SECONDS := 0.45
@@ -132,60 +140,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 ## Devuelve problemas de configuración que pueden revisarse tanto en el
 ## editor como desde las pruebas automatizadas.
 func get_configuration_issues() -> PackedStringArray:
-	var issues: PackedStringArray = []
-	if empty_tile == null:
-		issues.append("Asigna una textura a empty_tile.")
-	if obstacle_tile == null and not obstacles.is_empty():
-		issues.append("Asigna una textura a obstacle_tile cuando existan obstáculos.")
-	if words.is_empty():
-		issues.append("Agrega al menos una palabra al tablero.")
-
-	var occupied_cells: Dictionary = {}
-	var maya_words: Dictionary = {}
-	for obstacle: Vector2i in obstacles:
-		if not is_valid_cell(obstacle):
-			issues.append("El obstáculo %s está fuera del tablero." % obstacle)
-			continue
-		if occupied_cells.has(obstacle):
-			issues.append("La celda %s está ocupada más de una vez." % obstacle)
-		occupied_cells[obstacle] = "obstáculo"
-
-	for index: int in words.size():
-		var word: GridWordData = words[index]
-		if word == null:
-			issues.append("La palabra %d no tiene un recurso asignado." % (index + 1))
-			continue
-		if word.maya_word.strip_edges().is_empty():
-			issues.append("La palabra %d no tiene texto maya." % (index + 1))
-		elif maya_words.has(word.maya_word):
-			issues.append("La palabra maya '%s' está duplicada." % word.maya_word)
-		else:
-			maya_words[word.maya_word] = true
-		_validate_word_cell(word.start_cell, "inicio de '%s'" % word.maya_word, occupied_cells, issues)
-		_validate_word_cell(
-			word.destination_cell,
-			"destino de '%s'" % word.maya_word,
-			occupied_cells,
-			issues
-		)
-		if word.start_cell == word.destination_cell:
-			issues.append("'%s' empieza y termina en la misma celda." % word.maya_word)
-	return issues
-
-func _validate_word_cell(
-	cell: Vector2i,
-	label: String,
-	occupied_cells: Dictionary,
-	issues: PackedStringArray
-) -> void:
-	if not is_valid_cell(cell):
-		issues.append("El %s (%s) está fuera del tablero." % [label, cell])
-		return
-	if occupied_cells.has(cell):
-		issues.append(
-			"La celda %s se comparte entre %s y %s." % [cell, occupied_cells[cell], label]
-		)
-	occupied_cells[cell] = label
+	return CONFIG_VALIDATOR.validate(columns, rows, empty_tile, obstacle_tile, obstacles, words)
 
 func _exit_tree() -> void:
 	for word in _watched_words:
@@ -196,42 +151,22 @@ func _exit_tree() -> void:
 ## Permite que una escena de nivel o el Inspector fuerce la actualización.
 func rebuild_preview() -> void:
 	_rebuild_queued = false
-	if not is_instance_valid(preview_root):
-		return
-	_watch_word_changes()
-	for child in preview_root.get_children():
-		child.free()
-	tile_rects.clear()
-	word_nodes.clear()
-	path_lines.clear()
-	path_tips.clear()
-	destination_nodes.clear()
+	_get_renderer().rebuild_preview()
 
-	if Engine.is_editor_hint() and not show_preview_in_editor:
-		return
+func _get_renderer() -> RefCounted:
+	if not is_instance_valid(_renderer):
+		_renderer = BOARD_RENDERER.new(self)
+	return _renderer
 
-	for row in range(rows):
-		for column in range(columns):
-			var cell: Vector2i = Vector2i(column, row)
-			var tile: TextureRect = TextureRect.new()
-			tile.name = "Tile_%d_%d" % [column, row]
-			tile.position = cell_to_local_position(cell) + Vector2.ONE
-			tile.size = Vector2(tile_size - 2, tile_size - 2)
-			tile.texture = obstacle_tile if cell in obstacles else empty_tile
-			tile.stretch_mode = TextureRect.STRETCH_SCALE
-			tile.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			preview_root.add_child(tile)
-			tile_rects[cell] = tile
+func _get_obstacle_hints() -> RefCounted:
+	if not is_instance_valid(_obstacle_hints):
+		_obstacle_hints = OBSTACLE_HINTS.new(self)
+	return _obstacle_hints
 
-	for index in words.size():
-		var word: GridWordData = words[index]
-		if not is_instance_valid(word):
-			continue
-		_add_destination_preview(word, index)
-		_add_word_preview(word, index)
-	_add_keyboard_cursor()
-
-	_refresh_all_path_visuals()
+func _get_path_controller() -> RefCounted:
+	if not is_instance_valid(_path_controller):
+		_path_controller = PATH_CONTROLLER.new(self)
+	return _path_controller
 
 ## Inicializa el estado jugable con las propiedades editadas en el Inspector.
 func start_game() -> void:
@@ -261,137 +196,24 @@ func set_interaction_enabled(enabled: bool) -> void:
 func get_word_node(word_index: int) -> Control:
 	return word_nodes.get(word_index) as Control
 
-func _add_word_preview(word: GridWordData, index: int) -> void:
-	if not is_valid_cell(word.start_cell):
-		return
-	var panel: Panel = _create_word_panel(word.color, false)
-	panel.name = "Word_%d" % index
-	panel.position = cell_to_local_position(word.start_cell) + Vector2(2, 2)
-	panel.size = Vector2(tile_size - 4, tile_size - 4)
-	panel.z_index = 2
-
-	if word.sprite:
-		var sprite: TextureRect = TextureRect.new()
-		sprite.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		sprite.texture = word.sprite
-		sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		panel.add_child(sprite)
-		if not word.start_text.is_empty():
-			_add_panel_label(panel, word.start_text, VERTICAL_ALIGNMENT_BOTTOM, 12, Color.WHITE)
-	else:
-		_add_panel_label(panel, word.get_start_text(), VERTICAL_ALIGNMENT_CENTER, 14, Color.WHITE)
-
-	preview_root.add_child(panel)
-	word_nodes[index] = panel
-
-func _add_destination_preview(word: GridWordData, index: int) -> void:
-	if not is_valid_cell(word.destination_cell):
-		return
-	var destination: Panel = _create_word_panel(word.color, true)
-	destination.name = "Destination_%d" % index
-	destination.position = cell_to_local_position(word.destination_cell) + Vector2(2, 2)
-	destination.size = Vector2(tile_size - 4, tile_size - 4)
-	destination.z_index = 1
-	_add_panel_label(destination, word.get_destination_text(), VERTICAL_ALIGNMENT_CENTER, 12, Color(0.12, 0.06, 0.0))
-	preview_root.add_child(destination)
-	destination_nodes[index] = destination
-
 ## Oculta solamente la apariencia de los obstáculos. Las celdas continúan
 ## bloqueadas, por lo que puede usarse como un reto de memoria sin cambiar la
 ## solución del tablero mientras el jugador está trazando un camino.
 func set_obstacle_clues_visible(visible: bool) -> void:
-	obstacle_clues_visible = visible
-	for obstacle: Vector2i in obstacles:
-		_kill_obstacle_reveal_tween(obstacle)
-		var tile := tile_rects.get(obstacle) as TextureRect
-		if tile:
-			tile.texture = obstacle_tile if visible else empty_tile
-			tile.modulate = Color.WHITE
-	revealed_obstacles.clear()
-	_update_nearby_obstacle_clues()
+	_get_obstacle_hints().set_visible(visible)
 
 ## Oculta todas las pistas de obstáculos con una transición conjunta. El
 ## estado bloqueado de las celdas no cambia durante ni después del efecto.
 func fade_out_obstacle_clues(duration: float = ALL_OBSTACLES_FADE_SECONDS) -> void:
-	obstacle_clues_visible = true
-	var tween := create_tween().set_parallel(true)
-	for obstacle: Vector2i in obstacles:
-		_kill_obstacle_reveal_tween(obstacle)
-		var tile := tile_rects.get(obstacle) as TextureRect
-		if tile:
-			tile.texture = obstacle_tile
-			tween.tween_property(tile, "modulate:a", 0.0, maxf(duration, 0.01)).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	await tween.finished
-	if not is_inside_tree():
-		return
-	set_obstacle_clues_visible(false)
+	await _get_obstacle_hints().fade_out_all(duration)
 
 ## Cuando las pistas generales están ocultas, revela con transparencia sólo
 ## los obstáculos ortogonalmente adyacentes a la punta del camino activo.
 func set_nearby_obstacle_reveal(enabled: bool, opacity: float = 0.5) -> void:
-	reveal_obstacles_near_tip = enabled
-	nearby_obstacle_opacity = clampf(opacity, 0.1, 0.9)
-	_update_nearby_obstacle_clues()
+	_get_obstacle_hints().set_nearby_reveal(enabled, opacity)
 
 func _update_nearby_obstacle_clues() -> void:
-	var desired_obstacles: Array[Vector2i] = []
-	if not obstacle_clues_visible and reveal_obstacles_near_tip and drawing and active_index >= 0:
-		var tip_cell: Vector2i = words[active_index].start_cell
-		if not paths[active_index].is_empty():
-			tip_cell = paths[active_index].back()
-		for direction: Vector2i in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
-			var adjacent_cell := tip_cell + direction
-			if adjacent_cell in obstacles:
-				desired_obstacles.append(adjacent_cell)
-
-	var previous_obstacles := revealed_obstacles.duplicate()
-	revealed_obstacles = desired_obstacles
-	for obstacle: Vector2i in previous_obstacles:
-		if obstacle not in desired_obstacles:
-			_fade_out_nearby_obstacle(obstacle)
-	for obstacle: Vector2i in desired_obstacles:
-		if obstacle not in previous_obstacles:
-			_fade_in_nearby_obstacle(obstacle)
-
-func _fade_in_nearby_obstacle(cell: Vector2i) -> void:
-	var tile := tile_rects.get(cell) as TextureRect
-	if not tile:
-		return
-	_kill_obstacle_reveal_tween(cell)
-	if tile.texture != obstacle_tile:
-		tile.texture = obstacle_tile
-		tile.modulate = Color(1.0, 1.0, 1.0, 0.0)
-	var tween := create_tween()
-	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(tile, "modulate:a", nearby_obstacle_opacity, NEARBY_OBSTACLE_FADE_SECONDS)
-	obstacle_reveal_tweens[cell] = tween
-
-func _fade_out_nearby_obstacle(cell: Vector2i) -> void:
-	var tile := tile_rects.get(cell) as TextureRect
-	if not tile:
-		return
-	_kill_obstacle_reveal_tween(cell)
-	var tween := create_tween()
-	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	tween.tween_property(tile, "modulate:a", 0.0, NEARBY_OBSTACLE_FADE_SECONDS)
-	tween.tween_callback(_finish_hiding_nearby_obstacle.bind(cell))
-	obstacle_reveal_tweens[cell] = tween
-
-func _finish_hiding_nearby_obstacle(cell: Vector2i) -> void:
-	obstacle_reveal_tweens.erase(cell)
-	if cell in revealed_obstacles or obstacle_clues_visible:
-		return
-	var tile := tile_rects.get(cell) as TextureRect
-	if tile:
-		tile.texture = empty_tile
-		tile.modulate = Color.WHITE
-
-func _kill_obstacle_reveal_tween(cell: Vector2i) -> void:
-	var tween := obstacle_reveal_tweens.get(cell) as Tween
-	if tween and tween.is_valid():
-		tween.kill()
-	obstacle_reveal_tweens.erase(cell)
+	_get_obstacle_hints().update_nearby()
 
 ## Sustituye las palabras y colores de los destinos por una pista neutra. Las
 ## posiciones no cambian: el jugador debe recordar qué animal iba en cada una.
@@ -407,35 +229,6 @@ func conceal_destination_clues() -> void:
 		style.set_border_width_all(3)
 		style.set_corner_radius_all(6)
 		destination.add_theme_stylebox_override("panel", style)
-
-func _create_word_panel(word_color: Color, lightened: bool) -> Panel:
-	var panel: Panel = Panel.new()
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var style: StyleBoxFlat = StyleBoxFlat.new()
-	if lightened:
-		style.bg_color = word_color.lightened(0.55) if word_color != Color.WHITE else destination_color
-	else:
-		style.bg_color = word_color if word_color != Color.WHITE else Color(0.35, 0.45, 0.65)
-	style.border_color = word_color.darkened(0.15)
-	style.set_border_width_all(2 if lightened else 3)
-	style.corner_radius_top_left = 6
-	style.corner_radius_top_right = 6
-	style.corner_radius_bottom_left = 6
-	style.corner_radius_bottom_right = 6
-	panel.add_theme_stylebox_override("panel", style)
-	return panel
-
-func _add_panel_label(panel: Panel, text: String, vertical: VerticalAlignment, font_size: int, font_color: Color) -> void:
-	var label: Label = Label.new()
-	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	label.text = text
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = vertical
-	label.add_theme_font_size_override("font_size", font_size)
-	label.add_theme_color_override("font_color", font_color)
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(label)
 
 func _schedule_rebuild() -> void:
 	if Engine.is_editor_hint() and is_inside_tree():
@@ -627,104 +420,25 @@ func _try_cell(cell: Vector2i) -> void:
 				_try_finalize_connection(cell)
 
 func _try_finalize_connection(destination_cell: Vector2i) -> void:
-	if active_index < 0 or active_index in connected:
-		return
-	if tile_owner.get(destination_cell, -1) != active_index:
-		return
-
-	var previous_cell: Vector2i = words[active_index].start_cell
-	if not paths[active_index].is_empty():
-		previous_cell = paths[active_index].back()
-	if not _are_adjacent(previous_cell, destination_cell):
-		return
-
-	_finalize_connection(active_index)
+	_get_path_controller().try_finalize(destination_cell)
 
 func _try_resume_path(cell: Vector2i) -> void:
-	var index: int = tile_owner.get(cell, -1)
-	if index < 0 or index in connected or paths.get(index, []).is_empty():
-		return
-	if paths[index].back() != cell:
-		return
-	active_index = index
-	drawing = true
-	last_cell = cell
-	_show_ring(index)
-	word_selected.emit(words[index])
-	_update_nearby_obstacle_clues()
+	_get_path_controller().try_resume(cell)
 
 func _try_retract_path(cell: Vector2i) -> bool:
-	if active_index < 0 or paths.get(active_index, []).is_empty():
-		return false
-	var path: Array = paths[active_index]
-	var current_tip: Vector2i = path.back()
-	if not _are_adjacent(cell, current_tip):
-		return false
-
-	var is_previous_path_cell: bool = path.size() >= 2 and path[path.size() - 2] == cell
-	var is_start_cell: bool = path.size() == 1 and words[active_index].start_cell == cell
-	if not is_previous_path_cell and not is_start_cell:
-		return false
-
-	var removed_cell: Vector2i = path.pop_back()
-	grid_state[removed_cell.y][removed_cell.x] = Cell.EMPTY
-	tile_owner.erase(removed_cell)
-	_reset_tile(removed_cell)
-	_refresh_path_line(active_index)
-	_update_nearby_obstacle_clues()
-	return true
+	return _get_path_controller().try_retract(cell)
 
 func _extend_path(cell: Vector2i) -> void:
-	if active_index < 0 or cell in paths[active_index]:
-		return
-	if cell in tile_owner and tile_owner[cell] != active_index:
-		return
-	var previous: Vector2i
-
-	if paths[active_index].is_empty():
-		previous = words[active_index].start_cell
-	else:
-		previous = paths[active_index].back()
-	if not _are_adjacent(cell, previous):
-		return
-	paths[active_index].append(cell)
-	grid_state[cell.y][cell.x] = Cell.PATH
-	tile_owner[cell] = active_index
-	_set_path_tile_tint(cell, words[active_index].color)
-	_refresh_path_line(active_index)
-	_update_nearby_obstacle_clues()
+	_get_path_controller().extend(cell)
 
 func _clear_path(index: int) -> void:
-	for cell: Vector2i in paths.get(index, []):
-		grid_state[cell.y][cell.x] = Cell.EMPTY
-		tile_owner.erase(cell)
-		_reset_tile(cell)
-	paths[index] = []
-	_remove_path_line(index)
-	_update_nearby_obstacle_clues()
+	_get_path_controller().clear(index)
 
 func _reset_connected_path(index: int) -> void:
-	if index not in connected:
-		return
-	connected.erase(index)
-	_reset_tile(words[index].destination_cell)
-	_clear_path(index)
-	path_reset.emit(words[index], index)
+	_get_path_controller().reset_connected(index)
 
 func _finalize_connection(index: int) -> void:
-	if index in connected:
-		return
-	connected.append(index)
-	for cell: Vector2i in paths[index]:
-		_set_path_tile_tint(cell, words[index].color)
-	_set_path_tile_tint(words[index].destination_cell, words[index].color)
-	_refresh_path_line(index)
-	drawing = false
-	active_index = -1
-	selection_ring.visible = false
-	_update_nearby_obstacle_clues()
-	input_enabled = false
-	word_connected.emit(words[index], index)
+	_get_path_controller().finalize(index)
 
 func _stop_drawing() -> void:
 	if not drawing and active_index < 0:
@@ -738,17 +452,9 @@ func _stop_drawing() -> void:
 	drawing_stopped.emit()
 
 func _show_ring(index: int) -> void:
-	var actual_position: Vector2 = cell_to_local_position(words[index].start_cell)
-	selection_ring.position = actual_position - Vector2(5, 5)
-	selection_ring.size = Vector2(tile_size + 10, tile_size + 10)
-	selection_ring.color = words[index].color
-	selection_ring.visible = true
-	selection_ring.modulate = Color.WHITE
 	if ring_tween and ring_tween.is_valid():
 		ring_tween.kill()
-	ring_tween = create_tween().set_loops()
-	ring_tween.tween_property(selection_ring, "modulate:a", 0.2, 0.4)
-	ring_tween.tween_property(selection_ring, "modulate:a", 1.0, 0.4)
+	ring_tween = _get_renderer().show_selection_ring(index)
 
 func _local_to_cell(actual_position: Vector2) -> Vector2i:
 	return Vector2i(
@@ -761,91 +467,19 @@ func _are_adjacent(first: Vector2i, second: Vector2i) -> bool:
 	return (abs(delta.x) == 1 and delta.y == 0) or (delta.x == 0 and abs(delta.y) == 1)
 
 func _set_tile_color(cell: Vector2i, color: Color) -> void:
-	var tile: TextureRect = tile_rects.get(cell) as TextureRect
-	if tile:
-		tile.modulate = color
+	_get_renderer().set_tile_color(cell, color)
 
 func _set_path_tile_tint(cell: Vector2i, color: Color) -> void:
-	_set_tile_color(cell, Color.WHITE.lerp(color, path_tile_tint))
+	_get_renderer().set_path_tile_tint(cell, color)
 
 func _refresh_all_path_visuals() -> void:
-	if not is_instance_valid(preview_root):
-		return
-	for index in paths:
-		for cell: Vector2i in paths[index]:
-			_set_path_tile_tint(cell, words[index].color)
-		if index in connected:
-			_set_path_tile_tint(words[index].destination_cell, words[index].color)
-		_refresh_path_line(index)
+	_get_renderer().refresh_all_paths()
 
 func _refresh_path_line(index: int) -> void:
-	if not is_instance_valid(preview_root) or not paths.has(index) or index >= words.size():
-		return
-	var path: Array = paths[index]
-	if path.is_empty():
-		_remove_path_line(index)
-		return
-
-	var line: Line2D = path_lines.get(index) as Line2D
-	if not line:
-		line = Line2D.new()
-		line.name = "PathLine_%d" % index
-		line.z_index = 0
-		line.begin_cap_mode = Line2D.LINE_CAP_ROUND
-		line.end_cap_mode = Line2D.LINE_CAP_ROUND
-		line.joint_mode = Line2D.LINE_JOINT_ROUND
-		line.antialiased = true
-		preview_root.add_child(line)
-		path_lines[index] = line
-
-	line.width = path_line_width
-	line.default_color = words[index].color
-	line.clear_points()
-	line.add_point(_cell_center(words[index].start_cell))
-	for cell: Vector2i in path:
-		line.add_point(_cell_center(cell))
-	if index in connected:
-		line.add_point(_cell_center(words[index].destination_cell))
-	_refresh_path_tip(index, path.back())
+	_get_renderer().refresh_path_line(index)
 
 func _remove_path_line(index: int) -> void:
-	var line: Line2D = path_lines.get(index) as Line2D
-	if line:
-		line.queue_free()
-	path_lines.erase(index)
-	_remove_path_tip(index)
-
-func _refresh_path_tip(index: int, cell: Vector2i) -> void:
-	if index in connected:
-		_remove_path_tip(index)
-		return
-	var tip: Polygon2D = path_tips.get(index) as Polygon2D
-	if not tip:
-		tip = Polygon2D.new()
-		tip.name = "PathTip_%d" % index
-		tip.z_index = 0
-		preview_root.add_child(tip)
-		path_tips[index] = tip
-
-	var radius: float = path_line_width * path_tip_scale * 0.5
-	var circle_points: PackedVector2Array = PackedVector2Array()
-	for point_index in range(24):
-		var angle: float = TAU * float(point_index) / 24.0
-		circle_points.append(Vector2(cos(angle), sin(angle)) * radius)
-	tip.polygon = circle_points
-	tip.color = words[index].color
-	tip.position = _cell_center(cell)
-
-func _remove_path_tip(index: int) -> void:
-	var tip: Polygon2D = path_tips.get(index) as Polygon2D
-	if tip:
-		tip.queue_free()
-	path_tips.erase(index)
-
-func _cell_center(cell: Vector2i) -> Vector2:
-	return cell_to_local_position(cell) + Vector2.ONE * (float(tile_size) * 0.5)
+	_get_renderer().remove_path_line(index)
 
 func _reset_tile(cell: Vector2i) -> void:
-	var tile: TextureRect = tile_rects.get(cell) as TextureRect
-	if tile:
-		tile.modulate = Color.WHITE
+	_get_renderer().reset_tile(cell)

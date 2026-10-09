@@ -238,7 +238,7 @@ func _validate_world4_runtime() -> void:
 		failures.append("Mundo 4 no creó sus fases guiada y de recuerdo")
 	if level.food_buttons.size() != 5 or level.modifier_buttons.size() != 3:
 		failures.append("Mundo 4 no creó todas las opciones de alimento y cualidad")
-	var challenge: Dictionary = level._current_challenge()
+	var challenge: ExerciseEntry = level._current_challenge()
 	level._select_food(challenge.food)
 	level._select_modifier(challenge.modifier)
 	if level.serve_button.disabled:
@@ -262,7 +262,7 @@ func _validate_world5_runtime() -> void:
 		failures.append("La energía del portal no representa todos los fragmentos")
 	if not level.completion.next_pressed.is_connected(level._on_epilogue_pressed):
 		failures.append("Cerrar la aventura debe abrir el epílogo de la historia")
-	var current: Dictionary = level.CHALLENGES[level.challenge_index]
+	var current: ExerciseEntry = level.CHALLENGES[level.challenge_index]
 	if current.correct not in current.options:
 		failures.append("El primer fragmento del Mundo 5 no puede resolverse")
 	level.queue_free()
