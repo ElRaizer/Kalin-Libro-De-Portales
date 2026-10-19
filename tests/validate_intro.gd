@@ -24,6 +24,11 @@ func _initialize() -> void:
 	if current_scene == null or current_scene.scene_file_path != GameManager.SCENE_PATHS.world1_cine1:
 		failures.append("La introducción no abrió la cinemática del huracán después del panel final")
 
+	# La cinemática crea temporizadores al entrar; esperar permite que el árbol
+	# procese su limpieza antes de terminar la prueba headless.
+	await process_frame
+	await process_frame
+
 	if failures.is_empty():
 		print("Validación de la introducción: OK")
 		quit(0)

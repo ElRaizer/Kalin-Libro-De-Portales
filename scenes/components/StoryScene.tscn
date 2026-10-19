@@ -13,6 +13,12 @@
 [sub_resource type="CanvasItemMaterial" id="Material_brillo"]
 blend_mode = 1
 
+[sub_resource type="CanvasItemMaterial" id="Material_muebles"]
+particles_animation = true
+particles_anim_h_frames = 4
+particles_anim_v_frames = 1
+particles_anim_loop = true
+
 [sub_resource type="Gradient" id="Gradient_aparecer"]
 offsets = PackedFloat32Array(0, 0.15, 0.8, 1)
 colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
@@ -102,6 +108,7 @@ scale_amount_min = 0.8
 scale_amount_max = 1.2
 
 [node name="Muebles" type="CPUParticles2D" parent="Effects"]
+material = SubResource("Material_muebles")
 position = Vector2(1340, 420)
 emitting = false
 amount = 9
@@ -119,8 +126,6 @@ angular_velocity_max = 280.0
 scale_amount_min = 1.2
 scale_amount_max = 1.9
 anim_offset_max = 1.0
-particles_anim_h_frames = 4
-particles_anim_v_frames = 1
 
 [node name="Paginas" type="CPUParticles2D" parent="Effects"]
 position = Vector2(640, -60)

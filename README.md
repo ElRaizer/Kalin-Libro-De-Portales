@@ -4,7 +4,7 @@ Videojuego educativo desarrollado en Godot para practicar vocabulario y estructu
 
 ## Estado del proyecto
 
-- Motor: **Godot 4.6**.
+- Motor oficial: **Godot 4.6.3**.
 - Resolución de diseño: **1280 × 720**.
 - Ventana redimensionable entre **960 × 540** y **1920 × 1080**, con escalado proporcional 16:9.
 - Escena principal: `res://scenes/Intro.tscn`.

@@ -7,6 +7,10 @@ class_name GridPathLevel
 @export_range(1, 99, 1) var world_number: int = 1
 @export_range(1, 99, 1) var level_number: int = 1
 @export var next_scene_key: String = "world1_level2"
+@export var level_title: String = "Mundo 1 · Caminos Blancos"
+@export var completion_title: String = "¡Nivel completado!"
+@export_multiline var completion_summary: String = "Reconstruiste los caminos y recuperaste nuevas palabras."
+@export var completion_next_text: String = "Siguiente nivel →"
 
 @export_category("Instrucciones")
 @export_multiline var default_instruction: String = "Haz clic en una ficha y arrastra hasta su destino. Conecta las tres para completar el nivel."
@@ -22,21 +26,21 @@ var _dialogue_serial: int = 0
 @onready var dlg_hint: Label = $UI/DialoguePanel/VBox/Hint
 @onready var dlg_icon: TextureRect = $UI/DialoguePanel/WordIcon
 @onready var dlg_vbox: VBoxContainer = $UI/DialoguePanel/VBox
-@onready var magic_lbl: Label = $UI/TopBar/MagicLabel
+@onready var level_header: LevelHeader = $UI/LevelHeader
 @onready var instr_lbl: Label = $UI/InstrPanel/InstrLbl
-@onready var complete_pan: Panel = $UI/CompletePanel
-@onready var complete_shade: ColorRect = get_node_or_null("UI/CompleteShade") as ColorRect
+@onready var completion_overlay: CompletionOverlay = $UI/CompletionOverlay
 @onready var libro: CanvasLayer = $LibroHechizos
 
 func _ready() -> void:
 	dialogue.visible = false
-	complete_pan.visible = false
-	if complete_shade:
-		complete_shade.visible = false
-	_refresh_hud()
+	level_header.set_title(level_title)
 	_set_default_instruction()
 	_set_mouse_passthrough(dialogue)
-	GameManager.magic_points_changed.connect(_on_magic_points_changed)
+	level_header.menu_pressed.connect(_on_menu_pressed)
+	level_header.book_pressed.connect(_on_book_pressed)
+	completion_overlay.next_pressed.connect(_on_next_level_pressed)
+	completion_overlay.replay_pressed.connect(_on_replay_pressed)
+	completion_overlay.menu_pressed.connect(_on_menu_pressed)
 	grid_board.word_selected.connect(_on_word_selected)
 	grid_board.word_connected.connect(_on_word_connected)
 	grid_board.drawing_stopped.connect(_on_drawing_stopped)
@@ -51,9 +55,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	):
 		_close_dialogue()
 		get_viewport().set_input_as_handled()
-
-func _on_magic_points_changed(_new_total: int) -> void:
-	_refresh_hud()
 
 func _on_word_selected(word: GridWordData) -> void:
 	var start_name: String = word.get_start_text().replace("\n", " ")
@@ -113,20 +114,14 @@ func _close_dialogue() -> void:
 
 func _on_level_complete() -> void:
 	GameManager.complete_level(world_number, level_number)
-	if complete_shade:
-		complete_shade.visible = true
-	complete_pan.visible = true
-	complete_pan.modulate.a = 0.0
-	create_tween().tween_property(complete_pan, "modulate:a", 1.0, 0.25)
+	completion_overlay.show_completion(completion_title, completion_summary, completion_next_text)
 	_set_instr("Nivel completado. Pulsa el botón para continuar.")
-	$UI/CompletePanel/VBox/NextBtn.grab_focus()
 
 func _safe_navigate(key: String) -> void:
 	grid_board.set_interaction_enabled(false)
 	_dialogue_open = false
 	dialogue.visible = false
-	if complete_shade:
-		complete_shade.visible = false
+	completion_overlay.hide_overlay()
 	GameManager.go_to_scene(key)
 
 func _on_next_level_pressed() -> void:
@@ -137,6 +132,9 @@ func _on_menu_pressed() -> void:
 
 func _on_book_pressed() -> void:
 	libro.show_book()
+
+func _on_replay_pressed() -> void:
+	get_tree().reload_current_scene()
 
 func _set_default_instruction() -> void:
 	_set_instr(default_instruction)
@@ -149,6 +147,3 @@ func _set_mouse_passthrough(control: Control) -> void:
 	for child: Node in control.get_children():
 		if child is Control:
 			_set_mouse_passthrough(child)
-
-func _refresh_hud() -> void:
-	magic_lbl.text = "%d pts mágicos" % GameManager.magic_points

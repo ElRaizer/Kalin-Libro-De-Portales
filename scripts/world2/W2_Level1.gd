@@ -10,9 +10,10 @@
 ## Vocabulario centralizado en GameManager.VOCABULARY, mundo 2 nivel 1:
 ##   mayak (mesa), lak (plato), ch'áak (cama), chan (silla), janal (comida)
 extends Node2D
+const EXERCISE_ENTRY = preload("res://scripts/data/ExerciseEntry.gd")
 
 # Objeto solicitado, animal que lo pide, y refuerzo gramatical.
-const OBJECTS: Array[Dictionary] = [
+const RAW_OBJECTS: Array[Dictionary] = [
 	{ "maya": "mayak",
 	  "animal_spr": "res://Arte/sprites/animal_miis.svg",  "animal": "Miis",
 	  "peticion": "Necesito un lugar para comer.",
@@ -34,6 +35,7 @@ const OBJECTS: Array[Dictionary] = [
 	  "peticion": "Necesito algo para comer.",
 	  "color": Color(0.80, 0.25, 0.20) },
 ]
+static var OBJECTS: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_OBJECTS)
 
 const TOTAL_ROUNDS := 10   # 5 objetos x 2 fases
 
@@ -52,8 +54,7 @@ var _choice_buttons: Array[Button] = []
 @onready var feedback_lbl: Label         = $UI/FeedbackPanel/FeedbackLbl
 @onready var phase_lbl:    Label         = $UI/StatusPanel/StatusVBox/PhaseLbl
 @onready var progress_lbl: Label         = $UI/StatusPanel/StatusVBox/ProgressLbl
-@onready var complete_pan: Panel         = $UI/CompletePanel
-@onready var complete_shade: ColorRect   = $UI/CompleteShade
+@onready var completion: CompletionOverlay = $UI/CompletionOverlay
 @onready var magic_lbl:    Label         = $UI/TopBar/MagicLabel
 @onready var libro:        CanvasLayer   = $LibroHechizos
 
@@ -62,15 +63,16 @@ func _ready() -> void:
 	for i in range(OBJECTS.size()):
 		round_order.append(i)
 	round_order.shuffle()
-	complete_pan.visible = false
-	complete_shade.visible = false
+	completion.next_pressed.connect(_on_next_level_pressed)
+	completion.replay_pressed.connect(_on_replay_pressed)
+	completion.menu_pressed.connect(_on_menu_pressed)
 	feedback_lbl.text = ""
 	magic_lbl.text = "%d pts mágicos" % GameManager.magic_points
 	GameManager.magic_points_changed.connect(_on_magic_points_changed)
 	_show_round()
 
 # ─── Rondas ───────────────────────────────────────────────────────────────────
-func _current_object() -> Dictionary:
+func _current_object() -> ExerciseEntry:
 	var obj_idx: int = round_order[round_index % round_order.size()]
 	return OBJECTS[obj_idx]
 
@@ -78,7 +80,7 @@ func _show_round() -> void:
 	if round_index >= TOTAL_ROUNDS:
 		return
 	feedback_lbl.text = ""
-	var obj: Dictionary = _current_object()
+	var obj: ExerciseEntry = _current_object()
 	var vocab: Dictionary = GameManager.get_vocabulary_entry(obj.maya)
 	current_phase = 0 if round_index < round_order.size() else 1
 	animal_spr.texture = load(obj.animal_spr)
@@ -99,7 +101,7 @@ func _show_round() -> void:
 
 func _learned_count() -> int:
 	var count: int = 0
-	for object_data: Dictionary in OBJECTS:
+	for object_data: ExerciseEntry in OBJECTS:
 		if GameManager.has_learned_word(object_data.maya):
 			count += 1
 	return count
@@ -108,9 +110,9 @@ func _build_choices() -> void:
 	for child in choices_grid.get_children():
 		child.queue_free()
 	_choice_buttons.clear()
-	var pool: Array[Dictionary] = OBJECTS.duplicate()
+	var pool: Array[ExerciseEntry] = OBJECTS.duplicate()
 	pool.shuffle()
-	for obj: Dictionary in pool:
+	for obj: ExerciseEntry in pool:
 		var btn: Button = Button.new()
 		btn.text = obj.maya
 		btn.custom_minimum_size = Vector2(230, 90)
@@ -126,13 +128,13 @@ func _build_choices() -> void:
 func _on_choice_pressed(maya_word: String) -> void:
 	if _completing:
 		return
-	var obj: Dictionary = _current_object()
+	var obj: ExerciseEntry = _current_object()
 	if maya_word == obj.maya:
 		_on_correct(obj)
 	else:
 		_on_wrong()
 
-func _on_correct(obj: Dictionary) -> void:
+func _on_correct(obj: ExerciseEntry) -> void:
 	for b in _choice_buttons:
 		b.disabled = true
 	GameManager.learn_word(obj.maya)
@@ -166,11 +168,11 @@ func _on_wrong() -> void:
 # ─── Completar nivel ────────────────────────────────────────────────────────
 func _on_level_complete() -> void:
 	GameManager.complete_level(2, 1)
-	complete_shade.visible = true
-	complete_pan.visible = true
-	complete_pan.modulate.a = 0.0
-	create_tween().tween_property(complete_pan, "modulate:a", 1.0, 0.25)
-	$UI/CompletePanel/VBox/NextBtn.grab_focus()
+	completion.show_completion(
+		"¡Mundo 2 · Nivel 1 completado!",
+		"Aprendiste a lanzar hechizos para construir la casa maya.",
+		"Siguiente mundo →"
+	)
 
 func _on_magic_points_changed(new_total: int) -> void:
 	magic_lbl.text = "%d pts mágicos" % new_total

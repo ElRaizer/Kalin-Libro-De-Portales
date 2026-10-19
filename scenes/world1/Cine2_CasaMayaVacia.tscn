@@ -1,13 +1,12 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dmtgmhxi8xnbp"]
 
 [ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
-[ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_atardecer.svg" id="3_bg_atardecer"]
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_casa_maya.svg" id="4_bg_casa"]
+[ext_resource type="Script" uid="uid://bmw6321e7uwe6" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
+[ext_resource type="Texture2D" uid="uid://bprcqlwrn3fpo" path="res://Arte/backgrounds/bg_aldea_atardecer.svg" id="3_bg_atardecer"]
+[ext_resource type="Texture2D" uid="uid://djkm7pk10jybq" path="res://Arte/backgrounds/bg_casa_maya.svg" id="4_bg_casa"]
 
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
-speaker = "Narrador"
 text = "Al caer la tarde, Kalin y sus amigos caminaron juntos hacia la Casa Maya."
 background = ExtResource("3_bg_atardecer")
 actors = Array[String](["Peek'", "Miis", "Kaax"])
@@ -17,7 +16,6 @@ auto_advance = 1.8
 
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
-speaker = "Narrador"
 text = "La puerta se abrió con un chirrido. Adentro no había nada."
 background = ExtResource("4_bg_casa")
 kalin_pose = 1
@@ -53,7 +51,6 @@ auto_advance = 1.8
 
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
-speaker = "Narrador"
 text = "Kalin abrió su libro y las páginas brillaron. Era hora de trabajar."
 actors = Array[String](["Peek'", "Miis", "Kaax"])
 effects = 24
@@ -62,7 +59,7 @@ title = "Mundo 2"
 subtitle = "La Casa Maya"
 auto_advance = 2.0
 
-[node name="Cine2" instance=ExtResource("1_base")]
+[node name="Cine2" unique_id=1925970453 instance=ExtResource("1_base")]
 chapter_title = "Mundo 2 · Intermedio — La Casa Maya vacía"
 next_scene_key = "world2_level1"
 beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5"), SubResource("Beat_6")])

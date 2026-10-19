@@ -6,6 +6,7 @@
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="4_theme"]
 [ext_resource type="Script" uid="uid://3tucogv2ix4h" path="res://scripts/components/DraggableWordButton.gd" id="5_drag_button"]
 [ext_resource type="Script" uid="uid://bc3tppmuyyvks" path="res://scripts/components/WordDropSlot.gd" id="6_drop_slot"]
+[ext_resource type="PackedScene" path="res://scenes/components/CompletionOverlay.tscn" id="7_complete"]
 
 [node name="Level3" type="Node2D" unique_id=1006187822]
 script = ExtResource("1_script")
@@ -450,83 +451,10 @@ horizontal_alignment = 2
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="CompleteShade" type="ColorRect" parent="UI" unique_id=795305655]
-visible = false
-offset_right = 1280.0
-offset_bottom = 720.0
-color = Color(0.02, 0.08, 0.07, 0.72)
-
-[node name="CompletePanel" type="Panel" parent="UI" unique_id=206784819]
-visible = false
-offset_left = 310.0
-offset_top = 132.0
-offset_right = 970.0
-offset_bottom = 588.0
-theme = ExtResource("4_theme")
-theme_type_variation = &"KalinCompletionPanel"
-
-[node name="Content" type="VBoxContainer" parent="UI/CompletePanel" unique_id=1543145103]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 30.0
-offset_top = 28.0
-offset_right = -30.0
-offset_bottom = -28.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 18
-
-[node name="MagicIcon" type="Label" parent="UI/CompletePanel/Content" unique_id=1514625278]
-layout_mode = 2
-theme_override_font_sizes/font_size = 52
-text = "✨📖✨"
-horizontal_alignment = 1
-
-[node name="TitleLabel" type="Label" parent="UI/CompletePanel/Content" unique_id=1718319674]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.04, 0.42, 0.32, 1)
-theme_override_font_sizes/font_size = 32
-text = "¡Hechizos de adjetivos dominados!"
-horizontal_alignment = 1
-
-[node name="SummaryLabel" type="Label" parent="UI/CompletePanel/Content" unique_id=1417193328]
-custom_minimum_size = Vector2(0, 105)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.15, 0.08, 1)
-theme_override_font_sizes/font_size = 18
-text = "Construiste las seis frases del GDD en dos fases."
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 3
-
-[node name="NextButton" type="Button" parent="UI/CompletePanel/Content" unique_id=1699428236]
-custom_minimum_size = Vector2(0, 58)
-layout_mode = 2
-theme_type_variation = &"KalinPrimaryButton"
-theme_override_font_sizes/font_size = 22
-text = "Continuar a Yo Quiero →"
-
-[node name="ReplayButton" type="Button" parent="UI/CompletePanel/Content" unique_id=1212717226]
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-theme_type_variation = &"KalinSecondaryButton"
-theme_override_font_sizes/font_size = 18
-text = "Practicar de nuevo"
-
-[node name="MenuButton" type="Button" parent="UI/CompletePanel/Content" unique_id=384809273]
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-theme_type_variation = &"KalinSecondaryButton"
-theme_override_font_sizes/font_size = 18
-text = "Volver al menú"
+[node name="CompletionOverlay" parent="UI" instance=ExtResource("7_complete")]
 
 [node name="LibroHechizos" parent="." unique_id=1529531518 instance=ExtResource("3_book")]
 visible = false
 
 [connection signal="pressed" from="UI/TopBar/Bar/BackButton" to="." method="_on_menu_pressed"]
 [connection signal="pressed" from="UI/TopBar/Bar/BookButton" to="." method="_on_book_pressed"]
-[connection signal="pressed" from="UI/CompletePanel/Content/NextButton" to="." method="_on_next_level_pressed"]
-[connection signal="pressed" from="UI/CompletePanel/Content/ReplayButton" to="." method="_on_replay_pressed"]
-[connection signal="pressed" from="UI/CompletePanel/Content/MenuButton" to="." method="_on_menu_pressed"]

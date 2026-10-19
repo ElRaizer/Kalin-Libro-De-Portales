@@ -4,6 +4,9 @@ var failures: Array[String] = []
 
 func _initialize() -> void:
 	var manager: Node = root.get_node("GameManager")
+	# SceneTree inicia este script junto con los autoloads. Esperar un frame evita
+	# que GameManager._ready() cargue la partida después de preparar el escenario.
+	await process_frame
 	var original_completed: Array[String] = manager.completed_levels.duplicate()
 	var empty_progress: Array[String] = []
 	manager.completed_levels = empty_progress

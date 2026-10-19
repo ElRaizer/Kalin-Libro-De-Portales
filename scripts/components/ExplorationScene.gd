@@ -12,6 +12,7 @@ class_name ExplorationScene
 
 const KALIN_NORMAL: Texture2D = preload("res://Arte/sprites/kalin_normal.svg")
 const KALIN_SURPRISED: Texture2D = preload("res://Arte/sprites/kalin_surprised.svg")
+const DIALOGUE_PRESENTER = preload("res://scripts/components/DialoguePresenter.gd")
 const ARRIVE_DISTANCE := 8.0
 const STEP_LENGTH := 70.0                  # píxeles recorridos en cada zancada
 const WALK_BOUNCE := 9.0
@@ -55,18 +56,14 @@ var _target_x: float = 0.0
 var _pending_spot: ExplorationSpot
 var _nearby_spot: ExplorationSpot
 var _active_spot: ExplorationSpot
-var _dialogue_lines: Array[String] = []
-var _dialogue_speaker: String = ""
-var _line_index: int = -1
-var _dialogue_open: bool = false
 var _resolving: bool = false
 var _navigating: bool = false
 var _walk_phase: float = 0.0
 var _time: float = 0.0
 var _animal_bases: Dictionary = {}         # Sprite2D -> posición en reposo
 var _arrow_base_x: float = 0.0
-var _text_tween: Tween
 var _notice_tween: Tween
+var _dialogue: RefCounted
 
 # ─── Nodos ───────────────────────────────────────────────────────────────────
 @onready var sendero: Path2D = $Sendero
@@ -96,6 +93,8 @@ func _ready() -> void:
 	skip_button.pressed.connect(_finish)
 	prompt_button.pressed.connect(_on_prompt_pressed)
 	dialogue_box.hide()
+	hint_label.add_theme_color_override("font_color", COLOR_HINT)
+	_dialogue = DIALOGUE_PRESENTER.new(self, dialogue_box, speaker_label, dialogue_text, hint_label, _speaker_name, _set_dialogue_pose, _on_dialogue_finished, CHAR_REVEAL_SECONDS)
 	prompt_button.hide()
 	_arrow_base_x = arrow.position.x
 	fade.modulate.a = 1.0
@@ -126,7 +125,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_finish()
 		return
 	var is_click: bool = event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT
-	if _dialogue_open:
+	if _dialogue.is_open():
 		if is_click or event.is_action_pressed(&"kalin_interactuar"):
 			get_viewport().set_input_as_handled()
 			advance_dialogue()
@@ -188,7 +187,7 @@ func walk_limit() -> float:
 
 # ─── Movimiento de Kalin ─────────────────────────────────────────────────────
 func _can_walk() -> bool:
-	return not (_navigating or _dialogue_open or _resolving)
+	return not (_navigating or _dialogue.is_open() or _resolving)
 
 ## Mueve a Kalin en la dirección indicada (-1 izquierda, 1 derecha). Si no hay
 ## dirección, sigue hacia el destino elegido con clic, si lo hay. Durante un
@@ -347,48 +346,19 @@ func _restore_objective() -> void:
 
 # ─── Diálogo ─────────────────────────────────────────────────────────────────
 func _start_dialogue(speaker: String, lines: Array[String], surprised: bool) -> void:
-	_dialogue_open = true
-	_dialogue_speaker = speaker
-	_dialogue_lines = lines
-	_line_index = -1
-	kalin_sprite.texture = KALIN_SURPRISED if surprised else KALIN_NORMAL
-	speaker_label.text = _speaker_name(speaker)
-	speaker_label.visible = speaker_label.text != ""
-	hint_label.text = "▶ Continuar"
-	hint_label.add_theme_color_override("font_color", COLOR_HINT)
-	dialogue_box.show()
+	_dialogue.start(speaker, lines, surprised)
 	prompt_button.hide()
-	_next_line()
 
 func advance_dialogue() -> void:
-	if not _dialogue_open:
-		return
-	if _text_tween != null and _text_tween.is_running():
-		_text_tween.kill()
-		dialogue_text.visible_ratio = 1.0
-		return
-	_next_line()
+	_dialogue.advance()
 
 func is_dialogue_open() -> bool:
-	return _dialogue_open
+	return _dialogue.is_open()
 
-func _next_line() -> void:
-	_line_index += 1
-	if _line_index >= _dialogue_lines.size():
-		_end_dialogue()
-		return
-	var text: String = _dialogue_lines[_line_index]
-	if _text_tween:
-		_text_tween.kill()
-	dialogue_text.text = text
-	dialogue_text.visible_ratio = 0.0
-	_text_tween = create_tween()
-	_text_tween.tween_property(dialogue_text, "visible_ratio", 1.0, text.length() * CHAR_REVEAL_SECONDS)
+func _set_dialogue_pose(surprised: bool) -> void:
+	kalin_sprite.texture = KALIN_SURPRISED if surprised else KALIN_NORMAL
 
-func _end_dialogue() -> void:
-	_dialogue_open = false
-	dialogue_box.hide()
-	kalin_sprite.texture = KALIN_NORMAL
+func _on_dialogue_finished() -> void:
 	var spot: ExplorationSpot = _active_spot
 	_active_spot = null
 	if spot != null:
@@ -426,8 +396,8 @@ func _finish() -> void:
 	if _navigating:
 		return
 	_navigating = true
-	_dialogue_open = false
-	dialogue_box.hide()
+	if _dialogue.is_open():
+		_dialogue.close()
 	prompt_button.hide()
 	var tween := create_tween()
 	tween.tween_property(fade, "modulate:a", 1.0, FADE_SECONDS)

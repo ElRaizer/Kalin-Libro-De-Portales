@@ -51,6 +51,30 @@ const MAGIC_TINT := Color(1.4, 1.35, 1.0)
 ## Qué le pasa al objeto la primera vez que se examina.
 @export var reaction: Reaction = Reaction.NINGUNA
 
+@export_category("Presentación")
+## Dibujo propio de esta instancia. Se configura en el nodo ExplorationSpot,
+## sin editar los hijos internos de la escena reutilizable.
+@export var spot_texture: Texture2D:
+	set(value):
+		spot_texture = value
+		_apply_visual_configuration()
+@export var sprite_offset: Vector2 = Vector2(0, -45):
+	set(value):
+		sprite_offset = value
+		_apply_visual_configuration()
+@export var sprite_scale: Vector2 = Vector2.ONE:
+	set(value):
+		sprite_scale = value
+		_apply_visual_configuration()
+@export var glow_position: Vector2 = Vector2(0, -40):
+	set(value):
+		glow_position = value
+		_apply_visual_configuration()
+@export var glow_extents: Vector2 = Vector2(50, 30):
+	set(value):
+		glow_extents = value
+		_apply_visual_configuration()
+
 # ─── Estado ──────────────────────────────────────────────────────────────────
 var examined: bool = false
 var _time: float = 0.0
@@ -62,9 +86,21 @@ var _reaction_tween: Tween
 
 # ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
+	_apply_visual_configuration()
 	if Engine.is_editor_hint():
 		return
 	_time = randf() * TAU
+
+func _apply_visual_configuration() -> void:
+	var sprite_node := get_node_or_null("Sprite") as Sprite2D
+	if sprite_node:
+		sprite_node.texture = spot_texture
+		sprite_node.offset = sprite_offset
+		sprite_node.scale = sprite_scale
+	var glow_node := get_node_or_null("Brillo") as CPUParticles2D
+	if glow_node:
+		glow_node.position = glow_position
+		glow_node.emission_rect_extents = glow_extents
 
 func _process(delta: float) -> void:
 	if Engine.is_editor_hint() or examined:
