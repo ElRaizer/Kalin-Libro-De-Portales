@@ -18,6 +18,8 @@ func _ready() -> void:
 	hide_overlay()
 
 func show_completion(title: String, summary: String, next_text: String = "Continuar") -> void:
+	# Cubrir también la casa y los controles añadidos al preparar cada nivel.
+	get_parent().move_child(self, -1)
 	title_label.text = title
 	summary_label.text = summary
 	var manager: Node = get_node("/root/GameManager")

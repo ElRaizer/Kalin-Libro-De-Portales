@@ -52,16 +52,13 @@ func _run() -> void:
 	board._handle_press(board.words[0].start_cell)
 	for column: int in range(1, board.words[0].destination_cell.x + 1):
 		board._try_cell(Vector2i(column, 1))
-	await create_timer(1.4).timeout
+	await create_timer(0.15).timeout
+	await _shot("camino_saltito")
+	while current_scene._arrival_animating:
+		await process_frame
 	await _shot("camino_recuperado")
 	current_scene._close_dialogue()
 	await _shot("caminos")
-	var quiz := RecallCheck.new()
-	current_scene.add_child(quiz)
-	quiz.start(["Peek'", "Miis", "Kaax"])
-	await _shot("repaso_animales")
-	quiz.queue_free()
-	await process_frame
 	await _scene("world1_level3", "memoria_lista")
 	current_scene._toggle_preview()
 	await _shot("memoria_pistas")
@@ -69,6 +66,14 @@ func _run() -> void:
 	current_scene._on_choice_pressed(current_scene._current_object().maya)
 	await create_timer(0.6).timeout
 	await _shot("casa_objeto")
+	await create_timer(3.6).timeout
+	await _shot("casa_continuar")
+	current_scene._advance_round()
+	for index: int in range(1, current_scene.TOTAL_ROUNDS):
+		current_scene._on_choice_pressed(current_scene._current_object().maya)
+		current_scene._advance_round()
+	await create_timer(0.4).timeout
+	await _shot("casa_completada")
 	await _scene("world3_level1", "adjetivos")
 	var challenge: ExerciseEntry = current_scene._current_challenge()
 	current_scene._select_noun(challenge.noun)
@@ -82,6 +87,16 @@ func _run() -> void:
 	current_scene._on_serve_pressed()
 	await create_timer(0.4).timeout
 	await _shot("entrega")
+	await create_timer(3.8).timeout
+	await _shot("peticion_continuar")
+	current_scene.round_index = 2
+	current_scene._show_round()
+	current_scene._select_food("pak'al")
+	await _shot("fruta_sin_tamano")
+	current_scene._select_modifier("nojoch")
+	await _shot("fruta_con_tamano")
+	current_scene._select_modifier("")
+	await _shot("fruta_tamano_retirado")
 	current_scene.round_index = current_scene.CHALLENGES.size()
 	current_scene._show_round()
 	await _shot("peticion_recuerdo")

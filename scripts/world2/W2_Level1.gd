@@ -149,6 +149,7 @@ func _current_object() -> ExerciseEntry:
 	return OBJECTS[round_order[round_index % round_order.size()]]
 
 func _show_round() -> void:
+	guide.stop()
 	_waiting = false
 	_mistakes = 0
 	next_button.hide()
@@ -225,6 +226,7 @@ func _render_success(animate: bool) -> void:
 	progress_lbl.text = "%d / %d muebles recuperados" % [room_items.size(), OBJECTS.size()]
 	next_button.show()
 	next_button.grab_focus()
+	guide.watch_continue(next_button)
 	if animate:
 		guide.page_to_book(request_art.global_position, $UI/TopBar/BookBtn.get_global_rect().get_center())
 	GameManager.checkpoint(self)

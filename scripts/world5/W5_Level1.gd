@@ -212,6 +212,7 @@ func _render_success(animate: bool) -> void:
 	create_tween().tween_property(portal_glow, "color:a", minf(0.16 + 0.06 * (challenge_index + 1), 0.62), 0.5)
 	next_button.show()
 	next_button.grab_focus()
+	guide.watch_continue(next_button)
 	if animate:
 		challenge_art.celebrate()
 		guide.page_to_book(challenge_art.global_position, $UI/LevelHeader/Bar/BookButton.get_global_rect().get_center())

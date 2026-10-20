@@ -39,11 +39,13 @@ Los cuatro niveles del Mundo 1 usan tableros de 12 columnas y presentan una
 progresión propia: un primer camino corto con demostración visual, planificación
 de rutas sin cruces, memoria de obstáculos y recuerdo de destinos. El jugador
 decide cuándo ocultar las pistas y puede volver a consultarlas. Cada tablero
-termina con un breve reconocimiento de palabras y animales.
+termina con una celebración; el reconocimiento de palabras y animales queda
+en la historia siguiente para evitar dos pruebas consecutivas.
 
 Las ayudas con una mano animada se pueden repetir con **Ayuda**. Al acertar,
 los animales recorren su camino, los muebles permanecen en la casa y los
-alimentos se entregan. Las frases recuperadas esperan a **Continuar**. El
+alimentos se entregan. Las frases recuperadas esperan a **Continuar**; tras
+cuatro segundos sin interacción, la mano señala el botón. El
 Libro de Hechizos pausa el ejercicio y usa las mismas ilustraciones SVG que
 las peticiones; en el repaso se retiran los dibujos de las respuestas.
 

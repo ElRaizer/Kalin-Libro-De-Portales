@@ -68,7 +68,7 @@ static func sanitize_completed_levels(value: Variant, level_order: Array[Diction
 
 static func sanitize_scene_state(value: Dictionary) -> Dictionary:
 	var state := value.duplicate(true)
-	for key: String in ["panel", "beat", "round", "challenge", "quiz_index", "dialogue_word", "line", "x"]:
+	for key: String in ["panel", "beat", "round", "challenge", "dialogue_word", "line", "x"]:
 		if not state.has(key):
 			continue
 		var number: Variant = state[key]
@@ -76,7 +76,7 @@ static func sanitize_scene_state(value: Dictionary) -> Dictionary:
 			state.erase(key)
 		elif key != "x":
 			state[key] = int(clampf(float(number), -1 if key == "dialogue_word" else 0, 10000))
-	for key: String in ["waiting", "complete", "quiz_complete", "quiz_solved", "dialogue_open", "resolved", "intro_done"]:
+	for key: String in ["waiting", "complete", "dialogue_open", "resolved", "intro_done"]:
 		if state.has(key) and state[key] is not bool:
 			state.erase(key)
 	for key: String in ["noun", "adjective", "food", "modifier", "active"]:

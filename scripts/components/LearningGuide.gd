@@ -9,6 +9,9 @@ var gesture: Tween
 var help_button: Button
 var _point_target: Control
 var _time := 0.0
+var _continue_target: Control
+var _idle_seconds := 0.0
+var _idle_delay := 4.0
 
 static func install(host: Node, bar: Container, help_action: Callable) -> LearningGuide:
 	var guide := LearningGuide.new()
@@ -58,8 +61,43 @@ func point_at(control: Control) -> void:
 	set_process(true)
 	_process(0)
 
+## El aviso espera al jugador y respeta la pausa del libro.
+func watch_continue(control: Control, delay: float = 4.0) -> void:
+	stop()
+	_continue_target = control
+	_idle_delay = delay
+	set_process(true)
+
+func _input(event: InputEvent) -> void:
+	if not is_instance_valid(_continue_target):
+		return
+	var interacted: bool = (
+		(event is InputEventMouseMotion and event.relative.length() > 2.0)
+		or (event is InputEventMouseButton and event.pressed)
+		or (event is InputEventKey and event.pressed and not event.echo)
+		or (event is InputEventScreenTouch and event.pressed)
+		or event is InputEventScreenDrag
+	)
+	if interacted:
+		_idle_seconds = 0.0
+		_point_target = null
+		hand.hide()
+
 func _process(delta: float) -> void:
-	if not is_instance_valid(_point_target) or not _point_target.is_visible_in_tree():
+	if is_instance_valid(_continue_target):
+		if not _continue_target.is_visible_in_tree() or (_continue_target is BaseButton and _continue_target.disabled):
+			stop()
+			return
+		_idle_seconds += delta
+		if _idle_seconds >= _idle_delay:
+			_point_target = _continue_target
+			hand.show()
+			hand.modulate.a = 0.95
+	if not is_instance_valid(_point_target):
+		if not is_instance_valid(_continue_target):
+			stop()
+		return
+	if not _point_target.is_visible_in_tree():
 		stop()
 		return
 	_time += delta
@@ -67,6 +105,8 @@ func _process(delta: float) -> void:
 
 func stop() -> void:
 	_point_target = null
+	_continue_target = null
+	_idle_seconds = 0.0
 	set_process(false)
 	if gesture and gesture.is_valid():
 		gesture.kill()

@@ -91,11 +91,23 @@ func _paths() -> void:
 	_check(board.drawing and board.active_index == 0, "Pulsar el cuerpo del animal debe iniciar el camino")
 	for column: int in range(1, board.words[0].destination_cell.x + 1):
 		board._try_cell(Vector2i(column, 1))
-	await create_timer(1.3).timeout
+	await create_timer(0.15).timeout
+	var walker := level.get_node("UI/ArrivingAnimal") as TextureRect
+	var start := board.cell_to_local_position(board.words[0].start_cell)
+	_check(level._arrival_animating and not level.dialogue.visible, "La palabra debe esperar a que el animal llegue a su casa")
+	_check(walker.position.x > start.x and walker.position.y < start.y and absf(walker.rotation) > 0.001, "El animal debe avanzar con elevación y balanceo, como Kalin")
+	level.libro.show_book()
+	var paused_position := walker.position
+	await create_timer(0.2).timeout
+	_check(walker.position.is_equal_approx(paused_position), "El libro debe pausar también el salto del animal")
+	level.libro.hide_book()
+	await create_timer(1.0).timeout
+	_check(level._arrival_animating, "La llegada no debe recorrer todo el camino en sólo un segundo")
+	await _wait_for_arrival(level)
 	_check(level._dialogue_open and level.dialogue.visible, "El animal debe llegar y dejar visible la palabra recuperada")
 	_check(board.get_word_node(1).visible, "Después del primer acierto deben aparecer los demás animales")
 	await _resume()
-	await create_timer(1.3).timeout
+	await _wait_for_arrival(current_scene)
 	level = current_scene
 	board = level.grid_board
 	_check(level._dialogue_open and level.dialogue.visible, "Continuar debe recuperar también la palabra pendiente de leer")
@@ -111,22 +123,13 @@ func _paths() -> void:
 	_check(current_scene.scene_file_path == manager.SCENE_PATHS.world1_level1, "Continuar debe volver al tablero, sin repetir el prólogo")
 	_check(current_scene.grid_board.connected.size() == 1, "Se debe conservar el animal conectado")
 	_check(current_scene.grid_board.paths[1].size() == 1, "Se debe conservar el camino parcial")
-	var quiz := RecallCheck.new()
-	current_scene.add_child(quiz)
-	quiz.start(["Peek'", "Miis", "Kaax"])
-	var correct: Button
-	var wrong: Button
-	for button: Button in quiz.options.get_children():
-		if button.icon == load(manager.get_book_illustration("Peek'")):
-			correct = button
-		else:
-			wrong = button
-	wrong.pressed.emit()
-	_check(quiz.next_button.disabled, "El repaso no debe avanzar al elegir otro animal")
-	correct.pressed.emit()
-	_check(not quiz.next_button.disabled, "Reconocer la palabra debe habilitar Continuar")
-	quiz.queue_free()
-	await process_frame
+
+func _wait_for_arrival(level: Node) -> void:
+	var deadline := Time.get_ticks_msec() + 30000
+	while level._arrival_animating and Time.get_ticks_msec() < deadline:
+		await process_frame
+	_check(not level._arrival_animating, "El animal debe terminar su recorrido y aterrizar")
+	_check(level.get_node_or_null("UI/ArrivingAnimal") == null, "La llegada debe retirar el animal animado al mostrar el de la casa")
 
 func _objects() -> void:
 	await _scene("world2_level1")
@@ -135,10 +138,48 @@ func _objects() -> void:
 	_check(word in current_scene.room_items, "El objeto recuperado debe aparecer en la casa")
 	await create_timer(1.6).timeout
 	_check(current_scene.round_index == 0 and current_scene.next_button.visible, "El mensaje de aprendizaje debe esperar al jugador")
+	await _continue_hint(current_scene.next_button)
 	await _resume()
 	_check(current_scene._waiting and word in current_scene.room_items, "Continuar debe restaurar el mueble y el acierto pendiente")
 	current_scene._advance_round()
 	_check(current_scene.round_index == 1, "La flecha debe avanzar exactamente una ronda")
+	_check(not current_scene.guide.hand.visible and current_scene.guide._continue_target == null, "Cambiar de ronda debe quitar el aviso pendiente")
+	for index: int in range(current_scene.round_index, current_scene.TOTAL_ROUNDS):
+		current_scene._on_choice_pressed(current_scene._current_object().maya)
+		current_scene._advance_round()
+	_check(current_scene.completion.visible and current_scene.completion.get_index() > current_scene.room.get_index(), "El cierre debe quedar por encima de la casa y recibir los clics")
+	_check(not current_scene.guide.hand.visible, "El aviso no debe cubrir la pantalla de nivel completado")
+	await process_frame
+	var panel: Control = current_scene.completion.panel
+	var center := panel.get_global_rect().get_center()
+	var hover := InputEventMouseMotion.new()
+	hover.position = center
+	hover.global_position = center
+	root.push_input(hover, true)
+	await process_frame
+	var hovered := root.gui_get_hovered_control()
+	_check(hovered != null and current_scene.completion.is_ancestor_of(hovered), "La casa no debe interceptar la interacción del panel final (control: %s)" % (hovered.get_path() if hovered else "ninguno"))
+
+func _continue_hint(button: Button) -> void:
+	var guide: LearningGuide = current_scene.guide
+	_check(guide._continue_target == button and not guide.hand.visible, "La mano debe esperar antes de señalar Continuar")
+	var movement := InputEventMouseMotion.new()
+	movement.relative = Vector2(30, 0)
+	guide._input(movement)
+	await create_timer(2.0).timeout
+	_check(not guide.hand.visible, "La ayuda no debe aparecer antes de cuatro segundos")
+	guide._input(movement)
+	current_scene.libro.show_book()
+	var elapsed := guide._idle_seconds
+	await create_timer(0.25).timeout
+	_check(is_equal_approx(guide._idle_seconds, elapsed), "El tiempo de ayuda debe pausarse al consultar el libro")
+	current_scene.libro.hide_book()
+	await create_timer(2.1).timeout
+	_check(not guide.hand.visible, "La interacción debe reiniciar la espera de ayuda")
+	await create_timer(2.1).timeout
+	_check(guide.hand.visible and guide._point_target == button, "Tras cuatro segundos de inactividad la mano debe señalar Continuar")
+	guide._input(movement)
+	_check(not guide.hand.visible, "Volver a interactuar debe retirar la mano")
 
 func _phrases() -> void:
 	await _scene("world3_level1")
@@ -149,6 +190,7 @@ func _phrases() -> void:
 	await create_timer(1.6).timeout
 	_check(current_scene.round_index == 0 and current_scene._awaiting_continue, "El Mundo 3 debe conservar el acierto hasta Continuar")
 	_check(current_scene.result_art.visible, "El hechizo debe mostrar el objeto a la medida")
+	_check(current_scene.guide._continue_target == current_scene.cast_button, "El taller debe ofrecer la ayuda diferida de Continuar")
 	var plan: Array = current_scene.round_plan.duplicate()
 	await _resume()
 	_check(current_scene.round_plan == plan and current_scene._awaiting_continue, "Se debe restaurar el plan y el acierto de adjetivos")
@@ -165,19 +207,24 @@ func _requests() -> void:
 	_check(current_scene.round_index == 0, "Un checkpoint con tipos incorrectos debe volver a un estado jugable")
 	_check(current_scene._current_challenge().food == "ja'", "La primera petición debe enseñar un caso sencillo sin tamaño")
 	current_scene._select_food("ja'")
+	_check(current_scene.modifier_slot.text.is_empty() and not current_scene.modifier_slot.visible, "Una frase sin tamaño debe contener solamente palabras mayas")
 	_check(not current_scene.serve_button.disabled and current_scene.selected_modifier == "", "Agua debe poder servirse sin elegir Sin tamaño")
 	current_scene._on_serve_pressed()
 	await create_timer(1.3).timeout
 	_check(current_scene.round_index == 0 and current_scene._awaiting_continue, "La petición acertada debe esperar al jugador")
+	_check(not current_scene.modifier_slot.visible and current_scene.modifier_slot.text.is_empty(), "El acierto sin tamaño no debe añadir un símbolo a la frase")
+	_check(current_scene.guide._continue_target == current_scene.serve_button, "Servir debe activar la ayuda diferida de Continuar")
 	await _resume()
 	_check(current_scene._awaiting_continue, "Se debe restaurar la petición entregada")
 	current_scene._on_serve_pressed()
 	_check(current_scene.round_index == 1, "Continuar una petición debe avanzar una ronda")
 	var challenge: ExerciseEntry = current_scene._current_challenge()
+	_check(current_scene.modifier_slot.visible and current_scene.modifier_slot.text.is_empty(), "Una petición con tamaño necesita un espacio vacío donde colocar su palabra")
 	current_scene._select_food(challenge.food)
 	current_scene._on_serve_pressed()
 	_check(not current_scene._awaiting_continue, "Una petición con tamaño no debe aceptar un tamaño ausente")
 	current_scene._select_modifier(challenge.modifier)
+	_check(current_scene.modifier_slot.text == challenge.modifier, "El tamaño elegido debe aparecer en maya")
 	current_scene._on_serve_pressed()
 	_check(current_scene._awaiting_continue, "La petición completa debe poder entregarse")
 	current_scene.round_index = current_scene.CHALLENGES.size()
@@ -193,6 +240,7 @@ func _portal() -> void:
 	current_scene._on_option_pressed(current_scene.CHALLENGES[0].correct)
 	await create_timer(1.3).timeout
 	_check(current_scene.challenge_index == 0 and current_scene.next_button.visible, "La página del portal debe esperar a Continuar")
+	_check(current_scene.guide._continue_target == current_scene.next_button, "El portal debe ofrecer la ayuda diferida de Continuar")
 	await _resume()
 	_check(current_scene._awaiting_continue and current_scene.portal_energy.value == 1, "Se debe restaurar la página recuperada del portal")
 

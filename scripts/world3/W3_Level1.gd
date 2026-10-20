@@ -336,6 +336,7 @@ func _render_success(animate: bool) -> void:
 	cast_button.text = "Continuar →"
 	cast_button.disabled = false
 	cast_button.grab_focus()
+	guide.watch_continue(cast_button)
 	if animate:
 		result_art.celebrate()
 		guide.page_to_book(result_art.global_position, $UI/TopBar/Bar/BookButton.get_global_rect().get_center())

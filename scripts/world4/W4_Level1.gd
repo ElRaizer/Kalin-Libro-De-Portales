@@ -138,7 +138,7 @@ func _show_round() -> void:
 	feedback_label.text = "1 Alimento   →   2 Tamaño, si lo pide   →   3 Servir"
 	feedback_label.add_theme_color_override("font_color", Color("5b4630"))
 	food_slot.text = "alimento"
-	modifier_slot.text = "opcional"
+	_update_modifier_slot()
 	_update_choice_labels(guided)
 	_update_button_states()
 	_set_choices_enabled(true)
@@ -164,8 +164,9 @@ func _update_choice_labels(guided: bool) -> void:
 		button.expand_icon = true
 		button.add_theme_constant_override("icon_max_width", 38)
 
-func _modifier_display(value: String) -> String:
-	return "opcional" if value == "" else value
+func _update_modifier_slot() -> void:
+	modifier_slot.text = selected_modifier
+	modifier_slot.visible = not selected_modifier.is_empty() or not _current_challenge().modifier.is_empty()
 
 func _select_food(value: String) -> void:
 	if _resolving:
@@ -179,7 +180,7 @@ func _select_modifier(value: String) -> void:
 	if _resolving:
 		return
 	selected_modifier = value
-	modifier_slot.text = _modifier_display(value)
+	_update_modifier_slot()
 	_update_button_states()
 	_celebrate_selection(modifier_slot)
 
@@ -275,7 +276,7 @@ func _render_success(animate: bool) -> void:
 	_set_choices_enabled(false)
 	var challenge := _current_challenge()
 	food_slot.text = challenge.food
-	modifier_slot.text = challenge.modifier if challenge.modifier != "" else "✓"
+	_update_modifier_slot()
 	PHRASE_BUILDER.mark_slot(food_slot, true)
 	if challenge.modifier != "":
 		PHRASE_BUILDER.mark_slot(modifier_slot, true)
@@ -284,6 +285,7 @@ func _render_success(animate: bool) -> void:
 	serve_button.text = "Continuar →"
 	serve_button.disabled = false
 	serve_button.grab_focus()
+	guide.watch_continue(serve_button)
 	if animate:
 		_deliver_food(challenge)
 		guide.page_to_book(visual_clue.global_position, $UI/LevelHeader/Bar/BookButton.get_global_rect().get_center())

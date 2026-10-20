@@ -19,7 +19,7 @@ func _ready() -> void:
 	_set_instr("Observa las rocas. Pulsa Listo cuando quieras empezar.")
 
 func _toggle_preview() -> void:
-	if _dialogue_open or _completing or recall.visible:
+	if _dialogue_open or _completing:
 		return
 	previewing = not previewing
 	guide.stop()

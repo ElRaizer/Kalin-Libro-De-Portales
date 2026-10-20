@@ -92,17 +92,28 @@ func _complete_paths() -> void:
 		board._handle_press(board.words[index].start_cell)
 		for cell: Vector2i in routes[index]:
 			board._try_cell(cell)
-		await create_timer(1.25).timeout
+		var arrival_deadline := Time.get_ticks_msec() + 30000
+		while level._arrival_animating and Time.get_ticks_msec() < arrival_deadline:
+			await process_frame
+		if level._arrival_animating:
+			failures.append("La llegada del animal no terminó")
+			return
 		level._close_dialogue()
-	for question: int in range(board.words.size()):
-		if not level.recall.visible:
-			break
-		var target: String = level.recall.words[level.recall.question_index]
-		for button: Button in level.recall.options.get_children():
-			if button.icon == load(manager.get_book_illustration(target)):
-				button.pressed.emit()
-				break
-		level.recall.next_button.pressed.emit()
+	if not level.completion_overlay.visible:
+		failures.append("Los caminos deben terminar directamente, sin otra prueba de animales")
+	# Una partida detenida en el antiguo repaso debe poder continuar.
+	var key: String = manager.scene_key_for(level)
+	var legacy_state: Dictionary = level.get_checkpoint_state()
+	legacy_state.complete = false
+	legacy_state.quiz_index = 1
+	legacy_state.quiz_complete = false
+	manager.scene_states[key] = legacy_state
+	change_scene_to_file(manager.SCENE_PATHS[key])
+	await scene_changed
+	await process_frame
+	await process_frame
+	if not current_scene.completion_overlay.visible:
+		failures.append("El antiguo repaso pendiente debe recuperarse como tablero completado")
 
 func _find_routes(board: GridBoard) -> Dictionary:
 	var orders: Array = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]]
