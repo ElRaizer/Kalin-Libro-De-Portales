@@ -57,6 +57,8 @@ var _blocks_seen: Array[int] = []
 @onready var adjective_grid: GridContainer = $UI/ChoicesPanel/Content/AdjectiveGrid
 @onready var cast_button: Button = $UI/CastButton
 @onready var feedback_label: Label = $UI/FeedbackPanel/FeedbackLabel
+@onready var _feedback_left: float = feedback_label.offset_left
+@onready var _feedback_color: Color = feedback_label.get_theme_color("font_color")
 @onready var progress_label: Label = $UI/StatusPanel/StatusRow/ProgressLabel
 @onready var instruction_label: Label = $UI/StatusPanel/StatusRow/InstructionLabel
 @onready var magic_label: Label = $UI/TopBar/Bar/MagicLabel
@@ -132,8 +134,8 @@ func _show_round() -> void:
 	PHRASE_BUILDER.clear_mark(noun_slot)
 	PHRASE_BUILDER.clear_mark(adjective_slot)
 	feedback_label.text = "Elige el objeto."
-	feedback_label.offset_left = 12
-	feedback_label.add_theme_color_override("font_color", COLOR_INK)
+	feedback_label.offset_left = _feedback_left
+	feedback_label.add_theme_color_override("font_color", _feedback_color)
 	var challenge := _current_challenge()
 	var guided := _is_guided_phase()
 	animal_sprite.texture = challenge.sprite
@@ -188,14 +190,10 @@ func _update_choice_labels() -> void:
 		var button: Button = noun_buttons[noun.maya]
 		button.text = "%s\n%s" % [noun.maya, str(noun.spanish).capitalize()] if bridge else noun.maya
 		button.icon = GameManager.get_visual_texture(noun.maya) if guided else null
-		button.expand_icon = true
-		button.add_theme_constant_override("icon_max_width", 56)
 	for adjective: ExerciseEntry in adjectives:
 		var button: Button = adjective_buttons[adjective.maya]
 		button.text = "%s\n%s" % [adjective.maya, str(adjective.spanish).capitalize()] if bridge else adjective.maya
 		button.icon = GameManager.get_visual_texture(adjective.maya) if guided else null
-		button.expand_icon = true
-		button.add_theme_constant_override("icon_max_width", 56)
 
 func _select_noun(word: String) -> void:
 	if _resolving:
@@ -221,9 +219,9 @@ func _celebrate_selection(slot: Control) -> void:
 	if not selected_noun.is_empty():
 		result_art.show()
 		result_art.show_meaning(selected_noun, selected_adjective)
-		feedback_label.offset_left = 145
+		feedback_label.offset_left = maxf(_feedback_left, result_art.position.x + result_art.size.x + 9)
 	PHRASE_BUILDER.clear_mark(slot)
-	PHRASE_BUILDER.celebrate(slot, feedback_label, "Elige cómo es." if selected_adjective.is_empty() else "¡Crea el objeto!", COLOR_INK)
+	PHRASE_BUILDER.celebrate(slot, feedback_label, "Elige cómo es." if selected_adjective.is_empty() else "¡Crea el objeto!", _feedback_color)
 	GameManager.checkpoint(self)
 	if round_index == 0 and "phrases" not in GameManager.tutorials_seen:
 		_show_help()
@@ -269,7 +267,7 @@ func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
 	guide.stop()
 	result_art.show()
 	result_art.show_meaning(selected_noun, selected_adjective)
-	feedback_label.offset_left = 145
+	feedback_label.offset_left = maxf(_feedback_left, result_art.position.x + result_art.size.x + 9)
 	CharacterReaction.play(animal_sprite, false)
 	var noun_ok: bool = selected_noun == str(challenge.noun)
 	var adjective_ok: bool = selected_adjective == str(challenge.adjective)
@@ -297,9 +295,7 @@ func _pulse_error_slots(noun_ok: bool, adjective_ok: bool) -> void:
 		var is_ok := noun_ok if slot == noun_slot else adjective_ok
 		if is_ok:
 			continue
-		var tween := create_tween()
-		tween.tween_property(slot, "modulate", Color(1.25, 0.55, 0.55, 1.0), 0.08)
-		tween.tween_property(slot, "modulate", Color.WHITE, 0.2)
+		slot.pulse_error()
 
 func _phrase_noun(phrase: String) -> String:
 	var parts := phrase.split(" ")
@@ -348,7 +344,7 @@ func _render_success(animate: bool) -> void:
 	feedback_label.text = "✓ ¡Ya está a su medida!"
 	feedback_label.add_theme_color_override("font_color", COLOR_SUCCESS)
 	result_art.show()
-	feedback_label.offset_left = 145
+	feedback_label.offset_left = maxf(_feedback_left, result_art.position.x + result_art.size.x + 9)
 	result_art.show_meaning(challenge.noun, challenge.adjective)
 	cast_button.text = "Continuar →"
 	cast_button.disabled = false

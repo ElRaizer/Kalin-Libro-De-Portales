@@ -16,4 +16,6 @@ offset_bottom = 210
 pivot_offset = Vector2(90, 105)
 icon_alignment = 1
 vertical_icon_alignment = 0
-tooltip_text = "Toca para escuchar su nombre"
+disabled = true
+focus_mode = 0
+mouse_filter = 2

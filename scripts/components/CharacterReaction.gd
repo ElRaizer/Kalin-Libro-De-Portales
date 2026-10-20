@@ -7,9 +7,14 @@ static func play(actor: Control, happy: bool = true) -> void:
 		var previous: Tween = actor.get_meta("reaction_tween")
 		if previous and previous.is_valid():
 			previous.kill()
-	actor.pivot_offset = actor.size * Vector2(0.5, 0.9)
-	actor.scale = Vector2.ONE
-	actor.rotation = 0
+	# Al repetir una reacción, recuperar la base anterior evita acumular el pulso.
+	if not actor.has_meta("reaction_base_transform"):
+		actor.set_meta("reaction_base_transform", {"scale": actor.scale, "rotation": actor.rotation})
+	var base: Dictionary = actor.get_meta("reaction_base_transform")
+	var base_scale: Vector2 = base.scale
+	var base_rotation: float = base.rotation
+	actor.scale = base_scale
+	actor.rotation = base_rotation
 	var old := actor.get_node_or_null("ReactionBadge")
 	if old:
 		actor.remove_child(old)
@@ -40,13 +45,14 @@ static func play(actor: Control, happy: bool = true) -> void:
 						actor.set(texture_property, source)
 				)
 	if happy:
-		tween.tween_property(actor, "scale", Vector2(1.08, 0.94), 0.14)
-		tween.tween_property(actor, "scale", Vector2(0.97, 1.06), 0.18)
+		tween.tween_property(actor, "scale", base_scale * Vector2(1.08, 0.94), 0.14)
+		tween.tween_property(actor, "scale", base_scale * Vector2(0.97, 1.06), 0.18)
 	else:
-		tween.tween_property(actor, "rotation", -0.055, 0.16)
-		tween.tween_property(actor, "rotation", 0.055, 0.2)
-	tween.tween_property(actor, "scale", Vector2.ONE, 0.18)
-	tween.parallel().tween_property(actor, "rotation", 0.0, 0.18)
+		tween.tween_property(actor, "rotation", base_rotation - 0.055, 0.16)
+		tween.tween_property(actor, "rotation", base_rotation + 0.055, 0.2)
+	tween.tween_property(actor, "scale", base_scale, 0.18)
+	tween.parallel().tween_property(actor, "rotation", base_rotation, 0.18)
+	tween.tween_callback(func(): actor.remove_meta("reaction_base_transform"))
 	tween.tween_interval(1.0)
 	tween.tween_property(badge, "position:y", -18.0, 0.3)
 	tween.parallel().tween_property(badge, "modulate:a", 0.0, 0.3)

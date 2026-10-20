@@ -15,6 +15,7 @@ const WORDS_PER_SPREAD := 2
 @onready var right_page: Panel = $BG/Book/Pages/RightPage
 @onready var audio_player: AudioStreamPlayer = $AudioPlayer
 @onready var audio_notice: Label = $BG/AudioNotice
+@onready var _notice_alpha: float = $BG/AudioNotice.modulate.a
 
 var _entries: Array[String] = []
 var _spread_index: int = 0
@@ -218,7 +219,7 @@ func _audio_path(maya_word: String) -> String:
 func _show_notice(message: String) -> void:
 	audio_notice.text = message
 	audio_notice.visible = true
-	audio_notice.modulate.a = 1.0
+	audio_notice.modulate.a = _notice_alpha
 	if _notice_tween:
 		_notice_tween.kill()
 	_notice_tween = create_tween()

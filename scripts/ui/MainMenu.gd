@@ -139,6 +139,8 @@ func _build_world_map() -> void:
 		var button := $UI/WorldMap.get_node("World%d" % (index + 1)) as Button
 		button.pressed.connect(_select_world.bind(index + 1))
 		world_buttons.append(button)
+		button.set_meta("map_base_modulate", button.modulate)
+	kalin_marker.set_meta("map_offset", kalin_marker.position - world_buttons[0].position)
 
 func _select_world(world: int) -> void:
 	selected_world = world
@@ -150,7 +152,7 @@ func _refresh_world_map() -> void:
 	if GameManager.resume_scene_key.begins_with("world"):
 		location = clampi(GameManager.resume_scene_key.trim_prefix("world").get_slice("_", 0).to_int(), 1, 5)
 	if is_instance_valid(kalin_marker):
-		kalin_marker.position = world_buttons[location - 1].position + Vector2(143, 87)
+		kalin_marker.position = world_buttons[location - 1].position + Vector2(kalin_marker.get_meta("map_offset"))
 	for index: int in range(world_buttons.size()):
 		var unlocked := index == 0
 		for level: Dictionary in GameManager.LEVEL_ORDER:
@@ -158,4 +160,4 @@ func _refresh_world_map() -> void:
 				var level_index: int = GameManager.LEVEL_ORDER.find(level)
 				unlocked = unlocked or level_index == 0 or GameManager.is_level_completed(GameManager.LEVEL_ORDER[level_index - 1].world, GameManager.LEVEL_ORDER[level_index - 1].level)
 		world_buttons[index].disabled = not unlocked
-		world_buttons[index].modulate = Color.WHITE if selected_world == index + 1 else Color(0.85, 0.85, 0.85)
+		world_buttons[index].modulate = Color(world_buttons[index].get_meta("map_base_modulate")) * (Color.WHITE if selected_world == index + 1 else Color(0.85, 0.85, 0.85))

@@ -294,6 +294,8 @@ text = "mayak
 Mesa"
 icon_alignment = 1
 vertical_icon_alignment = 0
+expand_icon = true
+theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "mayak"
 
@@ -307,6 +309,8 @@ text = "lak
 Plato"
 icon_alignment = 1
 vertical_icon_alignment = 0
+expand_icon = true
+theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "lak"
 
@@ -320,6 +324,8 @@ text = "ch'áak
 Cama"
 icon_alignment = 1
 vertical_icon_alignment = 0
+expand_icon = true
+theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "ch'áak"
 
@@ -333,6 +339,8 @@ text = "chan
 Silla"
 icon_alignment = 1
 vertical_icon_alignment = 0
+expand_icon = true
+theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "chan"
 
@@ -346,6 +354,8 @@ text = "janal
 Comida"
 icon_alignment = 1
 vertical_icon_alignment = 0
+expand_icon = true
+theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "janal"
 
@@ -372,6 +382,8 @@ text = "mejen
 Pequeña"
 icon_alignment = 1
 vertical_icon_alignment = 0
+expand_icon = true
+theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "mejen"
 word_kind = "adjective"
@@ -386,6 +398,8 @@ text = "nojoch
 Grande"
 icon_alignment = 1
 vertical_icon_alignment = 0
+expand_icon = true
+theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "nojoch"
 word_kind = "adjective"
@@ -400,6 +414,8 @@ text = "Jats'uts
 Bonita"
 icon_alignment = 1
 vertical_icon_alignment = 0
+expand_icon = true
+theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "Jats'uts"
 word_kind = "adjective"
@@ -414,6 +430,8 @@ text = "ki'
 Deliciosa"
 icon_alignment = 1
 vertical_icon_alignment = 0
+expand_icon = true
+theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "ki'"
 word_kind = "adjective"
@@ -428,6 +446,8 @@ text = "jach'
 Fuerte"
 icon_alignment = 1
 vertical_icon_alignment = 0
+expand_icon = true
+theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "jach'"
 word_kind = "adjective"

@@ -24,7 +24,9 @@ $tests = @(
     "res://tests/validate_adventure.gd",
     "res://tests/validate_visual_flow.gd",
     "res://tests/validate_animation_loops.gd",
-    "res://tests/validate_inspector.gd"
+    "res://tests/validate_inspector.gd",
+    "res://tests/validate_authoring.gd",
+    "res://tests/validate_story_interaction.gd"
 )
 
 $validationPreviousAppData = $env:APPDATA

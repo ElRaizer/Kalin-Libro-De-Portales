@@ -6,14 +6,16 @@ class_name ExerciseEntry
 @export_category("Palabra")
 @export var maya: String = ""
 @export var spanish: String = ""
-@export var emoji: String = ""
-@export var symbol: String = ""
+# Compatibilidad con recursos antiguos: la presentación actual usa el catálogo
+# y los estilos de las escenas. Estos campos ya no controlan la apariencia.
+@export_storage var emoji: String = ""
+@export_storage var symbol: String = ""
 @export_category("Petición")
 @export var animal: String = ""
 @export var animal_spanish: String = ""
 @export var sprite: Texture2D
 @export_multiline var request: String = ""
-@export var color: Color = Color.WHITE
+@export_storage var color: Color = Color.WHITE
 @export_category("Frase")
 @export var noun: String = ""
 @export var adjective: String = ""

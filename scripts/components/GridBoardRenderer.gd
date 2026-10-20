@@ -6,6 +6,7 @@ class_name GridBoardRenderer
 ## partida enlaza los nodos guardados y actualiza sus caminos y estados.
 
 var board: Node2D
+var _base_colors: Dictionary = {}
 
 func _init(owner_board: Node2D) -> void:
 	board = owner_board
@@ -14,6 +15,7 @@ func rebuild_preview() -> void:
 	if not is_instance_valid(board.preview_root):
 		return
 	board._watch_word_changes()
+	_base_colors.clear()
 	for child: Node in board.preview_root.get_children():
 		child.free()
 	board.tile_rects.clear()
@@ -77,6 +79,7 @@ func bind_saved_nodes() -> void:
 				push_error("Actualiza los nodos de GridBoard en el inspector y guarda la escena antes de jugar.")
 				return
 			board.tile_rects[Vector2i(column, row)] = tile
+			_base_color(tile)
 	for index: int in range(board.words.size()):
 		var word := board.preview_root.get_node_or_null("Word_%d" % index) as Panel
 		var destination := board.preview_root.get_node_or_null("Destination_%d" % index) as Panel
@@ -86,6 +89,7 @@ func bind_saved_nodes() -> void:
 			push_error("Faltan fichas del tablero. Actualiza los nodos en el inspector y guarda la escena.")
 			return
 		board.word_nodes[index] = word
+		_base_color(word)
 		board.destination_nodes[index] = destination
 		board.path_lines[index] = line
 		board.path_tips[index] = tip
@@ -160,7 +164,12 @@ func show_selection_ring(index: int) -> Tween:
 func set_tile_color(cell: Vector2i, color: Color) -> void:
 	var tile := board.tile_rects.get(cell) as TextureRect
 	if tile:
-		tile.modulate = color
+		tile.modulate = _base_color(tile) * color
+
+func _base_color(control: Control) -> Color:
+	if not _base_colors.has(control):
+		_base_colors[control] = control.modulate
+	return _base_colors[control]
 
 func set_path_tile_tint(cell: Vector2i, color: Color) -> void:
 	set_tile_color(cell, Color.WHITE.lerp(color, board.path_tile_tint))
@@ -170,7 +179,8 @@ func refresh_all_paths() -> void:
 		return
 	for index: int in board.paths:
 		if board.word_nodes.has(index):
-			(board.word_nodes[index] as Control).modulate.a = 0.35 if index in board.connected else 1.0
+			var word: Control = board.word_nodes[index]
+			word.modulate = _base_color(word) * Color(1, 1, 1, 0.35 if index in board.connected else 1.0)
 		if board.destination_nodes.has(index):
 			var arrived := board.destination_nodes[index].get_node_or_null("ArrivedAnimal") as Control
 			if arrived:
@@ -233,4 +243,4 @@ func _cell_center(cell: Vector2i) -> Vector2:
 func reset_tile(cell: Vector2i) -> void:
 	var tile := board.tile_rects.get(cell) as TextureRect
 	if tile:
-		tile.modulate = Color.WHITE
+		tile.modulate = _base_color(tile)

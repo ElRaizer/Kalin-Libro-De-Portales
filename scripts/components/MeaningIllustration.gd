@@ -22,8 +22,10 @@ class_name MeaningIllustration
 var word: String = ""
 var quality: String = ""
 var celebration: Tween
+var _base_scale: Vector2
 
 func _ready() -> void:
+	_base_scale = scale
 	resized.connect(_layout_art)
 	if not initial_word.is_empty():
 		show_meaning(initial_word, initial_quality)
@@ -83,6 +85,6 @@ func celebrate() -> void:
 	if celebration and celebration.is_valid():
 		celebration.kill()
 	pivot_offset = size * 0.5
-	scale = Vector2(0.75, 0.75)
+	scale = _base_scale * 0.75
 	celebration = create_tween()
-	celebration.tween_property(self, "scale", Vector2.ONE, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	celebration.tween_property(self, "scale", _base_scale, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)

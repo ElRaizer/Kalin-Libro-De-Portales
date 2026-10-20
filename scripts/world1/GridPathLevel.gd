@@ -40,6 +40,7 @@ var arrival_tween: Tween
 @onready var dlg_hint: Label = $UI/DialoguePanel/VBox/Hint
 @onready var dlg_icon: TextureRect = $UI/DialoguePanel/WordIcon
 @onready var dlg_vbox: VBoxContainer = $UI/DialoguePanel/VBox
+@onready var _dialogue_text_left: float = $UI/DialoguePanel/VBox.offset_left
 @onready var level_header: LevelHeader = $UI/LevelHeader
 @onready var instr_lbl: Label = $UI/InstrPanel/InstrLbl
 @onready var completion_overlay: CompletionOverlay = $UI/CompletionOverlay
@@ -53,7 +54,7 @@ func _ready() -> void:
 	dialogue.mouse_filter = Control.MOUSE_FILTER_STOP
 	continue_button.pressed.connect(_close_dialogue)
 	guide = LearningGuide.install(self, $UI/LevelHeader/Bar, _show_help)
-	grid_board.set_destination_word_colors(level_number == 1)
+	# Conserva los estilos y colores de las casas guardados desde el Inspector.
 	arrival_button.pressed.connect(_speed_up_arrival)
 	level_header.menu_pressed.connect(_on_menu_pressed)
 	level_header.book_pressed.connect(_on_book_pressed)
@@ -113,12 +114,7 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 	dlg_hint.text = word.explanation if not word.explanation.is_empty() else "%s significa %s." % [word.maya_word, word.spanish_word]
 	dlg_icon.texture = word.sprite
 	dlg_icon.visible = word.sprite != null
-	if dlg_icon.visible:
-		dlg_vbox.offset_left = 108.0
-		dlg_vbox.offset_right = 800.0
-	else:
-		dlg_vbox.offset_left = 24.0
-		dlg_vbox.offset_right = 796.0
+	dlg_vbox.offset_left = _dialogue_text_left if dlg_icon.visible else minf(_dialogue_text_left, dlg_icon.offset_left)
 
 	_dialogue_serial += 1
 	var current_dialogue: int = _dialogue_serial
@@ -155,7 +151,9 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 		var tilt_direction := 1.0 if step % 2 == 0 else -1.0
 		walk.tween_method(_animate_arrival_step.bind(walker, previous_position, next_position, tilt_direction), 0.0, 1.0, arrival_step_seconds)
 		previous_position = next_position
-	await walk.finished
+	walk.finished.connect(_on_arrival_finished.bind(walker, arrived, current_dialogue, word.destination_cell), CONNECT_ONE_SHOT)
+
+func _on_arrival_finished(walker: TextureRect, arrived: Control, current_dialogue: int, destination_cell: Vector2i) -> void:
 	if not is_inside_tree() or current_dialogue != _dialogue_serial:
 		return
 	walker.queue_free()
@@ -166,7 +164,7 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 	dialogue.visible = true
 	continue_button.grab_focus()
 	guide.watch_continue(continue_button)
-	guide.page_to_book(grid_board.cell_to_local_position(word.destination_cell), $UI/LevelHeader/Bar/BookButton.get_global_rect().get_center())
+	guide.page_to_book(grid_board.cell_to_local_position(destination_cell), $UI/LevelHeader/Bar/BookButton.get_global_rect().get_center())
 
 func _animate_arrival_step(progress: float, walker: TextureRect, start: Vector2, destination: Vector2, tilt_direction: float) -> void:
 	# La misma elevación y balanceo suaves que usa Kalin al explorar.

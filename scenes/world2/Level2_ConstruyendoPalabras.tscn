@@ -121,6 +121,7 @@ autowrap_mode = 3
 
 [node name="WordLbl" type="Label" parent="UI/RequestPanel/VBox" unique_id=694304619]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.439216, 0.298039, 0.623529, 1)
 theme_override_font_sizes/font_size = 30
 autowrap_mode = 3
 
@@ -143,6 +144,7 @@ theme = ExtResource("4_theme")
 theme_type_variation = &"KalinFeedbackPanel"
 
 [node name="FeedbackLbl" type="Label" parent="UI/FeedbackPanel" unique_id=1235306111]
+theme_override_colors/font_color = Color(0.356863, 0.27451, 0.188235, 1)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

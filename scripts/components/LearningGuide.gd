@@ -15,6 +15,8 @@ var _hint_target: Control
 @onready var _hint_ring: Panel = $HintRing
 @onready var _gesture_line: Line2D = $GestureLine
 var _action_target: Control
+@onready var _hand_alpha: float = $Hand.modulate.a
+@onready var _ring_alpha: float = $HintRing.modulate.a
 
 static func install(host: Node, bar: Container, help_action: Callable) -> LearningGuide:
 	var guide := host.get_node("LearningGuide") as LearningGuide
@@ -36,7 +38,7 @@ func demonstrate(points: Array[Vector2]) -> void:
 		_gesture_line.show()
 	hand.position = points[0] - Vector2(22, 5)
 	gesture = create_tween().set_loops()
-	gesture.tween_property(hand, "modulate:a", 1.0, 0.15).from(0.0)
+	gesture.tween_property(hand, "modulate:a", _hand_alpha, 0.15).from(0.0)
 	gesture.tween_interval(0.35)
 	for index: int in range(1, points.size()):
 		gesture.tween_property(hand, "position", points[index] - Vector2(22, 5), 0.65).set_trans(Tween.TRANS_SINE)
@@ -48,7 +50,7 @@ func point_at(control: Control) -> void:
 	stop()
 	_point_target = control
 	hand.show()
-	hand.modulate.a = 0.95
+	hand.modulate.a = _hand_alpha * 0.95
 	set_process(true)
 	_process(0)
 
@@ -103,7 +105,7 @@ func _process(delta: float) -> void:
 		var rect := _hint_target.get_global_rect().grow(5)
 		_hint_ring.position = rect.position
 		_hint_ring.size = rect.size
-		_hint_ring.modulate.a = 0.6 + 0.4 * sin(_time * 3.0)
+		_hint_ring.modulate.a = _ring_alpha * (0.6 + 0.4 * sin(_time * 3.0))
 		return
 	if is_instance_valid(_continue_target):
 		if not _continue_target.is_visible_in_tree() or (_continue_target is BaseButton and _continue_target.disabled):
@@ -113,7 +115,7 @@ func _process(delta: float) -> void:
 		if _idle_seconds >= _idle_delay:
 			_point_target = _continue_target
 			hand.show()
-			hand.modulate.a = 0.95
+			hand.modulate.a = _hand_alpha * 0.95
 	if not is_instance_valid(_point_target):
 		if not is_instance_valid(_continue_target):
 			stop()
@@ -148,6 +150,6 @@ func page_to_book(origin: Vector2, target: Vector2) -> void:
 	var tween := page.create_tween()
 	tween.tween_property(page, "position", page.position + Vector2(0, -55), 0.3).set_trans(Tween.TRANS_SINE)
 	tween.tween_property(page, "position", target - Vector2(20, 15), 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
-	tween.parallel().tween_property(page, "scale", Vector2(0.4, 0.4), 0.65)
+	tween.parallel().tween_property(page, "scale", page.scale * 0.4, 0.65)
 	tween.parallel().tween_property(page, "modulate:a", 0.0, 0.3).set_delay(0.35)
 	tween.tween_callback(page.queue_free)

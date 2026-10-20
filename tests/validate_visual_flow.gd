@@ -89,12 +89,21 @@ func _run() -> void:
 	level.serve_button.pressed.emit()
 	_check(level.modifier_grid.visible and level.modifier_slot.visible, "El plátano pequeño debe mostrar los tamaños y su espacio")
 	_check(not (level.modifier_buttons[""] as Button).visible, "No se debe ofrecer Sin tamaño como un paso obligatorio")
-	await _scene("world1_level2")
-	_check(not current_scene.grid_board.destination_word_colors, "Los retos posteriores no deben resolverse emparejando colores")
-	var styles: Array[Color] = []
-	for destination: Panel in current_scene.grid_board.destination_nodes.values():
-		styles.append((destination.get_theme_stylebox("panel") as StyleBoxFlat).bg_color)
-	_check(styles[0] == styles[1] and styles[1] == styles[2], "Las casas avanzadas deben compartir color y conservar sus palabras")
+	for key: String in ["world1_level1", "world1_level2", "world1_level3", "world1_level4"]:
+		await _scene(key)
+		var board: GridBoard = current_scene.grid_board
+		for phase: int in range(3):
+			if phase > 0 and current_scene.has_method("_toggle_preview"):
+				current_scene.preview_button.pressed.emit()
+			for word_index: int in range(board.words.size()):
+				var destination: Panel = board.destination_nodes[word_index]
+				var style := destination.get_theme_stylebox("panel") as StyleBoxFlat
+				var color := board.words[word_index].color
+				_check(style.bg_color.is_equal_approx(color.lightened(0.55)), key + " debe conservar el color de la casa al iniciar y consultar pistas")
+				_check(style.border_color.is_equal_approx(color.darkened(0.15)), key + " debe conservar el borde del color de cada animal")
+				var label := destination.get_node("Label") as Label
+				var expected_text := "?" if key == "world1_level4" and phase == 1 else board.words[word_index].get_destination_text()
+				_check(label.text == expected_text, key + " debe conservar el funcionamiento de las pistas de destino")
 	await _scene("world2_story1")
 	level = current_scene
 	while level.current_beat().kind != StoryBeat.Kind.EXPLORAR:

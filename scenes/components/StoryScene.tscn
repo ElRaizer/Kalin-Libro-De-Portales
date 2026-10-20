@@ -435,6 +435,7 @@ theme_type_variation = &"KalinSecondaryButton"
 text = "Menú"
 
 [node name="Actor1" type="Control" parent="Stage/Actors"]
+visible = false
 custom_minimum_size = Vector2(180, 210)
 layout_mode = 2
 mouse_filter = 2
@@ -442,6 +443,7 @@ mouse_filter = 2
 [node name="Button" parent="Stage/Actors/Actor1" instance=ExtResource("editor_13")]
 
 [node name="Actor2" type="Control" parent="Stage/Actors"]
+visible = false
 custom_minimum_size = Vector2(180, 210)
 layout_mode = 2
 mouse_filter = 2
@@ -449,6 +451,7 @@ mouse_filter = 2
 [node name="Button" parent="Stage/Actors/Actor2" instance=ExtResource("editor_13")]
 
 [node name="Actor3" type="Control" parent="Stage/Actors"]
+visible = false
 custom_minimum_size = Vector2(180, 210)
 layout_mode = 2
 mouse_filter = 2
@@ -456,6 +459,7 @@ mouse_filter = 2
 [node name="Button" parent="Stage/Actors/Actor3" instance=ExtResource("editor_13")]
 
 [node name="Actor4" type="Control" parent="Stage/Actors"]
+visible = false
 custom_minimum_size = Vector2(180, 210)
 layout_mode = 2
 mouse_filter = 2

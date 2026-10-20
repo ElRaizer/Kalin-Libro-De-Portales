@@ -59,6 +59,14 @@ var _subtitle_label: Label
 var _flash_rect: ColorRect
 var _celebration: Label
 var _kalin_home: Vector2
+var kalin_base_scale: Vector2
+var _kalin_rotation: float
+var _kalin_alpha: float
+var _kalin_z_index: int
+var _host_home: Vector2
+var _celebration_scale: Vector2
+var _celebration_alpha: float
+var _speaker_tween: Tween
 var _current_background: Texture2D
 var _celebration_tween: Tween
 var _kalin_idle_tween: Tween
@@ -94,6 +102,13 @@ func _init(
 	_flash_rect = flash_rect
 	_celebration = celebration
 	_kalin_home = kalin.position
+	kalin_base_scale = kalin.scale
+	_kalin_rotation = kalin.rotation
+	_kalin_alpha = kalin.modulate.a
+	_kalin_z_index = kalin.z_index
+	_host_home = host.position
+	_celebration_scale = celebration.scale
+	_celebration_alpha = celebration.modulate.a
 	_current_background = background.texture
 
 func start_idle() -> void:
@@ -110,10 +125,10 @@ func celebrate_page() -> void:
 	(_effects_root.get_node("ConfetiPaginas") as CPUParticles2D).restart()
 	(_effects_root.get_node("ConfetiChispas") as CPUParticles2D).restart()
 	_celebration.pivot_offset = _celebration.size * 0.5
-	_celebration.scale = Vector2(0.6, 0.6)
-	_celebration.modulate.a = 1.0
+	_celebration.scale = _celebration_scale * 0.6
+	_celebration.modulate.a = _celebration_alpha
 	_celebration_tween = _host.create_tween()
-	_celebration_tween.tween_property(_celebration, "scale", Vector2.ONE, 0.35).set_trans(Tween.TRANS_BACK)
+	_celebration_tween.tween_property(_celebration, "scale", _celebration_scale, 0.35).set_trans(Tween.TRANS_BACK)
 	_celebration_tween.tween_interval(1.4)
 	_celebration_tween.tween_property(_celebration, "modulate:a", 0.0, 0.5)
 	_celebration_tween.tween_callback(_celebration.hide)
@@ -165,14 +180,14 @@ func apply_effects(effects: int) -> void:
 func shake_screen() -> void:
 	if _shake_tween:
 		_shake_tween.kill()
-	_host.position = Vector2.ZERO
+	_host.position = _host_home
 	_shake_tween = _host.create_tween()
 	var step_time: float = SHAKE_SECONDS / SHAKE_STEPS
 	for step: int in range(SHAKE_STEPS):
 		var fade: float = 1.0 - float(step) / SHAKE_STEPS
 		var offset := Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * SHAKE_AMPLITUDE * fade
-		_shake_tween.tween_property(_host, "position", offset, step_time)
-	_shake_tween.tween_property(_host, "position", Vector2.ZERO, step_time)
+		_shake_tween.tween_property(_host, "position", _host_home + offset, step_time)
+	_shake_tween.tween_property(_host, "position", _host_home, step_time)
 
 func flash_screen() -> void:
 	if _flash_tween:
@@ -212,22 +227,31 @@ func play_kalin_motion(motion: StoryBeat.KalinMotion) -> void:
 				start_idle()
 
 func _reset_kalin(animated: bool) -> void:
-	for tween: Tween in [_kalin_motion_tween, _kalin_idle_tween]:
+	for tween: Tween in [_kalin_motion_tween, _kalin_idle_tween, _speaker_tween]:
 		if tween:
 			tween.kill()
 	sleeping = false
-	_kalin.modulate.a = 1.0
-	_kalin.z_index = 0
+	_kalin.modulate.a = _kalin_alpha
+	_kalin.z_index = _kalin_z_index
 	if animated:
 		_kalin_motion_tween = _host.create_tween().set_parallel(true)
 		_kalin_motion_tween.tween_property(_kalin, "position", _kalin_home, STAND_UP_SECONDS)
-		_kalin_motion_tween.tween_property(_kalin, "rotation", 0.0, STAND_UP_SECONDS)
-		_kalin_motion_tween.tween_property(_kalin, "scale", Vector2.ONE, STAND_UP_SECONDS)
+		_kalin_motion_tween.tween_property(_kalin, "rotation", _kalin_rotation, STAND_UP_SECONDS)
+		_kalin_motion_tween.tween_property(_kalin, "scale", kalin_base_scale, STAND_UP_SECONDS)
 		_kalin_motion_tween.chain().tween_callback(start_idle)
 		return
 	_kalin.position = _kalin_home
-	_kalin.rotation = 0.0
-	_kalin.scale = Vector2.ONE
+	_kalin.rotation = _kalin_rotation
+	_kalin.scale = kalin_base_scale
+
+func animate_speaker() -> void:
+	if _kalin_motion_tween and _kalin_motion_tween.is_running():
+		return
+	if _speaker_tween:
+		_speaker_tween.kill()
+	_speaker_tween = _host.create_tween()
+	_speaker_tween.tween_property(_kalin, "scale", kalin_base_scale * 1.04, 0.12)
+	_speaker_tween.tween_property(_kalin, "scale", kalin_base_scale, 0.18)
 
 func _kalin_walk_in() -> void:
 	_kalin.position.x = _kalin_home.x - WALK_DISTANCE
@@ -239,7 +263,7 @@ func _walk_step(progress: float) -> void:
 	var stride: float = sin(progress * TAU * WALK_STEPS)
 	_kalin.position.x = lerpf(_kalin_home.x - WALK_DISTANCE, _kalin_home.x, sin(progress * PI * 0.5))
 	_kalin.position.y = _kalin_home.y - absf(stride) * WALK_BOUNCE
-	_kalin.rotation = stride * WALK_TILT
+	_kalin.rotation = _kalin_rotation + stride * WALK_TILT
 
 func _kalin_jump() -> void:
 	_kalin_motion_tween = _host.create_tween()
@@ -258,16 +282,16 @@ func _kalin_shiver() -> void:
 
 func _kalin_sleep() -> void:
 	sleeping = true
-	_kalin.rotation = -SLEEP_ANGLE
+	_kalin.rotation = _kalin_rotation - SLEEP_ANGLE
 	_kalin.position = SLEEP_POSITION
 	_kalin_motion_tween = _host.create_tween().set_loops()
-	_kalin_motion_tween.tween_property(_kalin, "scale", Vector2(BREATH_SCALE, BREATH_SCALE), 1.6).set_trans(Tween.TRANS_SINE)
-	_kalin_motion_tween.tween_property(_kalin, "scale", Vector2.ONE, 1.6).set_trans(Tween.TRANS_SINE)
+	_kalin_motion_tween.tween_property(_kalin, "scale", kalin_base_scale * BREATH_SCALE, 1.6).set_trans(Tween.TRANS_SINE)
+	_kalin_motion_tween.tween_property(_kalin, "scale", kalin_base_scale, 1.6).set_trans(Tween.TRANS_SINE)
 
 func _kalin_cross_portal() -> void:
-	_kalin.z_index = 1
+	_kalin.z_index = _kalin_z_index + 1
 	_kalin_motion_tween = _host.create_tween().set_parallel(true)
 	var target: Vector2 = PORTAL_CENTER - _kalin.pivot_offset
 	_kalin_motion_tween.tween_property(_kalin, "position", target, CROSS_SECONDS).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	_kalin_motion_tween.tween_property(_kalin, "scale", Vector2(CROSS_SCALE, CROSS_SCALE), CROSS_SECONDS).set_trans(Tween.TRANS_SINE)
+	_kalin_motion_tween.tween_property(_kalin, "scale", kalin_base_scale * CROSS_SCALE, CROSS_SECONDS).set_trans(Tween.TRANS_SINE)
 	_kalin_motion_tween.tween_property(_kalin, "modulate:a", 0.0, CROSS_SECONDS * 0.4).set_delay(CROSS_SECONDS * 0.6)

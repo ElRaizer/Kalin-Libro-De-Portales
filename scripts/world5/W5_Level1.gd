@@ -31,6 +31,8 @@ var _help_stage := 0
 @onready var clue_label: Label = $UI/ChallengePanel/Content/ClueLabel
 @onready var options_box: VBoxContainer = $UI/OptionsPanel/Content/Options
 @onready var feedback_label: Label = $UI/FeedbackPanel/FeedbackLabel
+@onready var _feedback_left: float = feedback_label.offset_left
+@onready var _feedback_color: Color = feedback_label.get_theme_color("font_color")
 @onready var progress_label: Label = $UI/PortalStatus/Status/ProgressLabel
 @onready var portal_energy: ProgressBar = $UI/PortalStatus/Status/PortalEnergy
 @onready var portal_label: Label = $UI/PortalStatus/Status/PortalLabel
@@ -78,11 +80,11 @@ func _show_challenge() -> void:
 	_mistakes = 0
 	_help_stage = 0
 	feedback_art.hide()
-	feedback_label.offset_left = 14
+	feedback_label.offset_left = _feedback_left
 	var challenge := challenges[challenge_index]
 	section_label.text = "Página %d / %d" % [challenge_index + 1, challenges.size()]
 	prompt_label.text = challenge.prompt
-	clue_label.text = challenge.clue.get_slice("  ", 1)
+	clue_label.text = challenge.clue
 	var word := "Peek'"
 	var quality := ""
 	match challenge.section:
@@ -94,7 +96,7 @@ func _show_challenge() -> void:
 		"SALUDO", "AGRADECIMIENTO", "DESPEDIDA", "BUEN CAMINO": word = challenge.correct
 	challenge_art.show_meaning(word, quality)
 	feedback_label.text = "Elige el hechizo."
-	feedback_label.add_theme_color_override("font_color", Color("5b4630"))
+	feedback_label.add_theme_color_override("font_color", _feedback_color)
 	progress_label.text = "%d / %d páginas" % [challenge_index, challenges.size()]
 	portal_label.text = "El portal está despertando"
 	_build_options(challenge.options)
@@ -138,7 +140,7 @@ func _on_option_pressed(phrase: String) -> void:
 		elif phrase.ends_with(" ja'as"):
 			created = "ja'as"
 		feedback_art.show_meaning(created, quality)
-		feedback_label.offset_left = 135
+		feedback_label.offset_left = maxf(_feedback_left, feedback_art.position.x + feedback_art.size.x + 11)
 		var meaning := GameManager.get_vocabulary_entry(phrase)
 		if not meaning.is_empty():
 			feedback_label.text = "Esa frase dice: %s" % meaning.traduccion
@@ -186,7 +188,7 @@ func _on_replay_pressed() -> void:
 
 func _render_success(animate: bool) -> void:
 	feedback_art.hide()
-	feedback_label.offset_left = 14
+	feedback_label.offset_left = _feedback_left
 	_resolving = true
 	_awaiting_continue = true
 	guide.stop()

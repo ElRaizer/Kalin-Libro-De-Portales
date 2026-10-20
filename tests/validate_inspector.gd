@@ -138,12 +138,24 @@ func _validate_saved_boards() -> void:
 		if first_tile:
 			first_tile.position += Vector2(2, 3)
 		var edited_position := first_tile.position if first_tile else Vector2.ZERO
+		var saved_styles: Array[StyleBoxFlat] = []
+		for index: int in range(board.words.size()):
+			var destination := preview.get_node("Destination_%d" % index) as Panel
+			var style := (destination.get_theme_stylebox("panel") as StyleBoxFlat).duplicate() as StyleBoxFlat
+			# Un ajuste directo del Inspector debe sobrevivir al inicio del nivel.
+			style.bg_color = Color(0.23 + index * 0.1, 0.48, 0.67)
+			style.border_color = Color(0.15, 0.28 + index * 0.1, 0.39)
+			destination.add_theme_stylebox_override("panel", style)
+			saved_styles.append(style)
 		root.add_child(instance)
 		current_scene = instance
 		await process_frame
 		_check(preview.get_children() == saved, key + " debe reutilizar todos los nodos del tablero")
 		_check(first_tile.position == edited_position, key + " debe respetar la posición de autor de las casillas")
 		_check(board.word_nodes[0].get_node("Icon").texture == board.words[0].sprite, key + " debe guardar la ilustración de la ficha")
+		for index: int in range(board.words.size()):
+			var destination: Panel = board.destination_nodes[index]
+			_check(destination.get_theme_stylebox("panel") == saved_styles[index], key + " debe respetar el estilo de casa editado en el Inspector")
 		var line: Line2D = board.path_lines[0]
 		var tip: Polygon2D = board.path_tips[0]
 		board.paths[0].append(board.words[0].start_cell)

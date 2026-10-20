@@ -5,8 +5,6 @@ class_name UIEffects
 ## Mantenerlas aquí evita que cada nivel implemente versiones ligeramente
 ## distintas del mismo feedback visual.
 
-const SPARKLE_COLOR := Color("ffd85a")
-
 static func configure_horizontal_focus(buttons: Array[Button]) -> void:
 	if buttons.is_empty():
 		return
@@ -29,10 +27,8 @@ static func shake(host: Node, control: Control, distance: float = 9.0) -> Tween:
 static func success_burst(host: Node, parent: Node, origin: Control, count: int = 9) -> void:
 	for index: int in range(count):
 		var sparkle := GameManager.visual_catalog.sparkle_scene.instantiate() as Label
-		sparkle.text = "✦"
 		sparkle.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		sparkle.add_theme_font_size_override("font_size", 18 + index % 3 * 4)
-		sparkle.add_theme_color_override("font_color", SPARKLE_COLOR)
+		sparkle.add_theme_font_size_override("font_size", sparkle.get_theme_font_size("font_size") + index % 3 * 4)
 		parent.add_child(sparkle)
 		sparkle.position = origin.position + origin.size * 0.5
 		var angle := TAU * float(index) / float(count)

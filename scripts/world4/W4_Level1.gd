@@ -55,6 +55,8 @@ var _blocks_seen: Array[int] = []
 @onready var modifier_slot: Label = $UI/SpellPanel/Content/Sentence/ModifierSlot
 @onready var serve_button: Button = $UI/ServeButton
 @onready var feedback_label: Label = $UI/FeedbackPanel/FeedbackLabel
+@onready var _feedback_left: float = feedback_label.offset_left
+@onready var _feedback_color: Color = feedback_label.get_theme_color("font_color")
 @onready var progress_label: Label = $UI/StatusPanel/Status/ProgressLabel
 @onready var instruction_label: Label = $UI/StatusPanel/Status/InstructionLabel
 @onready var completion: Control = $UI/CompletionOverlay
@@ -121,7 +123,7 @@ func _show_round() -> void:
 	guide.stop()
 	mission_break.hide()
 	result_art.hide()
-	feedback_label.offset_left = 12
+	feedback_label.offset_left = _feedback_left
 	if is_instance_valid(_serving):
 		_serving.queue_free()
 	if round_index >= round_plan.size():
@@ -145,7 +147,7 @@ func _show_round() -> void:
 	instruction_label.text = ""
 	visual_clue.show_meaning(challenge.food, challenge.modifier)
 	feedback_label.text = "Elige el alimento."
-	feedback_label.add_theme_color_override("font_color", Color("5b4630"))
+	feedback_label.add_theme_color_override("font_color", _feedback_color)
 	food_slot.text = "alimento"
 	_update_modifier_slot()
 	_update_choice_labels(guided)
@@ -176,8 +178,11 @@ func _refresh_step() -> void:
 	$UI/ChoicesPanel/Content/ModifierHeading.text = "2 · Tamaño" + ("  ✓" if not selected_modifier.is_empty() else "")
 	(modifier_buttons[""] as Button).visible = not selected_modifier.is_empty()
 	for button: Button in food_buttons.values():
-		button.custom_minimum_size.y = 94 if needs_size else 130
-		button.add_theme_constant_override("icon_max_width", 56 if needs_size else 76)
+		if not button.has_meta("food_base_size"):
+			button.set_meta("food_base_size", button.custom_minimum_size)
+			button.set_meta("food_base_icon_width", button.get_theme_constant("icon_max_width"))
+		button.custom_minimum_size = Vector2(button.get_meta("food_base_size")) * Vector2(1, 1 if needs_size else 130.0 / 94.0)
+		button.add_theme_constant_override("icon_max_width", roundi(float(button.get_meta("food_base_icon_width")) * (1.0 if needs_size else 76.0 / 56.0)))
 		button.focus_neighbor_bottom = button.get_path_to(modifier_buttons["mejen"] if needs_size else serve_button)
 
 func _update_choice_labels(guided: bool) -> void:
@@ -186,14 +191,10 @@ func _update_choice_labels(guided: bool) -> void:
 		var button: Button = food_buttons[food.maya]
 		button.text = "%s\n%s" % [food.maya, food.spanish] if bridge else food.maya
 		button.icon = GameManager.get_visual_texture(food.maya) if guided else null
-		button.expand_icon = true
-		button.add_theme_constant_override("icon_max_width", 56)
 	for modifier: ExerciseEntry in modifiers:
 		var button: Button = modifier_buttons[modifier.maya]
 		button.text = "Quitar tamaño ↻" if modifier.maya == "" else ("%s\n%s" % [modifier.maya, modifier.spanish] if bridge else modifier.maya)
 		button.icon = GameManager.get_visual_texture(modifier.maya) if guided and modifier.maya != "" else null
-		button.expand_icon = true
-		button.add_theme_constant_override("icon_max_width", 56)
 
 func _update_modifier_slot() -> void:
 	modifier_slot.text = selected_modifier
@@ -223,10 +224,10 @@ func _celebrate_selection(slot: Control) -> void:
 	if not selected_food.is_empty():
 		result_art.show()
 		result_art.show_meaning(selected_food, selected_modifier)
-		feedback_label.offset_left = 145
+		feedback_label.offset_left = maxf(_feedback_left, result_art.position.x + result_art.size.x + 9)
 	PHRASE_BUILDER.clear_mark(slot)
 	var message := "Elige el alimento." if selected_food.is_empty() else ("Elige el tamaño." if not _current_challenge().modifier.is_empty() and selected_modifier.is_empty() else "¡Sirve la petición!")
-	PHRASE_BUILDER.celebrate(slot, feedback_label, message, Color("5b4630"))
+	PHRASE_BUILDER.celebrate(slot, feedback_label, message, _feedback_color)
 	GameManager.checkpoint(self)
 	if round_index == 0 and "requests" not in GameManager.tutorials_seen:
 		_show_help()
@@ -264,7 +265,7 @@ func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
 	guide.stop()
 	result_art.show()
 	result_art.show_meaning(selected_food, selected_modifier)
-	feedback_label.offset_left = 145
+	feedback_label.offset_left = maxf(_feedback_left, result_art.position.x + result_art.size.x + 9)
 	CharacterReaction.play(animal_sprite, false)
 	var food_ok := selected_food == str(challenge.food)
 	var modifier_ok := selected_modifier == str(challenge.modifier)
@@ -322,7 +323,7 @@ func _render_success(animate: bool) -> void:
 	serve_button.grab_focus()
 	guide.watch_continue(serve_button)
 	result_art.hide()
-	feedback_label.offset_left = 12
+	feedback_label.offset_left = _feedback_left
 	if animate:
 		CharacterReaction.play(animal_sprite)
 		_deliver_food(challenge)
@@ -338,7 +339,7 @@ func _deliver_food(challenge: ExerciseEntry) -> void:
 	serving.show_meaning(challenge.food, challenge.modifier)
 	var tween := serving.create_tween()
 	tween.tween_property(serving, "position", animal_sprite.get_global_rect().get_center() + Vector2(20, 15), 0.75).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(serving, "scale", Vector2(0.25, 0.25), 0.35)
+	tween.tween_property(serving, "scale", serving.scale * 0.25, 0.35)
 	tween.parallel().tween_property(serving, "modulate:a", 0.0, 0.35)
 	tween.tween_callback(serving.queue_free)
 	visual_clue.celebrate()

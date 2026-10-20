@@ -45,6 +45,8 @@ var _blocks_seen: Array[int] = []
 @onready var word_lbl: Label = $UI/RequestPanel/VBox/WordLbl
 @onready var choices_grid: GridContainer = $UI/ChoicesGrid
 @onready var feedback_lbl: Label = $UI/FeedbackPanel/FeedbackLbl
+@onready var _feedback_left: float = feedback_lbl.offset_left
+@onready var _feedback_color: Color = feedback_lbl.get_theme_color("font_color")
 @onready var phase_lbl: Label = $UI/StatusPanel/StatusVBox/PhaseLbl
 @onready var progress_lbl: Label = $UI/StatusPanel/StatusVBox/ProgressLbl
 @onready var completion: CompletionOverlay = $UI/CompletionOverlay
@@ -108,20 +110,19 @@ func _show_round() -> void:
 	guide.stop()
 	mission_break.hide()
 	choice_preview.hide()
-	feedback_lbl.offset_left = 12
+	feedback_lbl.offset_left = _feedback_left
 	_waiting = false
 	_mistakes = 0
 	_help_stage = 0
 	next_button.hide()
 	feedback_lbl.text = "Elige el hechizo para ayudar."
-	feedback_lbl.add_theme_color_override("font_color", Color("5b4630"))
+	feedback_lbl.add_theme_color_override("font_color", _feedback_color)
 	var obj := _current_object()
 	var vocab := GameManager.get_vocabulary_entry(obj.maya)
 	current_phase = 0 if round_index < objects.size() else 1
 	animal_spr.texture = obj.sprite
 	need_lbl.text = obj.request if current_phase == 0 else "¿Qué palabra crea este objeto?"
 	word_lbl.text = "%s · %s" % [obj.maya, vocab.spanish] if current_phase == 0 else ""
-	word_lbl.add_theme_color_override("font_color", Color("704c9f"))
 	request_art.show_meaning(obj.maya)
 	phase_lbl.text = "%s · %d / %d" % ["Aprende" if current_phase == 0 else "Recuerda", round_index % objects.size() + 1, objects.size()]
 	progress_lbl.text = "%d / %d muebles recuperados" % [mini(round_index, objects.size()), objects.size()]
@@ -172,7 +173,7 @@ func _on_choice_pressed(word: String) -> void:
 		_mistakes += 1
 		choice_preview.show()
 		choice_preview.show_meaning(word)
-		feedback_lbl.offset_left = 145
+		feedback_lbl.offset_left = maxf(_feedback_left, choice_preview.position.x + choice_preview.size.x + 11)
 		CharacterReaction.play(animal_spr, false)
 		var meaning := GameManager.get_vocabulary_entry(word)
 		feedback_lbl.text = "%s significa %s. Busca el objeto de la imagen." % [word, meaning.spanish]
@@ -185,7 +186,7 @@ func _render_success(animate: bool) -> void:
 	_waiting = true
 	mission_progress.update_progress(round_index + 1, total_rounds, "La casa · %d / %d · ¡Creado!" % [round_index % objects.size() + 1, objects.size()])
 	choice_preview.hide()
-	feedback_lbl.offset_left = 12
+	feedback_lbl.offset_left = _feedback_left
 	guide.stop()
 	for button: Button in _choice_buttons:
 		button.disabled = true

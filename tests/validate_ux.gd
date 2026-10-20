@@ -251,6 +251,7 @@ func _story() -> void:
 	current_scene._meet_actor("Peek'")
 	await _resume()
 	_check(current_scene.beat_index == 2 and "Peek'" in current_scene._met_words, "La historia debe recordar el momento y los animales saludados")
+	current_scene._complete_text()
 	await create_timer(0.7).timeout
 	var target: Control = current_scene.actor_buttons["Miis"]
 	_check(absf(current_scene.guide.hand.position.x - target.get_global_rect().get_center().x + 22) < 1, "La mano debe seguir al siguiente animal durante su entrada")

@@ -14,7 +14,8 @@ var is_animating: bool = false
 var text_revealed: bool = false
 var full_text: String = ""
 @onready var continue_button: Button = $UI/ContinueButton
-const CHAR_DELAY := 0.025   # segundos entre caracteres (typewriter)
+var _kalin_alpha: float
+var _dialogue_alpha: float
 
 # ─── Nodos ───────────────────────────────────────────────────────────────────
 @onready var bg_rect:      TextureRect  = $BG
@@ -36,9 +37,10 @@ func _ready() -> void:
 		push_error("La introducción necesita paneles con sus fondos y personajes.")
 		return
 	continue_button.pressed.connect(_advance)
+	_kalin_alpha = kalin_sprite.modulate.a
+	_dialogue_alpha = dialogue_box.modulate.a
 	$UI/MenuButton.pressed.connect(_on_menu_pressed)
 	skip_btn.pressed.connect(_on_skip)
-	typewriter_timer.wait_time = CHAR_DELAY
 	typewriter_timer.timeout.connect(_typewriter_tick)
 	_show_panel(clampi(int(GameManager.get_scene_state(self).get("panel", 0)), 0, panels.size() - 1))
 
@@ -94,7 +96,7 @@ func _show_panel(idx: int) -> void:
 		# Subtle entrance animation
 		var tw: Tween = create_tween()
 		kalin_sprite.modulate.a = 0.0
-		tw.tween_property(kalin_sprite, "modulate:a", 1.0, 0.4)
+		tw.tween_property(kalin_sprite, "modulate:a", _kalin_alpha, 0.4)
 	else:
 		kalin_sprite.visible = false
 
@@ -108,7 +110,7 @@ func _show_panel(idx: int) -> void:
 	# Fade in dialogue box
 	dialogue_box.modulate.a = 0.0
 	var tw2: Tween = create_tween()
-	tw2.tween_property(dialogue_box, "modulate:a", 1.0, 0.3)
+	tw2.tween_property(dialogue_box, "modulate:a", _dialogue_alpha, 0.3)
 	tw2.finished.connect(_on_panel_faded)
 
 func _on_panel_faded() -> void:

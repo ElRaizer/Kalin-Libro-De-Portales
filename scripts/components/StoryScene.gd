@@ -7,7 +7,8 @@
 ##   ELEGIR:   el jugador elige la palabra maya correcta entre botones; un
 ##             error revela el significado de la palabra elegida.
 ## Cada capítulo hereda esta escena y configura sus momentos (StoryBeat) en el
-## Inspector. Tocar a un animal en cualquier momento repite su frase.
+## Inspector. Los animales sólo reciben entrada en CONOCER y ADIVINAR,
+## después de su entrada y de presentar la consigna.
 ## Las cinemáticas usan la misma escena: cada StoryBeat puede cambiar el
 ## ambiente de color, activar efectos (hojas, lluvia, muebles, páginas,
 ## chispas), mover a Kalin, sacudir la pantalla, lanzar un destello, mostrar un
@@ -44,12 +45,16 @@ var beat_index: int = -1
 var actor_buttons: Dictionary = {}          # palabra maya -> Button
 var _actor_tweens: Dictionary = {}
 var _stage_words: Array[String] = []
+var _stage_initialized := false
+var _entering_actors: Dictionary = {}
 var _met_words: Array[String] = []
 var _known_words: Array[String] = []
 var _waiting_to_continue: bool = false
 var _navigating: bool = false
 var _text_tween: Tween
 var _animator: RefCounted
+var _bubble_scale: Vector2
+var _bubble_tween: Tween
 var guide: LearningGuide
 var continue_button: Button
 var vignette: StoryVignette
@@ -90,13 +95,17 @@ func _ready() -> void:
 		push_error("Configuración del capítulo: " + "; ".join(issues))
 		return
 	chapter_label.text = chapter_title
+	_bubble_scale = word_bubble.scale
 	skip_button.pressed.connect(_finish_story)
 	for slot: Control in actors_root.get_children():
 		var button := slot.get_node("Button") as Button
 		button.set_meta("home_position", button.position)
-		button.pressed.connect(func(): _on_actor_pressed(str(button.get_meta("word"))))
+		button.set_meta("home_alpha", button.modulate.a)
+		button.set_meta("word", "")
+		button.pressed.connect(func(): _on_actor_pressed(str(button.get_meta("word", ""))))
 	for button: Button in choices_box.get_children():
-		button.pressed.connect(func(): _on_choice_pressed(str(button.get_meta("word")), button))
+		button.set_meta("authored_variation", button.theme_type_variation)
+		button.pressed.connect(func(): _on_choice_pressed(str(button.get_meta("word", "")), button))
 	word_bubble.visible = false
 	celebration.visible = false
 	auto_timer.timeout.connect(_on_auto_timer_timeout)
@@ -210,24 +219,20 @@ func _show_beat(beat: StoryBeat) -> void:
 	match beat.kind:
 		StoryBeat.Kind.EXPLORAR:
 			_set_hint("", COLOR_HINT)
-			_set_actors_focusable(false)
 			_waiting_to_continue = true
 		StoryBeat.Kind.CONOCER:
 			_met_words.clear()
 			_set_hint("0 / %d amigos" % _stage_words.size(), COLOR_HINT)
-			_set_actors_focusable(true)
 		StoryBeat.Kind.ADIVINAR:
 			_set_hint("", COLOR_HINT)
-			_set_actors_focusable(true)
 		StoryBeat.Kind.ELEGIR:
 			_set_hint("Elige la palabra correcta.", COLOR_HINT)
-			_set_actors_focusable(false)
 			_build_choices(beat.options)
 		_:
 			_set_hint("▶ Continuar", COLOR_HINT)
-			_set_actors_focusable(false)
 			_waiting_to_continue = true
 	continue_button.disabled = not _waiting_to_continue
+	_refresh_actor_interaction()
 	if beat.kind in [StoryBeat.Kind.DIALOGO, StoryBeat.Kind.EXPLORAR]:
 		hint_label.hide()
 		if beat.auto_advance <= 0:
@@ -245,15 +250,20 @@ func _on_vignette_mood(expression: String) -> void:
 
 # ─── Actores ─────────────────────────────────────────────────────────────────
 func _set_stage_actors(words: Array[String]) -> void:
-	if words == _stage_words:
+	if _stage_initialized and words == _stage_words:
 		return
+	_stage_initialized = true
+	_entering_actors.clear()
 	for slot: Control in actors_root.get_children():
 		slot.hide()
 		var button := slot.get_node("Button") as Button
 		if _actor_tweens.has(button):
 			(_actor_tweens[button] as Tween).kill()
 		button.position = button.get_meta("home_position")
-		button.modulate.a = 1.0
+		button.modulate.a = button.get_meta("home_alpha")
+		button.set_meta("word", "")
+		button.icon = null
+		button.text = ""
 	actor_buttons.clear()
 	_stage_words = words.duplicate()
 	for index: int in range(words.size()):
@@ -270,29 +280,52 @@ func _set_stage_actors(words: Array[String]) -> void:
 
 func _update_actor_label(button: Button, word: String) -> void:
 	# En ADIVINAR los nombres se ocultan para que el jugador reconozca la imagen.
-	var guessing: bool = beat_index >= 0 and current_beat().kind == StoryBeat.Kind.ADIVINAR and not _waiting_to_continue
+	var guessing: bool = beat_index >= 0 and beat_index < beats.size() and current_beat().kind == StoryBeat.Kind.ADIVINAR and not _waiting_to_continue
 	var known: bool = word in _known_words or GameManager.has_learned_word(word)
 	button.text = word if known and not guessing else ""
 
-func _set_actors_focusable(enabled: bool) -> void:
-	for word: String in actor_buttons:
-		var button: Button = actor_buttons[word]
+func _actor_input_allowed() -> bool:
+	if _navigating or _waiting_to_continue or beat_index < 0 or beat_index >= beats.size():
+		return false
+	if get_tree().paused or not actors_root.is_visible_in_tree() or _is_revealing_text():
+		return false
+	return current_beat().kind in [StoryBeat.Kind.CONOCER, StoryBeat.Kind.ADIVINAR]
+
+func _actor_is_available(word: String, button: Button) -> bool:
+	if not _actor_input_allowed() or button == null or not button.is_visible_in_tree():
+		return false
+	if _entering_actors.has(button) or button.icon == null or button.modulate.a <= 0.001:
+		return false
+	if actor_buttons.get(word) != button or str(button.get_meta("word", "")) != word:
+		return false
+	return current_beat().kind != StoryBeat.Kind.CONOCER or word not in _met_words
+
+func _refresh_actor_interaction() -> void:
+	var first_available: Button
+	var focused := get_viewport().gui_get_focus_owner()
+	for slot: Control in actors_root.get_children():
+		var button := slot.get_node("Button") as Button
+		var word := str(button.get_meta("word", ""))
+		var enabled := _actor_is_available(word, button)
+		button.disabled = not enabled
+		button.mouse_filter = Control.MOUSE_FILTER_STOP if enabled else Control.MOUSE_FILTER_IGNORE
 		button.focus_mode = Control.FOCUS_ALL if enabled else Control.FOCUS_NONE
-		_update_actor_label(button, word)
-	if enabled and not _stage_words.is_empty():
-		(actor_buttons[_stage_words[0]] as Button).grab_focus()
-	else:
-		get_viewport().gui_release_focus()
+		button.tooltip_text = ("Toca para saludar" if current_beat().kind == StoryBeat.Kind.CONOCER else "Toca al animal que se nombra") if enabled else ""
+		if actor_buttons.get(word) == button:
+			_update_actor_label(button, word)
+		if enabled and first_available == null:
+			first_available = button
+		if not enabled and button.has_focus():
+			button.release_focus()
+	if first_available != null and (focused == null or not focused.has_focus()):
+		first_available.grab_focus()
 
 func _on_actor_pressed(word: String) -> void:
-	if _navigating:
+	var button := actor_buttons.get(word) as Button
+	if not _actor_is_available(word, button) or button.disabled:
 		return
-	var button: Button = actor_buttons[word]
 	_hop(button)
 	var beat := current_beat()
-	if _waiting_to_continue or beat.kind in [StoryBeat.Kind.DIALOGO, StoryBeat.Kind.ELEGIR]:
-		_show_word_bubble(word, COLOR_SUCCESS)
-		return
 	if beat.kind == StoryBeat.Kind.CONOCER:
 		_meet_actor(word)
 	elif beat.kind == StoryBeat.Kind.ADIVINAR:
@@ -305,6 +338,7 @@ func _meet_actor(word: String) -> void:
 		_known_words.append(word)
 	if word not in _met_words:
 		_met_words.append(word)
+	_refresh_actor_interaction()
 	_update_actor_label(actor_buttons[word], word)
 	GameManager.checkpoint(self)
 	if _met_words.size() < _stage_words.size():
@@ -336,10 +370,12 @@ func _build_choices(options: Array[String]) -> void:
 		var entry: Dictionary = GameManager.get_vocabulary_entry(word)
 		var button := choices_box.get_child(index) as Button
 		button.show()
+		button.disabled = false
 		button.set_meta("word", word)
 		# Los adjetivos del Mundo 3 conservan su color morado; el resto usa el
 		# color de los sustantivos, como en los niveles.
-		button.theme_type_variation = &"KalinAdjectiveButton" if int(entry.get("world", 0)) == 3 else &"KalinNounButton"
+		var authored_variation: StringName = button.get_meta("authored_variation")
+		button.theme_type_variation = (&"KalinAdjectiveButton" if int(entry.get("world", 0)) == 3 else &"KalinNounButton") if authored_variation in [&"KalinNounButton", &"KalinAdjectiveButton"] else authored_variation
 		button.text = word
 	choices_box.visible = true
 	if choices_box.get_child_count() > 0:
@@ -348,12 +384,19 @@ func _build_choices(options: Array[String]) -> void:
 func _clear_choices() -> void:
 	for child: Node in choices_box.get_children():
 		(child as Button).hide()
+		(child as Button).disabled = true
 	choices_box.visible = false
 
 func _on_choice_pressed(word: String, button: Button) -> void:
 	if _navigating or _waiting_to_continue:
 		return
 	var beat := current_beat()
+	if beat.kind != StoryBeat.Kind.ELEGIR or get_tree().paused:
+		return
+	if button == null or button.get_parent() != choices_box or not button.is_visible_in_tree() or button.disabled:
+		return
+	if word not in beat.options or str(button.get_meta("word", "")) != word:
+		return
 	_animate_speaker(beat.speaker)
 	if word != beat.target_word:
 		# El botón equivocado revela su significado para que el error enseñe.
@@ -372,7 +415,7 @@ func _on_choice_pressed(word: String, button: Button) -> void:
 
 func _resolve_interaction() -> void:
 	_waiting_to_continue = true
-	_set_actors_focusable(false)
+	_refresh_actor_interaction()
 	guide.stop()
 	continue_button.disabled = false
 	continue_button.grab_focus()
@@ -399,8 +442,11 @@ func _show_bubble(phrase: String, translation: String, color: Color) -> void:
 	bubble_maya.add_theme_color_override("font_color", color)
 	word_bubble.visible = true
 	word_bubble.pivot_offset = word_bubble.size * 0.5
-	word_bubble.scale = Vector2(0.9, 0.9)
-	create_tween().tween_property(word_bubble, "scale", Vector2.ONE, 0.18).set_trans(Tween.TRANS_BACK)
+	if _bubble_tween:
+		_bubble_tween.kill()
+	word_bubble.scale = _bubble_scale * 0.9
+	_bubble_tween = create_tween()
+	_bubble_tween.tween_property(word_bubble, "scale", _bubble_scale, 0.18).set_trans(Tween.TRANS_BACK)
 
 func _reveal_text(text: String) -> void:
 	if _text_tween:
@@ -409,13 +455,20 @@ func _reveal_text(text: String) -> void:
 	dialogue_text.visible_ratio = 0.0
 	_text_tween = create_tween()
 	_text_tween.tween_property(dialogue_text, "visible_ratio", 1.0, text.length() * char_reveal_seconds)
+	_text_tween.finished.connect(_on_text_revealed, CONNECT_ONE_SHOT)
 
 func _is_revealing_text() -> bool:
 	return _text_tween != null and _text_tween.is_running()
 
 func _complete_text() -> void:
-	_text_tween.kill()
+	if _text_tween:
+		_text_tween.kill()
 	dialogue_text.visible_ratio = 1.0
+	_on_text_revealed()
+
+func _on_text_revealed() -> void:
+	_refresh_actor_interaction()
+	_show_meet_hint()
 
 func _set_hint(text: String, color: Color) -> void:
 	hint_label.text = text
@@ -431,25 +484,31 @@ func _start_kalin_idle() -> void:
 
 func _animate_speaker(speaker: String) -> void:
 	if speaker in actor_buttons:
-		_hop(actor_buttons[speaker])
+		if not _entering_actors.has(actor_buttons[speaker]):
+			_hop(actor_buttons[speaker])
 	elif speaker == "Kalin" and not _kalin_sleeping:
-		var tween := create_tween()
-		tween.tween_property(kalin, "scale", Vector2(1.04, 1.04), 0.12)
-		tween.tween_property(kalin, "scale", Vector2.ONE, 0.18)
+		_animator.animate_speaker()
 
 func _animate_entry(button: Button, target: Vector2, delay: float) -> void:
+	_entering_actors[button] = true
 	button.position = target + Vector2(entry_distance, 0)
 	button.modulate.a = 0.0
 	var tween := create_tween().set_parallel(true)
 	_actor_tweens[button] = tween
 	tween.tween_property(button, "position", target, 0.55).set_delay(delay).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(button, "modulate:a", 1.0, 0.3).set_delay(delay)
+	tween.tween_property(button, "modulate:a", float(button.get_meta("home_alpha")), 0.3).set_delay(delay)
+	tween.finished.connect(_on_actor_entered.bind(button), CONNECT_ONE_SHOT)
+
+func _on_actor_entered(button: Button) -> void:
+	_entering_actors.erase(button)
+	_refresh_actor_interaction()
+	_show_meet_hint()
 
 func _hop(button: Button) -> void:
 	if _actor_tweens.has(button):
 		(_actor_tweens[button] as Tween).kill()
 	button.position = button.get_meta("home_position")
-	button.modulate.a = 1.0
+	button.modulate.a = button.get_meta("home_alpha")
 	var base_y: float = (button.get_meta("home_position") as Vector2).y
 	var tween := create_tween()
 	_actor_tweens[button] = tween
@@ -460,7 +519,7 @@ func _shake(button: Button) -> void:
 	if _actor_tweens.has(button):
 		(_actor_tweens[button] as Tween).kill()
 		button.position = button.get_meta("home_position")
-		button.modulate.a = 1.0
+		button.modulate.a = button.get_meta("home_alpha")
 	var base_x: float = button.position.x
 	var tween := create_tween()
 	if button.has_meta("home_position"):
@@ -523,6 +582,7 @@ func _finish_story() -> void:
 	if _navigating:
 		return
 	_navigating = true
+	_refresh_actor_interaction()
 	auto_timer.stop()
 	GameManager.go_to_scene(next_scene_key)
 
@@ -533,17 +593,22 @@ func _on_continue_pressed() -> void:
 		_next_beat()
 
 func _show_meet_hint() -> void:
-	if current_beat().kind != StoryBeat.Kind.CONOCER or _waiting_to_continue:
+	if not _actor_input_allowed() or current_beat().kind != StoryBeat.Kind.CONOCER:
 		return
 	for word: String in _stage_words:
 		if word not in _met_words:
-			guide.point_at(actor_buttons[word])
+			if _actor_is_available(word, actor_buttons[word]):
+				guide.point_at(actor_buttons[word])
+			else:
+				guide.stop()
 			return
 
 func get_checkpoint_state() -> Dictionary:
 	return {"revision": 2, "beat": maxi(beat_index, 0), "known": _known_words, "met": _met_words, "resolved": _waiting_to_continue}
 
 func _on_menu_pressed() -> void:
+	_navigating = true
+	_refresh_actor_interaction()
 	auto_timer.stop()
 	GameManager.go_to_scene("main_menu")
 

@@ -68,6 +68,9 @@ var _intro_done := false
 var guide: LearningGuide
 @onready var continue_button: Button = $UI/ContinueButton
 var _kalin_base_scale: Vector2
+var _kalin_base_position: Vector2
+var _kalin_base_rotation: float
+var _objective_color: Color
 
 # ─── Nodos ───────────────────────────────────────────────────────────────────
 @onready var sendero: Path2D = $Sendero
@@ -97,7 +100,7 @@ func _ready() -> void:
 	skip_button.pressed.connect(_finish)
 	prompt_button.pressed.connect(_on_prompt_pressed)
 	dialogue_box.hide()
-	hint_label.add_theme_color_override("font_color", COLOR_HINT)
+	_objective_color = objective_label.get_theme_color("font_color")
 	_dialogue = DIALOGUE_PRESENTER.new(self, dialogue_box, speaker_label, dialogue_text, hint_label, _speaker_name, _set_dialogue_pose, _on_dialogue_finished, CHAR_REVEAL_SECONDS)
 	prompt_button.hide()
 	_arrow_base_x = arrow.position.x
@@ -112,6 +115,8 @@ func _ready() -> void:
 	_place_kalin(_min_x)
 	guide = $LearningGuide
 	_kalin_base_scale = kalin_sprite.scale
+	_kalin_base_position = kalin_sprite.position
+	_kalin_base_rotation = kalin_sprite.rotation
 	continue_button.pressed.connect(advance_dialogue)
 	$UI/HelpButton.pressed.connect(_show_help)
 	$UI/MenuButton.pressed.connect(_on_menu_pressed)
@@ -204,10 +209,15 @@ func ground_y(x: float) -> float:
 
 func _configure_camera() -> void:
 	var viewport_size: Vector2 = get_viewport_rect().size
-	camera.limit_left = 0
-	camera.limit_top = 0
-	camera.limit_bottom = int(viewport_size.y)
-	camera.limit_right = int(maxf(_max_x + viewport_size.x * 0.1, viewport_size.x))
+	# Sólo completar los límites sin configurar; los del Inspector tienen prioridad.
+	if camera.limit_left == -10000000:
+		camera.limit_left = 0
+	if camera.limit_top == -10000000:
+		camera.limit_top = 0
+	if camera.limit_bottom == 10000000:
+		camera.limit_bottom = int(viewport_size.y)
+	if camera.limit_right == 10000000:
+		camera.limit_right = int(maxf(_max_x + viewport_size.x * 0.1, viewport_size.x))
 
 ## Límite derecho actual: el primer obstáculo sin resolver o el final.
 func walk_limit() -> float:
@@ -257,8 +267,8 @@ func walk(direction: float, delta: float) -> void:
 	_place_kalin(new_x)
 	_walk_phase += moved / STEP_LENGTH * PI
 	var stride: float = sin(_walk_phase)
-	kalin_sprite.position.y = -absf(stride) * WALK_BOUNCE
-	kalin_sprite.rotation = stride * WALK_TILT
+	kalin_sprite.position.y = _kalin_base_position.y - absf(stride) * WALK_BOUNCE
+	kalin_sprite.rotation = _kalin_base_rotation + stride * WALK_TILT
 	kalin_sprite.scale = _kalin_base_scale
 	_check_auto_trigger()
 
@@ -266,8 +276,8 @@ func _place_kalin(x: float) -> void:
 	kalin.position = Vector2(x, ground_y(x))
 
 func _idle() -> void:
-	kalin_sprite.position.y = lerpf(kalin_sprite.position.y, 0.0, 0.3)
-	kalin_sprite.rotation = lerpf(kalin_sprite.rotation, 0.0, 0.3)
+	kalin_sprite.position.y = lerpf(kalin_sprite.position.y, _kalin_base_position.y, 0.3)
+	kalin_sprite.rotation = lerpf(kalin_sprite.rotation, _kalin_base_rotation, 0.3)
 	var breath: float = 1.0 + sin(_time * BREATH_SPEED) * BREATH_SCALE
 	kalin_sprite.scale = _kalin_base_scale * Vector2(1.0, breath)
 
@@ -378,7 +388,7 @@ func _show_notice(text: String) -> void:
 
 func _restore_objective() -> void:
 	objective_label.text = objective_text
-	objective_label.remove_theme_color_override("font_color")
+	objective_label.add_theme_color_override("font_color", _objective_color)
 
 # ─── Diálogo ─────────────────────────────────────────────────────────────────
 func _start_dialogue(speaker: String, lines: Array[String], surprised: bool) -> void:

@@ -534,7 +534,8 @@ func focus_first_path(enabled: bool) -> void:
 		word_nodes[index].visible = not enabled or index == 0
 		destination_nodes[index].visible = not enabled or index == 0
 	for cell: Vector2i in tile_rects:
-		(tile_rects[cell] as Control).modulate.a = 1.0 if not enabled or (cell.y == words[0].start_cell.y and cell.x <= words[0].destination_cell.x) else 0.2
+		var tile: Control = tile_rects[cell]
+		tile.modulate.a = _get_renderer()._base_color(tile).a * (1.0 if not enabled or (cell.y == words[0].start_cell.y and cell.x <= words[0].destination_cell.x) else 0.2)
 
 func get_path_state() -> Dictionary:
 	var saved: Dictionary = {}

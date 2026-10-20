@@ -5,6 +5,10 @@ signal mood_changed(expression: String)
 @export_range(0.1, 30.0, 0.1) var cycle_seconds: float = 7.2
 @export var catalog: VisualCatalog
 @export var layouts: Array[VignetteLayout] = []
+## Desactívalo si el fondo ya incluye el dibujo del portal.
+@export var portal_sprite_visible: bool = true
+## Destino de la magia, en coordenadas locales de la viñeta.
+@export var portal_center: Vector2 = Vector2(495, 143)
 var situation := ""
 var solved := false
 @onready var actor: TextureRect = $Actor
@@ -26,8 +30,12 @@ var _footprints: Array[TextureRect] = []
 var _mood := ""
 var _magic := 0.0
 var _external_shadow := false
+var _authored: Dictionary = {}
 
 func _ready() -> void:
+	for node: Node in find_children("*", "Control", true, false):
+		var control := node as Control
+		_authored[control] = {"position": control.position, "scale": control.scale, "rotation": control.rotation, "modulate": control.modulate}
 	actor_home = actor.position
 	_thought_home = _thought.position
 	_reward_home = _reward.position
@@ -59,7 +67,7 @@ func show_situation(value: String, complete: bool = false) -> void:
 	prop.texture = layout.solved_texture if complete else layout.unsolved_texture
 	prop.position = layout.solved_position if complete else layout.position
 	prop.size = layout.solved_size if complete else layout.size
-	prop.show()
+	prop.visible = value != "portal" or portal_sprite_visible
 	_prop_home = prop.position
 	_build_support("mayak" if value == "tamano" else "janal")
 	seek_cycle(0)
@@ -120,6 +128,9 @@ func seek_cycle(seconds: float) -> void:
 	queue_redraw()
 
 func _apply_cycle(phase: float) -> void:
+	# Calcular cada fotograma desde la base de autor, sin acumular efectos.
+	for control: Control in _authored:
+		control.modulate = Color.WHITE
 	var travel := _ease(phase, 0.08, 0.30) - _ease(phase, 0.72, 0.94)
 	var moving := _bell(phase, 0.08, 0.30) + _bell(phase, 0.72, 0.94)
 	var attempt := _bell(phase, 0.30, 0.64)
@@ -128,11 +139,12 @@ func _apply_cycle(phase: float) -> void:
 	var stride := sin(phase * TAU * 12)
 	var distance := 330.0 if situation == "casa" else (270.0 if situation == "hambre" else (220.0 if situation == "tamano" else 205.0))
 	actor.position = actor_home + Vector2(travel * distance, -absf(stride) * 11.0 * moving)
-	actor.scale = Vector2.ONE * (1.0 + breath * 0.014)
-	actor.rotation = stride * 0.045 * moving
+	var actor_scale: Vector2 = _authored[actor].scale
+	actor.scale = actor_scale * (1.0 + breath * 0.014)
+	actor.rotation = float(_authored[actor].rotation) + stride * 0.045 * moving
 	prop.position = _prop_home
-	prop.scale = Vector2.ONE
-	prop.rotation = 0
+	prop.scale = _authored[prop].scale
+	prop.rotation = _authored[prop].rotation
 	prop.modulate = Color.WHITE
 	_question.modulate.a = 0
 	_thought.modulate.a = 0
@@ -149,10 +161,10 @@ func _apply_cycle(phase: float) -> void:
 		kalin_mood = "feliz" if relief > 0.2 else "normal"
 		if situation == "casa":
 			actor.position.y -= (_ease(phase, 0.30, 0.45) - _ease(phase, 0.62, 0.72)) * 100.0
-			actor.scale.y -= attempt * 0.09
+			actor.scale.y -= actor_scale.y * attempt * 0.09
 		if situation == "hambre":
 			actor.rotation += attempt * 0.11
-			actor.scale.y -= attempt * 0.035 * (1.0 + sin(phase * TAU * 24))
+			actor.scale.y -= actor_scale.y * attempt * 0.035 * (1.0 + sin(phase * TAU * 24))
 	else:
 		match situation:
 			"camino":
@@ -169,7 +181,7 @@ func _apply_cycle(phase: float) -> void:
 				emotion = "duda" if attempt > 0.1 else "neutro"
 			"tamano":
 				# El caparazón no cabe; la mesa se sacude al intentarlo.
-				actor.scale += Vector2(0.065, -0.045) * attempt
+				actor.scale += actor_scale * Vector2(0.065, -0.045) * attempt
 				actor.position.x += attempt * 17.0
 				prop.position.x += sin(phase * TAU * 20) * attempt * 3.0
 				_thought.modulate.a = _bell(phase, 0.46, 0.83) * 0.95
@@ -179,7 +191,7 @@ func _apply_cycle(phase: float) -> void:
 				# Olfatea el plato vacío, se toca la barriga e imagina comida.
 				actor.rotation += attempt * 0.12
 				actor.position.x += sin(phase * TAU * 30) * attempt * 2.5
-				_hunger.position = actor.position + Vector2(26, 100)
+				_hunger.position = actor.position + Vector2(26, 100) + Vector2(_authored[_hunger].position)
 				_hunger.modulate.a = attempt * 0.85
 				_thought.modulate.a = _bell(phase, 0.42, 0.84)
 				_thought.position.y -= _bell(phase, 0.42, 0.84) * 9.0
@@ -188,7 +200,7 @@ func _apply_cycle(phase: float) -> void:
 		actor.hide()
 		_magic = _bell(phase, 0.12, 0.82)
 		prop.pivot_offset = prop.size * 0.5
-		prop.scale = Vector2.ONE * (1.0 + _magic * 0.055)
+		prop.scale = Vector2(_authored[prop].scale) * (1.0 + _magic * 0.055)
 		prop.modulate.a = 0.65 + _magic * 0.35
 		kalin_mood = "magia" if _magic > 0.18 else "pensando"
 	else:
@@ -197,17 +209,19 @@ func _apply_cycle(phase: float) -> void:
 		emotion = "parpadeo"
 	actor.texture = _faces[emotion]
 	if is_instance_valid(_tail):
-		_tail.rotation = sin(phase * TAU * 6) * (0.19 if solved else 0.11)
+		_tail.rotation = float(_authored[_tail].rotation) + sin(phase * TAU * 6) * (0.19 if solved else 0.11)
 	for index: int in range(_hearts.size()):
 		var t := fposmod(phase + index / 3.0, 1.0)
-		_hearts[index].position = Vector2(270 + sin(t * TAU + index) * 32, 75 - t * 80)
+		_hearts[index].position = Vector2(_authored[_hearts[index]].position) + Vector2(270 + sin(t * TAU + index) * 32, 75 - t * 80)
 		_hearts[index].modulate.a = pow(sin(t * PI), 2.0) * relief if solved else 0.0
 		var angle := phase * TAU + index * TAU / 3.0
-		_pages[index].position = Vector2(475 + cos(angle) * 135, 128 + sin(angle) * 118)
-		_pages[index].rotation = sin(angle) * 0.22
+		_pages[index].position = Vector2(_authored[_pages[index]].position) + portal_center + Vector2(-20 + cos(angle) * 135, -15 + sin(angle) * 118)
+		_pages[index].rotation = float(_authored[_pages[index]].rotation) + sin(angle) * 0.22
 		_pages[index].modulate.a = 0.55 + _magic * 0.4 if situation == "portal" else 0.0
 	for index: int in range(_footprints.size()):
 		_footprints[index].modulate.a = travel * 0.38 if situation == "camino" else 0.0
+	for control: Control in _authored:
+		control.modulate *= Color(_authored[control].modulate)
 	if kalin_mood != _mood:
 		_mood = kalin_mood
 		mood_changed.emit(_mood)
@@ -229,7 +243,7 @@ func _draw() -> void:
 		draw_circle(Vector2.ZERO, 63, Color(0.23, 0.16, 0.08, 0.17), true, -1, true)
 		draw_set_transform(Vector2.ZERO)
 	elif situation == "portal":
-		var center := Vector2(495, 143)
+		var center := portal_center
 		var origin := Vector2(-102, 169) # Mano levantada de Kalin en StoryScene.
 		for ring: int in range(3):
 			draw_circle(center, 85 + ring * 15 + _magic * 6, Color(0.23, 0.83, 0.77, 0.05 + _magic * 0.06), false, 9, true)

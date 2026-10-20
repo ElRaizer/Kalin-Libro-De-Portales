@@ -13,8 +13,14 @@ var _mouse_mode_before_drag: Input.MouseMode = Input.MOUSE_MODE_VISIBLE
 var _owns_hidden_cursor: bool = false
 var _active_press_style: StyleBoxFlat
 var _is_drag_source: bool = false
+var _base_scale: Vector2
+var _press_override_active := false
+var _saved_pressed_style: StyleBox
+var _saved_pressed_color: Color
+var _had_pressed_color := false
 
 func _ready() -> void:
+	_base_scale = scale
 	pivot_offset = size * 0.5
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
@@ -35,10 +41,8 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 	# El origen de la previsualización es el cursor; este desplazamiento hace
 	# que la palabra quede agarrada exactamente desde su centro.
 	preview.position = -size * 0.5
-	preview.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	preview.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	preview.add_theme_font_size_override("font_size", get_theme_font_size("font_size"))
-	preview.add_theme_color_override("font_color", Color.WHITE)
+	if not preview.has_theme_font_size_override("font_size"):
+		preview.add_theme_font_size_override("font_size", get_theme_font_size("font_size"))
 	set_drag_preview(preview)
 	_mouse_mode_before_drag = Input.mouse_mode
 	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
@@ -85,6 +89,11 @@ func _on_mouse_exited() -> void:
 func _on_button_down() -> void:
 	# Marrón de la interfaz durante la presión física. Este estado es temporal
 	# y se diferencia del dorado persistente que representa una selección.
+	if not _press_override_active:
+		_saved_pressed_style = get_theme_stylebox("pressed") if has_theme_stylebox_override("pressed") else null
+		_had_pressed_color = has_theme_color_override("font_pressed_color")
+		_saved_pressed_color = get_theme_color("font_pressed_color")
+		_press_override_active = true
 	add_theme_stylebox_override("pressed", _active_press_style)
 	add_theme_color_override("font_pressed_color", Color("fff4d2"))
 
@@ -92,16 +101,25 @@ func _on_button_up() -> void:
 	_clear_active_press_style()
 
 func _clear_active_press_style() -> void:
-	remove_theme_stylebox_override("pressed")
-	remove_theme_color_override("font_pressed_color")
+	if not _press_override_active:
+		return
+	if _saved_pressed_style:
+		add_theme_stylebox_override("pressed", _saved_pressed_style)
+	else:
+		remove_theme_stylebox_override("pressed")
+	if _had_pressed_color:
+		add_theme_color_override("font_pressed_color", _saved_pressed_color)
+	else:
+		remove_theme_color_override("font_pressed_color")
+	_press_override_active = false
 
 
 func _animate_scale(target: Vector2, duration: float) -> void:
 	if _hover_tween and _hover_tween.is_valid():
 		_hover_tween.kill()
 	_hover_tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	_hover_tween.tween_property(self, "scale", target, duration)
+	_hover_tween.tween_property(self, "scale", _base_scale * target, duration)
 
 func _punch(from_scale: Vector2, target: Vector2) -> void:
-	scale = from_scale
+	scale = _base_scale * from_scale
 	_animate_scale(target, 0.18)

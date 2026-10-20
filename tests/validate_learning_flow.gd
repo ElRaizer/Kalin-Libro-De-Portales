@@ -41,6 +41,7 @@ func _validate_story_runtime() -> void:
 		story._next_beat()
 		var beat: StoryBeat = story.current_beat()
 		if beat.kind == StoryBeat.Kind.CONOCER and not checked_meet:
+			await _ready_actor_input(story)
 			checked_meet = true
 			if story._waiting_to_continue:
 				failures.append("La historia avanza antes de conocer a los animales")
@@ -49,6 +50,7 @@ func _validate_story_runtime() -> void:
 			if not story._waiting_to_continue:
 				failures.append("Conocer a todos los animales no habilita el avance")
 		elif beat.kind == StoryBeat.Kind.ADIVINAR and not checked_guess:
+			await _ready_actor_input(story)
 			checked_guess = true
 			for word: String in beat.actors:
 				if word != beat.target_word:
@@ -62,6 +64,13 @@ func _validate_story_runtime() -> void:
 	if not checked_meet or not checked_guess:
 		failures.append("El primer capítulo debe incluir los momentos CONOCER y ADIVINAR")
 	story.queue_free()
+	await process_frame
+
+func _ready_actor_input(story: Node) -> void:
+	story._complete_text()
+	for tween: Tween in story._actor_tweens.values().duplicate():
+		if tween.is_valid():
+			tween.custom_step(2.0)
 	await process_frame
 
 ## Recorre la exploración de la orilla: el diálogo de entrada detiene a Kalin,
