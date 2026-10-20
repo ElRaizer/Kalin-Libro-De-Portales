@@ -56,6 +56,7 @@ func extend(cell: Vector2i) -> void:
 	if board.active_index < 0 or cell in board.paths[board.active_index]:
 		return
 	if cell in board.tile_owner and board.tile_owner[cell] != board.active_index:
+		board.invalid_move.emit("Los caminos no se cruzan", cell)
 		return
 	var previous: Vector2i = board.words[board.active_index].start_cell if board.paths[board.active_index].is_empty() else board.paths[board.active_index].back()
 	if not board._are_adjacent(cell, previous):
@@ -83,6 +84,7 @@ func reset_connected(index: int) -> void:
 	board._reset_tile(board.words[index].destination_cell)
 	clear(index)
 	board.path_reset.emit(board.words[index], index)
+	board._refresh_all_path_visuals()
 
 func finalize(index: int) -> void:
 	if index in board.connected:
@@ -91,7 +93,7 @@ func finalize(index: int) -> void:
 	for cell: Vector2i in board.paths[index]:
 		board._set_path_tile_tint(cell, board.words[index].color)
 	board._set_path_tile_tint(board.words[index].destination_cell, board.words[index].color)
-	board._refresh_path_line(index)
+	board._refresh_all_path_visuals()
 	board.drawing = false
 	board.active_index = -1
 	board.selection_ring.visible = false

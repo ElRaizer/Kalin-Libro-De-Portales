@@ -53,6 +53,7 @@ func _add_word_preview(word: GridWordData, index: int) -> void:
 	panel.z_index = 2
 	if word.sprite:
 		var sprite := TextureRect.new()
+		sprite.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		sprite.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		sprite.texture = word.sprite
 		sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -73,7 +74,26 @@ func _add_destination_preview(word: GridWordData, index: int) -> void:
 	destination.position = board.cell_to_local_position(word.destination_cell) + Vector2(2, 2)
 	destination.size = Vector2(board.tile_size - 4, board.tile_size - 4)
 	destination.z_index = 1
-	_add_panel_label(destination, word.get_destination_text(), VERTICAL_ALIGNMENT_CENTER, 12, Color(0.12, 0.06, 0.0))
+	var house := TextureRect.new()
+	house.texture = preload("res://Arte/ilustraciones/ui_casa.svg")
+	house.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	house.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	house.position = Vector2(12, 0)
+	house.size = Vector2(board.tile_size - 28, 37)
+	house.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	destination.add_child(house)
+	var arrived := TextureRect.new()
+	arrived.name = "ArrivedAnimal"
+	arrived.texture = word.sprite
+	arrived.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	arrived.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	arrived.position = Vector2(27, 14)
+	arrived.size = Vector2(22, 24)
+	arrived.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	arrived.visible = index in board.connected
+	destination.add_child(arrived)
+	var font_size := 14 if word.get_destination_text().length() > 6 else 17
+	_add_panel_label(destination, word.get_destination_text(), VERTICAL_ALIGNMENT_BOTTOM, font_size, Color("3b2415"))
 	board.preview_root.add_child(destination)
 	board.destination_nodes[index] = destination
 
@@ -127,6 +147,12 @@ func refresh_all_paths() -> void:
 	if not is_instance_valid(board.preview_root):
 		return
 	for index: int in board.paths:
+		if board.word_nodes.has(index):
+			(board.word_nodes[index] as Control).modulate.a = 0.35 if index in board.connected else 1.0
+		if board.destination_nodes.has(index):
+			var arrived := board.destination_nodes[index].get_node_or_null("ArrivedAnimal") as Control
+			if arrived:
+				arrived.visible = index in board.connected
 		for cell: Vector2i in board.paths[index]:
 			set_path_tile_tint(cell, board.words[index].color)
 		if index in board.connected:

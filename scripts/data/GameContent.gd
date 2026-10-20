@@ -64,27 +64,35 @@ const SCENE_PATHS: Dictionary = {
 }
 
 const LEVEL_ORDER: Array[Dictionary] = [
-	{"world": 1, "level": 1, "scene_key": "world1_level1", "name": "Los Caminos Blancos", "story_key": "world1_cine1"},
-	{"world": 1, "level": 2, "scene_key": "world1_level2", "name": "Los Animales del Bosque", "story_key": "world1_story2"},
-	{"world": 1, "level": 3, "scene_key": "world1_level3", "name": "Los Guardianes del Monte", "story_key": "world1_story3"},
-	{"world": 1, "level": 4, "scene_key": "world1_level4", "name": "Agua y Cielo", "story_key": "world1_story4"},
-	{"world": 2, "level": 1, "scene_key": "world2_level1", "name": "La Casa Maya", "story_key": "world1_story5"},
-	{"world": 3, "level": 1, "scene_key": "world3_level1", "name": "Hechizos de Adjetivos", "story_key": "world2_story1"},
-	{"world": 4, "level": 1, "scene_key": "world4_level1", "name": "Yo Quiero", "story_key": "world3_story1"},
-	{"world": 5, "level": 1, "scene_key": "world5_level1", "name": "El Portal de Regreso", "story_key": "world4_story1"},
+	{"world": 1, "level": 1, "scene_key": "world1_level1", "name": "Los Caminos Blancos", "map_label": "Caminos", "story_key": "world1_cine1"},
+	{"world": 1, "level": 2, "scene_key": "world1_level2", "name": "Los Animales del Bosque", "map_label": "Bosque", "story_key": "world1_story2"},
+	{"world": 1, "level": 3, "scene_key": "world1_level3", "name": "Los Guardianes del Monte", "map_label": "Monte", "story_key": "world1_story3"},
+	{"world": 1, "level": 4, "scene_key": "world1_level4", "name": "Agua y Cielo", "map_label": "Agua y cielo", "story_key": "world1_story4"},
+	{"world": 2, "level": 1, "scene_key": "world2_level1", "name": "La Casa Maya", "map_label": "Los muebles", "story_key": "world1_story5"},
+	{"world": 3, "level": 1, "scene_key": "world3_level1", "name": "Hechizos de Adjetivos", "map_label": "A la medida", "story_key": "world2_story1"},
+	{"world": 4, "level": 1, "scene_key": "world4_level1", "name": "Yo Quiero", "map_label": "Peticiones", "story_key": "world3_story1"},
+	{"world": 5, "level": 1, "scene_key": "world5_level1", "name": "El Portal de Regreso", "map_label": "Regreso a casa", "story_key": "world4_story1"},
 ]
 
 const FUTURE_VOCABULARY: Array[String] = ["T'uut'"]
 
 const BOOK_ILLUSTRATIONS: Dictionary = {
+	"mayak": "res://Arte/ilustraciones/objeto_mayak.svg", "lak": "res://Arte/ilustraciones/objeto_lak.svg",
+	"ch'áak": "res://Arte/ilustraciones/objeto_chaak.svg", "chan": "res://Arte/ilustraciones/objeto_chan.svg",
+	"janal": "res://Arte/ilustraciones/comida_janal.svg", "ja'": "res://Arte/ilustraciones/comida_ja.svg",
+	"ja'as": "res://Arte/ilustraciones/comida_jaas.svg", "pak'al": "res://Arte/ilustraciones/comida_pakal.svg",
+	"K'úum": "res://Arte/ilustraciones/comida_kuum.svg",
+	"mejen": "res://Arte/ilustraciones/cualidad_mejen.svg", "nojoch": "res://Arte/ilustraciones/cualidad_nojoch.svg",
+	"Jats'uts": "res://Arte/ilustraciones/cualidad_jatsuts.svg", "ki'": "res://Arte/ilustraciones/cualidad_ki.svg",
+	"jach'": "res://Arte/ilustraciones/cualidad_jach.svg",
 	"Peek'": "res://Arte/sprites/animal_peek.svg", "Miis": "res://Arte/sprites/animal_miis.svg",
 	"Kaax": "res://Arte/sprites/animal_kaax.svg", "Áak": "res://Arte/sprites/animal_aak.svg",
 	"Kéej": "res://Arte/sprites/animal_keej.svg", "K'éek'en": "res://Arte/sprites/animal_keek_en.svg",
 	"Ma'ax": "res://Arte/sprites/animal_maax.svg", "Kuuts": "res://Arte/sprites/animal_kuuts.svg",
 	"Báalam": "res://Arte/sprites/animal_baalam.svg", "T'u'ul": "res://Arte/sprites/animal_tuul.svg",
 	"Kay": "res://Arte/sprites/animal_kay.svg", "Ch'íich'": "res://Arte/sprites/animal_chiich.svg",
-	"Bix a beel": "res://Arte/sprites/kalin_normal.svg", "Yuum bo'otik": "res://Arte/sprites/kalin_normal.svg",
-	"Ka xi'ik tech jats'uts": "res://Arte/sprites/kalin_normal.svg", "Tak ti' uláak' k'iin": "res://Arte/sprites/kalin_normal.svg",
+	"Bix a beel": "res://Arte/ilustraciones/cortesia_saludo.svg", "Yuum bo'otik": "res://Arte/ilustraciones/cortesia_gracias.svg",
+	"Ka xi'ik tech jats'uts": "res://Arte/ilustraciones/cortesia_camino.svg", "Tak ti' uláak' k'iin": "res://Arte/ilustraciones/cortesia_despedida.svg",
 }
 
 const VOCABULARY_ALIASES: Dictionary = {

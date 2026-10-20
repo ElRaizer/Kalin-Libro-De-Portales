@@ -18,7 +18,7 @@ sprite = ExtResource("5_peek")
 destination_text = "Peek'"
 color = Color(0.9, 0.55, 0.2, 1)
 start_cell = Vector2i(0, 1)
-destination_cell = Vector2i(11, 1)
+destination_cell = Vector2i(4, 1)
 
 [sub_resource type="Resource" id="Word_miis"]
 script = ExtResource("4_word")
@@ -50,7 +50,7 @@ next_scene_key = "world1_story2"
 level_title = "Mundo 1 · Nivel 1 — Sak Beh (Animales)"
 completion_title = "¡Mundo 1 · Nivel 1 completado!"
 completion_summary = "Conectaste a Peek', Miis y Kaax con sus casas."
-default_instruction = "Conecta cada animal con su casa. Toca uno ya conectado para rehacer sólo su camino."
+default_instruction = "Une cada animal con su casa."
 selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
 
 [node name="Background" parent="." index="0"]

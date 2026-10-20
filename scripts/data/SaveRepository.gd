@@ -4,7 +4,7 @@ class_name SaveRepository
 ## Único punto de acceso al archivo de progreso. Mantiene los detalles de JSON
 ## y FileAccess fuera de GameManager para que puedan probarse por separado.
 
-const CURRENT_VERSION := 1
+const CURRENT_VERSION := 2
 const DEFAULT_PATH := "user://kalin_save.json"
 
 var save_path: String
@@ -65,3 +65,24 @@ static func sanitize_completed_levels(value: Variant, level_order: Array[Diction
 		if valid_keys.has(key) and key not in sanitized:
 			sanitized.append(key)
 	return sanitized
+
+static func sanitize_scene_state(value: Dictionary) -> Dictionary:
+	var state := value.duplicate(true)
+	for key: String in ["panel", "beat", "round", "challenge", "quiz_index", "dialogue_word", "line", "x"]:
+		if not state.has(key):
+			continue
+		var number: Variant = state[key]
+		if not (number is float or number is int) or not is_finite(float(number)):
+			state.erase(key)
+		elif key != "x":
+			state[key] = int(clampf(float(number), -1 if key == "dialogue_word" else 0, 10000))
+	for key: String in ["waiting", "complete", "quiz_complete", "quiz_solved", "dialogue_open", "resolved", "intro_done"]:
+		if state.has(key) and state[key] is not bool:
+			state.erase(key)
+	for key: String in ["noun", "adjective", "food", "modifier", "active"]:
+		if state.has(key) and state[key] is not String:
+			state.erase(key)
+	for key: String in ["known", "met", "examined", "order", "plan"]:
+		if state.has(key) and state[key] is not Array:
+			state.erase(key)
+	return state

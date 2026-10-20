@@ -20,7 +20,8 @@ func _ready() -> void:
 func show_completion(title: String, summary: String, next_text: String = "Continuar") -> void:
 	title_label.text = title
 	summary_label.text = summary
-	score_label.text = "Puntuación acumulada: %d puntos mágicos" % GameManager.magic_points
+	var manager: Node = get_node("/root/GameManager")
+	score_label.text = "%d páginas recuperadas" % manager.words_learned.size()
 	next_button.text = next_text
 	visible = true
 	panel.modulate.a = 0.0

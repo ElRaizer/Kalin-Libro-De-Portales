@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" path="res://scenes/components/LevelHeader.tscn" id="6_header"]
 [ext_resource type="PackedScene" path="res://scenes/components/CompletionOverlay.tscn" id="7_complete"]
 
+[ext_resource type="Script" path="res://scripts/components/MeaningIllustration.gd" id="8_art"]
+
 [node name="Level5" type="Node2D"]
 script = ExtResource("1_script")
 
@@ -59,7 +61,7 @@ offset_left = 24.0
 offset_top = 18.0
 offset_right = 859.0
 offset_bottom = 224.0
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 
 [node name="SectionLabel" type="Label" parent="UI/ChallengePanel/Content"]
 layout_mode = 2
@@ -69,7 +71,7 @@ text = "FRAGMENTO 1 · IDENTIDAD"
 horizontal_alignment = 1
 
 [node name="PromptLabel" type="Label" parent="UI/ChallengePanel/Content"]
-custom_minimum_size = Vector2(0, 70)
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22, 0.12, 0.06, 1)
 theme_override_font_sizes/font_size = 22
@@ -78,10 +80,15 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
+[node name="ChallengeArt" type="Control" parent="UI/ChallengePanel/Content"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+script = ExtResource("8_art")
+
 [node name="ClueLabel" type="Label" parent="UI/ChallengePanel/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.13, 0.38, 0.36, 1)
-theme_override_font_sizes/font_size = 27
+theme_override_font_sizes/font_size = 23
 text = "🐶  Me llamo Perro"
 horizontal_alignment = 1
 
@@ -124,7 +131,7 @@ theme_type_variation = &"KalinFeedbackPanel"
 layout_mode = 0
 offset_left = 14.0
 offset_top = 8.0
-offset_right = 869.0
+offset_right = 660.0
 offset_bottom = 54.0
 theme_override_font_sizes/font_size = 16
 text = "Elige la frase que completa esta página del libro."

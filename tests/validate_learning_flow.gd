@@ -3,6 +3,11 @@ extends SceneTree
 var failures: Array[String] = []
 
 func _initialize() -> void:
+	await process_frame
+	var manager: Node = root.get_node("GameManager")
+	manager.scene_states.clear()
+	manager.resume_scene_key = ""
+	manager._save_repository = load("res://scripts/data/SaveRepository.gd").new("user://learning_validation_progress.json")
 	await _validate_story_runtime()
 	await _validate_story_choice_runtime()
 	await _validate_cinematic_runtime()
@@ -289,8 +294,8 @@ func _validate_book_runtime() -> void:
 		failures.append("El Libro no distribuye dos entradas por pliego")
 	if not book.left_page.get_node("Content/Illustration/ContextSprite").visible:
 		failures.append("El Libro no muestra la ilustración contextual disponible")
-	if not book.right_page.get_node("Content/Illustration/Placeholder").visible:
-		failures.append("El Libro no reserva espacio para ilustraciones futuras")
+	if not book.right_page.get_node("Content/Illustration/ContextSprite").visible or book.right_page.get_node("Content/Illustration/Placeholder").visible:
+		failures.append("El Libro debe mostrar la nueva ilustración del objeto")
 	book._next_spread()
 	if book._spread_index != 1 or not book.next_button.disabled:
 		failures.append("La navegación entre páginas del Libro no respeta sus límites")

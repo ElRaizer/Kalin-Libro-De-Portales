@@ -19,6 +19,14 @@ class_name GridPathLevel
 var _completing: bool = false
 var _dialogue_open: bool = false
 var _dialogue_serial: int = 0
+var _arrival_animating := false
+var _quiz_index := 0
+var _quiz_complete := false
+var _dialogue_word_index := -1
+var _saved_quiz_solved := false
+var guide: LearningGuide
+var recall: RecallCheck
+var continue_button: Button
 
 @onready var grid_board: GridBoard = $GridBoard
 @onready var dialogue: Panel = $UI/DialoguePanel
@@ -36,6 +44,23 @@ func _ready() -> void:
 	level_header.set_title(level_title)
 	_set_default_instruction()
 	_set_mouse_passthrough(dialogue)
+	dialogue.mouse_filter = Control.MOUSE_FILTER_STOP
+	continue_button = Button.new()
+	continue_button.text = "Continuar →"
+	continue_button.theme = preload("res://themes/kalin_theme.tres")
+	continue_button.theme_type_variation = &"KalinPrimaryButton"
+	continue_button.position = Vector2(572, 140)
+	continue_button.size = Vector2(220, 46)
+	continue_button.pressed.connect(_close_dialogue)
+	dialogue.add_child(continue_button)
+	$UI/DialoguePanel/VBox/SkipLbl.hide()
+	guide = LearningGuide.install(self, $UI/LevelHeader/Bar, _show_help)
+	recall = RecallCheck.new()
+	add_child(recall)
+	recall.completed.connect(_on_recall_complete)
+	recall.progress_changed.connect(func():
+		_quiz_index = recall.question_index
+		GameManager.checkpoint(self))
 	level_header.menu_pressed.connect(_on_menu_pressed)
 	level_header.book_pressed.connect(_on_book_pressed)
 	completion_overlay.next_pressed.connect(_on_next_level_pressed)
@@ -44,10 +69,27 @@ func _ready() -> void:
 	grid_board.word_selected.connect(_on_word_selected)
 	grid_board.word_connected.connect(_on_word_connected)
 	grid_board.drawing_stopped.connect(_on_drawing_stopped)
+	grid_board.invalid_move.connect(_on_invalid_move)
+	var state := GameManager.get_scene_state(self)
+	grid_board.restore_path_state(state.get("board", {}) if state.get("board", {}) is Dictionary else {})
+	_quiz_index = clampi(int(state.get("quiz_index", 0)), 0, grid_board.words.size())
+	_quiz_complete = bool(state.get("quiz_complete", false))
+	_saved_quiz_solved = bool(state.get("quiz_solved", false))
+	var pending_word := clampi(int(state.get("dialogue_word", -1)), -1, grid_board.words.size() - 1)
+	grid_board.focus_first_path(level_number == 1 and "paths" not in GameManager.tutorials_seen and grid_board.connected.is_empty())
+	if bool(state.get("complete", false)):
+		_completing = true
+		completion_overlay.show_completion(completion_title, completion_summary, completion_next_text)
+	elif bool(state.get("dialogue_open", false)) and pending_word in grid_board.connected:
+		call_deferred("_show_word_dialogue", grid_board.words[pending_word], pending_word)
+	elif grid_board.is_completed():
+		call_deferred("_begin_recall")
+	else:
+		call_deferred("_show_help")
 
 func _unhandled_input(event: InputEvent) -> void:
 	if (
-		_dialogue_open
+		_dialogue_open and not _arrival_animating
 		and (
 			(event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT)
 			or (event is InputEventKey and event.pressed and event.keycode in [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE, KEY_ESCAPE])
@@ -57,6 +99,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func _on_word_selected(word: GridWordData) -> void:
+	guide.stop()
 	var start_name: String = word.get_start_text().replace("\n", " ")
 	var destination_name: String = word.get_destination_text().replace("\n", " ")
 	_set_instr(selection_instruction % [start_name, destination_name])
@@ -66,12 +109,14 @@ func _on_word_connected(word: GridWordData, word_index: int) -> void:
 	_show_word_dialogue(word, word_index)
 
 func _on_drawing_stopped() -> void:
+	GameManager.checkpoint(self)
 	if not _dialogue_open and not _completing:
 		_set_default_instruction()
 
 func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 	if _dialogue_open:
 		return
+	_dialogue_word_index = word_index
 	dlg_phrase.text = word.phrase if not word.phrase.is_empty() else "%s = %s" % [word.maya_word, word.spanish_word]
 	dlg_hint.text = word.explanation if not word.explanation.is_empty() else "%s significa %s." % [word.maya_word, word.spanish_word]
 	dlg_icon.texture = word.sprite
@@ -86,42 +131,62 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 	_dialogue_serial += 1
 	var current_dialogue: int = _dialogue_serial
 	_dialogue_open = true
-	dialogue.visible = true
 	grid_board.set_interaction_enabled(false)
-
-	var word_node: Control = grid_board.get_word_node(word_index)
-	if word_node:
-		var tween: Tween = create_tween()
-		tween.tween_property(word_node, "position:y", word_node.position.y - 14, 0.15)
-		tween.tween_property(word_node, "position:y", word_node.position.y, 0.20)
-
-	await get_tree().create_timer(3.2).timeout
-	if is_inside_tree() and current_dialogue == _dialogue_serial:
-		_close_dialogue()
+	guide.stop()
+	_arrival_animating = true
+	var arrived := grid_board.destination_nodes[word_index].get_node_or_null("ArrivedAnimal") as Control
+	if arrived:
+		arrived.hide()
+	if level_number == 1:
+		GameManager.mark_tutorial_seen("paths")
+		grid_board.focus_first_path(false)
+	GameManager.checkpoint(self)
+	var walker := TextureRect.new()
+	walker.texture = word.sprite
+	walker.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	walker.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	walker.size = Vector2(grid_board.tile_size, grid_board.tile_size)
+	walker.position = grid_board.cell_to_local_position(word.start_cell)
+	walker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$UI.add_child(walker)
+	var route: Array = grid_board.paths[word_index].duplicate()
+	route.append(word.destination_cell)
+	var walk := create_tween()
+	for cell: Vector2i in route:
+		walk.tween_property(walker, "position", grid_board.cell_to_local_position(cell), 1.1 / maxf(route.size(), 1))
+	await walk.finished
+	if not is_inside_tree() or current_dialogue != _dialogue_serial:
+		return
+	walker.queue_free()
+	if arrived:
+		arrived.show()
+	_arrival_animating = false
+	dialogue.visible = true
+	continue_button.grab_focus()
+	guide.page_to_book(grid_board.cell_to_local_position(word.destination_cell), $UI/LevelHeader/Bar/BookButton.get_global_rect().get_center())
 
 func _close_dialogue() -> void:
-	if not _dialogue_open:
+	if not _dialogue_open or _arrival_animating:
 		return
 	_dialogue_open = false
+	_dialogue_word_index = -1
 	dialogue.visible = false
 	if not _completing and grid_board.is_completed():
-		_completing = true
-		await get_tree().create_timer(0.4).timeout
-		if is_inside_tree():
-			_on_level_complete()
+		_begin_recall()
 	elif not _completing:
 		grid_board.set_interaction_enabled(true)
+		_set_default_instruction()
+	GameManager.checkpoint(self)
 
 func _on_level_complete() -> void:
+	_completing = true
 	GameManager.complete_level(world_number, level_number)
 	completion_overlay.show_completion(completion_title, completion_summary, completion_next_text)
 	_set_instr("Nivel completado. Pulsa el botón para continuar.")
+	GameManager.checkpoint(self)
 
 func _safe_navigate(key: String) -> void:
 	grid_board.set_interaction_enabled(false)
-	_dialogue_open = false
-	dialogue.visible = false
-	completion_overlay.hide_overlay()
 	GameManager.go_to_scene(key)
 
 func _on_next_level_pressed() -> void:
@@ -134,7 +199,7 @@ func _on_book_pressed() -> void:
 	libro.show_book()
 
 func _on_replay_pressed() -> void:
-	get_tree().reload_current_scene()
+	GameManager.replay_scene(GameManager.scene_key_for(self))
 
 func _set_default_instruction() -> void:
 	_set_instr(default_instruction)
@@ -147,3 +212,50 @@ func _set_mouse_passthrough(control: Control) -> void:
 	for child: Node in control.get_children():
 		if child is Control:
 			_set_mouse_passthrough(child)
+
+func _show_help() -> void:
+	if _completing:
+		return
+	if _dialogue_open:
+		guide.point_at(continue_button)
+		return
+	for index: int in range(grid_board.words.size()):
+		if index in grid_board.connected:
+			continue
+		var word: GridWordData = grid_board.words[index]
+		var from := grid_board.cell_to_local_position(word.start_cell) + Vector2.ONE * grid_board.tile_size * 0.5
+		# Demostrar el gesto, sin regalar la ruta de los tableros avanzados.
+		var to := grid_board.cell_to_local_position(word.destination_cell) + Vector2.ONE * grid_board.tile_size * 0.5 if level_number == 1 else from + Vector2(grid_board.tile_size * 2, 0)
+		guide.demonstrate([from, to])
+		_set_instr("Arrastra desde el animal hasta su palabra.")
+		return
+
+func _on_invalid_move(reason: String, cell: Vector2i) -> void:
+	_set_instr(reason)
+	var tile: Control = grid_board.tile_rects.get(cell)
+	if tile:
+		var tint := tile.modulate
+		var tween := create_tween()
+		tween.tween_property(tile, "modulate", Color("f0a060"), 0.08)
+		tween.tween_property(tile, "modulate", tint, 0.25)
+
+func _begin_recall() -> void:
+	grid_board.set_interaction_enabled(false)
+	guide.stop()
+	if _quiz_complete:
+		_on_level_complete()
+		return
+	var words: Array[String] = []
+	for word: GridWordData in grid_board.words:
+		words.append(word.maya_word)
+	recall.start(words, _quiz_index)
+	if _saved_quiz_solved:
+		recall.restore_answer()
+		_saved_quiz_solved = false
+
+func _on_recall_complete() -> void:
+	_quiz_complete = true
+	_on_level_complete()
+
+func get_checkpoint_state() -> Dictionary:
+	return {"board": grid_board.get_path_state(), "quiz_index": _quiz_index, "quiz_complete": _quiz_complete, "quiz_solved": recall.visible and recall.solved, "complete": _completing, "dialogue_word": _dialogue_word_index, "dialogue_open": _dialogue_open}

@@ -9,62 +9,9 @@ const INTRO_PANEL_DATA = preload("res://scripts/data/IntroPanelData.gd")
 
 # ─── Datos de los paneles narrativos ────────────────────────────────────────
 const RAW_PANELS := [
-	{
-		"bg":       "res://Arte/backgrounds/bg_intro_room.svg",
-		"kalin":    "",                     # sin sprite en este panel
-		"kalin_x":  800,
-		"text":     "En las tierras de la Península de Yucatán...",
-		"subtext":  "",
-	},
-	{
-		"bg":       "res://Arte/backgrounds/bg_intro_room.svg",
-		"kalin":    "res://Arte/sprites/kalin_normal.svg",
-		"kalin_x":  760,
-		"text":     "Kalin era un joven aprendiz de hechicero.\nPasaba sus noches estudiando su mágico Libro de Hechizos.",
-		"subtext":  "",
-	},
-	{
-		"bg":       "res://Arte/backgrounds/bg_intro_room.svg",
-		"kalin":    "res://Arte/sprites/kalin_normal.svg",
-		"kalin_x":  760,
-		"text":     "Una noche, el libro brilló con una luz extraña...\nlas páginas comenzaron a moverse solas.",
-		"subtext":  "",
-	},
-	{
-		"bg":       "res://Arte/backgrounds/bg_intro_portal.svg",
-		"kalin":    "res://Arte/sprites/kalin_surprised.svg",
-		"kalin_x":  200,
-		"text":     "¡De repente, un portal mágico se abrió!\n¡Las páginas volaron por todos lados!",
-		"subtext":  "",
-	},
-	{
-		"bg":       "res://Arte/backgrounds/bg_intro_portal.svg",
-		"kalin":    "res://Arte/sprites/kalin_surprised.svg",
-		"kalin_x":  200,
-		"text":     "Kalin fue absorbido por el portal.\nSus palabras mágicas se dispersaron por el mundo...",
-		"subtext":  "\"¡Mis hechizos!  ¡Noooo!\"",
-	},
-	{
-		"bg":       "res://Arte/backgrounds/bg_level1.svg",
-		"kalin":    "res://Arte/sprites/kalin_surprised.svg",
-		"kalin_x":  840,
-		"text":     "Kalin despertó en una isla desconocida.\nAnimales extraños lo rodeaban...",
-		"subtext":  "",
-	},
-	{
-		"bg":       "res://Arte/backgrounds/bg_level1.svg",
-		"kalin":    "res://Arte/sprites/kalin_normal.svg",
-		"kalin_x":  840,
-		"text":     "Un perro se acercó y dijo algo incomprensible:\n\"In k'aaba'e'  Peek'!\"",
-		"subtext":  "Kalin no entendía nada... ¡necesitaba recuperar su libro!",
-	},
-	{
-		"bg":       "res://Arte/backgrounds/bg_level1.svg",
-		"kalin":    "res://Arte/sprites/kalin_normal.svg",
-		"kalin_x":  840,
-		"text":     "Para volver a casa, Kalin debe:\nRecolectar palabras en lengua maya y reescribir su libro.",
-		"subtext":  "¡Ayúdalo a conectar los caminos y aprender maya!",
-	},
+	{"bg": "res://Arte/backgrounds/bg_intro_room.svg", "kalin": "res://Arte/sprites/kalin_normal.svg", "kalin_x": 760, "text": "En Yucatán, Kalin aprendía magia con su Libro de Hechizos.", "subtext": ""},
+	{"bg": "res://Arte/backgrounds/bg_intro_portal.svg", "kalin": "res://Arte/sprites/kalin_surprised.svg", "kalin_x": 200, "text": "¡El libro abrió un portal! Sus páginas salieron volando.", "subtext": ""},
+	{"bg": "res://Arte/backgrounds/bg_intro_portal.svg", "kalin": "res://Arte/sprites/kalin_surprised.svg", "kalin_x": 200, "text": "¡Ayuda a Kalin a recuperar las palabras y volver a casa!", "subtext": ""},
 ]
 static var PANELS: Array[IntroPanelData] = INTRO_PANEL_DATA.from_dictionaries(RAW_PANELS)
 
@@ -88,10 +35,18 @@ const CHAR_DELAY := 0.025   # segundos entre caracteres (typewriter)
 
 # ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
+	var menu := Button.new()
+	menu.position = Vector2(884, 12)
+	menu.size = Vector2(158, 46)
+	menu.text = "Menú"
+	menu.theme = preload("res://themes/kalin_theme.tres")
+	menu.theme_type_variation = &"KalinSecondaryButton"
+	menu.pressed.connect(func(): GameManager.go_to_scene("main_menu"))
+	$UI.add_child(menu)
 	skip_btn.pressed.connect(_on_skip)
 	typewriter_timer.wait_time = CHAR_DELAY
 	typewriter_timer.timeout.connect(_typewriter_tick)
-	_show_panel(0)
+	_show_panel(clampi(int(GameManager.get_scene_state(self).get("panel", 0)), 0, PANELS.size() - 1))
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -125,6 +80,8 @@ func _advance() -> void:
 		_show_panel(panel_index)
 
 func _show_panel(idx: int) -> void:
+	panel_index = idx
+	GameManager.checkpoint(self)
 	is_animating = true
 	text_revealed = false
 	var p: IntroPanelData = PANELS[idx]
@@ -194,9 +151,12 @@ func _set_texture_from_path(rect: TextureRect, path: String) -> void:
 		rect.texture = tex
 
 func _on_skip() -> void:
-	GameManager.go_to_scene("main_menu")
+	GameManager.go_to_scene("world1_explore1")
 
 func _go_to_level1() -> void:
 	# La intro continúa con la cinemática de la noche del huracán y luego con el
 	# primer capítulo de historia del Mundo 1.
 	GameManager.go_to_scene("world1_cine1")
+
+func get_checkpoint_state() -> Dictionary:
+	return {"panel": panel_index}

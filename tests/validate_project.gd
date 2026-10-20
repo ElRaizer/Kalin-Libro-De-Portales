@@ -6,6 +6,11 @@ const WindowManagerScript = preload("res://scripts/autoloads/WindowManager.gd")
 var failures: Array[String] = []
 
 func _initialize() -> void:
+	await process_frame
+	var manager: Node = root.get_node("GameManager")
+	manager.scene_states.clear()
+	manager.resume_scene_key = ""
+	manager._save_repository = SaveRepositoryScript.new("user://validation_progress.json")
 	_validate_display_configuration()
 	_validate_level_order()
 	_validate_scene_registry()

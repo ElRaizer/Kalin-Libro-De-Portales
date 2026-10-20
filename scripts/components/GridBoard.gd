@@ -17,6 +17,7 @@ signal word_selected(word: GridWordData)
 signal word_connected(word: GridWordData, word_index: int)
 signal path_reset(word: GridWordData, word_index: int)
 signal drawing_stopped
+signal invalid_move(reason: String, cell: Vector2i)
 
 enum Cell { EMPTY, OBSTACLE, WORD, DESTINATION, PATH }
 
@@ -109,6 +110,7 @@ var drawing: bool = false
 var active_index: int = -1
 var last_cell: Vector2i = Vector2i(-1, -1)
 var input_enabled: bool = true
+var tutorial_only_index: int = -1
 var ring_tween: Tween
 var keyboard_cursor: Panel
 var keyboard_cell: Vector2i = Vector2i(-1, -1)
@@ -219,7 +221,7 @@ func _update_nearby_obstacle_clues() -> void:
 ## posiciones no cambian: el jugador debe recordar qué animal iba en cada una.
 func conceal_destination_clues() -> void:
 	for destination: Panel in destination_nodes.values():
-		var label := destination.get_child(0) as Label
+		var label := destination.get_child(destination.get_child_count() - 1) as Label
 		if label:
 			label.text = "?"
 			label.add_theme_font_size_override("font_size", 24)
@@ -368,6 +370,8 @@ func _handle_press(cell: Vector2i) -> void:
 	match grid_state[cell.y][cell.x]:
 		Cell.WORD:
 			var index: int = tile_owner[cell]
+			if tutorial_only_index >= 0 and index != tutorial_only_index:
+				return
 			if index in connected:
 				_reset_connected_path(index)
 			_clear_path(index)
@@ -407,6 +411,8 @@ func _fill_gap(from_cell: Vector2i, to_cell: Vector2i) -> void:
 			_try_cell(middle)
 
 func _try_cell(cell: Vector2i) -> void:
+	if not is_valid_cell(cell):
+		return
 	if drawing and _try_retract_path(cell):
 		return
 	match grid_state[cell.y][cell.x]:
@@ -418,6 +424,11 @@ func _try_cell(cell: Vector2i) -> void:
 		Cell.DESTINATION:
 			if tile_owner.get(cell, -1) == active_index:
 				_try_finalize_connection(cell)
+			elif drawing:
+				invalid_move.emit("Busca su palabra maya", cell)
+		Cell.OBSTACLE:
+			if drawing:
+				invalid_move.emit("Rodea la roca", cell)
 
 func _try_finalize_connection(destination_cell: Vector2i) -> void:
 	_get_path_controller().try_finalize(destination_cell)
@@ -483,3 +494,52 @@ func _remove_path_line(index: int) -> void:
 
 func _reset_tile(cell: Vector2i) -> void:
 	_get_renderer().reset_tile(cell)
+
+func focus_first_path(enabled: bool) -> void:
+	tutorial_only_index = 0 if enabled else -1
+	for index: int in range(words.size()):
+		word_nodes[index].visible = not enabled or index == 0
+		destination_nodes[index].visible = not enabled or index == 0
+	for cell: Vector2i in tile_rects:
+		(tile_rects[cell] as Control).modulate.a = 1.0 if not enabled or (cell.y == words[0].start_cell.y and cell.x <= words[0].destination_cell.x) else 0.2
+
+func get_path_state() -> Dictionary:
+	var saved: Dictionary = {}
+	for index: int in paths:
+		var cells: Array = []
+		for cell: Vector2i in paths[index]:
+			cells.append([cell.x, cell.y])
+		saved[str(index)] = cells
+	return {"paths": saved, "connected": connected.duplicate()}
+
+func restore_path_state(state: Dictionary) -> void:
+	var saved_paths: Variant = state.get("paths", {})
+	var saved_connected: Variant = state.get("connected", [])
+	if saved_paths is not Dictionary or saved_connected is not Array:
+		return
+	# JSON decodifica los números como float; Array.has no equipara sus tipos.
+	var restored_connections: Array[int] = []
+	for value: Variant in saved_connected:
+		if (value is int or value is float) and value == int(value):
+			restored_connections.append(int(value))
+	for index: int in range(words.size()):
+		var saved: Variant = saved_paths.get(str(index), [])
+		if saved is not Array or saved.size() > rows * columns:
+			continue
+		active_index = index
+		for pair: Variant in saved:
+			if pair is not Array or pair.size() != 2 or not (pair[0] is float or pair[0] is int) or not (pair[1] is float or pair[1] is int):
+				break
+			var cell := Vector2i(int(pair[0]), int(pair[1]))
+			if not is_valid_cell(cell) or grid_state[cell.y][cell.x] != Cell.EMPTY:
+				break
+			var before: int = paths[index].size()
+			_extend_path(cell)
+			if paths[index].size() == before:
+				break
+		var tip: Vector2i = words[index].start_cell if paths[index].is_empty() else paths[index].back()
+		if index in restored_connections and _are_adjacent(tip, words[index].destination_cell):
+			connected.append(index)
+	active_index = -1
+	drawing = false
+	_refresh_all_path_visuals()

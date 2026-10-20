@@ -39,7 +39,7 @@ func _initialize() -> void:
 	else:
 		for index: int in range(buttons.size()):
 			var expected_name: String = manager.LEVEL_ORDER[index].name
-			if expected_name not in buttons[index].text:
+			if expected_name not in buttons[index].tooltip_text:
 				failures.append("El botón %d no respeta el orden oficial" % (index + 1))
 			if buttons[index].pressed.get_connections().is_empty():
 				failures.append("El botón %d no tiene navegación conectada" % (index + 1))

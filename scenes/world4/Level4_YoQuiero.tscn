@@ -9,6 +9,8 @@
 [ext_resource type="Script" uid="uid://3tucogv2ix4h" path="res://scripts/components/DraggableWordButton.gd" id="7_drag_button"]
 [ext_resource type="Script" uid="uid://bc3tppmuyyvks" path="res://scripts/components/WordDropSlot.gd" id="8_drop_slot"]
 
+[ext_resource type="Script" path="res://scripts/components/MeaningIllustration.gd" id="9_art"]
+
 [node name="Level4" type="Node2D" unique_id=1962404994]
 script = ExtResource("1_script")
 
@@ -24,6 +26,7 @@ offset_right = 1280.0
 offset_bottom = 720.0
 color = Color(0.04, 0.18, 0.16, 0.3)
 
+mouse_filter = 2
 [node name="UI" type="CanvasLayer" parent="." unique_id=246692166]
 
 [node name="LevelHeader" parent="UI" unique_id=240238935 instance=ExtResource("5_header")]
@@ -53,7 +56,7 @@ text = "FASE 1 · APRENDE"
 horizontal_alignment = 1
 
 [node name="AnimalSprite" type="TextureRect" parent="UI/RequestPanel/Content" unique_id=1506204657]
-custom_minimum_size = Vector2(0, 170)
+custom_minimum_size = Vector2(0, 125)
 layout_mode = 2
 expand_mode = 3
 stretch_mode = 5
@@ -66,7 +69,7 @@ text = "Peek' · Perro"
 horizontal_alignment = 1
 
 [node name="RequestLabel" type="Label" parent="UI/RequestPanel/Content" unique_id=411969183]
-custom_minimum_size = Vector2(0, 54)
+custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.28, 0.2, 0.12, 1)
 theme_override_font_sizes/font_size = 17
@@ -75,11 +78,10 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="VisualClue" type="Label" parent="UI/RequestPanel/Content" unique_id=1683262538]
+[node name="VisualClue" type="Control" parent="UI/RequestPanel/Content"]
+custom_minimum_size = Vector2(0, 132)
 layout_mode = 2
-theme_override_font_sizes/font_size = 42
-text = "💧  —"
-horizontal_alignment = 1
+script = ExtResource("9_art")
 
 [node name="SpellPanel" type="Panel" parent="UI" unique_id=226511988]
 offset_left = 380.0
@@ -231,7 +233,7 @@ word_kind = "food"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.32, 0.22, 0.12, 1)
 theme_override_font_sizes/font_size = 15
-text = "2  Elige la cualidad"
+text = "2  Tamaño, si lo pide"
 
 [node name="ModifierGrid" type="GridContainer" parent="UI/ChoicesPanel/Content" unique_id=1809395240]
 layout_mode = 2

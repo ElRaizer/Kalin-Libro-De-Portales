@@ -68,3 +68,21 @@ static func _buttons_in(grid: Container) -> Array[Button]:
 		if child is Button:
 			buttons.append(child as Button)
 	return buttons
+
+static func mark_slot(slot: Control, correct: bool) -> void:
+	var marker := slot.get_node_or_null("ResultMark") as Label
+	if marker == null:
+		marker = Label.new()
+		marker.name = "ResultMark"
+		marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		marker.add_theme_font_size_override("font_size", 25)
+		marker.position = Vector2(slot.size.x - 24, -17)
+		slot.add_child(marker)
+	marker.text = "✓" if correct else "↻"
+	marker.add_theme_color_override("font_color", Color("2e8b57") if correct else Color("b56a1f"))
+	marker.show()
+
+static func clear_mark(slot: Control) -> void:
+	var marker := slot.get_node_or_null("ResultMark") as Label
+	if marker:
+		marker.hide()

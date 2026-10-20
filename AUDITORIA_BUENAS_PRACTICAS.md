@@ -37,9 +37,9 @@ autoloads, recursos y persistencia.
 
 ## Pendientes que requieren una decisión de producto
 
-- **Accesibilidad y teclado:** los niveles 2–4 dependen principalmente del
-  ratón. Hay que definir navegación por foco, contraste objetivo y tamaños
-  mínimos con pruebas de usuarios.
+- **Accesibilidad y teclado:** hay navegación por foco, alternativas de clic al
+  arrastre y ayudas visuales repetibles. Faltan pruebas de comprensión,
+  contraste y comodidad con jugadores del público objetivo.
 - **Diseño adaptable:** la interfaz fue compuesta para 1280 × 720. Antes de
   publicar en móvil o web se deben definir relaciones de aspecto objetivo y
   probar escalado, áreas seguras y texto largo.
@@ -52,9 +52,9 @@ autoloads, recursos y persistencia.
   modifica todas las rutas y enlaces externos. Debe hacerse en una migración
   aislada cuando el equipo confirme que no hay material externo que dependa de
   esos nombres.
-- **Cobertura:** la prueba actual es de estructura y una interacción del Mundo
-  3. Faltan pruebas end-to-end de entrada, navegación, reinicio y migraciones de
-  partidas reales.
+- **Cobertura:** se comprueban los ocho niveles, sus salidas, los repasos, la
+  pausa, la continuación desde JSON y la migración de progreso. Faltan pruebas
+  de sesiones reales con niños y de las exportaciones objetivo.
 
 ## Regla para cambios futuros
 

@@ -3,3 +3,4 @@
 builds/
 export/
 *.tmp
+.ui-review/

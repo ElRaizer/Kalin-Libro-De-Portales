@@ -24,5 +24,5 @@ func set_title(value: String) -> void:
 		title_label.text = value
 
 func set_magic_points(value: int) -> void:
-	magic_label.text = "%d puntos mágicos" % value
+	magic_label.text = GameManager.recovered_pages_text()
 
