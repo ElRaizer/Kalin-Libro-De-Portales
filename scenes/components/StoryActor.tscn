@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="editor_1"]
+
+[node name="ChoiceButton" type="Button"]
+theme = ExtResource("editor_1")
+expand_icon = true
+theme_override_constants/icon_max_width = 160
+theme_type_variation = "KalinStoryActor"
+custom_minimum_size = Vector2(180, 210)
+theme_override_font_sizes/font_size = 22
+offset_left = 0
+offset_top = 0
+offset_right = 180
+offset_bottom = 210
+pivot_offset = Vector2(90, 105)
+icon_alignment = 1
+vertical_icon_alignment = 0
+tooltip_text = "Toca para escuchar su nombre"

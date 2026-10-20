@@ -19,14 +19,22 @@ La escena principal es `res://scenes/MainMenu.tscn`. **Jugar** abre una introduc
 
 ## Configuración esencial
 
-El proyecto ya incluye el autoload requerido:
+El proyecto incluye los siguientes autoloads:
 
 ```ini
 [autoload]
-GameManager="*res://scripts/autoloads/GameManager.gd"
+WindowManager="*res://scripts/autoloads/WindowManager.gd"
+GameManager="*res://scenes/components/GameManager.tscn"
+AccessibilityManager="*res://scenes/components/AccessibilityManager.tscn"
+PauseMenu="*res://scenes/components/PauseMenu.tscn"
 ```
 
 `GameManager` conserva el catálogo canónico de vocabulario, el orden de los niveles, las palabras aprendidas, los puntos mágicos y el guardado local.
+
+La configuración de contenido, arte, controles y plantillas se explica en
+[Configuración desde el editor](GUIA_INSPECTOR.md). Los ejercicios de los mundos
+2–5 usan recursos `ExerciseSet` en `data/exercises/`; las ilustraciones y
+expresiones se asignan en `data/visual_catalog.tres`.
 
 `project.godot` también define tres acciones de entrada para las exploraciones (**Proyecto → Configuración del proyecto → Mapa de entrada**):
 
@@ -75,7 +83,7 @@ Kalin-Libro-De-Portales/
 │   │   ├── Exploracion1_OrillaIsla.tscn
 │   │   ├── Cine1_NocheHuracan.tscn
 │   │   └── Cine2_CasaMayaVacia.tscn
-│   ├── World2/
+│   ├── world2/
 │   │   └── Level2_ConstruyendoPalabras.tscn
 │   ├── world3/
 │   │   └── Level3_HechizosAdjetivos.tscn

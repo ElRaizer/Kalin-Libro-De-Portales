@@ -2,9 +2,8 @@ extends CanvasLayer
 class_name LearningGuide
 
 ## Demostración sobre el juego real. Nunca consume los clics del jugador.
-const HAND = preload("res://Arte/ilustraciones/ui_mano.svg")
-const PAGE = preload("res://Arte/exploracion/prop_pagina.svg")
-var hand: TextureRect
+@export var page_scene: PackedScene
+@onready var hand: TextureRect = $Hand
 var gesture: Tween
 var help_button: Button
 var _point_target: Control
@@ -13,32 +12,17 @@ var _continue_target: Control
 var _idle_seconds := 0.0
 var _idle_delay := 4.0
 var _hint_target: Control
-var _hint_ring: Panel
+@onready var _hint_ring: Panel = $HintRing
+@onready var _gesture_line: Line2D = $GestureLine
 var _action_target: Control
 
 static func install(host: Node, bar: Container, help_action: Callable) -> LearningGuide:
-	var guide := LearningGuide.new()
-	host.add_child(guide)
-	guide.help_button = Button.new()
-	guide.help_button.name = "HelpButton"
-	guide.help_button.text = "? Ayuda"
-	guide.help_button.custom_minimum_size = Vector2(106, 40)
-	guide.help_button.theme_type_variation = &"KalinSecondaryButton"
-	guide.help_button.tooltip_text = "Ver cómo se juega"
+	var guide := host.get_node("LearningGuide") as LearningGuide
+	guide.help_button = bar.get_node("HelpButton") as Button
 	guide.help_button.pressed.connect(help_action)
-	bar.add_child(guide.help_button)
-	bar.move_child(guide.help_button, maxi(1, bar.get_child_count() - 2))
 	return guide
 
 func _ready() -> void:
-	layer = 6
-	hand = TextureRect.new()
-	hand.texture = HAND
-	hand.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	hand.size = Vector2(49, 58)
-	hand.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hand.visible = false
-	add_child(hand)
 	set_process(false)
 
 func demonstrate(points: Array[Vector2]) -> void:
@@ -48,15 +32,8 @@ func demonstrate(points: Array[Vector2]) -> void:
 	hand.visible = true
 	# Una línea discontinua acompaña el gesto; nunca modifica la respuesta real.
 	if points.size() > 1:
-		var line := Line2D.new()
-		line.width = 5
-		line.default_color = Color("ffd050")
-		line.default_color.a = 0.72
-		line.begin_cap_mode = Line2D.LINE_CAP_ROUND
-		line.end_cap_mode = Line2D.LINE_CAP_ROUND
-		line.points = PackedVector2Array(points)
-		add_child(line)
-		move_child(line, 0)
+		_gesture_line.points = PackedVector2Array(points)
+		_gesture_line.show()
 	hand.position = points[0] - Vector2(22, 5)
 	gesture = create_tween().set_loops()
 	gesture.tween_property(hand, "modulate:a", 1.0, 0.15).from(0.0)
@@ -86,15 +63,7 @@ func watch_continue(control: Control, delay: float = 4.0) -> void:
 func highlight(control: Control) -> void:
 	stop()
 	_hint_target = control
-	_hint_ring = Panel.new()
-	_hint_ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0, 0, 0, 0)
-	style.border_color = Color("ffd050")
-	style.set_border_width_all(3)
-	style.set_corner_radius_all(14)
-	_hint_ring.add_theme_stylebox_override("panel", style)
-	add_child(_hint_ring)
+	_hint_ring.show()
 	set_process(true)
 	_process(0)
 
@@ -157,7 +126,8 @@ func _process(delta: float) -> void:
 
 func stop() -> void:
 	_hint_target = null
-	_hint_ring = null
+	_hint_ring.hide()
+	_gesture_line.hide()
 	_action_target = null
 	_point_target = null
 	_continue_target = null
@@ -167,18 +137,14 @@ func stop() -> void:
 		gesture.kill()
 	if is_instance_valid(hand):
 		hand.hide()
-	for child: Node in get_children():
-		if child != hand:
-			child.queue_free()
+	for child: Node in $Effects.get_children():
+		child.queue_free()
 
 func page_to_book(origin: Vector2, target: Vector2) -> void:
-	var page := TextureRect.new()
-	page.texture = PAGE
-	page.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	page.size = Vector2(78, 60)
+	var page := page_scene.instantiate() as TextureRect
 	page.position = origin - page.size * 0.5
 	page.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(page)
+	$Effects.add_child(page)
 	var tween := page.create_tween()
 	tween.tween_property(page, "position", page.position + Vector2(0, -55), 0.3).set_trans(Tween.TRANS_SINE)
 	tween.tween_property(page, "position", target - Vector2(20, 15), 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)

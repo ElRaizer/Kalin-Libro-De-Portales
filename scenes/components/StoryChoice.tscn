@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="editor_1"]
+
+[node name="ChoiceButton" type="Button"]
+theme = ExtResource("editor_1")
+expand_icon = true
+theme_override_constants/icon_max_width = 60
+theme_type_variation = "KalinNounButton"
+custom_minimum_size = Vector2(220, 84)
+theme_override_font_sizes/font_size = 20

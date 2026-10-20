@@ -1,0 +1,87 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://Arte/ilustraciones/ui_libro.svg" id="1_aleg0"]
+
+[ext_resource type="Texture2D" path="res://Arte/sprites/animal_peek.svg" id="2_y8qk7"]
+
+[ext_resource type="Texture2D" path="res://Arte/ilustraciones/objeto_chan.svg" id="3_5lsnv"]
+
+[ext_resource type="Texture2D" path="res://Arte/ilustraciones/cualidad_nojoch.svg" id="4_orn0j"]
+
+[ext_resource type="Texture2D" path="res://Arte/ilustraciones/comida_janal.svg" id="5_4rvuc"]
+
+[ext_resource type="Texture2D" path="res://Arte/ilustraciones/cortesia_gracias.svg" id="6_vklc6"]
+
+[node name="Categories" type="HBoxContainer"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 64.0
+offset_right = 1168.0
+offset_bottom = 110.0
+theme_override_constants/separation = 8
+
+[node name="Category0" type="Button" parent="."]
+custom_minimum_size = Vector2(183, 44)
+layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_constants/icon_max_width = 32
+theme_override_font_sizes/font_size = 18
+toggle_mode = true
+text = "Todo"
+icon = ExtResource("1_aleg0")
+expand_icon = true
+
+[node name="Category1" type="Button" parent="."]
+custom_minimum_size = Vector2(183, 44)
+layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_constants/icon_max_width = 32
+theme_override_font_sizes/font_size = 18
+toggle_mode = true
+text = "Animales"
+icon = ExtResource("2_y8qk7")
+expand_icon = true
+
+[node name="Category2" type="Button" parent="."]
+custom_minimum_size = Vector2(183, 44)
+layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_constants/icon_max_width = 32
+theme_override_font_sizes/font_size = 18
+toggle_mode = true
+text = "Objetos"
+icon = ExtResource("3_5lsnv")
+expand_icon = true
+
+[node name="Category3" type="Button" parent="."]
+custom_minimum_size = Vector2(183, 44)
+layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_constants/icon_max_width = 32
+theme_override_font_sizes/font_size = 18
+toggle_mode = true
+text = "Cómo es"
+icon = ExtResource("4_orn0j")
+expand_icon = true
+
+[node name="Category4" type="Button" parent="."]
+custom_minimum_size = Vector2(183, 44)
+layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_constants/icon_max_width = 32
+theme_override_font_sizes/font_size = 18
+toggle_mode = true
+text = "Comida"
+icon = ExtResource("5_4rvuc")
+expand_icon = true
+
+[node name="Category5" type="Button" parent="."]
+custom_minimum_size = Vector2(183, 44)
+layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_constants/icon_max_width = 32
+theme_override_font_sizes/font_size = 18
+toggle_mode = true
+text = "Cortesía"
+icon = ExtResource("6_vklc6")
+expand_icon = true

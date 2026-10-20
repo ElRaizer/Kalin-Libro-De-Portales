@@ -4,6 +4,14 @@ Revisión realizada sobre Godot 4.6.3. El criterio principal es la documentació
 oficial de Godot sobre organización de proyectos y escenas, estilo GDScript,
 autoloads, recursos y persistencia.
 
+Actualización del 20 de octubre de 2026: se aplicó la revisión de configuración
+del inspector. Los controles fijos y las composiciones visuales se guardan en
+escenas, los ejercicios en recursos editables y el arte en un catálogo de
+referencias explícitas. La guía vigente está en [GUIA_INSPECTOR.md](GUIA_INSPECTOR.md).
+Los cuatro tableros, los espacios para actores y los botones de respuesta
+también están guardados en escenas y se reutilizan. Se retiraron las
+herramientas temporales de migración; Python no es una dependencia del juego.
+
 ## Resumen
 
 | Área | Estado | Resultado |
@@ -18,7 +26,7 @@ autoloads, recursos y persistencia.
 | Persistencia | Corregido | El guardado ahora tiene versión, comprueba errores de apertura/escritura, informa JSON dañado y descarta niveles inválidos o duplicados. |
 | Configuración de componentes | Corregido | `GridBoard` muestra advertencias en el editor por texturas faltantes, palabras vacías, celdas fuera de rango, duplicados y solapamientos. |
 | Portabilidad | Corregido | Git registra `scenes/world2` con la misma capitalización usada por las rutas. Se añadieron reglas de fin de línea y editor. |
-| Carga de recursos | Mejorado | Se eliminaron cargas redundantes de fondos ya configurados en escenas y los recursos fijos del Mundo 4 usan `preload`. |
+| Carga de recursos | Corregido | Los fondos, retratos y expresiones usan referencias a recursos en escenas y en `visual_catalog.tres`; las plantillas variables están asignadas en el inspector. |
 | Pruebas automáticas | Mejorado | La validación comprueba todas las escenas registradas, las instancia y revisa la configuración de cada tablero. También revisa la estructura de las exploraciones y recorre la de la orilla (bloqueo, reacción y meta). |
 | Exploraciones | Cumple | `ExplorationScene` y `ExplorationSpot` se configuran desde el Inspector; los objetos avisan en el editor si les falta diálogo y la altura de Kalin sale del `Path2D` en vez de valores fijos. |
 | Arte SVG | Corregido | Las sombras de Kalin y los animales usaban `rgba(...)`, que el importador de Godot dibuja como negro sólido; ahora usan `fill-opacity`. |
@@ -27,6 +35,11 @@ autoloads, recursos y persistencia.
 ## Decisiones que conviene conservar
 
 - Un autoload pequeño para progreso y navegación es apropiado en este proyecto.
+- La pausa es un autoload de escena; su script conecta controles ya guardados.
+- La distribución estática pertenece a las escenas. La lógica de presentación
+  conserva únicamente los cambios dependientes del estado del juego.
+- `ExerciseSet` y `IntroPanelData` son la configuración efectiva; no deben
+  reintroducirse listas `RAW_*` ni recursos creados desde diccionarios estáticos.
 - Las escenas del Mundo 1 heredan un controlador común y contienen sus datos en
   recursos: evita duplicar la mecánica.
 - `GameManager.VOCABULARY` funciona como fuente única. No deben duplicarse
@@ -61,12 +74,16 @@ autoloads, recursos y persistencia.
 Antes de integrar un cambio, ejecutar:
 
 ```powershell
-godot_console.exe --headless --path . --editor --quit
-godot_console.exe --headless --path . --script res://tests/validate_project.gd
+.\tools\validate.ps1
 ```
 
 Después, probar manualmente la escena modificada y al menos una transición de
 entrada y salida. No deben ignorarse advertencias nuevas del editor.
+
+El comando importa el proyecto y ejecuta las nueve suites, incluida la prueba
+de respeto del inspector. Los datos de prueba quedan aislados de la partida
+real. La notificación de cambios de `GridWordData` y la conservación de la
+escala inicial de Kalin tienen regresiones específicas.
 
 ## Referencias oficiales
 

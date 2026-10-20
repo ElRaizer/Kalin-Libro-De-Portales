@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/LibroHechizos.gd" id="1_script"]
+
 [ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="2_theme"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/BookCategories.tscn" id="editor_3"]
 
 [node name="LibroHechizos" type="CanvasLayer"]
 layer = 10
@@ -54,24 +57,24 @@ text = "Cerrar"
 [node name="Pages" type="HBoxContainer" parent="BG/Book"]
 layout_mode = 0
 offset_left = 28.0
-offset_top = 66.0
 offset_right = 1168.0
 offset_bottom = 584.0
 theme_override_constants/separation = 20
 alignment = 1
+offset_top = 122.0
 
 [node name="LeftPage" type="Panel" parent="BG/Book/Pages"]
-custom_minimum_size = Vector2(545, 510)
 layout_mode = 2
 theme_type_variation = &"KalinBookCard"
+custom_minimum_size = Vector2(545, 450)
 
 [node name="Content" type="VBoxContainer" parent="BG/Book/Pages/LeftPage"]
 layout_mode = 0
 offset_left = 22.0
 offset_top = 16.0
 offset_right = 523.0
-offset_bottom = 492.0
 theme_override_constants/separation = 7
+offset_bottom = 434.0
 
 [node name="StageLabel" type="Label" parent="BG/Book/Pages/LeftPage/Content"]
 layout_mode = 2
@@ -79,20 +82,21 @@ theme_override_colors/font_color = Color(0.56, 0.38, 0.14, 1)
 theme_override_font_sizes/font_size = 14
 text = "Mundo 1 · Nivel 1"
 horizontal_alignment = 1
+visible = false
 
 [node name="Illustration" type="Panel" parent="BG/Book/Pages/LeftPage/Content"]
-custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 theme_type_variation = &"KalinCreamPanel"
+custom_minimum_size = Vector2(0, 146)
 
 [node name="ContextSprite" type="TextureRect" parent="BG/Book/Pages/LeftPage/Content/Illustration"]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 8.0
 offset_right = 477.0
-offset_bottom = 162.0
 expand_mode = 1
 stretch_mode = 5
+offset_bottom = 138.0
 
 [node name="Placeholder" type="Label" parent="BG/Book/Pages/LeftPage/Content/Illustration"]
 layout_mode = 0
@@ -147,6 +151,7 @@ text = "[ estructura ]  →  [ visual ]"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
+visible = false
 
 [node name="AudioButton" type="Button" parent="BG/Book/Pages/LeftPage/Content"]
 custom_minimum_size = Vector2(0, 35)
@@ -170,17 +175,17 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="RightPage" type="Panel" parent="BG/Book/Pages"]
-custom_minimum_size = Vector2(545, 510)
 layout_mode = 2
 theme_type_variation = &"KalinBookCard"
+custom_minimum_size = Vector2(545, 450)
 
 [node name="Content" type="VBoxContainer" parent="BG/Book/Pages/RightPage"]
 layout_mode = 0
 offset_left = 22.0
 offset_top = 16.0
 offset_right = 523.0
-offset_bottom = 492.0
 theme_override_constants/separation = 7
+offset_bottom = 434.0
 
 [node name="StageLabel" type="Label" parent="BG/Book/Pages/RightPage/Content"]
 layout_mode = 2
@@ -188,20 +193,21 @@ theme_override_colors/font_color = Color(0.56, 0.38, 0.14, 1)
 theme_override_font_sizes/font_size = 14
 text = "Mundo 1 · Nivel 1"
 horizontal_alignment = 1
+visible = false
 
 [node name="Illustration" type="Panel" parent="BG/Book/Pages/RightPage/Content"]
-custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 theme_type_variation = &"KalinCreamPanel"
+custom_minimum_size = Vector2(0, 146)
 
 [node name="ContextSprite" type="TextureRect" parent="BG/Book/Pages/RightPage/Content/Illustration"]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 8.0
 offset_right = 477.0
-offset_bottom = 162.0
 expand_mode = 1
 stretch_mode = 5
+offset_bottom = 138.0
 
 [node name="Placeholder" type="Label" parent="BG/Book/Pages/RightPage/Content/Illustration"]
 layout_mode = 0
@@ -256,6 +262,7 @@ text = "[ estructura ]  →  [ visual ]"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
+visible = false
 
 [node name="AudioButton" type="Button" parent="BG/Book/Pages/RightPage/Content"]
 custom_minimum_size = Vector2(0, 35)
@@ -281,11 +288,11 @@ autowrap_mode = 3
 [node name="Spine" type="ColorRect" parent="BG/Book"]
 layout_mode = 0
 offset_left = 591.0
-offset_top = 66.0
 offset_right = 605.0
 offset_bottom = 576.0
 color = Color(0.39, 0.22, 0.09, 0.62)
 mouse_filter = 2
+offset_top = 122.0
 
 [node name="EmptyLabel" type="Label" parent="BG/Book"]
 visible = false
@@ -341,3 +348,5 @@ text = "Audio próximamente"
 horizontal_alignment = 1
 
 [node name="AudioPlayer" type="AudioStreamPlayer" parent="."]
+
+[node name="Categories" parent="BG/Book" instance=ExtResource("editor_3")]

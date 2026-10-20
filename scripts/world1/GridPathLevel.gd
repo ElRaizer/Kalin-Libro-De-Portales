@@ -17,6 +17,7 @@ class_name GridPathLevel
 @export var selection_instruction: String = "Arrastra desde \"%s\" hasta \"%s\"."
 
 @export_category("Llegada a casa")
+@export var arriving_animal_scene: PackedScene
 ## Ritmo por casilla: las rutas largas conservan la misma velocidad.
 @export_range(0.25, 0.8, 0.05) var arrival_step_seconds: float = 0.42
 const ARRIVAL_HOP_HEIGHT := 9.0
@@ -28,10 +29,10 @@ var _dialogue_serial: int = 0
 var _arrival_animating := false
 var _dialogue_word_index := -1
 var guide: LearningGuide
-var continue_button: Button
-var arrival_button: Button
+@onready var continue_button: Button = $UI/DialoguePanel/ContinueButton
+@onready var arrival_button: Button = $UI/ArrivalButton
 var arrival_tween: Tween
-var mission_progress: MissionProgress
+@onready var mission_progress: MissionProgress = $UI/MissionProgress
 
 @onready var grid_board: GridBoard = $GridBoard
 @onready var dialogue: Panel = $UI/DialoguePanel
@@ -50,37 +51,10 @@ func _ready() -> void:
 	_set_default_instruction()
 	_set_mouse_passthrough(dialogue)
 	dialogue.mouse_filter = Control.MOUSE_FILTER_STOP
-	continue_button = Button.new()
-	continue_button.text = "Continuar →"
-	continue_button.theme = preload("res://themes/kalin_theme.tres")
-	continue_button.theme_type_variation = &"KalinPrimaryButton"
-	continue_button.position = Vector2(572, 140)
-	continue_button.size = Vector2(220, 46)
-	continue_button.position = Vector2(1024, 646) - dialogue.position
-	continue_button.size = Vector2(232, 58)
 	continue_button.pressed.connect(_close_dialogue)
-	dialogue.add_child(continue_button)
-	$UI/DialoguePanel/VBox/SkipLbl.hide()
 	guide = LearningGuide.install(self, $UI/LevelHeader/Bar, _show_help)
 	grid_board.set_destination_word_colors(level_number == 1)
-	arrival_button = Button.new()
-	arrival_button.position = Vector2(1024, 646)
-	arrival_button.size = Vector2(232, 58)
-	arrival_button.text = "Más rápido →"
-	arrival_button.theme = preload("res://themes/kalin_theme.tres")
-	arrival_button.theme_type_variation = &"KalinSecondaryButton"
-	arrival_button.pressed.connect(func():
-		if arrival_tween and arrival_tween.is_valid():
-			arrival_tween.set_speed_scale(3.0)
-	)
-	$UI.add_child(arrival_button)
-	arrival_button.hide()
-	mission_progress = MissionProgress.new()
-	mission_progress.position = Vector2(28, 647)
-	mission_progress.size = Vector2(390, 58)
-	$UI.add_child(mission_progress)
-	$UI/InstrPanel.position = Vector2(438, 640)
-	$UI/InstrPanel.size = Vector2(560, 68)
+	arrival_button.pressed.connect(_speed_up_arrival)
 	level_header.menu_pressed.connect(_on_menu_pressed)
 	level_header.book_pressed.connect(_on_book_pressed)
 	completion_overlay.next_pressed.connect(_on_next_level_pressed)
@@ -161,7 +135,7 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 		GameManager.mark_tutorial_seen("paths")
 		grid_board.focus_first_path(false)
 	GameManager.checkpoint(self)
-	var walker := TextureRect.new()
+	var walker := arriving_animal_scene.instantiate() as TextureRect
 	walker.name = "ArrivingAnimal"
 	walker.texture = word.sprite
 	walker.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -279,3 +253,7 @@ func _on_invalid_move(reason: String, cell: Vector2i) -> void:
 
 func get_checkpoint_state() -> Dictionary:
 	return {"board": grid_board.get_path_state(), "complete": _completing, "dialogue_word": _dialogue_word_index, "dialogue_open": _dialogue_open}
+
+func _speed_up_arrival() -> void:
+	if arrival_tween and arrival_tween.is_valid():
+		arrival_tween.set_speed_scale(3.0)

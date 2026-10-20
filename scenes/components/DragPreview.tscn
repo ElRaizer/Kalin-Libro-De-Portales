@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="StyleBox" path="res://themes/drag_preview.tres" id="editor_1"]
+
+[node name="DragPreview" type="Label"]
+horizontal_alignment = 1
+vertical_alignment = 1
+modulate = Color(1, 1, 1, 0.94)
+theme_override_styles/normal = ExtResource("editor_1")
+theme_override_colors/font_color = Color(1, 1, 1, 1)

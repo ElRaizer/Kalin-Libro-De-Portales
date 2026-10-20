@@ -65,7 +65,7 @@ enum Effect {
 ## Muestra la celebración "¡Página recuperada!".
 @export var celebrate_page: bool = false
 ## Vacío, camino, casa, tamano, hambre o portal.
-@export var visual_scene: String = ""
+@export_enum("ninguna", "camino", "casa", "tamano", "hambre", "portal") var visual_scene: String = "ninguna"
 @export var visual_solved: bool = false
 
 @export_category("Animación")

@@ -40,16 +40,6 @@ func _ready() -> void:
 	audio_notice.visible = false
 	_known_words = GameManager.words_learned.duplicate()
 	_build_categories()
-	$BG/Book/Pages.offset_top = 122
-	$BG/Book/Spine.offset_top = 122
-	for page: Panel in [left_page, right_page]:
-		page.custom_minimum_size.y = 450
-		var content := page.get_node("Content") as Control
-		content.offset_bottom = 434
-		content.get_node("StageLabel").hide()
-		content.get_node("DiagramLabel").hide()
-		(content.get_node("Illustration") as Control).custom_minimum_size.y = 146
-		(content.get_node("Illustration/ContextSprite") as Control).offset_bottom = 138
 
 func _reset_book() -> void:
 	_known_words.clear()
@@ -62,26 +52,9 @@ func _reset_book() -> void:
 		_render_spread()
 
 func _build_categories() -> void:
-	var tabs := HBoxContainer.new()
-	tabs.name = "Categories"
-	tabs.position = Vector2(28, 64)
-	tabs.size = Vector2(1140, 46)
-	tabs.add_theme_constant_override("separation", 8)
-	$BG/Book.add_child(tabs)
-	var names := ["Todo", "Animales", "Objetos", "Cómo es", "Comida", "Cortesía"]
-	var icons := ["ui_libro", "animal_peek", "objeto_chan", "cualidad_nojoch", "comida_janal", "cortesia_gracias"]
-	for index: int in range(names.size()):
-		var button := Button.new()
-		button.text = names[index]
-		button.custom_minimum_size = Vector2(183, 44)
-		button.theme_type_variation = &"KalinSecondaryButton"
-		button.toggle_mode = true
-		button.expand_icon = true
-		button.add_theme_constant_override("icon_max_width", 32)
-		button.add_theme_font_size_override("font_size", 18)
-		button.icon = load("res://Arte/%s/%s.svg" % ["sprites" if index == 1 else "ilustraciones", icons[index]])
+	for index: int in range($BG/Book/Categories.get_child_count()):
+		var button := $BG/Book/Categories.get_child(index) as Button
 		button.pressed.connect(_select_category.bind(index))
-		tabs.add_child(button)
 		category_buttons.append(button)
 
 func _select_category(index: int) -> void:
@@ -191,7 +164,7 @@ func _render_page(page: Panel, entry_index: int, visible_slot: int) -> void:
 	var placeholder := content.get_node("Illustration/Placeholder") as Label
 	var image_path := GameManager.get_book_illustration(maya_word)
 	if image_path != "" and ResourceLoader.exists(image_path):
-		illustration.texture = load(image_path)
+		illustration.texture = GameManager.get_visual_texture(maya_word)
 		illustration.visible = true
 		placeholder.visible = false
 	else:

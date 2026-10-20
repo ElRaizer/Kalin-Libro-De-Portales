@@ -1,3 +1,4 @@
+@tool
 ## Escena de historia reutilizable. Presenta a Kalin y a los animales con
 ## animaciones, diálogos y pequeñas interacciones para repasar vocabulario:
 ##   DIALOGO:  alguien habla; se avanza con clic, Espacio o Enter.
@@ -15,21 +16,13 @@
 extends Node2D
 class_name StoryScene
 
-const KALIN_NORMAL: Texture2D = preload("res://Arte/sprites/kalin_normal.svg")
-const KALIN_SURPRISED: Texture2D = preload("res://Arte/sprites/kalin_surprised.svg")
+@export var normal_texture: Texture2D
+@export var surprised_texture: Texture2D
 const STORY_ANIMATOR = preload("res://scripts/components/StoryAnimator.gd")
-const MAX_ACTORS := 4
-const ACTOR_SIZE := Vector2(180, 210)
-const ACTOR_SPACING := 28.0
-const ACTOR_AREA_LEFT := 360.0
-const ACTOR_AREA_WIDTH := 880.0
-const ACTOR_TOP := 250.0
-const ENTRY_DISTANCE := 460.0
-const CHOICE_SIZE := Vector2(220, 84)
-const CHOICE_FONT_SIZE := 20
-const ENTRY_STAGGER := 0.12
-const HOP_HEIGHT := 22.0
-const CHAR_REVEAL_SECONDS := 0.022
+@export var entry_distance: float = 460.0
+@export var entry_stagger: float = 0.12
+@export var hop_height: float = 22.0
+@export var char_reveal_seconds: float = 0.022
 const COLOR_SUCCESS := Color("2e8b57")
 const COLOR_RETRY := Color("b56a1f")
 const COLOR_HINT := Color("f5e6b8")
@@ -49,6 +42,7 @@ const CROSS_SCALE = STORY_ANIMATOR.CROSS_SCALE
 # ─── Estado ──────────────────────────────────────────────────────────────────
 var beat_index: int = -1
 var actor_buttons: Dictionary = {}          # palabra maya -> Button
+var _actor_tweens: Dictionary = {}
 var _stage_words: Array[String] = []
 var _met_words: Array[String] = []
 var _known_words: Array[String] = []
@@ -88,8 +82,21 @@ var _kalin_sleeping: bool:
 
 # ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		update_configuration_warnings()
+		return
+	var issues := get_configuration_issues()
+	if not issues.is_empty():
+		push_error("Configuración del capítulo: " + "; ".join(issues))
+		return
 	chapter_label.text = chapter_title
 	skip_button.pressed.connect(_finish_story)
+	for slot: Control in actors_root.get_children():
+		var button := slot.get_node("Button") as Button
+		button.set_meta("home_position", button.position)
+		button.pressed.connect(func(): _on_actor_pressed(str(button.get_meta("word"))))
+	for button: Button in choices_box.get_children():
+		button.pressed.connect(func(): _on_choice_pressed(str(button.get_meta("word")), button))
 	word_bubble.visible = false
 	celebration.visible = false
 	auto_timer.timeout.connect(_on_auto_timer_timeout)
@@ -97,34 +104,14 @@ func _ready() -> void:
 		self, ambient, background, background_next, kalin, effects_root,
 		title_card, title_label, subtitle_label, flash_rect, celebration
 	)
-	guide = LearningGuide.new()
-	add_child(guide)
-	vignette = StoryVignette.new()
-	vignette.position = Vector2(400, 150)
-	vignette.size = Vector2(800, 350)
-	$Stage.add_child(vignette)
+	guide = $LearningGuide
+	vignette = $Stage/Vignette
 	vignette.mood_changed.connect(_on_vignette_mood)
-	continue_button = Button.new()
-	continue_button.position = Vector2(1024, 646) - $UI/DialogueBox.position
-	continue_button.size = Vector2(232, 58)
-	continue_button.text = "Continuar →"
-	continue_button.theme = preload("res://themes/kalin_theme.tres")
-	continue_button.theme_type_variation = &"KalinPrimaryButton"
+	continue_button = $UI/DialogueBox/ContinueButton
 	continue_button.pressed.connect(_on_continue_pressed)
-	$UI/DialogueBox.add_child(continue_button)
-	var menu := Button.new()
-	menu.position = Vector2(884, 12)
-	menu.size = Vector2(158, 46)
-	menu.text = "Menú"
-	menu.theme = continue_button.theme
-	menu.theme_type_variation = &"KalinSecondaryButton"
-	menu.pressed.connect(_on_menu_pressed)
-	$UI.add_child(menu)
-	hint_label.offset_left = 24
-	hint_label.offset_right = 920
-	hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	$UI/MenuButton.pressed.connect(_on_menu_pressed)
 	_start_kalin_idle()
-	var state := GameManager.get_scene_state(self)
+	var state: Dictionary = GameManager.get_scene_state(self)
 	var saved_beat := clampi(int(state.get("beat", 0)), 0, maxi(beats.size() - 1, 0))
 	if int(state.get("revision", 1)) < 2:
 		var legacy_index := int(state.get("beat", 0))
@@ -204,8 +191,8 @@ func _show_beat(beat: StoryBeat) -> void:
 	_set_stage_actors(beat.actors)
 	for effect_name: String in ["ConfetiPaginas", "ConfetiChispas"]:
 		(effects_root.get_node(effect_name) as CPUParticles2D).visible = beat.kind != StoryBeat.Kind.EXPLORAR
-	vignette.show_situation(beat.visual_scene, beat.visual_solved)
-	actors_root.visible = beat.visual_scene.is_empty()
+	vignette.show_situation("" if beat.visual_scene == "ninguna" else beat.visual_scene, beat.visual_solved)
+	actors_root.visible = beat.visual_scene == "ninguna" or beat.visual_scene.is_empty()
 	speaker_label.text = _speaker_name(beat.speaker)
 	speaker_label.visible = speaker_label.text != ""
 	_reveal_text(beat.text)
@@ -254,44 +241,32 @@ func _show_beat(beat: StoryBeat) -> void:
 func _on_vignette_mood(expression: String) -> void:
 	if not kalin.visible or _kalin_sleeping:
 		return
-	kalin.texture = KALIN_NORMAL if expression == "normal" else load("res://Arte/sprites/expresiones/kalin_%s.svg" % expression)
+	kalin.texture = normal_texture if expression == "normal" else GameManager.get_visual_texture("kalin_" + expression)
 
 # ─── Actores ─────────────────────────────────────────────────────────────────
 func _set_stage_actors(words: Array[String]) -> void:
 	if words == _stage_words:
 		return
-	for button: Button in actor_buttons.values():
-		button.queue_free()
+	for slot: Control in actors_root.get_children():
+		slot.hide()
+		var button := slot.get_node("Button") as Button
+		if _actor_tweens.has(button):
+			(_actor_tweens[button] as Tween).kill()
+		button.position = button.get_meta("home_position")
+		button.modulate.a = 1.0
 	actor_buttons.clear()
 	_stage_words = words.duplicate()
-	var count: int = mini(words.size(), MAX_ACTORS)
-	var total_width: float = count * ACTOR_SIZE.x + maxf(count - 1, 0) * ACTOR_SPACING
-	var left: float = ACTOR_AREA_LEFT + (ACTOR_AREA_WIDTH - total_width) * 0.5
-	for index: int in range(count):
+	for index: int in range(words.size()):
 		var word: String = words[index]
-		var button := _make_actor_button(word)
-		actors_root.add_child(button)
+		var slot := actors_root.get_child(index) as Control
+		var button := slot.get_node("Button") as Button
+		slot.show()
+		button.set_meta("word", word)
+		button.icon = GameManager.get_visual_texture(word)
+		_update_actor_label(button, word)
 		actor_buttons[word] = button
-		var target := Vector2(left + index * (ACTOR_SIZE.x + ACTOR_SPACING), ACTOR_TOP)
-		_animate_entry(button, target, index * ENTRY_STAGGER)
-
-func _make_actor_button(word: String) -> Button:
-	var button := Button.new()
-	button.theme_type_variation = &"KalinStoryActor"
-	button.size = ACTOR_SIZE
-	button.custom_minimum_size = ACTOR_SIZE
-	button.pivot_offset = ACTOR_SIZE * 0.5
-	button.expand_icon = true
-	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	button.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
-	button.add_theme_font_size_override("font_size", 22)
-	var illustration: String = GameManager.get_book_illustration(word)
-	if illustration != "":
-		button.icon = load(illustration)
-	button.tooltip_text = "Toca para escuchar su nombre"
-	button.pressed.connect(_on_actor_pressed.bind(word))
-	_update_actor_label(button, word)
-	return button
+		var target: Vector2 = button.get_meta("home_position")
+		_animate_entry(button, target, index * entry_stagger)
 
 func _update_actor_label(button: Button, word: String) -> void:
 	# En ADIVINAR los nombres se ocultan para que el jugador reconozca la imagen.
@@ -356,25 +331,23 @@ func _guess_actor(word: String, target: String) -> void:
 
 # ─── Opciones escritas (ELEGIR) ──────────────────────────────────────────────
 func _build_choices(options: Array[String]) -> void:
-	for word: String in options:
+	for index: int in range(options.size()):
+		var word := options[index]
 		var entry: Dictionary = GameManager.get_vocabulary_entry(word)
-		var button := Button.new()
+		var button := choices_box.get_child(index) as Button
+		button.show()
+		button.set_meta("word", word)
 		# Los adjetivos del Mundo 3 conservan su color morado; el resto usa el
 		# color de los sustantivos, como en los niveles.
 		button.theme_type_variation = &"KalinAdjectiveButton" if int(entry.get("world", 0)) == 3 else &"KalinNounButton"
-		button.custom_minimum_size = CHOICE_SIZE
-		button.add_theme_font_size_override("font_size", CHOICE_FONT_SIZE)
 		button.text = word
-		button.pressed.connect(_on_choice_pressed.bind(word, button))
-		choices_box.add_child(button)
 	choices_box.visible = true
 	if choices_box.get_child_count() > 0:
 		(choices_box.get_child(0) as Button).grab_focus()
 
 func _clear_choices() -> void:
 	for child: Node in choices_box.get_children():
-		choices_box.remove_child(child)
-		child.queue_free()
+		(child as Button).hide()
 	choices_box.visible = false
 
 func _on_choice_pressed(word: String, button: Button) -> void:
@@ -435,7 +408,7 @@ func _reveal_text(text: String) -> void:
 	dialogue_text.text = text
 	dialogue_text.visible_ratio = 0.0
 	_text_tween = create_tween()
-	_text_tween.tween_property(dialogue_text, "visible_ratio", 1.0, text.length() * CHAR_REVEAL_SECONDS)
+	_text_tween.tween_property(dialogue_text, "visible_ratio", 1.0, text.length() * char_reveal_seconds)
 
 func _is_revealing_text() -> bool:
 	return _text_tween != null and _text_tween.is_running()
@@ -451,7 +424,7 @@ func _set_hint(text: String, color: Color) -> void:
 # ─── Animaciones ─────────────────────────────────────────────────────────────
 func _apply_kalin_pose(pose: StoryBeat.KalinPose) -> void:
 	kalin.visible = pose != StoryBeat.KalinPose.OCULTO
-	kalin.texture = KALIN_SURPRISED if pose == StoryBeat.KalinPose.SORPRENDIDO else KALIN_NORMAL
+	kalin.texture = surprised_texture if pose == StoryBeat.KalinPose.SORPRENDIDO else normal_texture
 
 func _start_kalin_idle() -> void:
 	_animator.start_idle()
@@ -465,21 +438,33 @@ func _animate_speaker(speaker: String) -> void:
 		tween.tween_property(kalin, "scale", Vector2.ONE, 0.18)
 
 func _animate_entry(button: Button, target: Vector2, delay: float) -> void:
-	button.position = target + Vector2(ENTRY_DISTANCE, 0)
+	button.position = target + Vector2(entry_distance, 0)
 	button.modulate.a = 0.0
 	var tween := create_tween().set_parallel(true)
+	_actor_tweens[button] = tween
 	tween.tween_property(button, "position", target, 0.55).set_delay(delay).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.tween_property(button, "modulate:a", 1.0, 0.3).set_delay(delay)
 
 func _hop(button: Button) -> void:
-	var base_y: float = ACTOR_TOP
+	if _actor_tweens.has(button):
+		(_actor_tweens[button] as Tween).kill()
+	button.position = button.get_meta("home_position")
+	button.modulate.a = 1.0
+	var base_y: float = (button.get_meta("home_position") as Vector2).y
 	var tween := create_tween()
-	tween.tween_property(button, "position:y", base_y - HOP_HEIGHT, 0.12).set_trans(Tween.TRANS_SINE)
+	_actor_tweens[button] = tween
+	tween.tween_property(button, "position:y", base_y - hop_height, 0.12).set_trans(Tween.TRANS_SINE)
 	tween.tween_property(button, "position:y", base_y, 0.16).set_trans(Tween.TRANS_BOUNCE)
 
 func _shake(button: Button) -> void:
+	if _actor_tweens.has(button):
+		(_actor_tweens[button] as Tween).kill()
+		button.position = button.get_meta("home_position")
+		button.modulate.a = 1.0
 	var base_x: float = button.position.x
 	var tween := create_tween()
+	if button.has_meta("home_position"):
+		_actor_tweens[button] = tween
 	tween.tween_property(button, "position:x", base_x - 8.0, 0.05)
 	tween.tween_property(button, "position:x", base_x + 8.0, 0.05)
 	tween.tween_property(button, "position:x", base_x, 0.05)
@@ -515,7 +500,7 @@ func _schedule_auto_advance(beat: StoryBeat) -> void:
 		return
 	# Se espera a que termine de escribirse el texto y luego el tiempo indicado.
 	# Las escenas con texto esperan una lectura cómoda; se pueden adelantar.
-	auto_timer.start(maxf(beat.text.length() * 0.065 + 1.0, beat.text.length() * CHAR_REVEAL_SECONDS + beat.auto_advance))
+	auto_timer.start(maxf(beat.text.length() * 0.065 + 1.0, beat.text.length() * char_reveal_seconds + beat.auto_advance))
 
 func _on_auto_timer_timeout() -> void:
 	if _navigating or not _waiting_to_continue:
@@ -561,3 +546,31 @@ func get_checkpoint_state() -> Dictionary:
 func _on_menu_pressed() -> void:
 	auto_timer.stop()
 	GameManager.go_to_scene("main_menu")
+
+func get_configuration_issues() -> PackedStringArray:
+	var issues: PackedStringArray = []
+	if next_scene_key not in GameContent.SCENE_PATHS:
+		issues.append("Selecciona una clave de salida válida en next_scene_key.")
+	if beats.is_empty():
+		issues.append("Agrega al menos un momento al capítulo.")
+	for index: int in range(beats.size()):
+		var beat := beats[index]
+		if beat == null:
+			issues.append("El momento %d no tiene un recurso asignado." % (index + 1))
+			continue
+		if beat.actors.size() > get_node("Stage/Actors").get_child_count():
+			issues.append("Añade espacios de actor en Stage/Actors para este capítulo.")
+		if beat.options.size() > get_node("UI/Choices").get_child_count():
+			issues.append("Añade botones en UI/Choices para todas las respuestas del capítulo.")
+		if beat.kind == StoryBeat.Kind.CONOCER and beat.actors.is_empty():
+			issues.append("CONOCER necesita animales en actors.")
+		if beat.kind == StoryBeat.Kind.ADIVINAR and beat.target_word not in beat.actors:
+			issues.append("El animal objetivo debe aparecer en actors.")
+		if beat.kind == StoryBeat.Kind.ELEGIR and (beat.options.size() < 2 or beat.target_word not in beat.options):
+			issues.append("ELEGIR necesita opciones que incluyan la respuesta correcta.")
+		if beat.kind == StoryBeat.Kind.EXPLORAR and beat.visual_scene not in ["camino", "casa", "tamano", "hambre", "portal"]:
+			issues.append("Selecciona una situación visual para EXPLORAR.")
+	return issues
+
+func _get_configuration_warnings() -> PackedStringArray:
+	return get_configuration_issues()

@@ -11,9 +11,9 @@ extends Node2D
 var level_buttons: Array[Button] = []
 var selected_world := 1
 var world_buttons: Array[Button] = []
-var reset_confirmation: ConfirmationDialog
-var kalin_marker: TextureRect
-var next_stop: Label
+@onready var reset_confirmation: ResetConfirmation = $UI/ResetConfirmation
+@onready var kalin_marker: TextureRect = $UI/WorldMap/KalinLocation
+@onready var next_stop: Label = $UI/NextStop
 
 func _ready() -> void:
 	selected_world = int(GameManager.get_level_info(GameManager.next_unlocked_scene()).get("world", 1))
@@ -21,22 +21,7 @@ func _ready() -> void:
 		selected_world = clampi(GameManager.resume_scene_key.trim_prefix("world").get_slice("_", 0).to_int(), 1, 5)
 	_setup_level_buttons()
 	_build_world_map()
-	reset_confirmation = ConfirmationDialog.new()
-	reset_confirmation.theme = preload("res://themes/kalin_theme.tres")
-	reset_confirmation.title = "Volver a empezar"
-	reset_confirmation.dialog_text = "¿Borrar las páginas recuperadas y empezar otra aventura?"
-	reset_confirmation.ok_button_text = "Borrar partida"
-	reset_confirmation.cancel_button_text = "Conservar mi aventura"
 	reset_confirmation.confirmed.connect(GameManager.reset_save)
-	$UI.add_child(reset_confirmation)
-	reset_confirmation.get_label().add_theme_color_override("font_color", Color("3b2415"))
-	reset_confirmation.get_label().add_theme_font_size_override("font_size", 21)
-	reset_confirmation.get_label().autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	reset_confirmation.get_label().custom_minimum_size = Vector2(460, 100)
-	reset_confirmation.get_ok_button().theme_type_variation = &"KalinSecondaryButton"
-	reset_confirmation.get_ok_button().custom_minimum_size = Vector2(160, 48)
-	reset_confirmation.get_cancel_button().theme_type_variation = &"KalinPrimaryButton"
-	reset_confirmation.get_cancel_button().custom_minimum_size = Vector2(250, 48)
 	_refresh_ui()
 	play_btn.grab_focus()
 	GameManager.magic_points_changed.connect(_on_progress_changed)
@@ -140,8 +125,7 @@ func _on_book_pressed() -> void:
 	libro.show_book()
 
 func _on_reset_pressed() -> void:
-	reset_confirmation.popup_centered(Vector2i(520, 210))
-	reset_confirmation.get_cancel_button().grab_focus()
+	reset_confirmation.show_dialog()
 
 func _on_quit_pressed() -> void:
 	GameManager.quit_game()
@@ -151,52 +135,10 @@ func _on_progress_reset() -> void:
 	_refresh_ui()
 
 func _build_world_map() -> void:
-	var icons: Array[String] = ["res://Arte/ilustraciones/ui_isla.svg", "res://Arte/ilustraciones/ui_casa.svg", "res://Arte/ilustraciones/ui_libro.svg", "res://Arte/ilustraciones/comida_janal.svg", "res://Arte/ilustraciones/ui_portal.svg"]
-	var names: Array[String] = ["La isla", "La casa", "El taller", "La comida", "El portal"]
-	var map := Control.new()
-	map.name = "WorldMap"
-	map.position = Vector2(92, 180)
-	map.size = Vector2(1096, 200)
-	map.theme = preload("res://themes/kalin_theme.tres")
-	$UI.add_child(map)
-	var trail := Line2D.new()
-	trail.width = 12
-	trail.default_color = Color("e8ddb8")
-	trail.begin_cap_mode = Line2D.LINE_CAP_ROUND
-	trail.end_cap_mode = Line2D.LINE_CAP_ROUND
-	map.add_child(trail)
 	for index: int in range(5):
-		var point := Vector2(110 + index * 220, 96 + (-12 if index % 2 == 0 else 12))
-		trail.add_point(point)
-		var button := Button.new()
-		button.position = point - Vector2(96, 82)
-		button.size = Vector2(192, 164)
-		button.theme_type_variation = &"KalinSecondaryButton"
-		button.icon = load(icons[index])
-		button.expand_icon = true
-		button.add_theme_constant_override("icon_max_width", 98)
-		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
-		button.text = names[index]
-		button.add_theme_font_size_override("font_size", 20)
+		var button := $UI/WorldMap.get_node("World%d" % (index + 1)) as Button
 		button.pressed.connect(_select_world.bind(index + 1))
-		map.add_child(button)
 		world_buttons.append(button)
-	kalin_marker = TextureRect.new()
-	kalin_marker.name = "KalinLocation"
-	kalin_marker.texture = preload("res://Arte/sprites/kalin_normal.svg")
-	kalin_marker.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	kalin_marker.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	kalin_marker.size = Vector2(52, 84)
-	kalin_marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	map.add_child(kalin_marker)
-	next_stop = Label.new()
-	next_stop.position = Vector2(200, 451)
-	next_stop.size = Vector2(880, 22)
-	next_stop.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	next_stop.add_theme_font_size_override("font_size", 17)
-	next_stop.add_theme_color_override("font_color", Color("fff0b8"))
-	$UI.add_child(next_stop)
 
 func _select_world(world: int) -> void:
 	selected_world = world
@@ -208,7 +150,7 @@ func _refresh_world_map() -> void:
 	if GameManager.resume_scene_key.begins_with("world"):
 		location = clampi(GameManager.resume_scene_key.trim_prefix("world").get_slice("_", 0).to_int(), 1, 5)
 	if is_instance_valid(kalin_marker):
-		kalin_marker.position = Vector2(110 + (location - 1) * 220 + 47, 96 + (-12 if location % 2 == 1 else 12) + 5)
+		kalin_marker.position = world_buttons[location - 1].position + Vector2(143, 87)
 	for index: int in range(world_buttons.size()):
 		var unlocked := index == 0
 		for level: Dictionary in GameManager.LEVEL_ORDER:

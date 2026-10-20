@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[node name="ArrivingAnimal" type="TextureRect"]
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2

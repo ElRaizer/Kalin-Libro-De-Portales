@@ -1,3 +1,4 @@
+@tool
 ## Intro.gd
 ## Introducción visual novel de Kalin y el Libro de los Portales.
 ## Presenta al personaje, establece el contexto narrativo y lleva al Nivel 1.
@@ -5,22 +6,14 @@
 
 extends Node2D
 
-const INTRO_PANEL_DATA = preload("res://scripts/data/IntroPanelData.gd")
-
-# ─── Datos de los paneles narrativos ────────────────────────────────────────
-const RAW_PANELS := [
-	{"bg": "res://Arte/backgrounds/bg_intro_room.svg", "kalin": "res://Arte/sprites/kalin_normal.svg", "kalin_x": 760, "text": "En Yucatán, Kalin aprendía magia con su Libro de Hechizos.", "subtext": ""},
-	{"bg": "res://Arte/backgrounds/bg_intro_portal.svg", "kalin": "res://Arte/sprites/kalin_surprised.svg", "kalin_x": 200, "text": "¡El libro abrió un portal! Sus páginas salieron volando.", "subtext": ""},
-	{"bg": "res://Arte/backgrounds/bg_intro_portal.svg", "kalin": "res://Arte/sprites/kalin_surprised.svg", "kalin_x": 200, "text": "¡Ayuda a Kalin a recuperar las palabras y volver a casa!", "subtext": ""},
-]
-static var PANELS: Array[IntroPanelData] = INTRO_PANEL_DATA.from_dictionaries(RAW_PANELS)
+@export var panels: Array[IntroPanelData] = []
 
 # ─── Estado ──────────────────────────────────────────────────────────────────
 var panel_index: int = 0
 var is_animating: bool = false
 var text_revealed: bool = false
 var full_text: String = ""
-var continue_button: Button
+@onready var continue_button: Button = $UI/ContinueButton
 const CHAR_DELAY := 0.025   # segundos entre caracteres (typewriter)
 
 # ─── Nodos ───────────────────────────────────────────────────────────────────
@@ -36,36 +29,18 @@ const CHAR_DELAY := 0.025   # segundos entre caracteres (typewriter)
 
 # ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
-	skip_btn.theme = preload("res://themes/kalin_theme.tres")
-	skip_btn.theme_type_variation = &"KalinSecondaryButton"
-	skip_btn.position = Vector2(1060, 12)
-	skip_btn.size = Vector2(204, 46)
-	skip_btn.add_theme_font_size_override("font_size", 19)
-	panel_num_lbl.position = Vector2(24, 12)
-	panel_num_lbl.size = Vector2(120, 46)
-	panel_num_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	panel_num_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	kalin_sprite.size = Vector2(200, 340)
-	continue_button = Button.new()
-	continue_button.position = Vector2(1024, 646)
-	continue_button.size = Vector2(232, 58)
-	continue_button.text = "Continuar →"
-	continue_button.theme = preload("res://themes/kalin_theme.tres")
-	continue_button.theme_type_variation = &"KalinPrimaryButton"
+	if Engine.is_editor_hint():
+		update_configuration_warnings()
+		return
+	if not get_configuration_issues().is_empty():
+		push_error("La introducción necesita paneles con sus fondos y personajes.")
+		return
 	continue_button.pressed.connect(_advance)
-	$UI.add_child(continue_button)
-	var menu := Button.new()
-	menu.position = Vector2(884, 12)
-	menu.size = Vector2(158, 46)
-	menu.text = "Menú"
-	menu.theme = preload("res://themes/kalin_theme.tres")
-	menu.theme_type_variation = &"KalinSecondaryButton"
-	menu.pressed.connect(func(): GameManager.go_to_scene("main_menu"))
-	$UI.add_child(menu)
+	$UI/MenuButton.pressed.connect(_on_menu_pressed)
 	skip_btn.pressed.connect(_on_skip)
 	typewriter_timer.wait_time = CHAR_DELAY
 	typewriter_timer.timeout.connect(_typewriter_tick)
-	_show_panel(clampi(int(GameManager.get_scene_state(self).get("panel", 0)), 0, PANELS.size() - 1))
+	_show_panel(clampi(int(GameManager.get_scene_state(self).get("panel", 0)), 0, panels.size() - 1))
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -93,7 +68,7 @@ func _advance() -> void:
 		return
 	# Siguiente panel
 	panel_index += 1
-	if panel_index >= PANELS.size():
+	if panel_index >= panels.size():
 		_go_to_level1()
 	else:
 		_show_panel(panel_index)
@@ -103,17 +78,17 @@ func _show_panel(idx: int) -> void:
 	GameManager.checkpoint(self)
 	is_animating = true
 	text_revealed = false
-	var p: IntroPanelData = PANELS[idx]
+	var p: IntroPanelData = panels[idx]
 
 	# Número de panel
-	panel_num_lbl.text = "%d / %d" % [idx + 1, PANELS.size()]
+	panel_num_lbl.text = "%d / %d" % [idx + 1, panels.size()]
 
 	# Fondo
-	_set_texture_from_path(bg_rect, p.background_path)
+	bg_rect.texture = p.background
 
 	# Kalin sprite
-	if p.kalin_path != "":
-		_set_texture_from_path(kalin_sprite, p.kalin_path)
+	if p.kalin != null:
+		kalin_sprite.texture = p.kalin
 		kalin_sprite.position.x = p.kalin_x
 		kalin_sprite.visible = true
 		# Subtle entrance animation
@@ -134,8 +109,9 @@ func _show_panel(idx: int) -> void:
 	dialogue_box.modulate.a = 0.0
 	var tw2: Tween = create_tween()
 	tw2.tween_property(dialogue_box, "modulate:a", 1.0, 0.3)
-	await tw2.finished
+	tw2.finished.connect(_on_panel_faded)
 
+func _on_panel_faded() -> void:
 	is_animating = false
 	continue_button.disabled = false
 	# Start typewriter
@@ -163,13 +139,8 @@ func _finish_typewriter() -> void:
 
 # ─── Utilidades ──────────────────────────────────────────────────────────────
 
-func _set_texture_from_path(rect: TextureRect, path: String) -> void:
-	if path == "":
-		rect.texture = null
-		return
-	var tex: Texture2D = load(path) as Texture2D
-	if tex:
-		rect.texture = tex
+func _on_menu_pressed() -> void:
+	GameManager.go_to_scene("main_menu")
 
 func _on_skip() -> void:
 	GameManager.go_to_scene("world1_explore1")
@@ -181,3 +152,15 @@ func _go_to_level1() -> void:
 
 func get_checkpoint_state() -> Dictionary:
 	return {"panel": panel_index}
+
+func get_configuration_issues() -> PackedStringArray:
+	var issues: PackedStringArray = []
+	if panels.is_empty():
+		issues.append("Agrega al menos un panel narrativo.")
+	for panel: IntroPanelData in panels:
+		if panel == null or panel.background == null:
+			issues.append("Asigna un recurso y un fondo a cada panel narrativo.")
+	return issues
+
+func _get_configuration_warnings() -> PackedStringArray:
+	return get_configuration_issues()

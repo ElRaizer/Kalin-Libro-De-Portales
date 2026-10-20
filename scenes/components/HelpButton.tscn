@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[node name="HelpButton" type="Button"]
+theme_type_variation = &"KalinSecondaryButton"
+custom_minimum_size = Vector2(106, 40)
+text = "? Ayuda"
+tooltip_text = "Ver cómo se juega"

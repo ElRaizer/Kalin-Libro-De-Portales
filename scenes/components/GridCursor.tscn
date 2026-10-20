@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="StyleBox" path="res://themes/grid_cursor.tres" id="editor_1"]
+
+[node name="KeyboardCursor" type="Panel"]
+mouse_filter = 2
+z_index = 20
+theme_override_styles/panel = ExtResource("editor_1")

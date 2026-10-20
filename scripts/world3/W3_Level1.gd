@@ -1,41 +1,25 @@
+@tool
 ## Mundo 3, nivel 1 — Hechizos con adjetivos
 ## El jugador construye las frases del GDD combinando un sustantivo y un
 ## adjetivo. La primera vuelta ofrece traducciones; la segunda las retira.
 extends Node2D
 
-const UI_EFFECTS = preload("res://scripts/components/UIEffects.gd")
+@export var content: ExerciseSet
+var nouns: Array[ExerciseEntry]:
+	get:
+		return content.nouns
+var adjectives: Array[ExerciseEntry]:
+	get:
+		return content.adjectives
+var challenges: Array[ExerciseEntry]:
+	get:
+		return content.challenges
+
 const PHRASE_BUILDER = preload("res://scripts/components/PhraseBuilderController.gd")
-const EXERCISE_ENTRY = preload("res://scripts/data/ExerciseEntry.gd")
 
-const RAW_NOUNS: Array[Dictionary] = [
-	{ "maya": "mayak",  "spanish": "mesa",   "emoji": "🪑" },
-	{ "maya": "lak",    "spanish": "plato",  "emoji": "🍽️" },
-	{ "maya": "ch'áak", "spanish": "cama",   "emoji": "🛏️" },
-	{ "maya": "chan",   "spanish": "silla",  "emoji": "💺" },
-	{ "maya": "janal",  "spanish": "comida", "emoji": "🍲" },
-]
-static var NOUNS: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_NOUNS)
-
-const RAW_ADJECTIVES: Array[Dictionary] = [
-	{ "maya": "mejen",    "spanish": "pequeña" },
-	{ "maya": "nojoch",   "spanish": "grande" },
-	{ "maya": "Jats'uts", "spanish": "bonita" },
-	{ "maya": "ki'",      "spanish": "deliciosa" },
-	{ "maya": "jach'",    "spanish": "fuerte" },
-]
-static var ADJECTIVES: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_ADJECTIVES)
 
 ## Peticiones definidas por el GDD. Las frases se guardan completas para no
 ## intentar inferir las uniones morfológicas desde el código.
-const RAW_CHALLENGES: Array[Dictionary] = [
-	{ "animal": "Peek'", "animal_spanish": "Perro", "sprite": "res://Arte/sprites/animal_peek.svg", "noun": "chan", "adjective": "jach'", "phrase": "In chan'e' jach'", "translation": "Mi silla es fuerte." },
-	{ "animal": "Miis", "animal_spanish": "Gato", "sprite": "res://Arte/sprites/animal_miis.svg", "noun": "ch'áak", "adjective": "mejen", "phrase": "In ch'áake' mejen", "translation": "Mi cama es pequeña." },
-	{ "animal": "Kaax", "animal_spanish": "Gallina", "sprite": "res://Arte/sprites/animal_kaax.svg", "noun": "lak", "adjective": "Jats'uts", "phrase": "In lake' Jats'uts", "translation": "Mi plato es bonito." },
-	{ "animal": "Áak", "animal_spanish": "Tortuga", "sprite": "res://Arte/sprites/animal_aak.svg", "noun": "mayak", "adjective": "nojoch", "phrase": "In mayake' nojoch", "translation": "Mi mesa es grande." },
-	{ "animal": "K'éek'en", "animal_spanish": "Cerdo", "sprite": "res://Arte/sprites/animal_keek_en.svg", "noun": "janal", "adjective": "ki'", "phrase": "In janale' ki'", "translation": "Mi comida es deliciosa." },
-	{ "animal": "Kéej", "animal_spanish": "Venado", "sprite": "res://Arte/sprites/animal_keej.svg", "noun": "chan", "adjective": "Jats'uts", "phrase": "In chan'e' Jats'uts", "translation": "Mi silla es bonita." },
-]
-static var CHALLENGES: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_CHALLENGES)
 
 const COLOR_INK := Color("3b2415")
 const COLOR_SUCCESS := Color("2e8b57")
@@ -52,9 +36,9 @@ var _awaiting_continue := false
 var _mistakes := 0
 var guide: LearningGuide
 var target_art: MeaningIllustration
-var result_art: MeaningIllustration
-var mission_progress: MissionProgress
-var mission_break: MissionBreak
+@onready var result_art: MeaningIllustration = $UI/FeedbackPanel/ResultArt
+@onready var mission_progress: MissionProgress = $UI/MissionProgress
+@onready var mission_break: MissionBreak = $UI/MissionBreak
 var _help_stage := 0
 var _blocks_seen: Array[int] = []
 
@@ -71,7 +55,7 @@ var _blocks_seen: Array[int] = []
 @onready var translation_label: Label = $UI/SpellPanel/Content/TranslationLabel
 @onready var noun_grid: GridContainer = $UI/ChoicesPanel/Content/NounGrid
 @onready var adjective_grid: GridContainer = $UI/ChoicesPanel/Content/AdjectiveGrid
-@onready var cast_button: Button = $UI/ChoicesPanel/Content/CastButton
+@onready var cast_button: Button = $UI/CastButton
 @onready var feedback_label: Label = $UI/FeedbackPanel/FeedbackLabel
 @onready var progress_label: Label = $UI/StatusPanel/StatusRow/ProgressLabel
 @onready var instruction_label: Label = $UI/StatusPanel/StatusRow/InstructionLabel
@@ -79,6 +63,13 @@ var _blocks_seen: Array[int] = []
 @onready var libro: CanvasLayer = $LibroHechizos
 
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		update_configuration_warnings()
+		return
+	var issues := get_configuration_issues()
+	if not issues.is_empty():
+		push_error("Configuración incompleta: " + "; ".join(issues))
+		return
 	_setup_drop_slots()
 	_build_round_plan()
 	_build_choice_buttons()
@@ -91,23 +82,13 @@ func _ready() -> void:
 	completion.menu_pressed.connect(_on_menu_pressed)
 	guide = LearningGuide.install(self, $UI/TopBar/Bar, _show_help)
 	target_art = $UI/RequestPanel/Content/TargetArt
-	result_art = MeaningIllustration.new()
-	result_art.position = Vector2(14, 100)
-	result_art.size = Vector2(145, 94)
-	$UI/FeedbackPanel.add_child(result_art)
-	result_art.position = Vector2(12, -6)
-	result_art.size = Vector2(124, 76)
-	mission_progress = ExercisePresentation.setup(self, false)
-	_configure_keyboard_navigation()
-	mission_break = MissionBreak.new()
-	$UI.add_child(mission_break)
 	mission_break.continued.connect(func():
 		_refresh_step()
 		guide.watch_action(noun_slot)
 	)
 	var state := GameManager.get_scene_state(self)
-	_blocks_seen = ExerciseProgress.restore_markers(state.get("blocks"), CHALLENGES.size() * 2)
-	round_plan = ExerciseProgress.restore_rounds(state.get("plan"), CHALLENGES.size(), round_plan)
+	_blocks_seen = ExerciseProgress.restore_markers(state.get("blocks"), challenges.size() * 2)
+	round_plan = ExerciseProgress.restore_rounds(state.get("plan"), challenges.size(), round_plan)
 	round_index = clampi(int(state.get("round", 0)), 0, round_plan.size())
 	_show_round()
 	if not _resolving:
@@ -121,7 +102,7 @@ func _ready() -> void:
 			_render_success(false)
 
 func _build_round_plan() -> void:
-	for item: Dictionary in PHRASE_BUILDER.build_two_phase_plan(CHALLENGES.size()):
+	for item: Dictionary in PHRASE_BUILDER.build_two_phase_plan(challenges.size()):
 		round_plan.append(int(item.challenge))
 
 func _build_choice_buttons() -> void:
@@ -155,7 +136,7 @@ func _show_round() -> void:
 	feedback_label.add_theme_color_override("font_color", COLOR_INK)
 	var challenge := _current_challenge()
 	var guided := _is_guided_phase()
-	animal_sprite.texture = load(challenge.sprite)
+	animal_sprite.texture = challenge.sprite
 	animal_name.text = challenge.animal
 	phase_label.text = "Aprende" if guided else "Recuerda"
 	request_label.text = "Ayuda a %s" % challenge.animal
@@ -169,7 +150,7 @@ func _show_round() -> void:
 	cast_button.text = "Crear ✦"
 	_refresh_step()
 	mission_progress.update_progress(round_index, round_plan.size(), _phase_caption())
-	progress_label.text = "%s %d / %d" % ["Aprende" if guided else "Repasa", round_index % CHALLENGES.size() + 1, CHALLENGES.size()]
+	progress_label.text = "%s %d / %d" % ["Aprende" if guided else "Repasa", round_index % challenges.size() + 1, challenges.size()]
 	if not noun_buttons.is_empty():
 		(noun_buttons.values()[0] as Button).grab_focus()
 	if round_index == 0 and "phrases" not in GameManager.tutorials_seen:
@@ -180,13 +161,13 @@ func _show_round() -> void:
 	GameManager.checkpoint(self)
 
 func _phase_caption() -> String:
-	return "El taller · %d / 3 · %s" % [round_index % 3 + 1, "Con ayuda" if _is_guided_phase() else ("Una pista" if round_index < CHALLENGES.size() + 3 else "A tu turno")]
+	return "El taller · %d / 3 · %s" % [round_index % 3 + 1, "Con ayuda" if _is_guided_phase() else ("Una pista" if round_index < challenges.size() + 3 else "A tu turno")]
 
 func _show_block() -> void:
 	if round_index > 0 and round_index % 3 == 0 and round_index not in _blocks_seen:
 		_blocks_seen.append(round_index)
 		guide.stop()
-		var recent: ExerciseEntry = CHALLENGES[round_plan[round_index - 1]]
+		var recent: ExerciseEntry = challenges[round_plan[round_index - 1]]
 		mission_break.show_block("¡Otro objeto a su medida!", "tamano", recent.noun, recent.adjective, recent.animal)
 
 func _refresh_step() -> void:
@@ -195,29 +176,24 @@ func _refresh_step() -> void:
 	$UI/ChoicesPanel/Content/AdjectiveHeading.text = "2 · Cómo es" + ("  ✓" if not selected_adjective.is_empty() else "")
 
 func _current_challenge() -> ExerciseEntry:
-	return CHALLENGES[round_plan[round_index]]
+	return challenges[round_plan[round_index]]
 
 func _is_guided_phase() -> bool:
-	return round_index < CHALLENGES.size()
-
-func _challenge_prompt(challenge: ExerciseEntry) -> String:
-	var noun := _noun_data(challenge.noun)
-	var adjective := _adjective_data(challenge.adjective)
-	return "%s %s" % [str(noun.spanish).capitalize(), adjective.spanish]
+	return round_index < challenges.size()
 
 func _update_choice_labels() -> void:
 	var guided := _is_guided_phase()
-	var bridge := not guided and round_index < CHALLENGES.size() + 3
-	for noun: ExerciseEntry in NOUNS:
+	var bridge := not guided and round_index < challenges.size() + 3
+	for noun: ExerciseEntry in nouns:
 		var button: Button = noun_buttons[noun.maya]
 		button.text = "%s\n%s" % [noun.maya, str(noun.spanish).capitalize()] if bridge else noun.maya
-		button.icon = load(GameManager.get_book_illustration(noun.maya)) if guided else null
+		button.icon = GameManager.get_visual_texture(noun.maya) if guided else null
 		button.expand_icon = true
 		button.add_theme_constant_override("icon_max_width", 56)
-	for adjective: ExerciseEntry in ADJECTIVES:
+	for adjective: ExerciseEntry in adjectives:
 		var button: Button = adjective_buttons[adjective.maya]
 		button.text = "%s\n%s" % [adjective.maya, str(adjective.spanish).capitalize()] if bridge else adjective.maya
-		button.icon = load(GameManager.get_book_illustration(adjective.maya)) if guided else null
+		button.icon = GameManager.get_visual_texture(adjective.maya) if guided else null
 		button.expand_icon = true
 		button.add_theme_constant_override("icon_max_width", 56)
 
@@ -257,7 +233,7 @@ func _celebrate_selection(slot: Control) -> void:
 func _update_slots() -> void:
 	noun_slot.text = "objeto"
 	if selected_noun != "":
-		for challenge: ExerciseEntry in CHALLENGES:
+		for challenge: ExerciseEntry in challenges:
 			if challenge.noun == selected_noun:
 				noun_slot.text = _phrase_noun(challenge.phrase)
 				break
@@ -328,22 +304,6 @@ func _pulse_error_slots(noun_ok: bool, adjective_ok: bool) -> void:
 func _phrase_noun(phrase: String) -> String:
 	var parts := phrase.split(" ")
 	return parts[1] if parts.size() > 1 else selected_noun
-
-func _noun_data(word: String) -> ExerciseEntry:
-	for noun: ExerciseEntry in NOUNS:
-		if noun.maya == word:
-			return noun
-	return null
-
-func _adjective_data(word: String) -> ExerciseEntry:
-	for adjective: ExerciseEntry in ADJECTIVES:
-		if adjective.maya == word:
-			return adjective
-	return null
-
-func _noun_emoji(word: String) -> String:
-	var data := _noun_data(word)
-	return data.emoji if data != null and data.emoji != "" else "✨"
 
 func _finish_level() -> void:
 	_resolving = true
@@ -427,3 +387,11 @@ func _show_help() -> void:
 
 func get_checkpoint_state() -> Dictionary:
 	return {"plan": round_plan, "round": round_index, "noun": selected_noun, "adjective": selected_adjective, "waiting": _awaiting_continue, "blocks": _blocks_seen}
+
+func get_configuration_issues() -> PackedStringArray:
+	if content == null:
+		return PackedStringArray(["Asigna el recurso content del ejercicio."])
+	return content.get_configuration_issues(3)
+
+func _get_configuration_warnings() -> PackedStringArray:
+	return get_configuration_issues()

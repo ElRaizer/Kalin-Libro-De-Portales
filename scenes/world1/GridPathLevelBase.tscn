@@ -1,14 +1,26 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/world1/GridPathLevel.gd" id="1_script"]
+
 [ext_resource type="PackedScene" path="res://scenes/components/GridBoard.tscn" id="2_board"]
+
 [ext_resource type="PackedScene" path="res://scenes/components/LevelHeader.tscn" id="3_header"]
+
 [ext_resource type="PackedScene" path="res://scenes/components/CompletionOverlay.tscn" id="4_complete"]
+
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="5_book"]
+
 [ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="6_theme"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/LearningGuide.tscn" id="editor_7"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/MissionProgress.tscn" id="editor_8"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/ArrivingAnimal.tscn" id="editor_9"]
 
 [node name="GridPathLevel" type="Node2D"]
 script = ExtResource("1_script")
+arriving_animal_scene = ExtResource("editor_9")
 
 [node name="Background" type="TextureRect" parent="."]
 offset_right = 1280.0
@@ -26,12 +38,12 @@ grid_origin = Vector2(208, 88)
 [node name="LevelHeader" parent="UI" instance=ExtResource("3_header")]
 
 [node name="InstrPanel" type="Panel" parent="UI"]
-offset_left = 50.0
-offset_top = 648.0
-offset_right = 1230.0
-offset_bottom = 708.0
 theme = ExtResource("6_theme")
 theme_type_variation = &"KalinDarkStatusPanel"
+offset_left = 438
+offset_top = 640
+offset_right = 998
+offset_bottom = 708
 
 [node name="InstrLbl" type="Label" parent="UI/InstrPanel"]
 layout_mode = 1
@@ -90,8 +102,36 @@ theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
 theme_override_font_sizes/font_size = 12
 text = "(Clic para cerrar)"
 horizontal_alignment = 1
+visible = false
 
 [node name="CompletionOverlay" parent="UI" instance=ExtResource("4_complete")]
 
 [node name="LibroHechizos" parent="." instance=ExtResource("5_book")]
 visible = false
+
+[node name="LearningGuide" parent="." instance=ExtResource("editor_7")]
+
+[node name="ContinueButton" type="Button" parent="UI/DialoguePanel"]
+offset_left = 794.0
+offset_top = 411.0
+offset_right = 1026.0
+offset_bottom = 469.0
+theme = ExtResource("6_theme")
+theme_type_variation = &"KalinPrimaryButton"
+text = "Continuar →"
+
+[node name="ArrivalButton" type="Button" parent="UI"]
+offset_left = 1024
+offset_top = 646
+offset_right = 1256
+offset_bottom = 704
+theme = ExtResource("6_theme")
+theme_type_variation = &"KalinSecondaryButton"
+text = "Más rápido →"
+visible = false
+
+[node name="MissionProgress" parent="UI" instance=ExtResource("editor_8")]
+offset_left = 28
+offset_top = 647
+offset_right = 418
+offset_bottom = 705

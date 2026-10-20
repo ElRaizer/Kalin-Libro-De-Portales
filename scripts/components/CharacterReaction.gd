@@ -14,13 +14,10 @@ static func play(actor: Control, happy: bool = true) -> void:
 	if old:
 		actor.remove_child(old)
 		old.queue_free()
-	var badge := TextureRect.new()
+	var badge := GameManager.visual_catalog.reaction_badge_scene.instantiate() as TextureRect
 	badge.name = "ReactionBadge"
-	badge.texture = load("res://Arte/ilustraciones/ui_corazon.svg" if happy else "res://Arte/ilustraciones/ui_pensar.svg")
-	badge.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	badge.size = Vector2(52, 52)
+	badge.texture = GameManager.get_visual_texture("ui_corazon" if happy else "ui_pensar")
 	badge.position = Vector2(actor.size.x * 0.65, 0)
-	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	actor.add_child(badge)
 	var tween := actor.create_tween()
 	actor.set_meta("reaction_tween", tween)
@@ -31,10 +28,11 @@ static func play(actor: Control, happy: bool = true) -> void:
 			if source.resource_path.contains("_reaccion_"):
 				source = actor.get_meta("reaction_base_texture", source)
 			actor.set_meta("reaction_base_texture", source)
-			var base := source.resource_path.get_file().get_basename()
-			var path := "res://Arte/sprites/expresiones/%s_reaccion_%s.svg" % [base, "feliz" if happy else "duda"]
-			if ResourceLoader.exists(path):
-				var expression: Texture2D = load(path)
+			var key := GameManager.get_visual_key(source)
+			var entry := GameManager.visual_catalog.find_entry(key)
+			var expression_name := "reaccion_feliz" if happy else "reaccion_duda"
+			if entry != null and entry.expressions.has(expression_name):
+				var expression := entry.expression(expression_name)
 				actor.set(texture_property, expression)
 				tween.finished.connect(func():
 					# Una ronda nueva puede haber cambiado ya el animal de este control.
@@ -53,4 +51,3 @@ static func play(actor: Control, happy: bool = true) -> void:
 	tween.tween_property(badge, "position:y", -18.0, 0.3)
 	tween.parallel().tween_property(badge, "modulate:a", 0.0, 0.3)
 	tween.tween_callback(badge.queue_free)
-

@@ -234,6 +234,9 @@ func _validate_grid_path_recovery() -> void:
 	board.rows = 2
 	board.obstacles = [Vector2i(1, 0), Vector2i(1, 1)]
 	board.words = [word]
+	# La prueba crea una configuración de autor y genera sus nodos antes de jugar.
+	board.preview_root = board.get_node("Preview")
+	board.rebuild_preview()
 	root.add_child(board)
 	await process_frame
 
@@ -269,17 +272,17 @@ func _validate_grid_path_recovery() -> void:
 	await process_frame
 
 func _validate_world3() -> void:
-	var world3_script: Script = load("res://scripts/world3/W3_Level1.gd") as Script
+	var world3_script: Node = load("res://scenes/world3/Level3_HechizosAdjetivos.tscn").instantiate()
 	if world3_script == null:
 		failures.append("No se pudo cargar el script del Mundo 3")
 		return
-	if world3_script.CHALLENGES.size() != 6:
+	if world3_script.challenges.size() != 6:
 		failures.append("El Mundo 3 debe contener las seis peticiones definidas por el GDD")
-	if world3_script.ADJECTIVES.size() != 5:
+	if world3_script.adjectives.size() != 5:
 		failures.append("El Mundo 3 debe enseñar los cinco adjetivos definidos por el GDD")
 	var combinations: Dictionary = {}
 	var used_adjectives: Dictionary = {}
-	for challenge: ExerciseEntry in world3_script.CHALLENGES:
+	for challenge: ExerciseEntry in world3_script.challenges:
 		for required_field: String in ["animal", "sprite", "noun", "adjective", "phrase", "translation"]:
 			if str(challenge.get(required_field)).is_empty():
 				failures.append("Petición del Mundo 3 sin campo obligatorio: %s" % required_field)
@@ -296,24 +299,26 @@ func _validate_world3() -> void:
 			failures.append("Combinación duplicada en Mundo 3: %s" % combination)
 		combinations[combination] = true
 		used_adjectives[adjective] = true
-		if not ResourceLoader.exists(challenge.sprite):
+		if challenge.sprite == null:
 			failures.append("Sprite inexistente en Mundo 3: %s" % challenge.sprite)
-	for adjective: ExerciseEntry in world3_script.ADJECTIVES:
+	for adjective: ExerciseEntry in world3_script.adjectives:
 		if not used_adjectives.has(adjective.maya):
 			failures.append("El adjetivo %s no se practica en ninguna petición" % adjective.maya)
+	world3_script.free()
+
 
 func _validate_world4() -> void:
-	var world4_script := load("res://scripts/world4/W4_Level1.gd") as Script
+	var world4_script: Node = load("res://scenes/world4/Level4_YoQuiero.tscn").instantiate()
 	if world4_script == null:
 		failures.append("No se pudo cargar el script del Mundo 4")
 		return
-	if world4_script.CHALLENGES.size() != 6:
+	if world4_script.challenges.size() != 6:
 		failures.append("El Mundo 4 debe contener las seis peticiones del GDD")
-	if world4_script.FOODS.size() != 5:
+	if world4_script.foods.size() != 5:
 		failures.append("El Mundo 4 debe ofrecer los cinco alimentos de sus peticiones")
-	if world4_script.MODIFIERS.size() != 3:
+	if world4_script.modifiers.size() != 3:
 		failures.append("El Mundo 4 debe permitir elegir sin cualidad, mejen o nojoch")
-	for challenge: ExerciseEntry in world4_script.CHALLENGES:
+	for challenge: ExerciseEntry in world4_script.challenges:
 		for field: String in ["animal", "sprite", "food", "phrase", "translation"]:
 			if str(challenge.get(field)).is_empty():
 				failures.append("Petición del Mundo 4 sin campo obligatorio: %s" % field)
@@ -321,17 +326,19 @@ func _validate_world4() -> void:
 			failures.append("Alimento desconocido en Mundo 4: %s" % challenge.food)
 		if challenge.modifier != "" and not GameManagerScript.VOCABULARY.has(challenge.modifier):
 			failures.append("Cualidad desconocida en Mundo 4: %s" % challenge.modifier)
-		if not ResourceLoader.exists(challenge.sprite):
+		if challenge.sprite == null:
 			failures.append("Sprite inexistente en Mundo 4: %s" % challenge.sprite)
+	world4_script.free()
+
 
 func _validate_world5() -> void:
-	var world5_script := load("res://scripts/world5/W5_Level1.gd") as Script
+	var world5_script: Node = load("res://scenes/world5/Level5_PortalDeRegreso.tscn").instantiate()
 	if world5_script == null:
 		failures.append("No se pudo cargar el script del Mundo 5")
 		return
-	if world5_script.CHALLENGES.size() != 8:
+	if world5_script.challenges.size() != 8:
 		failures.append("El Mundo 5 debe recuperar ocho fragmentos del portal")
-	for challenge: ExerciseEntry in world5_script.CHALLENGES:
+	for challenge: ExerciseEntry in world5_script.challenges:
 		for field: String in ["section", "prompt", "clue", "correct"]:
 			if str(challenge.get(field)).is_empty():
 				failures.append("Fragmento del Mundo 5 sin campo obligatorio: %s" % field)
@@ -339,6 +346,8 @@ func _validate_world5() -> void:
 			failures.append("La respuesta correcta del Mundo 5 no aparece entre sus opciones")
 		if challenge.learn != "" and not GameManagerScript.VOCABULARY.has(challenge.learn):
 			failures.append("Frase nueva del Mundo 5 ausente del vocabulario: %s" % challenge.learn)
+	world5_script.free()
+
 
 func _validate_book_catalog() -> void:
 	var manager := GameManagerScript.new()
@@ -541,7 +550,7 @@ func _validate_story_beat(scene_path: String, beat: StoryBeat) -> void:
 		if not GameManagerScript.VOCABULARY.has(word):
 			failures.append("%s usa un animal fuera del vocabulario: %s" % [scene_path, word])
 			continue
-		var illustration: String = GameManagerScript.BOOK_ILLUSTRATIONS.get(word, "")
+		var illustration: String = root.get_node("GameManager").get_book_illustration(word)
 		if illustration == "" or not ResourceLoader.exists(illustration):
 			failures.append("%s usa a %s, que no tiene ilustración" % [scene_path, word])
 	if beat.kind == StoryBeat.Kind.CONOCER and beat.actors.is_empty():

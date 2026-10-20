@@ -1,39 +1,26 @@
+@tool
 ## Mundo 4, nivel 1 — In k'a'at (Yo Quiero)
 ## Desafío de comprensión en dos fases. Primero ofrece apoyos en español y
 ## después presenta solamente pistas visuales para recuperar la frase maya.
 extends Node2D
 
-const UI_EFFECTS = preload("res://scripts/components/UIEffects.gd")
+@export var illustration_scene: PackedScene
+@export var content: ExerciseSet
+var foods: Array[ExerciseEntry]:
+	get:
+		return content.foods
+var modifiers: Array[ExerciseEntry]:
+	get:
+		return content.modifiers
+var challenges: Array[ExerciseEntry]:
+	get:
+		return content.challenges
+
 const PHRASE_BUILDER = preload("res://scripts/components/PhraseBuilderController.gd")
-const EXERCISE_ENTRY = preload("res://scripts/data/ExerciseEntry.gd")
 
-const RAW_FOODS: Array[Dictionary] = [
-	{ "maya": "ja'", "spanish": "agua", "emoji": "💧" },
-	{ "maya": "ja'as", "spanish": "plátano", "emoji": "🍌" },
-	{ "maya": "pak'al", "spanish": "fruta", "emoji": "🍎" },
-	{ "maya": "K'úum", "spanish": "calabaza", "emoji": "🎃" },
-	{ "maya": "janal", "spanish": "comida", "emoji": "🍲" },
-]
-static var FOODS: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_FOODS)
-
-const RAW_MODIFIERS: Array[Dictionary] = [
-	{ "maya": "", "spanish": "sin cualidad", "symbol": "—" },
-	{ "maya": "mejen", "spanish": "pequeño/a", "symbol": "◌" },
-	{ "maya": "nojoch", "spanish": "grande", "symbol": "⬢" },
-]
-static var MODIFIERS: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_MODIFIERS)
 
 ## Peticiones del GDD. Las frases completas evitan construir morfología desde
 ## el código y facilitan una posterior revisión lingüística.
-const RAW_CHALLENGES: Array[Dictionary] = [
-	{ "animal": "Peek'", "animal_spanish": "Perro", "sprite": "res://Arte/sprites/animal_peek.svg", "food": "ja'", "modifier": "", "phrase": "In k'a'at ja'", "translation": "Quiero agua" },
-	{ "animal": "Miis", "animal_spanish": "Gato", "sprite": "res://Arte/sprites/animal_miis.svg", "food": "ja'as", "modifier": "mejen", "phrase": "In k'a'at ja'as mejen", "translation": "Quiero un plátano pequeño" },
-	{ "animal": "Kaax", "animal_spanish": "Gallina", "sprite": "res://Arte/sprites/animal_kaax.svg", "food": "pak'al", "modifier": "", "phrase": "In k'a'at pak'al", "translation": "Quiero fruta" },
-	{ "animal": "Áak", "animal_spanish": "Tortuga", "sprite": "res://Arte/sprites/animal_aak.svg", "food": "K'úum", "modifier": "nojoch", "phrase": "In k'a'at K'úum nojoch", "translation": "Quiero una calabaza grande" },
-	{ "animal": "K'éek'en", "animal_spanish": "Cerdo", "sprite": "res://Arte/sprites/animal_keek_en.svg", "food": "janal", "modifier": "", "phrase": "In k'a'at janal", "translation": "Quiero comida" },
-	{ "animal": "Kéej", "animal_spanish": "Venado", "sprite": "res://Arte/sprites/animal_keej.svg", "food": "ja'as", "modifier": "", "phrase": "In k'a'at ja'as", "translation": "Quiero plátano" },
-]
-static var CHALLENGES: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_CHALLENGES)
 
 const UNSET_MODIFIER := "__unset__"
 const COLOR_SUCCESS := Color("2e8b57")
@@ -50,9 +37,9 @@ var _awaiting_continue := false
 var _mistakes := 0
 var guide: LearningGuide
 var _serving: Control
-var result_art: MeaningIllustration
-var mission_progress: MissionProgress
-var mission_break: MissionBreak
+@onready var result_art: MeaningIllustration = $UI/FeedbackPanel/ResultArt
+@onready var mission_progress: MissionProgress = $UI/MissionProgress
+@onready var mission_break: MissionBreak = $UI/MissionBreak
 var _help_stage := 0
 var _blocks_seen: Array[int] = []
 
@@ -66,7 +53,7 @@ var _blocks_seen: Array[int] = []
 @onready var modifier_grid: GridContainer = $UI/ChoicesPanel/Content/ModifierGrid
 @onready var food_slot: Label = $UI/SpellPanel/Content/Sentence/FoodSlot
 @onready var modifier_slot: Label = $UI/SpellPanel/Content/Sentence/ModifierSlot
-@onready var serve_button: Button = $UI/ChoicesPanel/Content/ServeButton
+@onready var serve_button: Button = $UI/ServeButton
 @onready var feedback_label: Label = $UI/FeedbackPanel/FeedbackLabel
 @onready var progress_label: Label = $UI/StatusPanel/Status/ProgressLabel
 @onready var instruction_label: Label = $UI/StatusPanel/Status/InstructionLabel
@@ -74,6 +61,13 @@ var _blocks_seen: Array[int] = []
 @onready var libro: CanvasLayer = $LibroHechizos
 
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		update_configuration_warnings()
+		return
+	var issues := get_configuration_issues()
+	if not issues.is_empty():
+		push_error("Configuración incompleta: " + "; ".join(issues))
+		return
 	_setup_drop_slots()
 	header.menu_pressed.connect(_on_menu_pressed)
 	header.book_pressed.connect(_on_book_pressed)
@@ -84,21 +78,13 @@ func _ready() -> void:
 	_build_choice_buttons()
 	_configure_keyboard_navigation()
 	guide = LearningGuide.install(self, $UI/LevelHeader/Bar, _show_help)
-	mission_progress = ExercisePresentation.setup(self, true)
-	_configure_keyboard_navigation()
-	result_art = MeaningIllustration.new()
-	result_art.position = Vector2(12, -6)
-	result_art.size = Vector2(124, 76)
-	$UI/FeedbackPanel.add_child(result_art)
-	mission_break = MissionBreak.new()
-	$UI.add_child(mission_break)
 	mission_break.continued.connect(func():
 		_refresh_step()
 		guide.watch_action(food_slot)
 	)
 	var state := GameManager.get_scene_state(self)
-	_blocks_seen = ExerciseProgress.restore_markers(state.get("blocks"), CHALLENGES.size() * 2)
-	round_plan = ExerciseProgress.restore_plan(state.get("plan"), CHALLENGES.size(), round_plan)
+	_blocks_seen = ExerciseProgress.restore_markers(state.get("blocks"), challenges.size() * 2)
+	round_plan = ExerciseProgress.restore_plan(state.get("plan"), challenges.size(), round_plan)
 	round_index = clampi(int(state.get("round", 0)), 0, round_plan.size())
 	_show_round()
 	if not _resolving:
@@ -112,7 +98,7 @@ func _ready() -> void:
 			_render_success(false)
 
 func _build_round_plan() -> void:
-	round_plan = PHRASE_BUILDER.build_two_phase_plan(CHALLENGES.size())
+	round_plan = PHRASE_BUILDER.build_two_phase_plan(challenges.size())
 
 func _build_choice_buttons() -> void:
 	food_buttons = PHRASE_BUILDER.collect_buttons(food_grid, _select_food)
@@ -126,7 +112,7 @@ func _setup_drop_slots() -> void:
 	modifier_slot.connect("word_dropped", _select_modifier)
 
 func _current_challenge() -> ExerciseEntry:
-	return CHALLENGES[int(round_plan[round_index].challenge)]
+	return challenges[int(round_plan[round_index].challenge)]
 
 func _is_guided_phase() -> bool:
 	return bool(round_plan[round_index].guided)
@@ -153,7 +139,7 @@ func _show_round() -> void:
 	var guided := _is_guided_phase()
 	phase_label.text = "Aprende" if guided else "Recuerda"
 	animal_label.text = challenge.animal
-	animal_sprite.texture = load(challenge.sprite)
+	animal_sprite.texture = challenge.sprite
 	request_label.text = challenge.translation if guided else "¿Qué quiere?"
 	request_label.visible = guided
 	instruction_label.text = ""
@@ -167,8 +153,8 @@ func _show_round() -> void:
 	_set_choices_enabled(true)
 	serve_button.text = "Servir ✦"
 	_refresh_step()
-	mission_progress.update_progress(round_index, round_plan.size(), "La comida · %d / 3 · %s" % [round_index % 3 + 1, "Con ayuda" if guided else ("Una pista" if round_index < CHALLENGES.size() + 3 else "A tu turno")])
-	progress_label.text = "%s %d / %d" % ["Aprende" if guided else "Repasa", round_index % CHALLENGES.size() + 1, CHALLENGES.size()]
+	mission_progress.update_progress(round_index, round_plan.size(), "La comida · %d / 3 · %s" % [round_index % 3 + 1, "Con ayuda" if guided else ("Una pista" if round_index < challenges.size() + 3 else "A tu turno")])
+	progress_label.text = "%s %d / %d" % ["Aprende" if guided else "Repasa", round_index % challenges.size() + 1, challenges.size()]
 	if not food_buttons.is_empty():
 		(food_buttons.values()[0] as Button).grab_focus()
 	if round_index == 0 and "requests" not in GameManager.tutorials_seen:
@@ -178,7 +164,7 @@ func _show_round() -> void:
 	if round_index > 0 and round_index % 3 == 0 and round_index not in _blocks_seen:
 		_blocks_seen.append(round_index)
 		guide.stop()
-		var recent: ExerciseEntry = CHALLENGES[int(round_plan[round_index - 1].challenge)]
+		var recent: ExerciseEntry = challenges[int(round_plan[round_index - 1].challenge)]
 		mission_break.show_block("¡Tus amigos recuperan sus fuerzas!", "hambre", recent.food, recent.modifier, recent.animal)
 	GameManager.checkpoint(self)
 
@@ -195,17 +181,17 @@ func _refresh_step() -> void:
 		button.focus_neighbor_bottom = button.get_path_to(modifier_buttons["mejen"] if needs_size else serve_button)
 
 func _update_choice_labels(guided: bool) -> void:
-	var bridge := not guided and round_index < CHALLENGES.size() + 3
-	for food: ExerciseEntry in FOODS:
+	var bridge := not guided and round_index < challenges.size() + 3
+	for food: ExerciseEntry in foods:
 		var button: Button = food_buttons[food.maya]
 		button.text = "%s\n%s" % [food.maya, food.spanish] if bridge else food.maya
-		button.icon = load(GameManager.get_book_illustration(food.maya)) if guided else null
+		button.icon = GameManager.get_visual_texture(food.maya) if guided else null
 		button.expand_icon = true
 		button.add_theme_constant_override("icon_max_width", 56)
-	for modifier: ExerciseEntry in MODIFIERS:
+	for modifier: ExerciseEntry in modifiers:
 		var button: Button = modifier_buttons[modifier.maya]
 		button.text = "Quitar tamaño ↻" if modifier.maya == "" else ("%s\n%s" % [modifier.maya, modifier.spanish] if bridge else modifier.maya)
-		button.icon = load(GameManager.get_book_illustration(modifier.maya)) if guided and modifier.maya != "" else null
+		button.icon = GameManager.get_visual_texture(modifier.maya) if guided and modifier.maya != "" else null
 		button.expand_icon = true
 		button.add_theme_constant_override("icon_max_width", 56)
 
@@ -295,9 +281,6 @@ func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
 		_help_stage = mini(_mistakes - 2, 2)
 		_show_help()
 
-func _shake_choices() -> void:
-	UI_EFFECTS.shake(self, $UI/ChoicesPanel)
-
 func _finish_level() -> void:
 	_resolving = true
 	_awaiting_continue = false
@@ -305,18 +288,6 @@ func _finish_level() -> void:
 	GameManager.complete_level(4, 1)
 	completion.show_completion("¡Todos han comido!", "Entendiste las peticiones de tus amigos.", "Al portal →")
 	GameManager.checkpoint(self)
-
-func _food_data(value: String) -> ExerciseEntry:
-	for food: ExerciseEntry in FOODS:
-		if food.maya == value:
-			return food
-	return null
-
-func _modifier_data(value: String) -> ExerciseEntry:
-	for modifier: ExerciseEntry in MODIFIERS:
-		if modifier.maya == value:
-			return modifier
-	return MODIFIERS[0]
 
 func _on_menu_pressed() -> void:
 	_resolving = true
@@ -359,7 +330,7 @@ func _render_success(animate: bool) -> void:
 	GameManager.checkpoint(self)
 
 func _deliver_food(challenge: ExerciseEntry) -> void:
-	var serving := MeaningIllustration.new()
+	var serving := illustration_scene.instantiate() as MeaningIllustration
 	serving.size = Vector2(140, 110)
 	serving.position = food_slot.get_global_rect().get_center() - serving.size * 0.5
 	$UI.add_child(serving)
@@ -400,3 +371,11 @@ func _show_help() -> void:
 
 func get_checkpoint_state() -> Dictionary:
 	return {"plan": round_plan, "round": round_index, "food": selected_food, "modifier": selected_modifier, "waiting": _awaiting_continue, "blocks": _blocks_seen}
+
+func get_configuration_issues() -> PackedStringArray:
+	if content == null:
+		return PackedStringArray(["Asigna el recurso content del ejercicio."])
+	return content.get_configuration_issues(4)
+
+func _get_configuration_warnings() -> PackedStringArray:
+	return get_configuration_issues()

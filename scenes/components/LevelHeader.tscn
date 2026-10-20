@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/components/LevelHeader.gd" id="1_script"]
+
 [ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="2_theme"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/HelpButton.tscn" id="editor_3"]
 
 [node name="LevelHeader" type="Panel"]
 offset_left = 16.0
@@ -37,6 +40,7 @@ vertical_alignment = 1
 
 text_overrun_behavior = 3
 clip_text = true
+
 [node name="MagicLabel" type="Label" parent="Bar"]
 custom_minimum_size = Vector2(140, 40)
 layout_mode = 2
@@ -46,9 +50,10 @@ text = "0 puntos mágicos"
 horizontal_alignment = 2
 vertical_alignment = 1
 
+[node name="HelpButton" parent="Bar" instance=ExtResource("editor_3")]
+
 [node name="BookButton" type="Button" parent="Bar"]
 custom_minimum_size = Vector2(118, 40)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 text = "Libro"
-

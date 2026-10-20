@@ -1,48 +1,53 @@
+@tool
 extends Control
 class_name MeaningIllustration
 
+@export var catalog: VisualCatalog:
+	set(value):
+		catalog = value
+		_refresh_editor_preview()
+@export var initial_word: String = "":
+	set(value):
+		initial_word = value
+		_refresh_editor_preview()
+@export var initial_quality: String = "":
+	set(value):
+		initial_quality = value
+		_refresh_editor_preview()
+
 ## Una misma ilustración en peticiones, resultados y pistas de tamaño.
-var picture: TextureRect
-var reference: TextureRect
-var quality_badge: TextureRect
+@onready var picture: TextureRect = $Picture
+@onready var reference: TextureRect = $Reference
+@onready var quality_badge: TextureRect = $QualityBadge
 var word: String = ""
 var quality: String = ""
 var celebration: Tween
 
 func _ready() -> void:
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	resized.connect(_layout_art)
-	_build()
+	if not initial_word.is_empty():
+		show_meaning(initial_word, initial_quality)
 	_layout_art()
 
-func _build() -> void:
-	if is_instance_valid(picture):
-		return
-	picture = _texture_rect()
-	reference = _texture_rect()
-	reference.modulate.a = 0.26
-	quality_badge = _texture_rect()
+func _refresh_editor_preview() -> void:
+	if Engine.is_editor_hint() and is_node_ready():
+		update_configuration_warnings()
+		if catalog != null:
+			show_meaning(initial_word, initial_quality)
 
-func _texture_rect() -> TextureRect:
-	var node := TextureRect.new()
-	node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(node)
-	return node
+func _get_configuration_warnings() -> PackedStringArray:
+	return PackedStringArray(["Asigna el catálogo de ilustraciones."]) if catalog == null else PackedStringArray()
+
 
 func show_meaning(maya_word: String, modifier: String = "") -> void:
-	_build()
 	word = maya_word
 	quality = modifier
-	var manager: Node = get_node("/root/GameManager")
-	var path: String = manager.get_book_illustration(word)
-	picture.texture = load(path) if not path.is_empty() else null
+	picture.texture = catalog.texture_for(word)
 	reference.texture = picture.texture
 	quality_badge.texture = null
-	if quality in ["Jats'uts", "ki'", "jach'"]:
-		var contexts := {"Jats'uts": "fx_decoracion", "ki'": "fx_aroma", "jach'": "prop_peso"}
-		quality_badge.texture = load("res://Arte/ilustraciones/%s.svg" % contexts[quality])
+	var contexts := {"Jats'uts": "fx_decoracion", "ki'": "fx_aroma", "jach'": "prop_peso"}
+	if quality in contexts:
+		quality_badge.texture = catalog.texture_for(contexts[quality])
 	_layout_art()
 
 func _layout_art() -> void:

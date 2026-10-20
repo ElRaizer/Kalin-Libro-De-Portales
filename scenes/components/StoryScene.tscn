@@ -1,14 +1,32 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/components/StoryScene.gd" id="1_script"]
+
 [ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level1.svg" id="2_bg"]
+
 [ext_resource type="Texture2D" path="res://Arte/sprites/kalin_normal.svg" id="3_kalin"]
+
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="4_theme"]
+
 [ext_resource type="Texture2D" path="res://Arte/efectos/fx_hoja.svg" id="5_hoja"]
+
 [ext_resource type="Texture2D" path="res://Arte/efectos/fx_lluvia.svg" id="6_lluvia"]
+
 [ext_resource type="Texture2D" path="res://Arte/efectos/fx_muebles.svg" id="7_muebles"]
+
 [ext_resource type="Texture2D" path="res://Arte/efectos/fx_pagina.svg" id="8_pagina"]
+
 [ext_resource type="Texture2D" path="res://Arte/efectos/fx_chispa.svg" id="9_chispa"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/LearningGuide.tscn" id="editor_10"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/StoryVignette.tscn" id="editor_11"]
+
+[ext_resource type="Texture2D" path="res://Arte/sprites/kalin_surprised.svg" id="editor_12"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/StoryActor.tscn" id="editor_13"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/StoryChoice.tscn" id="editor_14"]
 
 [sub_resource type="CanvasItemMaterial" id="Material_brillo"]
 blend_mode = 1
@@ -25,6 +43,8 @@ colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
 
 [node name="StoryScene" type="Node2D"]
 script = ExtResource("1_script")
+normal_texture = ExtResource("3_kalin")
+surprised_texture = ExtResource("editor_12")
 
 [node name="Ambient" type="CanvasModulate" parent="."]
 
@@ -61,13 +81,15 @@ texture = ExtResource("3_kalin")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Actors" type="Control" parent="Stage"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 1280.0
-offset_bottom = 720.0
+[node name="Actors" type="HBoxContainer" parent="Stage"]
+offset_left = 360.0
+offset_top = 250.0
+offset_right = 1240.0
+offset_bottom = 460.0
 mouse_filter = 2
 theme = ExtResource("4_theme")
+theme_override_constants/separation = 28
+alignment = 1
 
 [node name="Effects" type="Node2D" parent="."]
 
@@ -370,14 +392,14 @@ text = "Texto del diálogo"
 
 [node name="HintLabel" type="Label" parent="UI/DialogueBox"]
 layout_mode = 0
-offset_left = 420.0
 offset_top = 146.0
-offset_right = 1136.0
 offset_bottom = 176.0
 theme_override_colors/font_color = Color(0.96, 0.9, 0.72, 1)
 theme_override_font_sizes/font_size = 17
 text = "▶ Continuar"
-horizontal_alignment = 2
+offset_left = 24.0
+offset_right = 920.0
+horizontal_alignment = 0
 
 [node name="Flash" type="ColorRect" parent="UI"]
 modulate = Color(1, 1, 1, 0)
@@ -385,3 +407,69 @@ offset_right = 1280.0
 offset_bottom = 720.0
 mouse_filter = 2
 color = Color(1, 1, 1, 1)
+
+[node name="LearningGuide" parent="." instance=ExtResource("editor_10")]
+
+[node name="Vignette" parent="Stage" instance=ExtResource("editor_11")]
+offset_left = 400
+offset_top = 150
+offset_right = 1200
+offset_bottom = 500
+
+[node name="ContinueButton" type="Button" parent="UI/DialogueBox"]
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinPrimaryButton"
+text = "Continuar →"
+offset_left = 964.0
+offset_top = 126.0
+offset_right = 1196.0
+offset_bottom = 184.0
+
+[node name="MenuButton" type="Button" parent="UI"]
+offset_left = 884
+offset_top = 12
+offset_right = 1042
+offset_bottom = 58
+theme = ExtResource("4_theme")
+theme_type_variation = &"KalinSecondaryButton"
+text = "Menú"
+
+[node name="Actor1" type="Control" parent="Stage/Actors"]
+custom_minimum_size = Vector2(180, 210)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Button" parent="Stage/Actors/Actor1" instance=ExtResource("editor_13")]
+
+[node name="Actor2" type="Control" parent="Stage/Actors"]
+custom_minimum_size = Vector2(180, 210)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Button" parent="Stage/Actors/Actor2" instance=ExtResource("editor_13")]
+
+[node name="Actor3" type="Control" parent="Stage/Actors"]
+custom_minimum_size = Vector2(180, 210)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Button" parent="Stage/Actors/Actor3" instance=ExtResource("editor_13")]
+
+[node name="Actor4" type="Control" parent="Stage/Actors"]
+custom_minimum_size = Vector2(180, 210)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Button" parent="Stage/Actors/Actor4" instance=ExtResource("editor_13")]
+
+[node name="Choice1" parent="UI/Choices" instance=ExtResource("editor_14")]
+layout_mode = 2
+text = "Palabra 1"
+
+[node name="Choice2" parent="UI/Choices" instance=ExtResource("editor_14")]
+layout_mode = 2
+text = "Palabra 2"
+
+[node name="Choice3" parent="UI/Choices" instance=ExtResource("editor_14")]
+layout_mode = 2
+text = "Palabra 3"

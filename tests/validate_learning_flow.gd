@@ -239,7 +239,7 @@ func _validate_world4_runtime() -> void:
 	var level := packed.instantiate()
 	root.add_child(level)
 	await process_frame
-	if level.round_plan.size() != level.CHALLENGES.size() * 2:
+	if level.round_plan.size() != level.challenges.size() * 2:
 		failures.append("Mundo 4 no creó sus fases guiada y de recuerdo")
 	if level.food_buttons.size() != 5 or level.modifier_buttons.size() != 3:
 		failures.append("Mundo 4 no creó todas las opciones de alimento y cualidad")
@@ -263,11 +263,11 @@ func _validate_world5_runtime() -> void:
 	await process_frame
 	if level.option_buttons.size() != 3:
 		failures.append("Mundo 5 debe mostrar tres respuestas por fragmento")
-	if int(level.portal_energy.max_value) != level.CHALLENGES.size():
+	if int(level.portal_energy.max_value) != level.challenges.size():
 		failures.append("La energía del portal no representa todos los fragmentos")
 	if not level.completion.next_pressed.is_connected(level._on_epilogue_pressed):
 		failures.append("Cerrar la aventura debe abrir el epílogo de la historia")
-	var current: ExerciseEntry = level.CHALLENGES[level.challenge_index]
+	var current: ExerciseEntry = level.challenges[level.challenge_index]
 	if current.correct not in current.options:
 		failures.append("El primer fragmento del Mundo 5 no puede resolverse")
 	level.queue_free()

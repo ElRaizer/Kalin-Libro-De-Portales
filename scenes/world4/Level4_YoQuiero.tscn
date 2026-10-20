@@ -1,54 +1,87 @@
 [gd_scene format=3 uid="uid://chsav5jc1aq7o"]
 
-[ext_resource type="Script" uid="uid://wnfpjdvc4was" path="res://scripts/world4/W4_Level1.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_milpa.svg" id="2_bg"]
-[ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="3_book"]
-[ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="4_theme"]
-[ext_resource type="PackedScene" path="res://scenes/components/LevelHeader.tscn" id="5_header"]
-[ext_resource type="PackedScene" uid="uid://d2drg7vtn5ctw" path="res://scenes/components/CompletionOverlay.tscn" id="6_complete"]
-[ext_resource type="Script" uid="uid://3tucogv2ix4h" path="res://scripts/components/DraggableWordButton.gd" id="7_drag_button"]
-[ext_resource type="Script" uid="uid://bc3tppmuyyvks" path="res://scripts/components/WordDropSlot.gd" id="8_drop_slot"]
+[ext_resource type="Script" path="res://scripts/world4/W4_Level1.gd" id="1_fat62"]
 
-[ext_resource type="Script" path="res://scripts/components/MeaningIllustration.gd" id="9_art"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_milpa.svg" id="2_hxe78"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/LevelHeader.tscn" id="3_ehfii"]
+
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="4_qb5em"]
+
+[ext_resource type="Script" path="res://scripts/components/LevelHeader.gd" id="5_v1f1c"]
+
+[ext_resource type="Script" path="res://scripts/components/DraggableWordButton.gd" id="8_3urg7"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/CompletionOverlay.tscn" id="9_x3ovs"]
+
+[ext_resource type="Script" path="res://scripts/components/CompletionOverlay.gd" id="10_w0bua"]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="12_0xtb2"]
+
+[ext_resource type="Script" path="res://scripts/ui/LibroHechizos.gd" id="13_pmf7k"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/MeaningIllustration.tscn" id="editor_14"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/MissionProgress.tscn" id="editor_15"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/LearningGuide.tscn" id="editor_16"]
+
+[ext_resource type="Resource" path="res://data/exercises/world4.tres" id="editor_17"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/MissionBreak.tscn" id="editor_18"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/WordDropSlot.tscn" id="editor_19"]
 
 [node name="Level4" type="Node2D" unique_id=1962404994]
-script = ExtResource("1_script")
+script = ExtResource("1_fat62")
+content = ExtResource("editor_17")
+illustration_scene = ExtResource("editor_14")
 
 [node name="Background" type="TextureRect" parent="." unique_id=2107441385]
 offset_right = 1280.0
 offset_bottom = 720.0
-texture = ExtResource("2_bg")
+texture = ExtResource("2_hxe78")
 expand_mode = 1
 stretch_mode = 6
 
 [node name="Atmosphere" type="ColorRect" parent="." unique_id=427441148]
 offset_right = 1280.0
 offset_bottom = 720.0
+mouse_filter = 2
 color = Color(0.04, 0.18, 0.16, 0.3)
 
-mouse_filter = 2
 [node name="UI" type="CanvasLayer" parent="." unique_id=246692166]
 
-[node name="LevelHeader" parent="UI" unique_id=240238935 instance=ExtResource("5_header")]
+[node name="LevelHeader" type="Panel" parent="UI" unique_id=240238935 instance=ExtResource("3_ehfii")]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 1264.0
+offset_bottom = 68.0
+theme = ExtResource("4_qb5em")
+theme_type_variation = &"KalinTopBarPanel"
+script = ExtResource("5_v1f1c")
 title = "Mundo 4 · Yo Quiero"
 
 [node name="RequestPanel" type="Panel" parent="UI" unique_id=1104352659]
 offset_left = 24.0
 offset_top = 86.0
-offset_right = 356.0
-offset_bottom = 526.0
-theme = ExtResource("4_theme")
+offset_right = 368.0
+offset_bottom = 622.0
+theme = ExtResource("4_qb5em")
 theme_type_variation = &"KalinRequestPanel"
 
 [node name="Content" type="VBoxContainer" parent="UI/RequestPanel" unique_id=1638669196]
 layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
 offset_left = 18.0
-offset_top = 16.0
-offset_right = 314.0
-offset_bottom = 420.0
+offset_top = 12.0
+offset_right = -18.0
+offset_bottom = -12.0
 theme_override_constants/separation = 8
 
 [node name="PhaseLabel" type="Label" parent="UI/RequestPanel/Content" unique_id=748856553]
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.48, 0.08, 1)
 theme_override_font_sizes/font_size = 15
@@ -56,7 +89,7 @@ text = "FASE 1 · APRENDE"
 horizontal_alignment = 1
 
 [node name="AnimalSprite" type="TextureRect" parent="UI/RequestPanel/Content" unique_id=1506204657]
-custom_minimum_size = Vector2(0, 125)
+custom_minimum_size = Vector2(0, 138)
 layout_mode = 2
 expand_mode = 3
 stretch_mode = 5
@@ -64,11 +97,12 @@ stretch_mode = 5
 [node name="AnimalLabel" type="Label" parent="UI/RequestPanel/Content" unique_id=1457575819]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.23, 0.12, 0.06, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 24
 text = "Peek' · Perro"
 horizontal_alignment = 1
 
 [node name="RequestLabel" type="Label" parent="UI/RequestPanel/Content" unique_id=411969183]
+visible = false
 custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.28, 0.2, 0.12, 1)
@@ -78,28 +112,30 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="VisualClue" type="Control" parent="UI/RequestPanel/Content"]
-custom_minimum_size = Vector2(0, 132)
+[node name="VisualClue" parent="UI/RequestPanel/Content" unique_id=2065262678 instance=ExtResource("editor_14")]
+custom_minimum_size = Vector2(0, 218)
 layout_mode = 2
-script = ExtResource("9_art")
 
 [node name="SpellPanel" type="Panel" parent="UI" unique_id=226511988]
-offset_left = 380.0
+offset_left = 388.0
 offset_top = 86.0
 offset_right = 1256.0
-offset_bottom = 232.0
-theme = ExtResource("4_theme")
+offset_bottom = 242.0
+theme = ExtResource("4_qb5em")
 theme_type_variation = &"KalinSpellPanel"
 
 [node name="Content" type="VBoxContainer" parent="UI/SpellPanel" unique_id=1754432108]
 layout_mode = 0
-offset_left = 20.0
-offset_top = 13.0
-offset_right = 856.0
-offset_bottom = 132.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = 18.0
+offset_right = -18.0
+offset_bottom = -12.0
 theme_override_constants/separation = 10
 
 [node name="Heading" type="Label" parent="UI/SpellPanel/Content" unique_id=1854169503]
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.48, 0.31, 0.11, 1)
 theme_override_font_sizes/font_size = 16
@@ -117,7 +153,7 @@ theme_override_colors/font_color = Color(0.24, 0.14, 0.08, 1)
 theme_override_font_sizes/font_size = 29
 text = "In k'a'at"
 
-[node name="FoodSlot" type="Label" parent="UI/SpellPanel/Content/Sentence" unique_id=1240880578]
+[node name="FoodSlot" parent="UI/SpellPanel/Content/Sentence" unique_id=1240880578 instance=ExtResource("editor_19")]
 custom_minimum_size = Vector2(210, 48)
 layout_mode = 2
 theme_type_variation = &"KalinNounSlot"
@@ -126,10 +162,9 @@ theme_override_font_sizes/font_size = 21
 text = "alimento"
 horizontal_alignment = 1
 vertical_alignment = 1
-script = ExtResource("8_drop_slot")
 accepted_kind = "food"
 
-[node name="ModifierSlot" type="Label" parent="UI/SpellPanel/Content/Sentence" unique_id=2138717891]
+[node name="ModifierSlot" parent="UI/SpellPanel/Content/Sentence" unique_id=2138717891 instance=ExtResource("editor_19")]
 custom_minimum_size = Vector2(210, 48)
 layout_mode = 2
 theme_type_variation = &"KalinAdjectiveSlot"
@@ -138,24 +173,26 @@ theme_override_font_sizes/font_size = 21
 text = "cualidad"
 horizontal_alignment = 1
 vertical_alignment = 1
-script = ExtResource("8_drop_slot")
 accepted_kind = "modifier"
 
 [node name="ChoicesPanel" type="Panel" parent="UI" unique_id=980889088]
-offset_left = 380.0
-offset_top = 248.0
+offset_left = 388.0
+offset_top = 258.0
 offset_right = 1256.0
-offset_bottom = 530.0
-theme = ExtResource("4_theme")
+offset_bottom = 542.0
+theme = ExtResource("4_qb5em")
 theme_type_variation = &"KalinChoicesPanel"
 
 [node name="Content" type="VBoxContainer" parent="UI/ChoicesPanel" unique_id=2050732262]
 layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
 offset_left = 16.0
 offset_top = 12.0
-offset_right = 860.0
-offset_bottom = 270.0
+offset_right = -16.0
+offset_bottom = -12.0
 theme_override_constants/separation = 8
+alignment = 1
 
 [node name="FoodHeading" type="Label" parent="UI/ChoicesPanel/Content" unique_id=1641283767]
 layout_mode = 2
@@ -166,66 +203,77 @@ text = "1  Elige el alimento"
 [node name="FoodGrid" type="GridContainer" parent="UI/ChoicesPanel/Content" unique_id=1829724368]
 layout_mode = 2
 size_flags_horizontal = 4
+size_flags_vertical = 4
 theme_override_constants/h_separation = 8
 columns = 5
 
 [node name="JaButton" type="Button" parent="UI/ChoicesPanel/Content/FoodGrid" unique_id=1076074617]
-custom_minimum_size = Vector2(150, 58)
+custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinNounButton"
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "💧  ja'
 agua"
-script = ExtResource("7_drag_button")
+icon_alignment = 1
+vertical_icon_alignment = 0
+script = ExtResource("8_3urg7")
 word_value = "ja'"
 word_kind = "food"
 
 [node name="JaasButton" type="Button" parent="UI/ChoicesPanel/Content/FoodGrid" unique_id=821667956]
-custom_minimum_size = Vector2(150, 58)
+custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinNounButton"
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "🍌  ja'as
 plátano"
-script = ExtResource("7_drag_button")
+icon_alignment = 1
+vertical_icon_alignment = 0
+script = ExtResource("8_3urg7")
 word_value = "ja'as"
 word_kind = "food"
 
 [node name="PakalButton" type="Button" parent="UI/ChoicesPanel/Content/FoodGrid" unique_id=1248275243]
-custom_minimum_size = Vector2(150, 58)
+custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinNounButton"
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "🍎  pak'al
 fruta"
-script = ExtResource("7_drag_button")
+icon_alignment = 1
+vertical_icon_alignment = 0
+script = ExtResource("8_3urg7")
 word_value = "pak'al"
 word_kind = "food"
 
 [node name="KuumButton" type="Button" parent="UI/ChoicesPanel/Content/FoodGrid" unique_id=1416858828]
-custom_minimum_size = Vector2(150, 58)
+custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinNounButton"
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "🎃  K'úum
 calabaza"
-script = ExtResource("7_drag_button")
+icon_alignment = 1
+vertical_icon_alignment = 0
+script = ExtResource("8_3urg7")
 word_value = "K'úum"
 word_kind = "food"
 
 [node name="JanalButton" type="Button" parent="UI/ChoicesPanel/Content/FoodGrid" unique_id=1461897973]
-custom_minimum_size = Vector2(150, 58)
+custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinNounButton"
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "🍲  janal
 comida"
-script = ExtResource("7_drag_button")
+icon_alignment = 1
+vertical_icon_alignment = 0
+script = ExtResource("8_3urg7")
 word_value = "janal"
 word_kind = "food"
 
@@ -238,58 +286,57 @@ text = "2  Tamaño, si lo pide"
 [node name="ModifierGrid" type="GridContainer" parent="UI/ChoicesPanel/Content" unique_id=1809395240]
 layout_mode = 2
 size_flags_horizontal = 4
+size_flags_vertical = 4
 theme_override_constants/h_separation = 10
 columns = 3
 
 [node name="NoModifierButton" type="Button" parent="UI/ChoicesPanel/Content/ModifierGrid" unique_id=513387801]
-custom_minimum_size = Vector2(165, 52)
+custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinAdjectiveButton"
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "—
 sin cualidad"
-script = ExtResource("7_drag_button")
+icon_alignment = 1
+vertical_icon_alignment = 0
+script = ExtResource("8_3urg7")
 word_kind = "modifier"
 
 [node name="MejenButton" type="Button" parent="UI/ChoicesPanel/Content/ModifierGrid" unique_id=229303534]
-custom_minimum_size = Vector2(165, 52)
+custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinAdjectiveButton"
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "◌  mejen
 pequeño/a"
-script = ExtResource("7_drag_button")
+icon_alignment = 1
+vertical_icon_alignment = 0
+script = ExtResource("8_3urg7")
 word_value = "mejen"
 word_kind = "modifier"
 
 [node name="NojochButton" type="Button" parent="UI/ChoicesPanel/Content/ModifierGrid" unique_id=503373917]
-custom_minimum_size = Vector2(165, 52)
+custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinAdjectiveButton"
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "⬢  nojoch
 grande"
-script = ExtResource("7_drag_button")
+icon_alignment = 1
+vertical_icon_alignment = 0
+script = ExtResource("8_3urg7")
 word_value = "nojoch"
 word_kind = "modifier"
 
-[node name="ServeButton" type="Button" parent="UI/ChoicesPanel/Content" unique_id=898787245]
-custom_minimum_size = Vector2(0, 46)
-layout_mode = 2
-theme_type_variation = &"KalinPrimaryButton"
-theme_override_font_sizes/font_size = 19
-disabled = true
-text = "Servir y lanzar el hechizo"
-
 [node name="FeedbackPanel" type="Panel" parent="UI" unique_id=2101980638]
-offset_left = 24.0
-offset_top = 544.0
+offset_left = 388.0
+offset_top = 558.0
 offset_right = 1256.0
-offset_bottom = 610.0
-theme = ExtResource("4_theme")
+offset_bottom = 622.0
+theme = ExtResource("4_qb5em")
 theme_type_variation = &"KalinFeedbackPanel"
 
 [node name="FeedbackLabel" type="Label" parent="UI/FeedbackPanel" unique_id=1069728747]
@@ -305,11 +352,12 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="StatusPanel" type="Panel" parent="UI" unique_id=127784847]
+visible = false
 offset_left = 24.0
 offset_top = 624.0
 offset_right = 1256.0
 offset_bottom = 696.0
-theme = ExtResource("4_theme")
+theme = ExtResource("4_qb5em")
 theme_type_variation = &"KalinDarkStatusPanel"
 
 [node name="Status" type="HBoxContainer" parent="UI/StatusPanel" unique_id=1726900556]
@@ -337,9 +385,48 @@ text = "Construye la petición con apoyo en español."
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="CompletionOverlay" parent="UI" unique_id=1615898991 instance=ExtResource("6_complete")]
-
-[node name="LibroHechizos" parent="." unique_id=2045117540 instance=ExtResource("3_book")]
+[node name="CompletionOverlay" type="Control" parent="UI" unique_id=1615898991 instance=ExtResource("9_x3ovs")]
 visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 1
+script = ExtResource("10_w0bua")
 
-[connection signal="pressed" from="UI/ChoicesPanel/Content/ServeButton" to="." method="_on_serve_pressed"]
+[node name="ServeButton" type="Button" parent="UI" unique_id=898787245]
+custom_minimum_size = Vector2(232, 58)
+offset_left = 1024.0
+offset_top = 646.0
+offset_right = 1256.0
+offset_bottom = 704.0
+theme = ExtResource("4_qb5em")
+theme_type_variation = &"KalinPrimaryButton"
+theme_override_font_sizes/font_size = 24
+disabled = true
+text = "Servir y lanzar el hechizo"
+
+[node name="MissionProgress" parent="UI" unique_id=1777810334 instance=ExtResource("editor_15")]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 28.0
+offset_top = 647.0
+offset_right = 998.0
+offset_bottom = 705.0
+
+[node name="LibroHechizos" type="CanvasLayer" parent="." unique_id=2045117540 instance=ExtResource("12_0xtb2")]
+layer = 10
+visible = false
+script = ExtResource("13_pmf7k")
+
+[node name="LearningGuide" parent="." instance=ExtResource("editor_16")]
+
+[node name="MissionBreak" parent="UI" instance=ExtResource("editor_18")]
+
+[node name="ResultArt" parent="UI/FeedbackPanel" instance=ExtResource("editor_14")]
+offset_left = 12
+offset_top = -6
+offset_right = 136
+offset_bottom = 70
+
+[connection signal="pressed" from="UI/ServeButton" to="." method="_on_serve_pressed"]

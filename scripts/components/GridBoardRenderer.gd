@@ -2,8 +2,8 @@
 extends RefCounted
 class_name GridBoardRenderer
 
-## Construye y actualiza la representación visual de GridBoard. Las reglas de
-## conexión, ocupación y entrada permanecen en el tablero.
+## Genera los nodos de GridBoard durante la autoría en el editor. Durante la
+## partida enlaza los nodos guardados y actualiza sus caminos y estados.
 
 var board: Node2D
 
@@ -26,21 +26,71 @@ func rebuild_preview() -> void:
 	for row: int in range(board.rows):
 		for column: int in range(board.columns):
 			var cell := Vector2i(column, row)
-			var tile := TextureRect.new()
+			var tile := board.tile_scene.instantiate() as TextureRect
 			tile.name = "Tile_%d_%d" % [column, row]
 			tile.position = board.cell_to_local_position(cell) + Vector2.ONE
 			tile.size = Vector2(board.tile_size - 2, board.tile_size - 2)
 			tile.texture = board.obstacle_tile if cell in board.obstacles else board.empty_tile
 			tile.stretch_mode = TextureRect.STRETCH_SCALE
 			tile.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			board.preview_root.add_child(tile)
+			_add_saved_child(tile)
 			board.tile_rects[cell] = tile
 	for index: int in board.words.size():
 		var word: GridWordData = board.words[index]
 		if is_instance_valid(word):
 			_add_destination_preview(word, index)
 			_add_word_preview(word, index)
+			var line := board.path_line_scene.instantiate() as Line2D
+			line.name = "PathLine_%d" % index
+			line.hide()
+			_add_saved_child(line)
+			board.path_lines[index] = line
+			var tip := board.path_tip_scene.instantiate() as Polygon2D
+			tip.name = "PathTip_%d" % index
+			tip.hide()
+			_add_saved_child(tip)
+			board.path_tips[index] = tip
 	board._add_keyboard_cursor()
+	refresh_all_paths()
+
+func _add_saved_child(node: Node) -> void:
+	board.preview_root.add_child(node)
+	# La estructura generada en el editor se guarda con la escena del nivel.
+	_own_generated_node(node, board.owner if board.owner != null else board)
+
+func _own_generated_node(node: Node, scene_root: Node) -> void:
+	node.scene_file_path = ""
+	node.owner = scene_root
+	for child: Node in node.get_children():
+		_own_generated_node(child, scene_root)
+
+func bind_saved_nodes() -> void:
+	board.tile_rects.clear()
+	board.word_nodes.clear()
+	board.destination_nodes.clear()
+	board.path_lines.clear()
+	board.path_tips.clear()
+	for row: int in range(board.rows):
+		for column: int in range(board.columns):
+			var tile := board.preview_root.get_node_or_null("Tile_%d_%d" % [column, row]) as TextureRect
+			if tile == null:
+				push_error("Actualiza los nodos de GridBoard en el inspector y guarda la escena antes de jugar.")
+				return
+			board.tile_rects[Vector2i(column, row)] = tile
+	for index: int in range(board.words.size()):
+		var word := board.preview_root.get_node_or_null("Word_%d" % index) as Panel
+		var destination := board.preview_root.get_node_or_null("Destination_%d" % index) as Panel
+		var line := board.preview_root.get_node_or_null("PathLine_%d" % index) as Line2D
+		var tip := board.preview_root.get_node_or_null("PathTip_%d" % index) as Polygon2D
+		if word == null or destination == null or line == null or tip == null:
+			push_error("Faltan fichas del tablero. Actualiza los nodos en el inspector y guarda la escena.")
+			return
+		board.word_nodes[index] = word
+		board.destination_nodes[index] = destination
+		board.path_lines[index] = line
+		board.path_tips[index] = tip
+	board.keyboard_cursor = board.preview_root.get_node("KeyboardCursor") as Panel
+	board._update_keyboard_cursor()
 	refresh_all_paths()
 
 func _add_word_preview(word: GridWordData, index: int) -> void:
@@ -50,20 +100,14 @@ func _add_word_preview(word: GridWordData, index: int) -> void:
 	panel.name = "Word_%d" % index
 	panel.position = board.cell_to_local_position(word.start_cell) + Vector2(2, 2)
 	panel.size = Vector2(board.tile_size - 4, board.tile_size - 4)
-	panel.z_index = 2
-	if word.sprite:
-		var sprite := TextureRect.new()
-		sprite.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		sprite.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		sprite.texture = word.sprite
-		sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		panel.add_child(sprite)
-		if not word.start_text.is_empty():
-			_add_panel_label(panel, word.start_text, VERTICAL_ALIGNMENT_BOTTOM, 12, Color.WHITE)
-	else:
-		_add_panel_label(panel, word.get_start_text(), VERTICAL_ALIGNMENT_CENTER, 14, Color.WHITE)
-	board.preview_root.add_child(panel)
+	var sprite := panel.get_node("Icon") as TextureRect
+	var label := panel.get_node("Label") as Label
+	sprite.texture = word.sprite
+	sprite.visible = word.sprite != null
+	label.visible = word.sprite == null or not word.start_text.is_empty()
+	label.text = word.start_text if word.sprite else word.get_start_text()
+	label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM if word.sprite else VERTICAL_ALIGNMENT_CENTER
+	_add_saved_child(panel)
 	board.word_nodes[index] = panel
 
 func _add_destination_preview(word: GridWordData, index: int) -> void:
@@ -73,65 +117,33 @@ func _add_destination_preview(word: GridWordData, index: int) -> void:
 	destination.name = "Destination_%d" % index
 	destination.position = board.cell_to_local_position(word.destination_cell) + Vector2(2, 2)
 	destination.size = Vector2(board.tile_size - 4, board.tile_size - 4)
-	destination.z_index = 1
-	var house := TextureRect.new()
-	house.texture = preload("res://Arte/ilustraciones/ui_casa.svg")
-	house.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	house.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	house.position = Vector2(12, 0)
-	house.size = Vector2(board.tile_size - 28, 37)
-	house.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	destination.add_child(house)
-	var arrived := TextureRect.new()
-	arrived.name = "ArrivedAnimal"
+	var arrived := destination.get_node("ArrivedAnimal") as TextureRect
 	arrived.texture = word.sprite
-	arrived.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	arrived.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	arrived.position = Vector2(27, 14)
-	arrived.size = Vector2(22, 24)
-	arrived.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	arrived.visible = index in board.connected
-	destination.add_child(arrived)
-	var font_size := 17 if word.get_destination_text().length() > 6 else 20
-	_add_panel_label(destination, word.get_destination_text(), VERTICAL_ALIGNMENT_BOTTOM, font_size, Color("3b2415"))
-	board.preview_root.add_child(destination)
+	var label := destination.get_node("Label") as Label
+	label.text = word.get_destination_text()
+	label.add_theme_font_size_override("font_size", 17 if label.text.length() > 6 else 20)
+	_add_saved_child(destination)
 	board.destination_nodes[index] = destination
 	if not board.destination_word_colors:
 		destination.add_theme_stylebox_override("panel", destination_style(Color("b99562")))
 
 func destination_style(color: Color) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
+	var style := board.destination_style.duplicate() as StyleBoxFlat
 	style.bg_color = color.lightened(0.55)
 	style.border_color = color.darkened(0.15)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(6)
 	return style
 
 func _create_word_panel(word_color: Color, lightened: bool) -> Panel:
-	var panel := Panel.new()
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var style := StyleBoxFlat.new()
-	style.bg_color = (word_color.lightened(0.55) if word_color != Color.WHITE else board.destination_color) if lightened else (word_color if word_color != Color.WHITE else Color(0.35, 0.45, 0.65))
+	var template: PackedScene = board.destination_scene if lightened else board.word_scene
+	var panel := template.instantiate() as Panel
+	var base_style: StyleBoxFlat = board.destination_style if lightened else board.word_style
+	var style := base_style.duplicate() as StyleBoxFlat
+	style.bg_color = (word_color.lightened(0.55) if word_color != Color.WHITE else board.destination_color) if lightened else (word_color if word_color != Color.WHITE else base_style.bg_color)
 	style.border_color = word_color.darkened(0.15)
-	style.set_border_width_all(2 if lightened else 3)
-	style.corner_radius_top_left = 6
-	style.corner_radius_top_right = 6
-	style.corner_radius_bottom_left = 6
-	style.corner_radius_bottom_right = 6
 	panel.add_theme_stylebox_override("panel", style)
 	return panel
 
-func _add_panel_label(panel: Panel, text: String, vertical: VerticalAlignment, font_size: int, font_color: Color) -> void:
-	var label := Label.new()
-	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	label.text = text
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = vertical
-	label.add_theme_font_size_override("font_size", font_size)
-	label.add_theme_color_override("font_color", font_color)
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(label)
 
 func show_selection_ring(index: int) -> Tween:
 	var actual_position: Vector2 = board.cell_to_local_position(board.words[index].start_cell)
@@ -177,16 +189,7 @@ func refresh_path_line(index: int) -> void:
 		remove_path_line(index)
 		return
 	var line := board.path_lines.get(index) as Line2D
-	if not line:
-		line = Line2D.new()
-		line.name = "PathLine_%d" % index
-		line.z_index = 0
-		line.begin_cap_mode = Line2D.LINE_CAP_ROUND
-		line.end_cap_mode = Line2D.LINE_CAP_ROUND
-		line.joint_mode = Line2D.LINE_JOINT_ROUND
-		line.antialiased = true
-		board.preview_root.add_child(line)
-		board.path_lines[index] = line
+	line.show()
 	line.width = board.path_line_width
 	line.default_color = board.words[index].color
 	line.clear_points()
@@ -200,8 +203,8 @@ func refresh_path_line(index: int) -> void:
 func remove_path_line(index: int) -> void:
 	var line := board.path_lines.get(index) as Line2D
 	if line:
-		line.queue_free()
-	board.path_lines.erase(index)
+		line.clear_points()
+		line.hide()
 	_remove_path_tip(index)
 
 func _refresh_path_tip(index: int, cell: Vector2i) -> void:
@@ -209,12 +212,7 @@ func _refresh_path_tip(index: int, cell: Vector2i) -> void:
 		_remove_path_tip(index)
 		return
 	var tip := board.path_tips.get(index) as Polygon2D
-	if not tip:
-		tip = Polygon2D.new()
-		tip.name = "PathTip_%d" % index
-		tip.z_index = 0
-		board.preview_root.add_child(tip)
-		board.path_tips[index] = tip
+	tip.show()
 	var radius: float = board.path_line_width * board.path_tip_scale * 0.5
 	var circle_points := PackedVector2Array()
 	for point_index: int in range(24):
@@ -227,8 +225,7 @@ func _refresh_path_tip(index: int, cell: Vector2i) -> void:
 func _remove_path_tip(index: int) -> void:
 	var tip := board.path_tips.get(index) as Polygon2D
 	if tip:
-		tip.queue_free()
-	board.path_tips.erase(index)
+		tip.hide()
 
 func _cell_center(cell: Vector2i) -> Vector2:
 	return board.cell_to_local_position(cell) + Vector2.ONE * (float(board.tile_size) * 0.5)

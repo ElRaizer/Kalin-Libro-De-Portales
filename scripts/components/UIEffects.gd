@@ -28,7 +28,7 @@ static func shake(host: Node, control: Control, distance: float = 9.0) -> Tween:
 
 static func success_burst(host: Node, parent: Node, origin: Control, count: int = 9) -> void:
 	for index: int in range(count):
-		var sparkle := Label.new()
+		var sparkle := GameManager.visual_catalog.sparkle_scene.instantiate() as Label
 		sparkle.text = "✦"
 		sparkle.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		sparkle.add_theme_font_size_override("font_size", 18 + index % 3 * 4)

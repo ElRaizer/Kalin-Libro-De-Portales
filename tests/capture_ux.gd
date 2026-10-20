@@ -69,7 +69,7 @@ func _run() -> void:
 	await create_timer(3.6).timeout
 	await _shot("casa_continuar")
 	current_scene._advance_round()
-	for index: int in range(1, current_scene.TOTAL_ROUNDS):
+	for index: int in range(1, current_scene.total_rounds):
 		current_scene._on_choice_pressed(current_scene._current_object().maya)
 		current_scene._advance_round()
 	await create_timer(0.4).timeout
@@ -97,7 +97,7 @@ func _run() -> void:
 	await _shot("fruta_con_tamano")
 	current_scene._select_modifier("")
 	await _shot("fruta_tamano_retirado")
-	current_scene.round_index = current_scene.CHALLENGES.size()
+	current_scene.round_index = current_scene.challenges.size()
 	current_scene._show_round()
 	await _shot("peticion_recuerdo")
 	await _scene("world5_level1", "portal")

@@ -5,7 +5,7 @@ extends Node
 ## amarillo represente únicamente la navegación por teclado.
 
 var _mouse_focused_control: Control
-var _empty_focus_style := StyleBoxEmpty.new()
+@export var empty_focus_style: StyleBoxEmpty
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton or event is InputEventMouseMotion:
@@ -35,7 +35,7 @@ func _hide_keyboard_visuals() -> void:
 		if is_instance_valid(_mouse_focused_control) and _mouse_focused_control != focused:
 			_mouse_focused_control.remove_theme_stylebox_override(&"focus")
 		_mouse_focused_control = focused
-		focused.add_theme_stylebox_override(&"focus", _empty_focus_style)
+		focused.add_theme_stylebox_override(&"focus", empty_focus_style)
 	get_tree().call_group(&"keyboard_focus_visual", &"set_keyboard_visual_visible", false)
 
 func _show_keyboard_visuals() -> void:

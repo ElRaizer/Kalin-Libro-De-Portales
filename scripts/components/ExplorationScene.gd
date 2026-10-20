@@ -10,8 +10,8 @@
 extends Node2D
 class_name ExplorationScene
 
-const KALIN_NORMAL: Texture2D = preload("res://Arte/sprites/kalin_normal.svg")
-const KALIN_SURPRISED: Texture2D = preload("res://Arte/sprites/kalin_surprised.svg")
+@export var normal_texture: Texture2D
+@export var surprised_texture: Texture2D
 const DIALOGUE_PRESENTER = preload("res://scripts/components/DialoguePresenter.gd")
 const ARRIVE_DISTANCE := 8.0
 const STEP_LENGTH := 70.0                  # píxeles recorridos en cada zancada
@@ -66,7 +66,8 @@ var _notice_tween: Tween
 var _dialogue: RefCounted
 var _intro_done := false
 var guide: LearningGuide
-var continue_button: Button
+@onready var continue_button: Button = $UI/ContinueButton
+var _kalin_base_scale: Vector2
 
 # ─── Nodos ───────────────────────────────────────────────────────────────────
 @onready var sendero: Path2D = $Sendero
@@ -109,34 +110,11 @@ func _ready() -> void:
 		if animal is Sprite2D:
 			_animal_bases[animal] = (animal as Sprite2D).position
 	_place_kalin(_min_x)
-	guide = LearningGuide.new()
-	add_child(guide)
-	continue_button = Button.new()
-	continue_button.position = Vector2(1024, 646)
-	continue_button.size = Vector2(232, 58)
-	continue_button.text = "Continuar →"
-	continue_button.theme = preload("res://themes/kalin_theme.tres")
-	continue_button.theme_type_variation = &"KalinPrimaryButton"
+	guide = $LearningGuide
+	_kalin_base_scale = kalin_sprite.scale
 	continue_button.pressed.connect(advance_dialogue)
-	$UI.add_child(continue_button)
-	hint_label.hide()
-	var help := Button.new()
-	help.position = Vector2(666, 12)
-	help.size = Vector2(150, 46)
-	help.theme = preload("res://themes/kalin_theme.tres")
-	help.theme_type_variation = &"KalinSecondaryButton"
-	help.text = "? Ayuda"
-	help.pressed.connect(_show_help)
-	$UI.add_child(help)
-	var menu := Button.new()
-	menu.position = Vector2(832, 12)
-	menu.size = Vector2(180, 46)
-	menu.theme = help.theme
-	menu.theme_type_variation = &"KalinSecondaryButton"
-	menu.text = "Menú"
-	menu.pressed.connect(_on_menu_pressed)
-	$UI.add_child(menu)
-	controls_label.text = "← →   ·   Toca para caminar"
+	$UI/HelpButton.pressed.connect(_show_help)
+	$UI/MenuButton.pressed.connect(_on_menu_pressed)
 	var state := GameManager.get_scene_state(self)
 	var examined: Variant = state.get("examined", [])
 	for spot: ExplorationSpot in spots:
@@ -281,7 +259,7 @@ func walk(direction: float, delta: float) -> void:
 	var stride: float = sin(_walk_phase)
 	kalin_sprite.position.y = -absf(stride) * WALK_BOUNCE
 	kalin_sprite.rotation = stride * WALK_TILT
-	kalin_sprite.scale = Vector2.ONE
+	kalin_sprite.scale = _kalin_base_scale
 	_check_auto_trigger()
 
 func _place_kalin(x: float) -> void:
@@ -291,7 +269,7 @@ func _idle() -> void:
 	kalin_sprite.position.y = lerpf(kalin_sprite.position.y, 0.0, 0.3)
 	kalin_sprite.rotation = lerpf(kalin_sprite.rotation, 0.0, 0.3)
 	var breath: float = 1.0 + sin(_time * BREATH_SPEED) * BREATH_SCALE
-	kalin_sprite.scale = Vector2(1.0, breath)
+	kalin_sprite.scale = _kalin_base_scale * Vector2(1.0, breath)
 
 func _walk_to_point(world_point: Vector2) -> void:
 	_pending_spot = null
@@ -414,7 +392,7 @@ func is_dialogue_open() -> bool:
 	return _dialogue.is_open()
 
 func _set_dialogue_pose(surprised: bool) -> void:
-	kalin_sprite.texture = KALIN_SURPRISED if surprised else KALIN_NORMAL
+	kalin_sprite.texture = surprised_texture if surprised else normal_texture
 
 func _on_dialogue_finished() -> void:
 	if is_instance_valid(continue_button):

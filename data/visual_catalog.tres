@@ -1,0 +1,306 @@
+[gd_resource type="Resource" script_class="VisualCatalog" format=3 uid="uid://cctn1i82s0qd6"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/ReactionBadge.tscn" id="badge_scene"]
+[ext_resource type="Script" uid="uid://cydhhino66wur" path="res://scripts/data/VisualCatalog.gd" id="catalog"]
+[ext_resource type="Script" uid="uid://umpkq1ul2nps" path="res://scripts/data/VisualEntry.gd" id="entry"]
+[ext_resource type="PackedScene" path="res://scenes/components/Sparkle.tscn" id="sparkle_scene"]
+[ext_resource type="Texture2D" uid="uid://dtdomwloivwbk" path="res://Arte/exploracion/prop_pagina.svg" id="texture_0"]
+[ext_resource type="Texture2D" uid="uid://blkdrohpd1u0d" path="res://Arte/ilustraciones/comida_ja.svg" id="texture_1"]
+[ext_resource type="Texture2D" uid="uid://dq2jxe8mqvyc0" path="res://Arte/ilustraciones/comida_jaas.svg" id="texture_2"]
+[ext_resource type="Texture2D" uid="uid://b14xnv71pf7ij" path="res://Arte/ilustraciones/comida_janal.svg" id="texture_3"]
+[ext_resource type="Texture2D" uid="uid://dd6iuw0dwxu4p" path="res://Arte/ilustraciones/comida_kuum.svg" id="texture_4"]
+[ext_resource type="Texture2D" uid="uid://d1thtytpu1784" path="res://Arte/ilustraciones/comida_pakal.svg" id="texture_5"]
+[ext_resource type="Texture2D" uid="uid://b17nbcxyemor6" path="res://Arte/ilustraciones/cortesia_camino.svg" id="texture_6"]
+[ext_resource type="Texture2D" uid="uid://c55teundnymkl" path="res://Arte/ilustraciones/cortesia_despedida.svg" id="texture_7"]
+[ext_resource type="Texture2D" uid="uid://bibnwow54jbnw" path="res://Arte/ilustraciones/cortesia_gracias.svg" id="texture_8"]
+[ext_resource type="Texture2D" uid="uid://br7gt4w8l2lts" path="res://Arte/ilustraciones/cortesia_saludo.svg" id="texture_9"]
+[ext_resource type="Texture2D" uid="uid://bkb7ir7igiods" path="res://Arte/ilustraciones/cualidad_jach.svg" id="texture_10"]
+[ext_resource type="Texture2D" uid="uid://bwy2fom6boye7" path="res://Arte/ilustraciones/cualidad_jatsuts.svg" id="texture_11"]
+[ext_resource type="Texture2D" uid="uid://1d4wgdo2yp0v" path="res://Arte/ilustraciones/cualidad_ki.svg" id="texture_12"]
+[ext_resource type="Texture2D" uid="uid://eydg7t2246h2" path="res://Arte/ilustraciones/cualidad_mejen.svg" id="texture_13"]
+[ext_resource type="Texture2D" uid="uid://bbv5ka4xcasq7" path="res://Arte/ilustraciones/cualidad_nojoch.svg" id="texture_14"]
+[ext_resource type="Texture2D" uid="uid://dtk8bvpg252nl" path="res://Arte/ilustraciones/escena_camino.svg" id="texture_15"]
+[ext_resource type="Texture2D" uid="uid://c5lptvrqqivvw" path="res://Arte/ilustraciones/escena_objetivo.svg" id="texture_16"]
+[ext_resource type="Texture2D" uid="uid://btqixwqfcglxw" path="res://Arte/ilustraciones/fx_aroma.svg" id="texture_17"]
+[ext_resource type="Texture2D" uid="uid://bjffx3fcoagtk" path="res://Arte/ilustraciones/fx_decoracion.svg" id="texture_18"]
+[ext_resource type="Texture2D" uid="uid://rl7wb5el1tl7" path="res://Arte/ilustraciones/fx_hambre.svg" id="texture_19"]
+[ext_resource type="Texture2D" uid="uid://dnp0qdpua0f1h" path="res://Arte/ilustraciones/fx_huella.svg" id="texture_20"]
+[ext_resource type="Texture2D" uid="uid://c3qlnvt3s60m7" path="res://Arte/ilustraciones/fx_pensamiento.svg" id="texture_21"]
+[ext_resource type="Texture2D" uid="uid://b8kuq0r55hima" path="res://Arte/ilustraciones/objeto_chaak.svg" id="texture_22"]
+[ext_resource type="Texture2D" uid="uid://dxvlhcgvwktu3" path="res://Arte/ilustraciones/objeto_chan.svg" id="texture_23"]
+[ext_resource type="Texture2D" uid="uid://2oc21m255ccn" path="res://Arte/ilustraciones/objeto_lak.svg" id="texture_24"]
+[ext_resource type="Texture2D" uid="uid://bd7cj6ydmp5fh" path="res://Arte/ilustraciones/objeto_mayak.svg" id="texture_25"]
+[ext_resource type="Texture2D" uid="uid://bcht30h8bkur3" path="res://Arte/ilustraciones/prop_peso.svg" id="texture_26"]
+[ext_resource type="Texture2D" uid="uid://bxdnmf5sb653" path="res://Arte/ilustraciones/silueta_chan.svg" id="texture_27"]
+[ext_resource type="Texture2D" uid="uid://lyk3k1koslak" path="res://Arte/ilustraciones/ui_casa.svg" id="texture_28"]
+[ext_resource type="Texture2D" uid="uid://qudy1rcxpn2w" path="res://Arte/ilustraciones/ui_corazon.svg" id="texture_29"]
+[ext_resource type="Texture2D" uid="uid://c3swbfuk2xp4m" path="res://Arte/ilustraciones/ui_isla.svg" id="texture_30"]
+[ext_resource type="Texture2D" uid="uid://dg2gi27foy7kb" path="res://Arte/ilustraciones/ui_libro.svg" id="texture_31"]
+[ext_resource type="Texture2D" uid="uid://g86e47jvoddi" path="res://Arte/ilustraciones/ui_mano.svg" id="texture_32"]
+[ext_resource type="Texture2D" uid="uid://dhbbw7uar7w0o" path="res://Arte/ilustraciones/ui_pensar.svg" id="texture_33"]
+[ext_resource type="Texture2D" uid="uid://cyqn61hbqxxta" path="res://Arte/ilustraciones/ui_portal.svg" id="texture_34"]
+[ext_resource type="Texture2D" uid="uid://ci3k8myufu2wx" path="res://Arte/sprites/animal_aak.svg" id="texture_35"]
+[ext_resource type="Texture2D" uid="uid://d2f8hj07l54pc" path="res://Arte/sprites/animal_baalam.svg" id="texture_36"]
+[ext_resource type="Texture2D" uid="uid://ol8x8vcx6xd0" path="res://Arte/sprites/animal_chiich.svg" id="texture_37"]
+[ext_resource type="Texture2D" uid="uid://bt5cevfxvdhq8" path="res://Arte/sprites/animal_kaax.svg" id="texture_38"]
+[ext_resource type="Texture2D" uid="uid://cq288osuv6y8i" path="res://Arte/sprites/animal_kay.svg" id="texture_39"]
+[ext_resource type="Texture2D" uid="uid://brvdw65fjsm7f" path="res://Arte/sprites/animal_keej.svg" id="texture_40"]
+[ext_resource type="Texture2D" uid="uid://buun81673e5ys" path="res://Arte/sprites/animal_keek_en.svg" id="texture_41"]
+[ext_resource type="Texture2D" uid="uid://kuo4lhc2uowd" path="res://Arte/sprites/animal_kuuts.svg" id="texture_42"]
+[ext_resource type="Texture2D" uid="uid://b6g6we4pi072b" path="res://Arte/sprites/animal_maax.svg" id="texture_43"]
+[ext_resource type="Texture2D" uid="uid://bjtthugdl1hx" path="res://Arte/sprites/animal_miis.svg" id="texture_44"]
+[ext_resource type="Texture2D" uid="uid://c82xhit3gbmdq" path="res://Arte/sprites/animal_peek.svg" id="texture_45"]
+[ext_resource type="Texture2D" uid="uid://br3jmwjyekrda" path="res://Arte/sprites/animal_tuul.svg" id="texture_46"]
+[ext_resource type="Texture2D" uid="uid://b68xji7hesm47" path="res://Arte/sprites/expresiones/animal_aak_duda.svg" id="texture_47"]
+[ext_resource type="Texture2D" uid="uid://b1fecet1uix85" path="res://Arte/sprites/expresiones/animal_aak_feliz.svg" id="texture_48"]
+[ext_resource type="Texture2D" uid="uid://dfpgvl1qwi84o" path="res://Arte/sprites/expresiones/animal_aak_neutro.svg" id="texture_49"]
+[ext_resource type="Texture2D" uid="uid://bgve8s72duj5s" path="res://Arte/sprites/expresiones/animal_aak_parpadeo.svg" id="texture_50"]
+[ext_resource type="Texture2D" uid="uid://c2beyu7xmjbsy" path="res://Arte/sprites/expresiones/animal_aak_reaccion_duda.svg" id="texture_51"]
+[ext_resource type="Texture2D" uid="uid://cq48k6pta1kpq" path="res://Arte/sprites/expresiones/animal_aak_reaccion_feliz.svg" id="texture_52"]
+[ext_resource type="Texture2D" uid="uid://dgto36cgqxqv4" path="res://Arte/sprites/expresiones/animal_miis_cola.svg" id="texture_53"]
+[ext_resource type="Texture2D" uid="uid://4blq8wjcdqgn" path="res://Arte/sprites/expresiones/animal_miis_duda.svg" id="texture_54"]
+[ext_resource type="Texture2D" uid="uid://co7tr0jq13i2a" path="res://Arte/sprites/expresiones/animal_miis_feliz.svg" id="texture_55"]
+[ext_resource type="Texture2D" uid="uid://dm3xacjkqkmeg" path="res://Arte/sprites/expresiones/animal_miis_neutro.svg" id="texture_56"]
+[ext_resource type="Texture2D" uid="uid://cdxtodmo6yrrd" path="res://Arte/sprites/expresiones/animal_miis_parpadeo.svg" id="texture_57"]
+[ext_resource type="Texture2D" uid="uid://cdj5c8tsw7v44" path="res://Arte/sprites/expresiones/animal_miis_reaccion_duda.svg" id="texture_58"]
+[ext_resource type="Texture2D" uid="uid://nen37dud502t" path="res://Arte/sprites/expresiones/animal_miis_reaccion_feliz.svg" id="texture_59"]
+[ext_resource type="Texture2D" uid="uid://cue6y203luyuf" path="res://Arte/sprites/expresiones/animal_peek_cola.svg" id="texture_60"]
+[ext_resource type="Texture2D" uid="uid://cjtpp6wnfbbv1" path="res://Arte/sprites/expresiones/animal_peek_duda.svg" id="texture_61"]
+[ext_resource type="Texture2D" uid="uid://wwncfeecc083" path="res://Arte/sprites/expresiones/animal_peek_feliz.svg" id="texture_62"]
+[ext_resource type="Texture2D" uid="uid://djlhc0nknktxw" path="res://Arte/sprites/expresiones/animal_peek_hambre.svg" id="texture_63"]
+[ext_resource type="Texture2D" uid="uid://lq2hnm7ik3lu" path="res://Arte/sprites/expresiones/animal_peek_neutro.svg" id="texture_64"]
+[ext_resource type="Texture2D" uid="uid://cmu188tu0x1ys" path="res://Arte/sprites/expresiones/animal_peek_parpadeo.svg" id="texture_65"]
+[ext_resource type="Texture2D" uid="uid://drmgvyt20ottk" path="res://Arte/sprites/expresiones/animal_peek_reaccion_duda.svg" id="texture_66"]
+[ext_resource type="Texture2D" uid="uid://dut26y6vks3ic" path="res://Arte/sprites/expresiones/animal_peek_reaccion_feliz.svg" id="texture_67"]
+[ext_resource type="Texture2D" uid="uid://bh05s38ni51am" path="res://Arte/sprites/expresiones/kalin_feliz.svg" id="texture_68"]
+[ext_resource type="Texture2D" uid="uid://cm1goeydvqhos" path="res://Arte/sprites/expresiones/kalin_magia.svg" id="texture_69"]
+[ext_resource type="Texture2D" uid="uid://d0wghvjjf4klm" path="res://Arte/sprites/expresiones/kalin_parpadeo.svg" id="texture_70"]
+[ext_resource type="Texture2D" uid="uid://qldaegsumska" path="res://Arte/sprites/expresiones/kalin_pensando.svg" id="texture_71"]
+[ext_resource type="Texture2D" uid="uid://btn3uf2wll66a" path="res://Arte/sprites/kalin_normal.svg" id="texture_72"]
+[ext_resource type="Texture2D" uid="uid://cwb3nicmmdmyw" path="res://Arte/sprites/kalin_surprised.svg" id="texture_73"]
+
+[sub_resource type="Resource" id="entry_0"]
+script = ExtResource("entry")
+key = "Bix a beel"
+texture = ExtResource("texture_9")
+
+[sub_resource type="Resource" id="entry_1"]
+script = ExtResource("entry")
+key = "Báalam"
+texture = ExtResource("texture_36")
+
+[sub_resource type="Resource" id="entry_2"]
+script = ExtResource("entry")
+key = "Ch'íich'"
+texture = ExtResource("texture_37")
+
+[sub_resource type="Resource" id="entry_3"]
+script = ExtResource("entry")
+key = "Jats'uts"
+texture = ExtResource("texture_11")
+
+[sub_resource type="Resource" id="entry_4"]
+script = ExtResource("entry")
+key = "K'éek'en"
+texture = ExtResource("texture_41")
+
+[sub_resource type="Resource" id="entry_5"]
+script = ExtResource("entry")
+key = "K'úum"
+texture = ExtResource("texture_4")
+
+[sub_resource type="Resource" id="entry_6"]
+script = ExtResource("entry")
+key = "Ka xi'ik tech jats'uts"
+texture = ExtResource("texture_6")
+
+[sub_resource type="Resource" id="entry_7"]
+script = ExtResource("entry")
+key = "Kaax"
+texture = ExtResource("texture_38")
+
+[sub_resource type="Resource" id="entry_8"]
+script = ExtResource("entry")
+key = "Kay"
+texture = ExtResource("texture_39")
+
+[sub_resource type="Resource" id="entry_9"]
+script = ExtResource("entry")
+key = "Kuuts"
+texture = ExtResource("texture_42")
+
+[sub_resource type="Resource" id="entry_10"]
+script = ExtResource("entry")
+key = "Kéej"
+texture = ExtResource("texture_40")
+
+[sub_resource type="Resource" id="entry_11"]
+script = ExtResource("entry")
+key = "Ma'ax"
+texture = ExtResource("texture_43")
+
+[sub_resource type="Resource" id="entry_12"]
+script = ExtResource("entry")
+key = "Miis"
+texture = ExtResource("texture_44")
+expressions = Dictionary[String, Texture2D]({
+"cola": ExtResource("texture_53"),
+"duda": ExtResource("texture_54"),
+"feliz": ExtResource("texture_55"),
+"neutro": ExtResource("texture_56"),
+"parpadeo": ExtResource("texture_57"),
+"reaccion_duda": ExtResource("texture_58"),
+"reaccion_feliz": ExtResource("texture_59")
+})
+
+[sub_resource type="Resource" id="entry_13"]
+script = ExtResource("entry")
+key = "Peek'"
+texture = ExtResource("texture_45")
+expressions = Dictionary[String, Texture2D]({
+"cola": ExtResource("texture_60"),
+"duda": ExtResource("texture_61"),
+"feliz": ExtResource("texture_62"),
+"hambre": ExtResource("texture_63"),
+"neutro": ExtResource("texture_64"),
+"parpadeo": ExtResource("texture_65"),
+"reaccion_duda": ExtResource("texture_66"),
+"reaccion_feliz": ExtResource("texture_67")
+})
+
+[sub_resource type="Resource" id="entry_14"]
+script = ExtResource("entry")
+key = "T'u'ul"
+texture = ExtResource("texture_46")
+
+[sub_resource type="Resource" id="entry_15"]
+script = ExtResource("entry")
+key = "Tak ti' uláak' k'iin"
+texture = ExtResource("texture_7")
+
+[sub_resource type="Resource" id="entry_16"]
+script = ExtResource("entry")
+key = "Yuum bo'otik"
+texture = ExtResource("texture_8")
+
+[sub_resource type="Resource" id="entry_17"]
+script = ExtResource("entry")
+key = "ch'áak"
+texture = ExtResource("texture_22")
+
+[sub_resource type="Resource" id="entry_18"]
+script = ExtResource("entry")
+key = "chan"
+texture = ExtResource("texture_23")
+
+[sub_resource type="Resource" id="entry_19"]
+script = ExtResource("entry")
+key = "ja'"
+texture = ExtResource("texture_1")
+
+[sub_resource type="Resource" id="entry_20"]
+script = ExtResource("entry")
+key = "ja'as"
+texture = ExtResource("texture_2")
+
+[sub_resource type="Resource" id="entry_21"]
+script = ExtResource("entry")
+key = "jach'"
+texture = ExtResource("texture_10")
+
+[sub_resource type="Resource" id="entry_22"]
+script = ExtResource("entry")
+key = "janal"
+texture = ExtResource("texture_3")
+
+[sub_resource type="Resource" id="entry_23"]
+script = ExtResource("entry")
+key = "ki'"
+texture = ExtResource("texture_12")
+
+[sub_resource type="Resource" id="entry_24"]
+script = ExtResource("entry")
+key = "lak"
+texture = ExtResource("texture_24")
+
+[sub_resource type="Resource" id="entry_25"]
+script = ExtResource("entry")
+key = "mayak"
+texture = ExtResource("texture_25")
+
+[sub_resource type="Resource" id="entry_26"]
+script = ExtResource("entry")
+key = "mejen"
+texture = ExtResource("texture_13")
+
+[sub_resource type="Resource" id="entry_27"]
+script = ExtResource("entry")
+key = "nojoch"
+texture = ExtResource("texture_14")
+
+[sub_resource type="Resource" id="entry_28"]
+script = ExtResource("entry")
+key = "pak'al"
+texture = ExtResource("texture_5")
+
+[sub_resource type="Resource" id="entry_29"]
+script = ExtResource("entry")
+key = "Áak"
+texture = ExtResource("texture_35")
+expressions = Dictionary[String, Texture2D]({
+"duda": ExtResource("texture_47"),
+"feliz": ExtResource("texture_48"),
+"neutro": ExtResource("texture_49"),
+"parpadeo": ExtResource("texture_50"),
+"reaccion_duda": ExtResource("texture_51"),
+"reaccion_feliz": ExtResource("texture_52")
+})
+
+[resource]
+script = ExtResource("catalog")
+sparkle_scene = ExtResource("sparkle_scene")
+reaction_badge_scene = ExtResource("badge_scene")
+entries = Array[ExtResource("entry")]([SubResource("entry_0"), SubResource("entry_1"), SubResource("entry_2"), SubResource("entry_3"), SubResource("entry_4"), SubResource("entry_5"), SubResource("entry_6"), SubResource("entry_7"), SubResource("entry_8"), SubResource("entry_9"), SubResource("entry_10"), SubResource("entry_11"), SubResource("entry_12"), SubResource("entry_13"), SubResource("entry_14"), SubResource("entry_15"), SubResource("entry_16"), SubResource("entry_17"), SubResource("entry_18"), SubResource("entry_19"), SubResource("entry_20"), SubResource("entry_21"), SubResource("entry_22"), SubResource("entry_23"), SubResource("entry_24"), SubResource("entry_25"), SubResource("entry_26"), SubResource("entry_27"), SubResource("entry_28"), SubResource("entry_29")])
+decorations = Dictionary[String, Texture2D]({
+"comida_ja": ExtResource("texture_1"),
+"comida_jaas": ExtResource("texture_2"),
+"comida_janal": ExtResource("texture_3"),
+"comida_kuum": ExtResource("texture_4"),
+"comida_pakal": ExtResource("texture_5"),
+"cortesia_camino": ExtResource("texture_6"),
+"cortesia_despedida": ExtResource("texture_7"),
+"cortesia_gracias": ExtResource("texture_8"),
+"cortesia_saludo": ExtResource("texture_9"),
+"cualidad_jach": ExtResource("texture_10"),
+"cualidad_jatsuts": ExtResource("texture_11"),
+"cualidad_ki": ExtResource("texture_12"),
+"cualidad_mejen": ExtResource("texture_13"),
+"cualidad_nojoch": ExtResource("texture_14"),
+"escena_camino": ExtResource("texture_15"),
+"escena_objetivo": ExtResource("texture_16"),
+"fx_aroma": ExtResource("texture_17"),
+"fx_decoracion": ExtResource("texture_18"),
+"fx_hambre": ExtResource("texture_19"),
+"fx_huella": ExtResource("texture_20"),
+"fx_pensamiento": ExtResource("texture_21"),
+"kalin_feliz": ExtResource("texture_68"),
+"kalin_magia": ExtResource("texture_69"),
+"kalin_normal": ExtResource("texture_72"),
+"kalin_parpadeo": ExtResource("texture_70"),
+"kalin_pensando": ExtResource("texture_71"),
+"kalin_surprised": ExtResource("texture_73"),
+"objeto_chaak": ExtResource("texture_22"),
+"objeto_chan": ExtResource("texture_23"),
+"objeto_lak": ExtResource("texture_24"),
+"objeto_mayak": ExtResource("texture_25"),
+"page": ExtResource("texture_0"),
+"prop_peso": ExtResource("texture_26"),
+"silueta_chan": ExtResource("texture_27"),
+"ui_casa": ExtResource("texture_28"),
+"ui_corazon": ExtResource("texture_29"),
+"ui_isla": ExtResource("texture_30"),
+"ui_libro": ExtResource("texture_31"),
+"ui_mano": ExtResource("texture_32"),
+"ui_pensar": ExtResource("texture_33"),
+"ui_portal": ExtResource("texture_34")
+})

@@ -62,7 +62,7 @@ func _run() -> void:
 	await _shot("14_tamano")
 	await _scene("world5_level1", "15_portal")
 	for index: int in range(4):
-		current_scene._on_option_pressed(current_scene.CHALLENGES[index].correct)
+		current_scene._on_option_pressed(current_scene.challenges[index].correct)
 		current_scene._advance_challenge()
 	await create_timer(0.7).timeout
 	await _shot("16_portal_energia")

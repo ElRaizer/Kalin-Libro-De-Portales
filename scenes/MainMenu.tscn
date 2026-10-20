@@ -1,9 +1,16 @@
 [gd_scene format=3 uid="uid://yl62bpm0aa4h"]
 
 [ext_resource type="Script" uid="uid://dx4ol5egx4y1m" path="res://scripts/ui/MainMenu.gd" id="1"]
+
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="2"]
+
 [ext_resource type="Texture2D" uid="uid://8oxnqwhv7jl6" path="res://Arte/backgrounds/bg_menu.svg" id="2_2wh52"]
+
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="3_theme"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/WorldMap.tscn" id="editor_5"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/ResetConfirmation.tscn" id="editor_6"]
 
 [node name="MainMenu" type="Node2D" unique_id=2139944658]
 script = ExtResource("1")
@@ -160,7 +167,23 @@ text = "Salir"
 [node name="LibroHechizos" parent="." unique_id=1731784252 instance=ExtResource("2")]
 visible = false
 
+[node name="WorldMap" parent="UI" instance=ExtResource("editor_5")]
+
+[node name="NextStop" type="Label" parent="UI"]
+offset_left = 200
+offset_top = 451
+offset_right = 1080
+offset_bottom = 473
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(1, 0.941176, 0.721569, 1)
+
+[node name="ResetConfirmation" parent="UI" instance=ExtResource("editor_6")]
+
 [connection signal="pressed" from="UI/Center/VBox/PlayBtn" to="." method="_on_play_pressed"]
+
 [connection signal="pressed" from="UI/Center/VBox/BookBtn" to="." method="_on_book_pressed"]
+
 [connection signal="pressed" from="UI/Center/VBox/ResetBtn" to="." method="_on_reset_pressed"]
+
 [connection signal="pressed" from="UI/Center/VBox/QuitBtn" to="." method="_on_quit_pressed"]
