@@ -53,6 +53,10 @@ var _mistakes := 0
 var guide: LearningGuide
 var target_art: MeaningIllustration
 var result_art: MeaningIllustration
+var mission_progress: MissionProgress
+var mission_break: MissionBreak
+var _help_stage := 0
+var _blocks_seen: Array[int] = []
 
 @onready var spell_panel: Panel = $UI/SpellPanel
 @onready var choices_panel: Panel = $UI/ChoicesPanel
@@ -90,8 +94,19 @@ func _ready() -> void:
 	result_art = MeaningIllustration.new()
 	result_art.position = Vector2(14, 100)
 	result_art.size = Vector2(145, 94)
-	spell_panel.add_child(result_art)
+	$UI/FeedbackPanel.add_child(result_art)
+	result_art.position = Vector2(12, -6)
+	result_art.size = Vector2(124, 76)
+	mission_progress = ExercisePresentation.setup(self, false)
+	_configure_keyboard_navigation()
+	mission_break = MissionBreak.new()
+	$UI.add_child(mission_break)
+	mission_break.continued.connect(func():
+		_refresh_step()
+		guide.watch_action(noun_slot)
+	)
 	var state := GameManager.get_scene_state(self)
+	_blocks_seen = ExerciseProgress.restore_markers(state.get("blocks"), CHALLENGES.size() * 2)
 	round_plan = ExerciseProgress.restore_rounds(state.get("plan"), CHALLENGES.size(), round_plan)
 	round_index = clampi(int(state.get("round", 0)), 0, round_plan.size())
 	_show_round()
@@ -122,39 +137,62 @@ func _setup_drop_slots() -> void:
 
 func _show_round() -> void:
 	guide.stop()
+	mission_break.hide()
 	if round_index >= round_plan.size():
 		_finish_level()
 		return
 	_resolving = false
 	_awaiting_continue = false
 	_mistakes = 0
+	_help_stage = 0
 	selected_noun = ""
 	selected_adjective = ""
 	result_art.hide()
 	PHRASE_BUILDER.clear_mark(noun_slot)
 	PHRASE_BUILDER.clear_mark(adjective_slot)
-	feedback_label.text = "1 Objeto   →   2 Cómo es   →   3 Crear"
+	feedback_label.text = "Elige el objeto."
+	feedback_label.offset_left = 12
 	feedback_label.add_theme_color_override("font_color", COLOR_INK)
 	var challenge := _current_challenge()
 	var guided := _is_guided_phase()
 	animal_sprite.texture = load(challenge.sprite)
-	animal_name.text = "%s · %s" % [challenge.animal_spanish, challenge.animal]
+	animal_name.text = challenge.animal
 	phase_label.text = "Aprende" if guided else "Recuerda"
 	request_label.text = "Ayuda a %s" % challenge.animal
 	target_art.show_meaning(challenge.noun, challenge.adjective)
 	target_badge.text = challenge.translation if guided else ""
-	instruction_label.text = "Elige o arrastra."
+	instruction_label.text = ""
 	translation_label.text = ""
 	_update_slots()
 	_update_choice_labels()
 	_set_choices_enabled(true)
 	cast_button.text = "Crear ✦"
+	_refresh_step()
+	mission_progress.update_progress(round_index, round_plan.size(), _phase_caption())
 	progress_label.text = "%s %d / %d" % ["Aprende" if guided else "Repasa", round_index % CHALLENGES.size() + 1, CHALLENGES.size()]
 	if not noun_buttons.is_empty():
 		(noun_buttons.values()[0] as Button).grab_focus()
 	if round_index == 0 and "phrases" not in GameManager.tutorials_seen:
 		call_deferred("_show_help")
+	else:
+		guide.watch_action(noun_slot)
+	_show_block()
 	GameManager.checkpoint(self)
+
+func _phase_caption() -> String:
+	return "El taller · %d / 3 · %s" % [round_index % 3 + 1, "Con ayuda" if _is_guided_phase() else ("Una pista" if round_index < CHALLENGES.size() + 3 else "A tu turno")]
+
+func _show_block() -> void:
+	if round_index > 0 and round_index % 3 == 0 and round_index not in _blocks_seen:
+		_blocks_seen.append(round_index)
+		guide.stop()
+		var recent: ExerciseEntry = CHALLENGES[round_plan[round_index - 1]]
+		mission_break.show_block("¡Otro objeto a su medida!", "tamano", recent.noun, recent.adjective, recent.animal)
+
+func _refresh_step() -> void:
+	ExercisePresentation.focus_step(noun_grid, adjective_grid, not selected_noun.is_empty())
+	$UI/ChoicesPanel/Content/NounHeading.text = "1 · Objeto" + ("  ✓" if not selected_noun.is_empty() else "")
+	$UI/ChoicesPanel/Content/AdjectiveHeading.text = "2 · Cómo es" + ("  ✓" if not selected_adjective.is_empty() else "")
 
 func _current_challenge() -> ExerciseEntry:
 	return CHALLENGES[round_plan[round_index]]
@@ -169,23 +207,26 @@ func _challenge_prompt(challenge: ExerciseEntry) -> String:
 
 func _update_choice_labels() -> void:
 	var guided := _is_guided_phase()
+	var bridge := not guided and round_index < CHALLENGES.size() + 3
 	for noun: ExerciseEntry in NOUNS:
 		var button: Button = noun_buttons[noun.maya]
-		button.text = "%s\n%s" % [noun.maya, str(noun.spanish).capitalize()] if guided else noun.maya
+		button.text = "%s\n%s" % [noun.maya, str(noun.spanish).capitalize()] if bridge else noun.maya
 		button.icon = load(GameManager.get_book_illustration(noun.maya)) if guided else null
 		button.expand_icon = true
-		button.add_theme_constant_override("icon_max_width", 28)
+		button.add_theme_constant_override("icon_max_width", 56)
 	for adjective: ExerciseEntry in ADJECTIVES:
 		var button: Button = adjective_buttons[adjective.maya]
-		button.text = "%s\n%s" % [adjective.maya, str(adjective.spanish).capitalize()] if guided else adjective.maya
+		button.text = "%s\n%s" % [adjective.maya, str(adjective.spanish).capitalize()] if bridge else adjective.maya
 		button.icon = load(GameManager.get_book_illustration(adjective.maya)) if guided else null
 		button.expand_icon = true
-		button.add_theme_constant_override("icon_max_width", 28)
+		button.add_theme_constant_override("icon_max_width", 56)
 
 func _select_noun(word: String) -> void:
 	if _resolving:
 		return
+	guide.stop()
 	selected_noun = word
+	_refresh_step()
 	_update_slots()
 	_update_button_states()
 	_celebrate_selection(noun_slot)
@@ -193,17 +234,25 @@ func _select_noun(word: String) -> void:
 func _select_adjective(word: String) -> void:
 	if _resolving:
 		return
+	guide.stop()
 	selected_adjective = word
+	_refresh_step()
 	_update_slots()
 	_update_button_states()
 	_celebrate_selection(adjective_slot)
 
 func _celebrate_selection(slot: Control) -> void:
+	if not selected_noun.is_empty():
+		result_art.show()
+		result_art.show_meaning(selected_noun, selected_adjective)
+		feedback_label.offset_left = 145
 	PHRASE_BUILDER.clear_mark(slot)
-	PHRASE_BUILDER.celebrate(slot, feedback_label, "Colocado", COLOR_INK)
+	PHRASE_BUILDER.celebrate(slot, feedback_label, "Elige cómo es." if selected_adjective.is_empty() else "¡Crea el objeto!", COLOR_INK)
 	GameManager.checkpoint(self)
 	if round_index == 0 and "phrases" not in GameManager.tutorials_seen:
 		_show_help()
+	else:
+		guide.watch_action(adjective_slot if selected_adjective.is_empty() else cast_button)
 
 func _update_slots() -> void:
 	noun_slot.text = "objeto"
@@ -241,6 +290,11 @@ func _on_cast_pressed() -> void:
 
 func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
 	_mistakes += 1
+	guide.stop()
+	result_art.show()
+	result_art.show_meaning(selected_noun, selected_adjective)
+	feedback_label.offset_left = 145
+	CharacterReaction.play(animal_sprite, false)
 	var noun_ok: bool = selected_noun == str(challenge.noun)
 	var adjective_ok: bool = selected_adjective == str(challenge.adjective)
 	if not noun_ok and not adjective_ok:
@@ -259,6 +313,7 @@ func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
 	PHRASE_BUILDER.mark_slot(noun_slot, noun_ok)
 	PHRASE_BUILDER.mark_slot(adjective_slot, adjective_ok)
 	if _mistakes >= 2:
+		_help_stage = mini(_mistakes - 2, 2)
 		_show_help()
 
 func _pulse_error_slots(noun_ok: bool, adjective_ok: bool) -> void:
@@ -320,6 +375,7 @@ func _on_replay_pressed() -> void:
 func _render_success(animate: bool) -> void:
 	_resolving = true
 	_awaiting_continue = true
+	mission_progress.update_progress(round_index + 1, round_plan.size(), "El taller · %d / 3 · ¡Creado!" % [round_index % 3 + 1])
 	guide.stop()
 	_set_choices_enabled(false)
 	var challenge := _current_challenge()
@@ -332,6 +388,7 @@ func _render_success(animate: bool) -> void:
 	feedback_label.text = "✓ ¡Ya está a su medida!"
 	feedback_label.add_theme_color_override("font_color", COLOR_SUCCESS)
 	result_art.show()
+	feedback_label.offset_left = 145
 	result_art.show_meaning(challenge.noun, challenge.adjective)
 	cast_button.text = "Continuar →"
 	cast_button.disabled = false
@@ -339,23 +396,34 @@ func _render_success(animate: bool) -> void:
 	guide.watch_continue(cast_button)
 	if animate:
 		result_art.celebrate()
+		CharacterReaction.play(animal_sprite)
 		guide.page_to_book(result_art.global_position, $UI/TopBar/Bar/BookButton.get_global_rect().get_center())
 	GameManager.checkpoint(self)
 
 func _show_help() -> void:
+	if mission_break.visible:
+		guide.point_at(mission_break.continue_button)
+		return
 	if _awaiting_continue:
 		guide.point_at(cast_button)
-	elif not _resolving:
-		var challenge := _current_challenge()
-		if selected_noun != challenge.noun:
-			guide.demonstrate([(noun_buttons[challenge.noun] as Control).get_global_rect().get_center(), noun_slot.get_global_rect().get_center()])
-			feedback_label.text = "1 Elige o arrastra el objeto."
-		elif selected_adjective != challenge.adjective:
-			guide.demonstrate([(adjective_buttons[challenge.adjective] as Control).get_global_rect().get_center(), adjective_slot.get_global_rect().get_center()])
-			feedback_label.text = "2 Elige cómo es."
-		else:
-			guide.point_at(cast_button)
-			feedback_label.text = "3 ¡Crea el objeto!"
+		return
+	if _resolving:
+		return
+	var challenge := _current_challenge()
+	var needs_noun := selected_noun != challenge.noun
+	var grid: Control = noun_grid if needs_noun else adjective_grid
+	var slot: Control = noun_slot if needs_noun else adjective_slot
+	if not selected_noun.is_empty() and not selected_adjective.is_empty() and _mistakes == 0:
+		guide.point_at(cast_button)
+	elif round_index == 0 and "phrases" not in GameManager.tutorials_seen or _help_stage >= 2:
+		var button: Control = noun_buttons[challenge.noun] if needs_noun else adjective_buttons[challenge.adjective]
+		guide.demonstrate([button.get_global_rect().get_center(), slot.get_global_rect().get_center()])
+	elif _help_stage == 0:
+		guide.highlight(slot)
+	else:
+		guide.highlight(grid)
+	_help_stage += 1
+	feedback_label.text = "Elige el objeto." if needs_noun else "Elige cómo es."
 
 func get_checkpoint_state() -> Dictionary:
-	return {"plan": round_plan, "round": round_index, "noun": selected_noun, "adjective": selected_adjective, "waiting": _awaiting_continue}
+	return {"plan": round_plan, "round": round_index, "noun": selected_noun, "adjective": selected_adjective, "waiting": _awaiting_continue, "blocks": _blocks_seen}

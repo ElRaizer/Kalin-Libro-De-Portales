@@ -1,5 +1,17 @@
 [gd_resource type="Theme" format=3 uid="uid://d3cw0ebb2x17v"]
 
+[sub_resource type="StyleBoxFlat" id="CreamPanel"]
+bg_color = Color(0.98, 0.94, 0.84, 0.98)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.45, 0.3, 0.15, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
 [sub_resource type="StyleBoxFlat" id="DisabledButton"]
 content_margin_top = 9.0
 content_margin_bottom = 9.0
@@ -126,18 +138,6 @@ corner_radius_top_left = 22
 corner_radius_top_right = 22
 corner_radius_bottom_right = 22
 corner_radius_bottom_left = 22
-
-[sub_resource type="StyleBoxFlat" id="CreamPanel"]
-bg_color = Color(0.98, 0.94, 0.84, 0.98)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(0.45, 0.3, 0.15, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
 
 [sub_resource type="StyleBoxFlat" id="DarkStatusPanel"]
 bg_color = Color(0.1, 0.14, 0.1, 0.82)
@@ -289,10 +289,6 @@ corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="DialogFrame"]
-expand_margin_left = 8.0
-expand_margin_top = 32.0
-expand_margin_right = 8.0
-expand_margin_bottom = 8.0
 content_margin_left = 8.0
 content_margin_top = 32.0
 content_margin_right = 8.0
@@ -307,12 +303,13 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
+expand_margin_left = 8.0
+expand_margin_top = 32.0
+expand_margin_right = 8.0
+expand_margin_bottom = 8.0
 
 [resource]
 AcceptDialog/styles/panel = SubResource("CreamPanel")
-Window/styles/embedded_border = SubResource("DialogFrame")
-Window/colors/title_color = Color(1, 0.96, 0.78, 1)
-Window/constants/title_height = 32
 KalinAdjectiveButton/base_type = &"Button"
 KalinAdjectiveButton/colors/font_color = Color(1, 1, 1, 1)
 KalinAdjectiveButton/colors/font_hover_color = Color(1, 1, 1, 1)
@@ -355,10 +352,10 @@ KalinNounSlot/base_type = &"Label"
 KalinNounSlot/styles/normal = SubResource("NounSlot")
 KalinPrimaryButton/base_type = &"Button"
 KalinPrimaryButton/colors/font_color = Color(0.231, 0.141, 0.082, 1)
+KalinPrimaryButton/colors/font_disabled_color = Color(0.42, 0.384, 0.325, 1)
 KalinPrimaryButton/colors/font_focus_color = Color(0.231, 0.141, 0.082, 1)
 KalinPrimaryButton/colors/font_hover_color = Color(0.231, 0.141, 0.082, 1)
 KalinPrimaryButton/colors/font_pressed_color = Color(0.231, 0.141, 0.082, 1)
-KalinPrimaryButton/colors/font_disabled_color = Color(0.42, 0.384, 0.325, 1)
 KalinPrimaryButton/styles/disabled = SubResource("DisabledButton")
 KalinPrimaryButton/styles/focus = SubResource("KeyboardFocus")
 KalinPrimaryButton/styles/hover = SubResource("GoldButtonHover")
@@ -368,10 +365,10 @@ KalinRequestPanel/base_type = &"Panel"
 KalinRequestPanel/styles/panel = SubResource("RequestPanel")
 KalinSecondaryButton/base_type = &"Button"
 KalinSecondaryButton/colors/font_color = Color(1, 1, 1, 1)
-KalinSecondaryButton/colors/font_disabled_color = Color(0.30, 0.21, 0.12, 1)
-KalinSecondaryButton/colors/icon_disabled_color = Color(1, 1, 1, 0.85)
+KalinSecondaryButton/colors/font_disabled_color = Color(0.3, 0.21, 0.12, 1)
 KalinSecondaryButton/colors/font_hover_color = Color(1, 1, 1, 1)
 KalinSecondaryButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+KalinSecondaryButton/colors/icon_disabled_color = Color(1, 1, 1, 0.85)
 KalinSecondaryButton/styles/disabled = SubResource("DisabledButton")
 KalinSecondaryButton/styles/focus = SubResource("KeyboardFocus")
 KalinSecondaryButton/styles/hover = SubResource("TealButtonHover")
@@ -393,3 +390,6 @@ KalinStoryActor/styles/normal = SubResource("StoryActorNormal")
 KalinStoryActor/styles/pressed = SubResource("StoryActorHover")
 KalinTopBarPanel/base_type = &"Panel"
 KalinTopBarPanel/styles/panel = SubResource("TopBarPanel")
+Window/colors/title_color = Color(1, 0.96, 0.78, 1)
+Window/constants/title_height = 32
+Window/styles/embedded_border = SubResource("DialogFrame")

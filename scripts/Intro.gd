@@ -20,6 +20,7 @@ var panel_index: int = 0
 var is_animating: bool = false
 var text_revealed: bool = false
 var full_text: String = ""
+var continue_button: Button
 const CHAR_DELAY := 0.025   # segundos entre caracteres (typewriter)
 
 # ─── Nodos ───────────────────────────────────────────────────────────────────
@@ -35,6 +36,24 @@ const CHAR_DELAY := 0.025   # segundos entre caracteres (typewriter)
 
 # ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
+	skip_btn.theme = preload("res://themes/kalin_theme.tres")
+	skip_btn.theme_type_variation = &"KalinSecondaryButton"
+	skip_btn.position = Vector2(1060, 12)
+	skip_btn.size = Vector2(204, 46)
+	skip_btn.add_theme_font_size_override("font_size", 19)
+	panel_num_lbl.position = Vector2(24, 12)
+	panel_num_lbl.size = Vector2(120, 46)
+	panel_num_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	panel_num_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	kalin_sprite.size = Vector2(200, 340)
+	continue_button = Button.new()
+	continue_button.position = Vector2(1024, 646)
+	continue_button.size = Vector2(232, 58)
+	continue_button.text = "Continuar →"
+	continue_button.theme = preload("res://themes/kalin_theme.tres")
+	continue_button.theme_type_variation = &"KalinPrimaryButton"
+	continue_button.pressed.connect(_advance)
+	$UI.add_child(continue_button)
 	var menu := Button.new()
 	menu.position = Vector2(884, 12)
 	menu.size = Vector2(158, 46)
@@ -109,6 +128,7 @@ func _show_panel(idx: int) -> void:
 	sub_text.text  = p.subtext
 	full_text      = p.text
 	continue_lbl.visible = false
+	continue_button.disabled = true
 
 	# Fade in dialogue box
 	dialogue_box.modulate.a = 0.0
@@ -117,6 +137,7 @@ func _show_panel(idx: int) -> void:
 	await tw2.finished
 
 	is_animating = false
+	continue_button.disabled = false
 	# Start typewriter
 	_start_typewriter()
 
@@ -138,7 +159,7 @@ func _finish_typewriter() -> void:
 	typewriter_timer.stop()
 	main_text.visible_characters = -1   # show all
 	text_revealed = true
-	continue_lbl.visible = true
+	continue_lbl.visible = false
 
 # ─── Utilidades ──────────────────────────────────────────────────────────────
 

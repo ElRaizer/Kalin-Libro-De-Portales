@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
 [ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level1.svg" id="3_bg_isla"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea.svg" id="3_bg_isla"]
 
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
@@ -51,14 +51,16 @@ effects = 16
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
 speaker = "Peek'"
-text = "Pero el huracán también se llevó nuestros muebles. No tenemos mesa, ni plato, ni cama..."
+text = "¡Nuestras casas están vacías!"
 actors = Array[String](["Peek'", "Miis", "Kaax"])
 mood = 2
+kind = 4
+visual_scene = "casa"
 
 [sub_resource type="Resource" id="Beat_7"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Entonces aprenderé los hechizos para construirlos! Vamos a la Casa Maya."
+text = "¡Crearemos lo que necesitan!"
 actors = Array[String](["Peek'", "Miis", "Kaax"])
 mood = 2
 

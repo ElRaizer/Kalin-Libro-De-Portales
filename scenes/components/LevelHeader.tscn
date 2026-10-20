@@ -49,6 +49,6 @@ vertical_alignment = 1
 [node name="BookButton" type="Button" parent="Bar"]
 custom_minimum_size = Vector2(118, 40)
 layout_mode = 2
-theme_type_variation = &"KalinPrimaryButton"
+theme_type_variation = &"KalinSecondaryButton"
 text = "Libro"
 

@@ -12,6 +12,9 @@ var _time := 0.0
 var _continue_target: Control
 var _idle_seconds := 0.0
 var _idle_delay := 4.0
+var _hint_target: Control
+var _hint_ring: Panel
+var _action_target: Control
 
 static func install(host: Node, bar: Container, help_action: Callable) -> LearningGuide:
 	var guide := LearningGuide.new()
@@ -43,6 +46,17 @@ func demonstrate(points: Array[Vector2]) -> void:
 	if points.is_empty():
 		return
 	hand.visible = true
+	# Una línea discontinua acompaña el gesto; nunca modifica la respuesta real.
+	if points.size() > 1:
+		var line := Line2D.new()
+		line.width = 5
+		line.default_color = Color("ffd050")
+		line.default_color.a = 0.72
+		line.begin_cap_mode = Line2D.LINE_CAP_ROUND
+		line.end_cap_mode = Line2D.LINE_CAP_ROUND
+		line.points = PackedVector2Array(points)
+		add_child(line)
+		move_child(line, 0)
 	hand.position = points[0] - Vector2(22, 5)
 	gesture = create_tween().set_loops()
 	gesture.tween_property(hand, "modulate:a", 1.0, 0.15).from(0.0)
@@ -68,8 +82,30 @@ func watch_continue(control: Control, delay: float = 4.0) -> void:
 	_idle_delay = delay
 	set_process(true)
 
+## Ayuda de operación: rodea un grupo o un hueco, sin señalar la respuesta.
+func highlight(control: Control) -> void:
+	stop()
+	_hint_target = control
+	_hint_ring = Panel.new()
+	_hint_ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0, 0, 0, 0)
+	style.border_color = Color("ffd050")
+	style.set_border_width_all(3)
+	style.set_corner_radius_all(14)
+	_hint_ring.add_theme_stylebox_override("panel", style)
+	add_child(_hint_ring)
+	set_process(true)
+	_process(0)
+
+func watch_action(control: Control, delay: float = 8.0) -> void:
+	stop()
+	_action_target = control
+	_idle_delay = delay
+	set_process(true)
+
 func _input(event: InputEvent) -> void:
-	if not is_instance_valid(_continue_target):
+	if not is_instance_valid(_continue_target) and not is_instance_valid(_action_target):
 		return
 	var interacted: bool = (
 		(event is InputEventMouseMotion and event.relative.length() > 2.0)
@@ -84,6 +120,22 @@ func _input(event: InputEvent) -> void:
 		hand.hide()
 
 func _process(delta: float) -> void:
+	if is_instance_valid(_action_target):
+		_idle_seconds += delta
+		if _idle_seconds >= _idle_delay:
+			var target := _action_target
+			highlight(target)
+		return
+	if is_instance_valid(_hint_target) and is_instance_valid(_hint_ring):
+		if not _hint_target.is_visible_in_tree():
+			stop()
+			return
+		_time += delta
+		var rect := _hint_target.get_global_rect().grow(5)
+		_hint_ring.position = rect.position
+		_hint_ring.size = rect.size
+		_hint_ring.modulate.a = 0.6 + 0.4 * sin(_time * 3.0)
+		return
 	if is_instance_valid(_continue_target):
 		if not _continue_target.is_visible_in_tree() or (_continue_target is BaseButton and _continue_target.disabled):
 			stop()
@@ -104,6 +156,9 @@ func _process(delta: float) -> void:
 	hand.position = _point_target.get_global_rect().get_center() - Vector2(22, 5) + Vector2(0, sin(_time * 4) * 6)
 
 func stop() -> void:
+	_hint_target = null
+	_hint_ring = null
+	_action_target = null
 	_point_target = null
 	_continue_target = null
 	_idle_seconds = 0.0

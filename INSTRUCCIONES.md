@@ -161,6 +161,15 @@ script propio. En el Inspector se configuran:
 
 Cada `StoryBeat` define:
 
+La revisión visual incorpora también `kind = EXPLORAR`, `visual_scene` (vacío,
+`camino`, `casa`, `tamano`, `hambre` o `portal`) y `visual_solved`. En EXPLORAR,
+la escena representa el problema automáticamente en un bucle continuo; Continuar
+está disponible sin tocar la animación. Los
+checkpoints narrativos guardan `revision = 2` y migran las posiciones de los
+capítulos abreviados. `PauseMenu` es el autoload que gestiona `Esc` sin saltar
+capítulos. Ver [REVISION_UX_VISUAL.md](REVISION_UX_VISUAL.md) para los componentes
+compartidos de presentación y ayuda.
+
 | Propiedad | Uso |
 |---|---|
 | `kind` | `DIALOGO` (se avanza con clic, Espacio o Enter), `CONOCER` (tocar a cada animal), `ADIVINAR` (elegir al animal nombrado) o `ELEGIR` (elegir una palabra maya entre botones). |
@@ -300,7 +309,7 @@ El progreso se guarda automáticamente como `user://kalin_save.json`. Incluye:
 - identificadores `w<numero>_l<numero>` de los niveles completados;
 - escena pendiente, estado de cada escena y tutoriales ya practicados (formato 2).
 
-**Ajustes · volver a empezar** pide confirmación antes de eliminar la partida. Los datos inválidos se descartan y un JSON dañado genera una advertencia sin impedir que el juego inicie. `SaveRepository.CURRENT_VERSION` es la versión canónica. El formato 1 conserva palabras, puntos y niveles; sólo el formato 0 infiere niveles desde vocabulario antiguo.
+**Volver a empezar** pide confirmación antes de eliminar la partida. Los datos inválidos se descartan y un JSON dañado genera una advertencia sin impedir que el juego inicie. `SaveRepository.CURRENT_VERSION` es la versión canónica. El formato 1 conserva palabras, puntos y niveles; sólo el formato 0 infiere niveles desde vocabulario antiguo.
 
 Para una escena nueva, implementar `get_checkpoint_state() -> Dictionary` y restaurar con `GameManager.get_scene_state(self)`. Guardar tras acciones completas mediante `GameManager.checkpoint(self)`. La navegación y el cierre de ventana capturan también el estado actual. Usar `GameManager.replay_scene()` para repetir desde el principio sin borrar los logros. El libro usa `PROCESS_MODE_ALWAYS` mientras pausa el árbol; los temporizadores de un ejercicio deben respetar esa pausa.
 
@@ -319,6 +328,8 @@ godot_console.exe --headless --path . --script res://tests/validate_main_menu.gd
 godot_console.exe --headless --path . --script res://tests/validate_intro.gd
 godot_console.exe --headless --path . --script res://tests/validate_ux.gd
 godot_console.exe --headless --path . --script res://tests/validate_adventure.gd
+godot_console.exe --headless --path . --script res://tests/validate_visual_flow.gd
+godot_console.exe --headless --path . --script res://tests/validate_animation_loops.gd
 ```
 
 `validate_project.gd` revisa también que cada exploración tenga sendero, objetos

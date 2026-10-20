@@ -74,7 +74,15 @@ func get_learnable_word_count() -> int:
 	return get_learnable_vocabulary_keys().size()
 
 func recovered_pages_text() -> String:
-	return "%d %s" % [words_learned.size(), "página" if words_learned.size() == 1 else "páginas"]
+	var count := get_recovered_word_count()
+	return "%d %s" % [count, "página" if count == 1 else "páginas"]
+
+func get_recovered_word_count() -> int:
+	var count := 0
+	for word: String in words_learned:
+		if word in VOCABULARY and word not in FUTURE_VOCABULARY:
+			count += 1
+	return count
 
 func get_book_illustration(maya_word: String) -> String:
 	var key: String = _resolve_vocab_key(maya_word)

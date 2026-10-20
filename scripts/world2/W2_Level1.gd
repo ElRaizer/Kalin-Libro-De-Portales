@@ -5,8 +5,8 @@
 ## Cada animal necesita un objeto para su casa. El jugador debe elegir el
 ## sustantivo maya correcto entre varias opciones para conjurarlo:
 ##   Fase 1 (Aprende):   se muestra la imagen Y la palabra en maya.
-##   Fase 2 (Recuerda):  solo se muestra la imagen — sin apoyo escrito,
-##                       tal como pide el GDD para el nivel avanzado.
+##   Fase 2 (Recuerda):  dos peticiones con traducción de transición y después
+##                       sólo las palabras mayas en las respuestas.
 ## Vocabulario centralizado en GameManager.VOCABULARY, mundo 2 nivel 1:
 ##   mayak (mesa), lak (plato), ch'áak (cama), chan (silla), janal (comida)
 extends Node2D
@@ -50,6 +50,11 @@ var next_button: Button
 var request_art: MeaningIllustration
 var room: Panel
 var room_items: Dictionary = {}
+var mission_progress: MissionProgress
+var mission_break: MissionBreak
+var choice_preview: MeaningIllustration
+var _help_stage := 0
+var _blocks_seen: Array[int] = []
 
 @onready var animal_spr: TextureRect = $UI/RequestPanel/AnimalSprite
 @onready var need_lbl: Label = $UI/RequestPanel/VBox/NeedLbl
@@ -67,6 +72,7 @@ func _ready() -> void:
 		round_order.append(index)
 	round_order.shuffle()
 	var state := GameManager.get_scene_state(self)
+	_blocks_seen = ExerciseProgress.restore_markers(state.get("blocks"), TOTAL_ROUNDS)
 	round_order = ExerciseProgress.order_or(state.get("order"), OBJECTS.size(), round_order)
 	round_index = clampi(int(state.get("round", 0)), 0, TOTAL_ROUNDS)
 	completion.next_pressed.connect(_on_next_level_pressed)
@@ -81,13 +87,25 @@ func _ready() -> void:
 	request_art.size = Vector2(164, 125)
 	$UI/RequestPanel.add_child(request_art)
 	next_button = Button.new()
-	next_button.position = Vector2(1050, 574)
-	next_button.size = Vector2(188, 52)
+	next_button.position = Vector2(1024, 646)
+	next_button.size = Vector2(232, 58)
 	next_button.theme = preload("res://themes/kalin_theme.tres")
 	next_button.theme_type_variation = &"KalinPrimaryButton"
 	next_button.text = "Continuar →"
 	next_button.pressed.connect(_advance_round)
 	$UI.add_child(next_button)
+	$UI/StatusPanel.hide()
+	mission_progress = MissionProgress.new()
+	mission_progress.position = Vector2(28, 647)
+	mission_progress.size = Vector2(970, 58)
+	$UI.add_child(mission_progress)
+	choice_preview = MeaningIllustration.new()
+	choice_preview.position = Vector2(10, -6)
+	choice_preview.size = Vector2(124, 76)
+	$UI/FeedbackPanel.add_child(choice_preview)
+	mission_break = MissionBreak.new()
+	$UI.add_child(mission_break)
+	mission_break.continued.connect(func(): guide.watch_action(choices_grid))
 	_restore_room()
 	if round_index >= TOTAL_ROUNDS:
 		_on_level_complete()
@@ -150,8 +168,12 @@ func _current_object() -> ExerciseEntry:
 
 func _show_round() -> void:
 	guide.stop()
+	mission_break.hide()
+	choice_preview.hide()
+	feedback_lbl.offset_left = 12
 	_waiting = false
 	_mistakes = 0
+	_help_stage = 0
 	next_button.hide()
 	feedback_lbl.text = "Elige el hechizo para ayudar."
 	feedback_lbl.add_theme_color_override("font_color", Color("5b4630"))
@@ -165,9 +187,15 @@ func _show_round() -> void:
 	request_art.show_meaning(obj.maya)
 	phase_lbl.text = "%s · %d / %d" % ["Aprende" if current_phase == 0 else "Recuerda", round_index % OBJECTS.size() + 1, OBJECTS.size()]
 	progress_lbl.text = "%d / %d muebles recuperados" % [mini(round_index, OBJECTS.size()), OBJECTS.size()]
+	mission_progress.update_progress(round_index, TOTAL_ROUNDS, "La casa · %d / %d · %s" % [round_index % OBJECTS.size() + 1, OBJECTS.size(), "Con ayuda" if current_phase == 0 else ("Una pista" if round_index < 7 else "A tu turno")])
 	_build_choices()
 	if round_index == 0 and "objects" not in GameManager.tutorials_seen:
 		call_deferred("_show_help")
+	else:
+		guide.watch_action(choices_grid)
+	if round_index == OBJECTS.size() and round_index not in _blocks_seen:
+		_blocks_seen.append(round_index)
+		mission_break.show_block("¡La casa está amueblada! Ahora prueba tus palabras.", "casa")
 	GameManager.checkpoint(self)
 
 func _build_choices() -> void:
@@ -185,6 +213,8 @@ func _build_choices() -> void:
 	for obj: ExerciseEntry in pool:
 		var button := Button.new()
 		button.text = obj.maya
+		if current_phase == 1 and round_index < 7:
+			button.text += "\n" + str(GameManager.get_vocabulary_entry(obj.maya).spanish)
 		button.custom_minimum_size = Vector2(216, 92)
 		button.theme_type_variation = &"KalinNounButton"
 		button.add_theme_font_size_override("font_size", 23)
@@ -207,14 +237,22 @@ func _on_choice_pressed(word: String) -> void:
 		_render_success(true)
 	else:
 		_mistakes += 1
+		choice_preview.show()
+		choice_preview.show_meaning(word)
+		feedback_lbl.offset_left = 145
+		CharacterReaction.play(animal_spr, false)
 		var meaning := GameManager.get_vocabulary_entry(word)
 		feedback_lbl.text = "%s significa %s. Busca el objeto de la imagen." % [word, meaning.spanish]
 		feedback_lbl.add_theme_color_override("font_color", Color("b56a1f"))
 		if _mistakes >= 2:
+			_help_stage = mini(_mistakes - 2, 2)
 			_show_help()
 
 func _render_success(animate: bool) -> void:
 	_waiting = true
+	mission_progress.update_progress(round_index + 1, TOTAL_ROUNDS, "La casa · %d / %d · ¡Creado!" % [round_index % OBJECTS.size() + 1, OBJECTS.size()])
+	choice_preview.hide()
+	feedback_lbl.offset_left = 12
 	guide.stop()
 	for button: Button in _choice_buttons:
 		button.disabled = true
@@ -228,6 +266,7 @@ func _render_success(animate: bool) -> void:
 	next_button.grab_focus()
 	guide.watch_continue(next_button)
 	if animate:
+		CharacterReaction.play(animal_spr)
 		guide.page_to_book(request_art.global_position, $UI/TopBar/BookBtn.get_global_rect().get_center())
 	GameManager.checkpoint(self)
 
@@ -241,8 +280,16 @@ func _advance_round() -> void:
 		_show_round()
 
 func _show_help() -> void:
+	if mission_break.visible:
+		guide.point_at(mission_break.continue_button)
+		return
 	if _waiting:
 		guide.point_at(next_button)
+		return
+	if not (round_index == 0 and "objects" not in GameManager.tutorials_seen) and _help_stage < 2:
+		guide.highlight(request_art if _help_stage == 0 else choices_grid)
+		_help_stage += 1
+		feedback_lbl.text = "Busca la palabra del objeto."
 		return
 	for button: Button in _choice_buttons:
 		if button.text == _current_object().maya:
@@ -274,4 +321,4 @@ func _on_replay_pressed() -> void:
 	GameManager.replay_scene(GameManager.scene_key_for(self))
 
 func get_checkpoint_state() -> Dictionary:
-	return {"order": round_order, "round": round_index, "waiting": _waiting}
+	return {"order": round_order, "round": round_index, "waiting": _waiting, "blocks": _blocks_seen}

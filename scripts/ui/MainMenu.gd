@@ -12,6 +12,8 @@ var level_buttons: Array[Button] = []
 var selected_world := 1
 var world_buttons: Array[Button] = []
 var reset_confirmation: ConfirmationDialog
+var kalin_marker: TextureRect
+var next_stop: Label
 
 func _ready() -> void:
 	selected_world = int(GameManager.get_level_info(GameManager.next_unlocked_scene()).get("world", 1))
@@ -53,8 +55,8 @@ func _setup_level_buttons() -> void:
 			button.pressed.connect(_on_level_pressed.bind(index))
 
 func _refresh_ui() -> void:
-	magic_lbl.text = "%d / %d páginas recuperadas" % [GameManager.words_learned.size(), GameManager.get_learnable_word_count()]
-	var word_count: int = GameManager.words_learned.size()
+	magic_lbl.text = "%d / %d páginas recuperadas" % [GameManager.get_recovered_word_count(), GameManager.get_learnable_word_count()]
+	var word_count: int = GameManager.get_recovered_word_count()
 	book_btn.text  = "Libro de Hechizos  (%d palabras)" % word_count
 	_refresh_level_buttons()
 
@@ -69,6 +71,9 @@ func _refresh_ui() -> void:
 	else:
 		play_btn.text = "Continuar →"
 	_refresh_world_map()
+	if is_instance_valid(next_stop):
+		var info := GameManager.get_level_info(next)
+		next_stop.text = "¡Aventura completa!" if info.is_empty() else "Siguiente: " + str(info.get("map_label", ""))
 
 func _refresh_level_buttons() -> void:
 	for index: int in range(level_buttons.size()):
@@ -177,6 +182,21 @@ func _build_world_map() -> void:
 		button.pressed.connect(_select_world.bind(index + 1))
 		map.add_child(button)
 		world_buttons.append(button)
+	kalin_marker = TextureRect.new()
+	kalin_marker.name = "KalinLocation"
+	kalin_marker.texture = preload("res://Arte/sprites/kalin_normal.svg")
+	kalin_marker.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	kalin_marker.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	kalin_marker.size = Vector2(52, 84)
+	kalin_marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	map.add_child(kalin_marker)
+	next_stop = Label.new()
+	next_stop.position = Vector2(200, 451)
+	next_stop.size = Vector2(880, 22)
+	next_stop.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	next_stop.add_theme_font_size_override("font_size", 17)
+	next_stop.add_theme_color_override("font_color", Color("fff0b8"))
+	$UI.add_child(next_stop)
 
 func _select_world(world: int) -> void:
 	selected_world = world
@@ -184,6 +204,11 @@ func _select_world(world: int) -> void:
 	_refresh_world_map()
 
 func _refresh_world_map() -> void:
+	var location := int(GameManager.get_level_info(GameManager.next_unlocked_scene()).get("world", 5 if GameManager.all_levels_completed() else 1))
+	if GameManager.resume_scene_key.begins_with("world"):
+		location = clampi(GameManager.resume_scene_key.trim_prefix("world").get_slice("_", 0).to_int(), 1, 5)
+	if is_instance_valid(kalin_marker):
+		kalin_marker.position = Vector2(110 + (location - 1) * 220 + 47, 96 + (-12 if location % 2 == 1 else 12) + 5)
 	for index: int in range(world_buttons.size()):
 		var unlocked := index == 0
 		for level: Dictionary in GameManager.LEVEL_ORDER:

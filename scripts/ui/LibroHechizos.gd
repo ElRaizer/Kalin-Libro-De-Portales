@@ -23,6 +23,9 @@ var _notice_tween: Tween
 var _previous_focus: Control
 var _owns_pause := false
 var _new_word := ""
+var _category := 0
+var category_buttons: Array[Button] = []
+var _known_words: Dictionary = {}
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -33,7 +36,59 @@ func _ready() -> void:
 	left_page.get_node("Content/AudioButton").pressed.connect(_play_visible_audio.bind(0))
 	right_page.get_node("Content/AudioButton").pressed.connect(_play_visible_audio.bind(1))
 	GameManager.word_learned.connect(_on_word_learned)
+	GameManager.progress_reset.connect(_reset_book)
 	audio_notice.visible = false
+	_known_words = GameManager.words_learned.duplicate()
+	_build_categories()
+	$BG/Book/Pages.offset_top = 122
+	$BG/Book/Spine.offset_top = 122
+	for page: Panel in [left_page, right_page]:
+		page.custom_minimum_size.y = 450
+		var content := page.get_node("Content") as Control
+		content.offset_bottom = 434
+		content.get_node("StageLabel").hide()
+		content.get_node("DiagramLabel").hide()
+		(content.get_node("Illustration") as Control).custom_minimum_size.y = 146
+		(content.get_node("Illustration/ContextSprite") as Control).offset_bottom = 138
+
+func _reset_book() -> void:
+	_known_words.clear()
+	_entries.clear()
+	_new_word = ""
+	_category = 0
+	_spread_index = 0
+	if visible:
+		_collect_entries()
+		_render_spread()
+
+func _build_categories() -> void:
+	var tabs := HBoxContainer.new()
+	tabs.name = "Categories"
+	tabs.position = Vector2(28, 64)
+	tabs.size = Vector2(1140, 46)
+	tabs.add_theme_constant_override("separation", 8)
+	$BG/Book.add_child(tabs)
+	var names := ["Todo", "Animales", "Objetos", "Cómo es", "Comida", "Cortesía"]
+	var icons := ["ui_libro", "animal_peek", "objeto_chan", "cualidad_nojoch", "comida_janal", "cortesia_gracias"]
+	for index: int in range(names.size()):
+		var button := Button.new()
+		button.text = names[index]
+		button.custom_minimum_size = Vector2(183, 44)
+		button.theme_type_variation = &"KalinSecondaryButton"
+		button.toggle_mode = true
+		button.expand_icon = true
+		button.add_theme_constant_override("icon_max_width", 32)
+		button.add_theme_font_size_override("font_size", 18)
+		button.icon = load("res://Arte/%s/%s.svg" % ["sprites" if index == 1 else "ilustraciones", icons[index]])
+		button.pressed.connect(_select_category.bind(index))
+		tabs.add_child(button)
+		category_buttons.append(button)
+
+func _select_category(index: int) -> void:
+	_category = index
+	_spread_index = 0
+	_collect_entries()
+	_render_spread()
 
 func show_book() -> void:
 	if visible:
@@ -41,6 +96,8 @@ func show_book() -> void:
 	_previous_focus = get_viewport().gui_get_focus_owner()
 	_owns_pause = not get_tree().paused
 	get_tree().paused = true
+	if not _new_word.is_empty():
+		_category = int(GameManager.get_vocabulary_entry(_new_word).get("world", 0))
 	_collect_entries()
 	if _new_word in _entries:
 		_spread_index = floori(float(_entries.find(_new_word)) / WORDS_PER_SPREAD)
@@ -68,11 +125,14 @@ func _exit_tree() -> void:
 func _collect_entries() -> void:
 	_entries.clear()
 	for maya_word: String in GameManager.words_learned:
-		if maya_word not in GameManager.FUTURE_VOCABULARY:
+		var world := int(GameManager.get_vocabulary_entry(maya_word).get("world", 0))
+		if maya_word not in GameManager.FUTURE_VOCABULARY and (_category == 0 or world == _category or (_category == 4 and maya_word == "janal")):
 			_entries.append(maya_word)
 	_entries.sort_custom(_sort_entries)
+	for index: int in range(category_buttons.size()):
+		category_buttons[index].button_pressed = index == _category
 	word_count_label.text = "%d de %d entradas recuperadas" % [
-		_entries.size(), GameManager.get_learnable_word_count()
+		GameManager.get_recovered_word_count(), GameManager.get_learnable_word_count()
 	]
 
 func _sort_entries(a: String, b: String) -> bool:
@@ -93,7 +153,8 @@ func _render_spread() -> void:
 	previous_button.disabled = empty or _spread_index <= 0
 	next_button.disabled = empty or _spread_index >= _spread_count() - 1
 	if empty:
-		page_label.text = "El libro espera su primera palabra"
+		empty_label.text = "Las palabras que recuperes aparecerán aquí."
+		page_label.text = "Todavía no hay palabras en esta sección"
 		return
 	var first_index := _spread_index * WORDS_PER_SPREAD
 	_render_page(left_page, first_index, 0)
@@ -117,8 +178,14 @@ func _render_page(page: Panel, entry_index: int, visible_slot: int) -> void:
 	(content.get_node("StageLabel") as Label).text = "Mundo %d · Nivel %d" % [data.world, data.level]
 	(content.get_node("MayaLabel") as Label).text = maya_word
 	(content.get_node("SpanishLabel") as Label).text = str(data.get("spanish", ""))
-	(content.get_node("ExampleLabel") as Label).text = "Ejemplo\n%s" % str(data.get("estructura", ""))
-	(content.get_node("TranslationLabel") as Label).text = str(data.get("traduccion", ""))
+	var example := str(data.get("estructura", ""))
+	var translation := str(data.get("traduccion", ""))
+	var samples := {"mejen": ["In ch'áake' mejen", "Mi cama es pequeña."], "nojoch": ["In mayake' nojoch", "Mi mesa es grande."], "Jats'uts": ["In lake' Jats'uts", "Mi plato es bonito."], "ki'": ["In janale' ki'", "Mi comida es deliciosa."], "jach'": ["In chan'e' jach'", "Mi silla es fuerte."]}
+	if maya_word in samples:
+		example = samples[maya_word][0]
+		translation = samples[maya_word][1]
+	(content.get_node("ExampleLabel") as Label).text = example
+	(content.get_node("TranslationLabel") as Label).text = translation
 	(content.get_node("DiagramLabel") as Label).text = _structure_diagram(str(data.get("estructura", maya_word)))
 	var illustration := content.get_node("Illustration/ContextSprite") as TextureRect
 	var placeholder := content.get_node("Illustration/Placeholder") as Label
@@ -188,8 +255,9 @@ func _show_notice(message: String) -> void:
 
 func _on_word_learned(_data: Dictionary) -> void:
 	for word: String in GameManager.words_learned:
-		if word not in _entries:
+		if word not in _known_words:
 			_new_word = word
+	_known_words = GameManager.words_learned.duplicate()
 	if visible:
 		_collect_entries()
 		_render_spread()

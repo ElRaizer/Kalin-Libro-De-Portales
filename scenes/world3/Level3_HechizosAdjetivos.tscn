@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b55van14jkj3b"]
 
 [ext_resource type="Script" uid="uid://cmj8x3eg7tafw" path="res://scripts/world3/W3_Level1.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://bedp7h6bqksto" path="res://Arte/backgrounds/bg_level1.svg" id="2_bg"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_taller.svg" id="2_bg"]
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="3_book"]
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="4_theme"]
 [ext_resource type="Script" uid="uid://3tucogv2ix4h" path="res://scripts/components/DraggableWordButton.gd" id="5_drag_button"]

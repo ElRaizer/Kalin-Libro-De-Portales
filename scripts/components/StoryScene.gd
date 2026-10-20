@@ -58,6 +58,7 @@ var _text_tween: Tween
 var _animator: RefCounted
 var guide: LearningGuide
 var continue_button: Button
+var vignette: StoryVignette
 var _kalin_sleeping: bool:
 	get:
 		return _animator != null and _animator.sleeping
@@ -98,9 +99,14 @@ func _ready() -> void:
 	)
 	guide = LearningGuide.new()
 	add_child(guide)
+	vignette = StoryVignette.new()
+	vignette.position = Vector2(400, 150)
+	vignette.size = Vector2(800, 350)
+	$Stage.add_child(vignette)
+	vignette.mood_changed.connect(_on_vignette_mood)
 	continue_button = Button.new()
-	continue_button.position = Vector2(938, 140)
-	continue_button.size = Vector2(196, 40)
+	continue_button.position = Vector2(1024, 646) - $UI/DialogueBox.position
+	continue_button.size = Vector2(232, 58)
 	continue_button.text = "Continuar →"
 	continue_button.theme = preload("res://themes/kalin_theme.tres")
 	continue_button.theme_type_variation = &"KalinPrimaryButton"
@@ -120,6 +126,17 @@ func _ready() -> void:
 	_start_kalin_idle()
 	var state := GameManager.get_scene_state(self)
 	var saved_beat := clampi(int(state.get("beat", 0)), 0, maxi(beats.size() - 1, 0))
+	if int(state.get("revision", 1)) < 2:
+		var legacy_index := int(state.get("beat", 0))
+		var retained: Array = []
+		match GameManager.scene_key_for(self):
+			"world2_story1": retained = [0, 1, 5, 6, 7, 8, 9, 10]
+			"world3_story1": retained = [0, 5, 6, 7, 8, 9, 10]
+			"world4_story1": retained = [0, 4, 5, 6, 7, 8, 9]
+		for index: int in range(retained.size()):
+			if int(retained[index]) >= legacy_index:
+				saved_beat = index
+				break
 	var known: Variant = state.get("known", [])
 	if known is Array:
 		for word: Variant in known:
@@ -143,6 +160,8 @@ func _ready() -> void:
 		elif current_beat().kind == StoryBeat.Kind.ELEGIR:
 			var answer_index: int = current_beat().options.find(current_beat().target_word)
 			_on_choice_pressed(current_beat().target_word, choices_box.get_child(answer_index))
+		elif current_beat().kind == StoryBeat.Kind.EXPLORAR:
+			_resolve_interaction()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _navigating:
@@ -151,7 +170,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	var is_key: bool = event is InputEventKey and event.pressed and not event.echo
 	if is_key and event.keycode == KEY_ESCAPE:
 		get_viewport().set_input_as_handled()
-		_finish_story()
+		PauseMenu.open_pause()
 		return
 	if not is_click and not (is_key and event.keycode in [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER]):
 		return
@@ -183,6 +202,10 @@ func _show_beat(beat: StoryBeat) -> void:
 	_apply_kalin_pose(beat.kalin_pose)
 	_play_kalin_motion(_effective_motion(beat))
 	_set_stage_actors(beat.actors)
+	for effect_name: String in ["ConfetiPaginas", "ConfetiChispas"]:
+		(effects_root.get_node(effect_name) as CPUParticles2D).visible = beat.kind != StoryBeat.Kind.EXPLORAR
+	vignette.show_situation(beat.visual_scene, beat.visual_solved)
+	actors_root.visible = beat.visual_scene.is_empty()
 	speaker_label.text = _speaker_name(beat.speaker)
 	speaker_label.visible = speaker_label.text != ""
 	_reveal_text(beat.text)
@@ -198,12 +221,16 @@ func _show_beat(beat: StoryBeat) -> void:
 	_show_title(beat.title, beat.subtitle)
 	_schedule_auto_advance(beat)
 	match beat.kind:
+		StoryBeat.Kind.EXPLORAR:
+			_set_hint("", COLOR_HINT)
+			_set_actors_focusable(false)
+			_waiting_to_continue = true
 		StoryBeat.Kind.CONOCER:
 			_met_words.clear()
-			_set_hint("Toca a cada animal para saludarlo  (0 / %d)" % _stage_words.size(), COLOR_HINT)
+			_set_hint("0 / %d amigos" % _stage_words.size(), COLOR_HINT)
 			_set_actors_focusable(true)
 		StoryBeat.Kind.ADIVINAR:
-			_set_hint("Elige al animal correcto.", COLOR_HINT)
+			_set_hint("", COLOR_HINT)
 			_set_actors_focusable(true)
 		StoryBeat.Kind.ELEGIR:
 			_set_hint("Elige la palabra correcta.", COLOR_HINT)
@@ -214,9 +241,20 @@ func _show_beat(beat: StoryBeat) -> void:
 			_set_actors_focusable(false)
 			_waiting_to_continue = true
 	continue_button.disabled = not _waiting_to_continue
+	if beat.kind in [StoryBeat.Kind.DIALOGO, StoryBeat.Kind.EXPLORAR]:
+		hint_label.hide()
+		if beat.auto_advance <= 0:
+			guide.watch_continue(continue_button, 7.0)
+	else:
+		hint_label.show()
 	GameManager.checkpoint(self)
 	if beat.kind == StoryBeat.Kind.CONOCER:
 		call_deferred("_show_meet_hint")
+
+func _on_vignette_mood(expression: String) -> void:
+	if not kalin.visible or _kalin_sleeping:
+		return
+	kalin.texture = KALIN_NORMAL if expression == "normal" else load("res://Arte/sprites/expresiones/kalin_%s.svg" % expression)
 
 # ─── Actores ─────────────────────────────────────────────────────────────────
 func _set_stage_actors(words: Array[String]) -> void:
@@ -286,6 +324,7 @@ func _on_actor_pressed(word: String) -> void:
 		_guess_actor(word, beat.target_word)
 
 func _meet_actor(word: String) -> void:
+	CharacterReaction.play(actor_buttons[word])
 	_show_word_bubble(word, COLOR_SUCCESS)
 	if word not in _known_words:
 		_known_words.append(word)
@@ -294,10 +333,10 @@ func _meet_actor(word: String) -> void:
 	_update_actor_label(actor_buttons[word], word)
 	GameManager.checkpoint(self)
 	if _met_words.size() < _stage_words.size():
-		_set_hint("Toca a cada animal para saludarlo  (%d / %d)" % [_met_words.size(), _stage_words.size()], COLOR_HINT)
+		_set_hint("%d / %d amigos" % [_met_words.size(), _stage_words.size()], COLOR_HINT)
 		_show_meet_hint()
 		return
-	_set_hint("¡Ya conoces a todos!  ▶ Continuar", COLOR_HINT)
+	_set_hint("¡Listo!", COLOR_HINT)
 	_resolve_interaction()
 
 func _guess_actor(word: String, target: String) -> void:
@@ -306,6 +345,7 @@ func _guess_actor(word: String, target: String) -> void:
 		_show_word_bubble(word, COLOR_RETRY)
 		_set_hint("¡Casi! Ese es %s. Busca a %s." % [word, target], COLOR_HINT)
 		_shake(actor_buttons[word])
+		CharacterReaction.play(actor_buttons[word], false)
 		return
 	_show_word_bubble(word, COLOR_SUCCESS)
 	if word not in _known_words:
@@ -324,7 +364,7 @@ func _build_choices(options: Array[String]) -> void:
 		button.theme_type_variation = &"KalinAdjectiveButton" if int(entry.get("world", 0)) == 3 else &"KalinNounButton"
 		button.custom_minimum_size = CHOICE_SIZE
 		button.add_theme_font_size_override("font_size", CHOICE_FONT_SIZE)
-		button.text = "%s  %s" % [entry.get("emoji", ""), word]
+		button.text = word
 		button.pressed.connect(_on_choice_pressed.bind(word, button))
 		choices_box.add_child(button)
 	choices_box.visible = true
@@ -345,7 +385,7 @@ func _on_choice_pressed(word: String, button: Button) -> void:
 	if word != beat.target_word:
 		# El botón equivocado revela su significado para que el error enseñe.
 		var entry: Dictionary = GameManager.get_vocabulary_entry(word)
-		button.text = "%s  %s\n%s" % [entry.get("emoji", ""), word, entry.get("spanish", "")]
+		button.text = "%s\n%s" % [word, entry.get("spanish", "")]
 		_set_hint("Esa palabra significa «%s». ¡Intenta otra!" % str(entry.get("spanish", "")).to_lower(), COLOR_HINT)
 		_shake(button)
 		return
@@ -445,9 +485,7 @@ func _shake(button: Button) -> void:
 	tween.tween_property(button, "position:x", base_x, 0.05)
 
 func _sparkle(button: Button) -> void:
-	var tween := create_tween()
-	tween.tween_property(button, "scale", Vector2(1.15, 1.15), 0.14).set_trans(Tween.TRANS_BACK)
-	tween.tween_property(button, "scale", Vector2.ONE, 0.2)
+	CharacterReaction.play(button)
 
 func _celebrate_page() -> void:
 	_animator.celebrate_page()
@@ -476,7 +514,8 @@ func _schedule_auto_advance(beat: StoryBeat) -> void:
 	if beat.auto_advance <= 0.0 or beat.kind != StoryBeat.Kind.DIALOGO:
 		return
 	# Se espera a que termine de escribirse el texto y luego el tiempo indicado.
-	auto_timer.start(beat.text.length() * CHAR_REVEAL_SECONDS + beat.auto_advance)
+	# Las escenas con texto esperan una lectura cómoda; se pueden adelantar.
+	auto_timer.start(maxf(beat.text.length() * 0.065 + 1.0, beat.text.length() * CHAR_REVEAL_SECONDS + beat.auto_advance))
 
 func _on_auto_timer_timeout() -> void:
 	if _navigating or not _waiting_to_continue:
@@ -517,7 +556,7 @@ func _show_meet_hint() -> void:
 			return
 
 func get_checkpoint_state() -> Dictionary:
-	return {"beat": maxi(beat_index, 0), "known": _known_words, "met": _met_words, "resolved": _waiting_to_continue}
+	return {"revision": 2, "beat": maxi(beat_index, 0), "known": _known_words, "met": _met_words, "resolved": _waiting_to_continue}
 
 func _on_menu_pressed() -> void:
 	auto_timer.stop()

@@ -3,7 +3,7 @@
 ## examina objetos (ExplorationSpot) y al llegar a la meta empieza el capítulo
 ## de historia indicado en `next_scene_key`.
 ##   Controles: ← → o A D para caminar, clic o toque para ir a un punto,
-##   E / Espacio / Enter para examinar y avanzar el diálogo, Esc para saltar.
+##   E / Espacio / Enter para examinar y avanzar el diálogo, Esc para pausar.
 ## Cada exploración hereda esta escena: dibuja su terreno, ajusta el Path2D
 ## «Sendero» y coloca instancias de ExplorationSpot dentro de «Spots», todo
 ## desde el editor y sin escribir código.
@@ -66,6 +66,7 @@ var _notice_tween: Tween
 var _dialogue: RefCounted
 var _intro_done := false
 var guide: LearningGuide
+var continue_button: Button
 
 # ─── Nodos ───────────────────────────────────────────────────────────────────
 @onready var sendero: Path2D = $Sendero
@@ -110,6 +111,15 @@ func _ready() -> void:
 	_place_kalin(_min_x)
 	guide = LearningGuide.new()
 	add_child(guide)
+	continue_button = Button.new()
+	continue_button.position = Vector2(1024, 646)
+	continue_button.size = Vector2(232, 58)
+	continue_button.text = "Continuar →"
+	continue_button.theme = preload("res://themes/kalin_theme.tres")
+	continue_button.theme_type_variation = &"KalinPrimaryButton"
+	continue_button.pressed.connect(advance_dialogue)
+	$UI.add_child(continue_button)
+	hint_label.hide()
 	var help := Button.new()
 	help.position = Vector2(666, 12)
 	help.size = Vector2(150, 46)
@@ -154,6 +164,7 @@ func _ready() -> void:
 		call_deferred("_show_help")
 
 func _process(delta: float) -> void:
+	continue_button.visible = is_dialogue_open()
 	_time += delta
 	walk(Input.get_axis(&"kalin_izquierda", &"kalin_derecha"), delta)
 	_update_nearby_spot()
@@ -165,7 +176,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
 		get_viewport().set_input_as_handled()
-		_finish()
+		PauseMenu.open_pause()
 		return
 	var is_click: bool = event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT
 	if _dialogue.is_open():
@@ -357,6 +368,8 @@ func _close_spot(spot: ExplorationSpot) -> void:
 	if not first_time:
 		return
 	discovered += 1
+	if spot.name == &"Pagina":
+		_show_notice("¡Encontraste tu libro! Las palabras volverán con tus hechizos.")
 	_update_counter()
 	var tween: Tween = spot.play_reaction(kalin.global_position + Vector2(0.0, -120.0))
 	if tween == null:
@@ -404,6 +417,8 @@ func _set_dialogue_pose(surprised: bool) -> void:
 	kalin_sprite.texture = KALIN_SURPRISED if surprised else KALIN_NORMAL
 
 func _on_dialogue_finished() -> void:
+	if is_instance_valid(continue_button):
+		continue_button.hide()
 	var spot: ExplorationSpot = _active_spot
 	_active_spot = null
 	if spot != null:

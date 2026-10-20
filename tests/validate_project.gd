@@ -360,7 +360,7 @@ func _validate_world3_runtime() -> void:
 	await process_frame
 	var noun_grid := level.get_node_or_null("UI/ChoicesPanel/Content/NounGrid") as GridContainer
 	var adjective_grid := level.get_node_or_null("UI/ChoicesPanel/Content/AdjectiveGrid") as GridContainer
-	var cast_button := level.get_node_or_null("UI/ChoicesPanel/Content/CastButton") as Button
+	var cast_button := level.get_node_or_null("UI/CastButton") as Button
 	if noun_grid == null or noun_grid.get_child_count() != 5:
 		failures.append("La interfaz del Mundo 3 no creó las cinco opciones de sustantivo")
 	if adjective_grid == null or adjective_grid.get_child_count() != 5:

@@ -148,7 +148,7 @@ custom_minimum_size = Vector2(440, 40)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 18
-text = "Ajustes · volver a empezar"
+text = "Volver a empezar"
 
 [node name="QuitBtn" type="Button" parent="UI/Center/VBox" unique_id=258813198]
 custom_minimum_size = Vector2(440, 40)

@@ -92,10 +92,20 @@ func _add_destination_preview(word: GridWordData, index: int) -> void:
 	arrived.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	arrived.visible = index in board.connected
 	destination.add_child(arrived)
-	var font_size := 14 if word.get_destination_text().length() > 6 else 17
+	var font_size := 17 if word.get_destination_text().length() > 6 else 20
 	_add_panel_label(destination, word.get_destination_text(), VERTICAL_ALIGNMENT_BOTTOM, font_size, Color("3b2415"))
 	board.preview_root.add_child(destination)
 	board.destination_nodes[index] = destination
+	if not board.destination_word_colors:
+		destination.add_theme_stylebox_override("panel", destination_style(Color("b99562")))
+
+func destination_style(color: Color) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = color.lightened(0.55)
+	style.border_color = color.darkened(0.15)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(6)
+	return style
 
 func _create_word_panel(word_color: Color, lightened: bool) -> Panel:
 	var panel := Panel.new()

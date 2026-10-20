@@ -41,7 +41,8 @@ func show_meaning(maya_word: String, modifier: String = "") -> void:
 	reference.texture = picture.texture
 	quality_badge.texture = null
 	if quality in ["Jats'uts", "ki'", "jach'"]:
-		quality_badge.texture = load(manager.get_book_illustration(quality))
+		var contexts := {"Jats'uts": "fx_decoracion", "ki'": "fx_aroma", "jach'": "prop_peso"}
+		quality_badge.texture = load("res://Arte/ilustraciones/%s.svg" % contexts[quality])
 	_layout_art()
 
 func _layout_art() -> void:
@@ -51,19 +52,27 @@ func _layout_art() -> void:
 	reference.visible = comparison
 	quality_badge.visible = quality_badge.texture != null
 	if comparison:
-		# Referencia idéntica y fija: cambia el tamaño del objeto, no su símbolo.
-		var factor := 0.3 if quality == "mejen" else 0.95
-		picture.size = size * Vector2(0.66, factor)
-		picture.position = Vector2(size.x * 0.34, size.y - picture.size.y)
-		reference.size = size * Vector2(0.36, 0.65)
+		# Los dos objetos conservan proporción y se apoyan en la misma base.
+		var ratio := 4.0 / 3.0
+		if picture.texture:
+			ratio = float(picture.texture.get_width()) / picture.texture.get_height()
+		var width := size.x * 0.64 * (0.55 if quality == "mejen" else 1.0)
+		picture.size = Vector2(width, width / ratio)
+		if picture.size.y > size.y:
+			picture.size *= size.y / picture.size.y
+		picture.position = Vector2(size.x * 0.36, size.y - picture.size.y)
+		reference.size = Vector2(size.x * 0.32, size.x * 0.32 / ratio)
 		reference.position = Vector2(0, size.y - reference.size.y)
 	else:
 		picture.position = Vector2.ZERO
 		picture.size = size
 	if quality_badge.visible:
-		picture.size.x = size.x * 0.53
-		quality_badge.size = Vector2(size.x * 0.54, size.y)
-		quality_badge.position = Vector2(size.x * 0.46, 0)
+		picture.size = size * Vector2(0.94, 0.85)
+		picture.position = Vector2(0, size.y * 0.15)
+		quality_badge.size = size * Vector2(0.44, 0.44)
+		quality_badge.position = size * Vector2(0.48, 0.02)
+		if quality == "jach'":
+			quality_badge.position = size * Vector2(0.26, 0.24)
 
 func celebrate() -> void:
 	if celebration and celebration.is_valid():

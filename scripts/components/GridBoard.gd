@@ -123,6 +123,13 @@ var obstacle_reveal_tweens: Dictionary = {}
 var _renderer: RefCounted
 var _obstacle_hints: RefCounted
 var _path_controller: RefCounted
+var destination_word_colors := true
+
+func set_destination_word_colors(enabled: bool) -> void:
+	destination_word_colors = enabled
+	for index: int in destination_nodes:
+		var color: Color = words[index].color if enabled else Color("b99562")
+		(destination_nodes[index] as Panel).add_theme_stylebox_override("panel", _get_renderer().destination_style(color))
 
 const NEARBY_OBSTACLE_FADE_SECONDS := 0.22
 const ALL_OBSTACLES_FADE_SECONDS := 0.45

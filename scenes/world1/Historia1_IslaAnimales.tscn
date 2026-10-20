@@ -2,12 +2,12 @@
 
 [ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
 [ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level1.svg" id="3_bg_isla"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea.svg" id="3_bg_isla"]
 
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Mi Libro de Hechizos está en blanco! ¿Me ayudan?"
+text = "¡Mi libro perdió sus palabras!"
 background = ExtResource("3_bg_isla")
 kalin_pose = 1
 actors = Array[String]([])
@@ -15,7 +15,7 @@ actors = Array[String]([])
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "¡Mira! Se acercan tres animales."
+text = "¡Hay amigos en la isla!"
 kalin_pose = 1
 actors = Array[String](["Peek'", "Miis", "Kaax"])
 
@@ -29,13 +29,15 @@ actors = Array[String](["Peek'", "Miis", "Kaax"])
 [sub_resource type="Resource" id="Beat_4"]
 script = ExtResource("2_beat")
 speaker = "Peek'"
-text = "El huracán borró los caminos. ¡No podemos volver a casa!"
+text = "¡El camino está roto!"
 actors = Array[String](["Peek'", "Miis", "Kaax"])
+kind = 4
+visual_scene = "camino"
 
 [sub_resource type="Resource" id="Beat_5"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Los reconstruiré con magia!"
+text = "¡Vamos a repararlo!"
 actors = Array[String](["Peek'", "Miis", "Kaax"])
 
 [sub_resource type="Resource" id="Beat_6"]
@@ -49,7 +51,7 @@ target_word = "Miis"
 [sub_resource type="Resource" id="Beat_7"]
 script = ExtResource("2_beat")
 speaker = "Kaax"
-text = "Une cada animal con su casa."
+text = "Lleva a cada amigo a su casa."
 actors = Array[String](["Peek'", "Miis", "Kaax"])
 
 [node name="Historia1" instance=ExtResource("1_base")]

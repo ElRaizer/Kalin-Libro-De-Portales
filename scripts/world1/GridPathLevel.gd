@@ -29,6 +29,9 @@ var _arrival_animating := false
 var _dialogue_word_index := -1
 var guide: LearningGuide
 var continue_button: Button
+var arrival_button: Button
+var arrival_tween: Tween
+var mission_progress: MissionProgress
 
 @onready var grid_board: GridBoard = $GridBoard
 @onready var dialogue: Panel = $UI/DialoguePanel
@@ -53,10 +56,31 @@ func _ready() -> void:
 	continue_button.theme_type_variation = &"KalinPrimaryButton"
 	continue_button.position = Vector2(572, 140)
 	continue_button.size = Vector2(220, 46)
+	continue_button.position = Vector2(1024, 646) - dialogue.position
+	continue_button.size = Vector2(232, 58)
 	continue_button.pressed.connect(_close_dialogue)
 	dialogue.add_child(continue_button)
 	$UI/DialoguePanel/VBox/SkipLbl.hide()
 	guide = LearningGuide.install(self, $UI/LevelHeader/Bar, _show_help)
+	grid_board.set_destination_word_colors(level_number == 1)
+	arrival_button = Button.new()
+	arrival_button.position = Vector2(1024, 646)
+	arrival_button.size = Vector2(232, 58)
+	arrival_button.text = "Más rápido →"
+	arrival_button.theme = preload("res://themes/kalin_theme.tres")
+	arrival_button.theme_type_variation = &"KalinSecondaryButton"
+	arrival_button.pressed.connect(func():
+		if arrival_tween and arrival_tween.is_valid():
+			arrival_tween.set_speed_scale(3.0)
+	)
+	$UI.add_child(arrival_button)
+	arrival_button.hide()
+	mission_progress = MissionProgress.new()
+	mission_progress.position = Vector2(28, 647)
+	mission_progress.size = Vector2(390, 58)
+	$UI.add_child(mission_progress)
+	$UI/InstrPanel.position = Vector2(438, 640)
+	$UI/InstrPanel.size = Vector2(560, 68)
 	level_header.menu_pressed.connect(_on_menu_pressed)
 	level_header.book_pressed.connect(_on_book_pressed)
 	completion_overlay.next_pressed.connect(_on_next_level_pressed)
@@ -68,6 +92,7 @@ func _ready() -> void:
 	grid_board.invalid_move.connect(_on_invalid_move)
 	var state := GameManager.get_scene_state(self)
 	grid_board.restore_path_state(state.get("board", {}) if state.get("board", {}) is Dictionary else {})
+	mission_progress.update_progress(grid_board.connected.size(), grid_board.words.size(), "Lleva a tus amigos a casa")
 	var pending_word := clampi(int(state.get("dialogue_word", -1)), -1, grid_board.words.size() - 1)
 	grid_board.focus_first_path(level_number == 1 and "paths" not in GameManager.tutorials_seen and grid_board.connected.is_empty())
 	if bool(state.get("complete", false)):
@@ -127,6 +152,8 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 	grid_board.set_interaction_enabled(false)
 	guide.stop()
 	_arrival_animating = true
+	arrival_button.show()
+	mission_progress.update_progress(grid_board.connected.size(), grid_board.words.size(), "¡El camino está listo!")
 	var arrived := grid_board.destination_nodes[word_index].get_node_or_null("ArrivedAnimal") as Control
 	if arrived:
 		arrived.hide()
@@ -147,6 +174,7 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 	var route: Array = grid_board.paths[word_index].duplicate()
 	route.append(word.destination_cell)
 	var walk := walker.create_tween()
+	arrival_tween = walk
 	var previous_position := walker.position
 	for step: int in range(route.size()):
 		var next_position := grid_board.cell_to_local_position(route[step])
@@ -160,6 +188,7 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 	if arrived:
 		arrived.show()
 	_arrival_animating = false
+	arrival_button.hide()
 	dialogue.visible = true
 	continue_button.grab_focus()
 	guide.watch_continue(continue_button)
