@@ -3,6 +3,11 @@ extends SceneTree
 var failures: Array[String] = []
 
 func _initialize() -> void:
+	await process_frame
+	var manager: Node = root.get_node("GameManager")
+	manager.scene_states.clear()
+	manager.resume_scene_key = ""
+	manager._save_repository = load("res://scripts/data/SaveRepository.gd").new("user://intro_validation_progress.json")
 	var error: Error = change_scene_to_file("res://scenes/Intro.tscn")
 	if error != OK:
 		push_error("No se pudo cargar la introducción para la prueba")
@@ -11,7 +16,8 @@ func _initialize() -> void:
 
 	await scene_changed
 	var intro: Node = current_scene
-	intro.set("panel_index", 7)
+	await create_timer(0.4).timeout
+	intro.set("panel_index", intro.PANELS.size() - 1)
 	intro.set("is_animating", false)
 	intro.set("text_revealed", true)
 

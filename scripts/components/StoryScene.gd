@@ -56,6 +56,8 @@ var _waiting_to_continue: bool = false
 var _navigating: bool = false
 var _text_tween: Tween
 var _animator: RefCounted
+var guide: LearningGuide
+var continue_button: Button
 var _kalin_sleeping: bool:
 	get:
 		return _animator != null and _animator.sleeping
@@ -94,8 +96,53 @@ func _ready() -> void:
 		self, ambient, background, background_next, kalin, effects_root,
 		title_card, title_label, subtitle_label, flash_rect, celebration
 	)
+	guide = LearningGuide.new()
+	add_child(guide)
+	continue_button = Button.new()
+	continue_button.position = Vector2(938, 140)
+	continue_button.size = Vector2(196, 40)
+	continue_button.text = "Continuar →"
+	continue_button.theme = preload("res://themes/kalin_theme.tres")
+	continue_button.theme_type_variation = &"KalinPrimaryButton"
+	continue_button.pressed.connect(_on_continue_pressed)
+	$UI/DialogueBox.add_child(continue_button)
+	var menu := Button.new()
+	menu.position = Vector2(884, 12)
+	menu.size = Vector2(158, 46)
+	menu.text = "Menú"
+	menu.theme = continue_button.theme
+	menu.theme_type_variation = &"KalinSecondaryButton"
+	menu.pressed.connect(_on_menu_pressed)
+	$UI.add_child(menu)
+	hint_label.offset_left = 24
+	hint_label.offset_right = 920
+	hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_start_kalin_idle()
+	var state := GameManager.get_scene_state(self)
+	var saved_beat := clampi(int(state.get("beat", 0)), 0, maxi(beats.size() - 1, 0))
+	var known: Variant = state.get("known", [])
+	if known is Array:
+		for word: Variant in known:
+			if word is String and word in GameManager.VOCABULARY:
+				_known_words.append(word)
+	for index: int in range(saved_beat):
+		if beats[index].background != null:
+			background.texture = beats[index].background
+		if beats[index].mood != StoryBeat.Mood.SIN_CAMBIO:
+			_apply_mood(beats[index].mood)
+	beat_index = saved_beat - 1
 	_next_beat()
+	var met: Variant = state.get("met", [])
+	if current_beat().kind == StoryBeat.Kind.CONOCER and met is Array:
+		for word: Variant in met:
+			if word is String and word in actor_buttons:
+				_meet_actor(word)
+	elif bool(state.get("resolved", false)) and current_beat().kind != StoryBeat.Kind.DIALOGO:
+		if current_beat().kind == StoryBeat.Kind.ADIVINAR:
+			_guess_actor(current_beat().target_word, current_beat().target_word)
+		elif current_beat().kind == StoryBeat.Kind.ELEGIR:
+			var answer_index: int = current_beat().options.find(current_beat().target_word)
+			_on_choice_pressed(current_beat().target_word, choices_box.get_child(answer_index))
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _navigating:
@@ -126,6 +173,7 @@ func _next_beat() -> void:
 	_show_beat(current_beat())
 
 func _show_beat(beat: StoryBeat) -> void:
+	guide.stop()
 	_waiting_to_continue = false
 	word_bubble.visible = false
 	_clear_choices()
@@ -165,6 +213,10 @@ func _show_beat(beat: StoryBeat) -> void:
 			_set_hint("▶ Continuar", COLOR_HINT)
 			_set_actors_focusable(false)
 			_waiting_to_continue = true
+	continue_button.disabled = not _waiting_to_continue
+	GameManager.checkpoint(self)
+	if beat.kind == StoryBeat.Kind.CONOCER:
+		call_deferred("_show_meet_hint")
 
 # ─── Actores ─────────────────────────────────────────────────────────────────
 func _set_stage_actors(words: Array[String]) -> void:
@@ -240,8 +292,10 @@ func _meet_actor(word: String) -> void:
 	if word not in _met_words:
 		_met_words.append(word)
 	_update_actor_label(actor_buttons[word], word)
+	GameManager.checkpoint(self)
 	if _met_words.size() < _stage_words.size():
 		_set_hint("Toca a cada animal para saludarlo  (%d / %d)" % [_met_words.size(), _stage_words.size()], COLOR_HINT)
+		_show_meet_hint()
 		return
 	_set_hint("¡Ya conoces a todos!  ▶ Continuar", COLOR_HINT)
 	_resolve_interaction()
@@ -306,6 +360,10 @@ func _on_choice_pressed(word: String, button: Button) -> void:
 func _resolve_interaction() -> void:
 	_waiting_to_continue = true
 	_set_actors_focusable(false)
+	guide.stop()
+	continue_button.disabled = false
+	continue_button.grab_focus()
+	GameManager.checkpoint(self)
 
 # ─── Textos ──────────────────────────────────────────────────────────────────
 func _speaker_name(speaker: String) -> String:
@@ -443,3 +501,24 @@ func _finish_story() -> void:
 	_navigating = true
 	auto_timer.stop()
 	GameManager.go_to_scene(next_scene_key)
+
+func _on_continue_pressed() -> void:
+	if _is_revealing_text():
+		_complete_text()
+	elif _waiting_to_continue:
+		_next_beat()
+
+func _show_meet_hint() -> void:
+	if current_beat().kind != StoryBeat.Kind.CONOCER or _waiting_to_continue:
+		return
+	for word: String in _stage_words:
+		if word not in _met_words:
+			guide.point_at(actor_buttons[word])
+			return
+
+func get_checkpoint_state() -> Dictionary:
+	return {"beat": maxi(beat_index, 0), "known": _known_words, "met": _met_words, "resolved": _waiting_to_continue}
+
+func _on_menu_pressed() -> void:
+	auto_timer.stop()
+	GameManager.go_to_scene("main_menu")

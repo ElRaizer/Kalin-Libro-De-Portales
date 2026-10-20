@@ -64,6 +64,8 @@ var _animal_bases: Dictionary = {}         # Sprite2D -> posición en reposo
 var _arrow_base_x: float = 0.0
 var _notice_tween: Tween
 var _dialogue: RefCounted
+var _intro_done := false
+var guide: LearningGuide
 
 # ─── Nodos ───────────────────────────────────────────────────────────────────
 @onready var sendero: Path2D = $Sendero
@@ -106,9 +108,50 @@ func _ready() -> void:
 		if animal is Sprite2D:
 			_animal_bases[animal] = (animal as Sprite2D).position
 	_place_kalin(_min_x)
+	guide = LearningGuide.new()
+	add_child(guide)
+	var help := Button.new()
+	help.position = Vector2(666, 12)
+	help.size = Vector2(150, 46)
+	help.theme = preload("res://themes/kalin_theme.tres")
+	help.theme_type_variation = &"KalinSecondaryButton"
+	help.text = "? Ayuda"
+	help.pressed.connect(_show_help)
+	$UI.add_child(help)
+	var menu := Button.new()
+	menu.position = Vector2(832, 12)
+	menu.size = Vector2(180, 46)
+	menu.theme = help.theme
+	menu.theme_type_variation = &"KalinSecondaryButton"
+	menu.text = "Menú"
+	menu.pressed.connect(_on_menu_pressed)
+	$UI.add_child(menu)
+	controls_label.text = "← →   ·   Toca para caminar"
+	var state := GameManager.get_scene_state(self)
+	var examined: Variant = state.get("examined", [])
+	for spot: ExplorationSpot in spots:
+		if examined is Array and str(spot.name) in examined:
+			spot.mark_examined()
+			if spot.reaction != ExplorationSpot.Reaction.NINGUNA:
+				spot.sprite.hide()
+			if not spot.is_goal:
+				discovered += 1
+	_place_kalin(clampf(float(state.get("x", _min_x)), _min_x, walk_limit()))
+	camera.reset_smoothing()
+	_intro_done = bool(state.get("intro_done", false))
 	_update_counter()
-	if not intro_lines.is_empty():
+	var active_name := str(state.get("active", ""))
+	for spot: ExplorationSpot in spots:
+		if str(spot.name) == active_name and not spot.examined:
+			open_spot(spot)
+			break
+	if not _dialogue.is_open() and not _intro_done and not intro_lines.is_empty():
 		_start_dialogue(intro_speaker, intro_lines, intro_surprised)
+	if _dialogue.is_open():
+		_dialogue.line_index = clampi(int(state.get("line", 0)), 0, _dialogue.lines.size() - 1) - 1
+		_dialogue._next_line()
+	else:
+		call_deferred("_show_help")
 
 func _process(delta: float) -> void:
 	_time += delta
@@ -221,6 +264,7 @@ func walk(direction: float, delta: float) -> void:
 		_has_target = false
 		_idle()
 		return
+	guide.stop()
 	_place_kalin(new_x)
 	_walk_phase += moved / STEP_LENGTH * PI
 	var stride: float = sin(_walk_phase)
@@ -275,7 +319,8 @@ func _update_nearby_spot() -> void:
 	prompt_button.visible = _nearby_spot != null
 	if _nearby_spot == null:
 		return
-	prompt_button.text = "E · %s" % _nearby_spot.prompt
+	prompt_button.text = _nearby_spot.prompt
+	prompt_button.tooltip_text = "Clic o E para interactuar"
 	var anchor: Vector2 = _nearby_spot.prompt_anchor()
 	anchor.y = minf(anchor.y, _kalin_top() - PROMPT_ABOVE_KALIN)
 	var screen_point: Vector2 = get_viewport().get_canvas_transform() * anchor
@@ -363,6 +408,10 @@ func _on_dialogue_finished() -> void:
 	_active_spot = null
 	if spot != null:
 		_close_spot(spot)
+	else:
+		_intro_done = true
+		_show_help()
+	GameManager.checkpoint(self)
 
 func _speaker_name(speaker: String) -> String:
 	if speaker == "" or speaker == "Narrador":
@@ -405,3 +454,25 @@ func _finish() -> void:
 
 func _go_to_next_scene() -> void:
 	GameManager.go_to_scene(next_scene_key)
+
+func _show_help() -> void:
+	if _dialogue.is_open() or _navigating:
+		return
+	for spot: ExplorationSpot in spots:
+		if not spot.examined and not spot.is_goal and spot.position.x > kalin.position.x:
+			var transform := get_viewport().get_canvas_transform()
+			var point := transform * spot.global_position
+			if point.x < 1200:
+				guide.demonstrate([point + Vector2(0, -70), point + Vector2(0, -45)])
+				return
+	guide.demonstrate([Vector2(720, 540), Vector2(900, 540)])
+
+func get_checkpoint_state() -> Dictionary:
+	var examined: Array[String] = []
+	for spot: ExplorationSpot in spots:
+		if spot.examined:
+			examined.append(str(spot.name))
+	return {"x": kalin.position.x, "examined": examined, "intro_done": _intro_done, "active": str(_active_spot.name) if _active_spot != null else "", "line": _dialogue.line_index if _dialogue.is_open() else 0}
+
+func _on_menu_pressed() -> void:
+	GameManager.go_to_scene("main_menu")

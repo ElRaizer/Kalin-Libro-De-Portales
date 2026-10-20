@@ -54,65 +54,65 @@ horizontal_alignment = 1
 
 [node name="LevelsGrid" type="GridContainer" parent="UI"]
 offset_left = 130.0
-offset_top = 190.0
+offset_top = 394.0
 offset_right = 1150.0
-offset_bottom = 350.0
+offset_bottom = 454.0
 theme = ExtResource("3_theme")
 theme_override_constants/h_separation = 12
 theme_override_constants/v_separation = 10
 columns = 4
 
 [node name="Level1Button" type="Button" parent="UI/LevelsGrid"]
-custom_minimum_size = Vector2(246, 70)
+custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "▶  1. Los Caminos Blancos"
 
 [node name="Level2Button" type="Button" parent="UI/LevelsGrid"]
-custom_minimum_size = Vector2(246, 70)
+custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "🔒  2. Los Animales del Bosque"
 
 [node name="Level3Button" type="Button" parent="UI/LevelsGrid"]
-custom_minimum_size = Vector2(246, 70)
+custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "🔒  3. Los Guardianes del Monte"
 
 [node name="Level4Button" type="Button" parent="UI/LevelsGrid"]
-custom_minimum_size = Vector2(246, 70)
+custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "🔒  4. Agua y Cielo"
 
 [node name="Level5Button" type="Button" parent="UI/LevelsGrid"]
-custom_minimum_size = Vector2(246, 70)
+custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "🔒  5. La Casa Maya"
 
 [node name="Level6Button" type="Button" parent="UI/LevelsGrid"]
-custom_minimum_size = Vector2(246, 70)
+custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "🔒  6. Hechizos de Adjetivos"
 
 [node name="Level7Button" type="Button" parent="UI/LevelsGrid"]
-custom_minimum_size = Vector2(246, 70)
+custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "🔒  7. Yo Quiero"
 
 [node name="Level8Button" type="Button" parent="UI/LevelsGrid"]
-custom_minimum_size = Vector2(246, 70)
+custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
@@ -120,38 +120,38 @@ text = "🔒  8. El Portal de Regreso"
 
 [node name="Center" type="CenterContainer" parent="UI" unique_id=1672652378]
 offset_left = 340.0
-offset_top = 375.0
+offset_top = 472.0
 offset_right = 940.0
 offset_bottom = 700.0
 theme = ExtResource("3_theme")
 
 [node name="VBox" type="VBoxContainer" parent="UI/Center" unique_id=53778132]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 10
 
 [node name="PlayBtn" type="Button" parent="UI/Center/VBox" unique_id=942120593]
-custom_minimum_size = Vector2(440, 76)
+custom_minimum_size = Vector2(440, 62)
 layout_mode = 2
 theme_type_variation = &"KalinPrimaryButton"
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 27
 text = "Comenzar aventura"
 
 [node name="BookBtn" type="Button" parent="UI/Center/VBox" unique_id=2105956837]
-custom_minimum_size = Vector2(440, 64)
+custom_minimum_size = Vector2(440, 46)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 20
 text = "Libro de Hechizos  (0 palabras)"
 
 [node name="ResetBtn" type="Button" parent="UI/Center/VBox" unique_id=345391258]
-custom_minimum_size = Vector2(440, 52)
+custom_minimum_size = Vector2(440, 40)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 18
-text = "Reiniciar progreso"
+text = "Ajustes · volver a empezar"
 
 [node name="QuitBtn" type="Button" parent="UI/Center/VBox" unique_id=258813198]
-custom_minimum_size = Vector2(440, 52)
+custom_minimum_size = Vector2(440, 40)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 18

@@ -7,8 +7,8 @@ Videojuego educativo desarrollado en Godot para practicar vocabulario y estructu
 - Motor oficial: **Godot 4.6.3**.
 - Resolución de diseño: **1280 × 720**.
 - Ventana redimensionable entre **960 × 540** y **1920 × 1080**, con escalado proporcional 16:9.
-- Escena principal: `res://scenes/Intro.tscn`.
-- Progreso local con guardado automático.
+- Escena principal: `res://scenes/MainMenu.tscn`, con mapa de cinco lugares.
+- Progreso local con guardado automático de escena, ronda, selección y caminos parciales.
 - Ocho escenas jugables distribuidas en cinco mundos.
 - Nueve capítulos de historia animados y tres cinemáticas que acompañan toda la aventura, desde la noche del huracán hasta el regreso de Kalin.
 - Una exploración libre de la isla antes del primer capítulo: el jugador camina con Kalin por la orilla, examina objetos y llega a la aldea de los animales.
@@ -33,11 +33,21 @@ Cada **mundo** representa una mecánica. Los **niveles** de un mismo mundo reuti
 
 El orden de progreso es Mundo 1 completo → Mundo 2 → Mundo 3 → Mundo 4 → Mundo 5. El último mundo recupera los fragmentos finales del libro y cierra la aventura con el portal de regreso.
 
-Los puntos mágicos son una puntuación acumulativa de desempeño: se obtienen al aprender vocabulario nuevo y completar niveles. No se consumen ni bloquean el avance.
+La interfaz muestra páginas recuperadas. Los puntos mágicos se conservan en el guardado como puntuación acumulativa; no se consumen ni bloquean el avance.
 
 Los cuatro niveles del Mundo 1 usan tableros de 12 columnas y presentan una
-progresión propia: tutorial abierto, planificación de rutas sin cruces, memoria
-de obstáculos y recuerdo de destinos sin pistas textuales.
+progresión propia: un primer camino corto con demostración visual, planificación
+de rutas sin cruces, memoria de obstáculos y recuerdo de destinos. El jugador
+decide cuándo ocultar las pistas y puede volver a consultarlas. Cada tablero
+termina con una celebración; el reconocimiento de palabras y animales queda
+en la historia siguiente para evitar dos pruebas consecutivas.
+
+Las ayudas con una mano animada se pueden repetir con **Ayuda**. Al acertar,
+los animales recorren su camino, los muebles permanecen en la casa y los
+alimentos se entregan. Las frases recuperadas esperan a **Continuar**; tras
+cuatro segundos sin interacción, la mano señala el botón. El
+Libro de Hechizos pausa el ejercicio y usa las mismas ilustraciones SVG que
+las peticiones; en el repaso se retiran los dibujos de las respuestas.
 
 ## Historia
 
@@ -68,7 +78,8 @@ completan el libro y abren el portal (Mundo 5). Con cada capítulo Kalin
 recupera páginas de su Libro de Hechizos.
 
 Los capítulos se pueden saltar con **Saltar historia** o `Esc`. **Continuar**
-en el menú muestra el capítulo que antecede al nivel pendiente.
+retoma la escena y el momento guardados. En partidas antiguas sin punto de
+continuación, presenta la historia del siguiente nivel pendiente.
 
 ### Exploración de la isla
 
@@ -129,6 +140,7 @@ No se requieren complementos ni dependencias externas.
 - [INSTRUCCIONES.md](INSTRUCCIONES.md): instalación, estructura técnica y mantenimiento.
 - [AUDITORIA_BUENAS_PRACTICAS.md](AUDITORIA_BUENAS_PRACTICAS.md): cumplimiento, correcciones y pendientes de diseño.
 - [VOCABULARIO.md](VOCABULARIO.md): grafías adoptadas, normalizaciones y decisiones del GDD.
+- [MEJORAS_UX.md](MEJORAS_UX.md): interacción visual, arte, continuación y pruebas de esta iteración.
 - [Arte/audio/README.md](Arte/audio/README.md): preparación y nombres de los audios pendientes.
 
 ## Trabajo pendiente
@@ -138,5 +150,6 @@ No se requieren complementos ni dependencias externas.
 - Ampliar las variaciones y la dificultad de los mundos 2, 3 y 4.
 - Validar las frases de cortesía del Mundo 5 con una persona hablante o especialista.
 - Validar textos y pronunciaciones con una persona hablante o especialista en maya yucateco.
-- Realizar pruebas de accesibilidad, teclado, pantallas distintas a 1280 × 720 y exportaciones objetivo.
+- Observar a niños de alrededor de 10 años jugando sin explicación inicial y ajustar las ayudas según los resultados.
+- Ampliar pruebas de accesibilidad, relaciones de aspecto y exportaciones objetivo.
 - Ampliar la validación automática hasta cubrir interacción, navegación y migraciones completas del guardado.

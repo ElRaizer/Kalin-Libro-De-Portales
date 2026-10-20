@@ -21,8 +21,11 @@ var _spread_index: int = 0
 var _visible_words: Array[String] = ["", ""]
 var _notice_tween: Tween
 var _previous_focus: Control
+var _owns_pause := false
+var _new_word := ""
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
 	close_button.pressed.connect(hide_book)
 	previous_button.pressed.connect(_previous_spread)
@@ -33,8 +36,15 @@ func _ready() -> void:
 	audio_notice.visible = false
 
 func show_book() -> void:
+	if visible:
+		return
 	_previous_focus = get_viewport().gui_get_focus_owner()
+	_owns_pause = not get_tree().paused
+	get_tree().paused = true
 	_collect_entries()
+	if _new_word in _entries:
+		_spread_index = floori(float(_entries.find(_new_word)) / WORDS_PER_SPREAD)
+		_new_word = ""
 	_spread_index = clampi(_spread_index, 0, maxi(_spread_count() - 1, 0))
 	_render_spread()
 	visible = true
@@ -42,11 +52,18 @@ func show_book() -> void:
 
 func hide_book() -> void:
 	visible = false
+	if _owns_pause:
+		get_tree().paused = false
+	_owns_pause = false
 	if audio_player.playing:
 		audio_player.stop()
 	if is_instance_valid(_previous_focus) and _previous_focus.is_visible_in_tree():
 		_previous_focus.grab_focus()
 	_previous_focus = null
+
+func _exit_tree() -> void:
+	if _owns_pause and get_tree() != null:
+		get_tree().paused = false
 
 func _collect_entries() -> void:
 	_entries.clear()
@@ -81,7 +98,7 @@ func _render_spread() -> void:
 	var first_index := _spread_index * WORDS_PER_SPREAD
 	_render_page(left_page, first_index, 0)
 	_render_page(right_page, first_index + 1, 1)
-	page_label.text = "Pliego %d de %d" % [_spread_index + 1, _spread_count()]
+	page_label.text = "Páginas %d de %d" % [_spread_index + 1, _spread_count()]
 
 func _render_page(page: Panel, entry_index: int, visible_slot: int) -> void:
 	var content := page.get_node("Content") as VBoxContainer
@@ -170,6 +187,9 @@ func _show_notice(message: String) -> void:
 	_notice_tween.tween_callback(func(): audio_notice.visible = false)
 
 func _on_word_learned(_data: Dictionary) -> void:
+	for word: String in GameManager.words_learned:
+		if word not in _entries:
+			_new_word = word
 	if visible:
 		_collect_entries()
 		_render_spread()

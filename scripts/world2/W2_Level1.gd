@@ -37,158 +37,241 @@ const RAW_OBJECTS: Array[Dictionary] = [
 ]
 static var OBJECTS: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_OBJECTS)
 
-const TOTAL_ROUNDS := 10   # 5 objetos x 2 fases
-
-# ─── Estado ──────────────────────────────────────────────────────────────────
+const TOTAL_ROUNDS := 10
 var round_order: Array[int] = []
-var round_index: int = 0
-var current_phase: int = 0            # 0 = imagen+palabra, 1 = solo imagen
-var _completing: bool = false
+var round_index := 0
+var current_phase := 0
+var _completing := false
+var _waiting := false
+var _mistakes := 0
 var _choice_buttons: Array[Button] = []
+var guide: LearningGuide
+var next_button: Button
+var request_art: MeaningIllustration
+var room: Panel
+var room_items: Dictionary = {}
 
-# ─── Nodos ───────────────────────────────────────────────────────────────────
-@onready var animal_spr:   TextureRect   = $UI/RequestPanel/AnimalSprite
-@onready var need_lbl:     Label         = $UI/RequestPanel/VBox/NeedLbl
-@onready var word_lbl:     Label         = $UI/RequestPanel/VBox/WordLbl
+@onready var animal_spr: TextureRect = $UI/RequestPanel/AnimalSprite
+@onready var need_lbl: Label = $UI/RequestPanel/VBox/NeedLbl
+@onready var word_lbl: Label = $UI/RequestPanel/VBox/WordLbl
 @onready var choices_grid: GridContainer = $UI/ChoicesGrid
-@onready var feedback_lbl: Label         = $UI/FeedbackPanel/FeedbackLbl
-@onready var phase_lbl:    Label         = $UI/StatusPanel/StatusVBox/PhaseLbl
-@onready var progress_lbl: Label         = $UI/StatusPanel/StatusVBox/ProgressLbl
+@onready var feedback_lbl: Label = $UI/FeedbackPanel/FeedbackLbl
+@onready var phase_lbl: Label = $UI/StatusPanel/StatusVBox/PhaseLbl
+@onready var progress_lbl: Label = $UI/StatusPanel/StatusVBox/ProgressLbl
 @onready var completion: CompletionOverlay = $UI/CompletionOverlay
-@onready var magic_lbl:    Label         = $UI/TopBar/MagicLabel
-@onready var libro:        CanvasLayer   = $LibroHechizos
+@onready var magic_lbl: Label = $UI/TopBar/MagicLabel
+@onready var libro: CanvasLayer = $LibroHechizos
 
-# ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
-	for i in range(OBJECTS.size()):
-		round_order.append(i)
+	for index: int in range(OBJECTS.size()):
+		round_order.append(index)
 	round_order.shuffle()
+	var state := GameManager.get_scene_state(self)
+	round_order = ExerciseProgress.order_or(state.get("order"), OBJECTS.size(), round_order)
+	round_index = clampi(int(state.get("round", 0)), 0, TOTAL_ROUNDS)
 	completion.next_pressed.connect(_on_next_level_pressed)
 	completion.replay_pressed.connect(_on_replay_pressed)
 	completion.menu_pressed.connect(_on_menu_pressed)
-	feedback_lbl.text = ""
-	magic_lbl.text = "%d pts mágicos" % GameManager.magic_points
 	GameManager.magic_points_changed.connect(_on_magic_points_changed)
-	_show_round()
+	_on_magic_points_changed(GameManager.magic_points)
+	guide = LearningGuide.install(self, $UI/TopBar, _show_help)
+	_build_room()
+	request_art = MeaningIllustration.new()
+	request_art.position = Vector2(495, 48)
+	request_art.size = Vector2(164, 125)
+	$UI/RequestPanel.add_child(request_art)
+	next_button = Button.new()
+	next_button.position = Vector2(1050, 574)
+	next_button.size = Vector2(188, 52)
+	next_button.theme = preload("res://themes/kalin_theme.tres")
+	next_button.theme_type_variation = &"KalinPrimaryButton"
+	next_button.text = "Continuar →"
+	next_button.pressed.connect(_advance_round)
+	$UI.add_child(next_button)
+	_restore_room()
+	if round_index >= TOTAL_ROUNDS:
+		_on_level_complete()
+	else:
+		_show_round()
+		if bool(state.get("waiting", false)):
+			_render_success(false)
 
-# ─── Rondas ───────────────────────────────────────────────────────────────────
+func _build_room() -> void:
+	room = Panel.new()
+	room.position = Vector2(26, 80)
+	room.size = Vector2(460, 470)
+	room.clip_contents = true
+	room.theme = preload("res://themes/kalin_theme.tres")
+	room.theme_type_variation = &"KalinRequestPanel"
+	$UI.add_child(room)
+	var background := TextureRect.new()
+	background.texture = preload("res://Arte/backgrounds/bg_casa_maya.svg")
+	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	background.position = Vector2(5, 5)
+	background.size = room.size - Vector2(10, 10)
+	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	room.add_child(background)
+	var label := Label.new()
+	label.text = "La casa de tus amigos"
+	label.position = Vector2(24, 18)
+	label.add_theme_font_size_override("font_size", 22)
+	label.add_theme_color_override("font_color", Color("fff6e1"))
+	label.add_theme_color_override("font_outline_color", Color("4a3016"))
+	label.add_theme_constant_override("outline_size", 4)
+	room.add_child(label)
+
+func _place_object(word: String, animate: bool) -> void:
+	if word in room_items:
+		if animate:
+			(room_items[word] as MeaningIllustration).celebrate()
+		return
+	var positions := [Vector2(163, 275), Vector2(181, 244), Vector2(12, 345), Vector2(308, 299), Vector2(325, 228)]
+	var index := 0
+	for item: ExerciseEntry in OBJECTS:
+		if item.maya == word:
+			break
+		index += 1
+	var art := MeaningIllustration.new()
+	art.position = positions[mini(index, positions.size() - 1)]
+	art.size = Vector2(128, 100)
+	room.add_child(art)
+	art.show_meaning(word)
+	room_items[word] = art
+	if animate:
+		art.celebrate()
+
+func _restore_room() -> void:
+	for index: int in range(mini(round_index, OBJECTS.size())):
+		_place_object(OBJECTS[round_order[index]].maya, false)
+
 func _current_object() -> ExerciseEntry:
-	var obj_idx: int = round_order[round_index % round_order.size()]
-	return OBJECTS[obj_idx]
+	return OBJECTS[round_order[round_index % round_order.size()]]
 
 func _show_round() -> void:
-	if round_index >= TOTAL_ROUNDS:
-		return
-	feedback_lbl.text = ""
-	var obj: ExerciseEntry = _current_object()
-	var vocab: Dictionary = GameManager.get_vocabulary_entry(obj.maya)
-	current_phase = 0 if round_index < round_order.size() else 1
+	guide.stop()
+	_waiting = false
+	_mistakes = 0
+	next_button.hide()
+	feedback_lbl.text = "Elige el hechizo para ayudar."
+	feedback_lbl.add_theme_color_override("font_color", Color("5b4630"))
+	var obj := _current_object()
+	var vocab := GameManager.get_vocabulary_entry(obj.maya)
+	current_phase = 0 if round_index < OBJECTS.size() else 1
 	animal_spr.texture = load(obj.animal_spr)
-	animal_spr.modulate = Color.WHITE
-	animal_spr.position.x = 20
-
-	if current_phase == 0:
-		phase_lbl.text = "Fase 1 · Aprende — Ronda %d / %d" % [round_index + 1, TOTAL_ROUNDS]
-		need_lbl.text = "%s dice: \"%s\"" % [obj.animal, obj.peticion]
-		word_lbl.text = "%s   %s   (%s)" % [vocab.get("emoji", "?"), vocab.get("spanish", ""), obj.maya]
-	else:
-		phase_lbl.text = "Fase 2 · Recuerda sin ayuda — Ronda %d / %d" % [round_index + 1, TOTAL_ROUNDS]
-		need_lbl.text = "%s te mira en silencio, esperando su hechizo..." % obj.animal
-		word_lbl.text = vocab.get("emoji", "?")   # solo la imagen: sin palabra escrita
-	word_lbl.add_theme_color_override("font_color", obj.color.darkened(0.15))
+	need_lbl.text = obj.peticion if current_phase == 0 else "¿Qué palabra crea este objeto?"
+	word_lbl.text = "%s · %s" % [obj.maya, vocab.spanish] if current_phase == 0 else ""
+	word_lbl.add_theme_color_override("font_color", Color("704c9f"))
+	request_art.show_meaning(obj.maya)
+	phase_lbl.text = "%s · %d / %d" % ["Aprende" if current_phase == 0 else "Recuerda", round_index % OBJECTS.size() + 1, OBJECTS.size()]
+	progress_lbl.text = "%d / %d muebles recuperados" % [mini(round_index, OBJECTS.size()), OBJECTS.size()]
 	_build_choices()
-	progress_lbl.text = "Palabras en el libro: %d / %d" % [_learned_count(), OBJECTS.size()]
-
-func _learned_count() -> int:
-	var count: int = 0
-	for object_data: ExerciseEntry in OBJECTS:
-		if GameManager.has_learned_word(object_data.maya):
-			count += 1
-	return count
+	if round_index == 0 and "objects" not in GameManager.tutorials_seen:
+		call_deferred("_show_help")
+	GameManager.checkpoint(self)
 
 func _build_choices() -> void:
-	for child in choices_grid.get_children():
+	for child: Node in choices_grid.get_children():
+		choices_grid.remove_child(child)
 		child.queue_free()
 	_choice_buttons.clear()
 	var pool: Array[ExerciseEntry] = OBJECTS.duplicate()
+	pool.erase(_current_object())
+	pool.shuffle()
+	var count := mini(round_index + 2, OBJECTS.size()) if current_phase == 0 else OBJECTS.size()
+	pool = pool.slice(0, count - 1)
+	pool.append(_current_object())
 	pool.shuffle()
 	for obj: ExerciseEntry in pool:
-		var btn: Button = Button.new()
-		btn.text = obj.maya
-		btn.custom_minimum_size = Vector2(230, 90)
-		btn.theme_type_variation = &"KalinNounButton"
-		btn.add_theme_font_size_override("font_size", 24)
-		choices_grid.add_child(btn)
-		_choice_buttons.append(btn)
-		btn.pressed.connect(_on_choice_pressed.bind(str(obj.maya)))
-	if not _choice_buttons.is_empty():
-		_choice_buttons[0].grab_focus()
+		var button := Button.new()
+		button.text = obj.maya
+		button.custom_minimum_size = Vector2(216, 92)
+		button.theme_type_variation = &"KalinNounButton"
+		button.add_theme_font_size_override("font_size", 23)
+		if current_phase == 0:
+			button.icon = load(GameManager.get_book_illustration(obj.maya))
+			button.expand_icon = true
+			button.add_theme_constant_override("icon_max_width", 60)
+		button.pressed.connect(_on_choice_pressed.bind(str(obj.maya)))
+		choices_grid.add_child(button)
+		_choice_buttons.append(button)
+	_choice_buttons[0].grab_focus()
 
-# ─── Selección ────────────────────────────────────────────────────────────────
-func _on_choice_pressed(maya_word: String) -> void:
-	if _completing:
+func _on_choice_pressed(word: String) -> void:
+	if _completing or _waiting:
 		return
-	var obj: ExerciseEntry = _current_object()
-	if maya_word == obj.maya:
-		_on_correct(obj)
+	guide.stop()
+	if word == _current_object().maya:
+		GameManager.learn_word(word)
+		GameManager.mark_tutorial_seen("objects")
+		_render_success(true)
 	else:
-		_on_wrong()
+		_mistakes += 1
+		var meaning := GameManager.get_vocabulary_entry(word)
+		feedback_lbl.text = "%s significa %s. Busca el objeto de la imagen." % [word, meaning.spanish]
+		feedback_lbl.add_theme_color_override("font_color", Color("b56a1f"))
+		if _mistakes >= 2:
+			_show_help()
 
-func _on_correct(obj: ExerciseEntry) -> void:
-	for b in _choice_buttons:
-		b.disabled = true
-	GameManager.learn_word(obj.maya)
-	var vocab: Dictionary = GameManager.get_vocabulary_entry(obj.maya)
-	feedback_lbl.text = "¡Hechizo lanzado!  %s  =  %s   →  \"%s\"" % [
-		obj.maya, vocab.get("traduccion", ""), vocab.get("estructura", "")
-	]
-	feedback_lbl.add_theme_color_override("font_color", Color(0.12, 0.45, 0.15))
-	var tween: Tween = create_tween()
-	tween.tween_property(animal_spr, "scale", Vector2(1.18, 1.18), 0.12)
-	tween.tween_property(animal_spr, "scale", Vector2(1.0, 1.0), 0.18)
-	await get_tree().create_timer(1.4).timeout
-	if not is_inside_tree():
+func _render_success(animate: bool) -> void:
+	_waiting = true
+	guide.stop()
+	for button: Button in _choice_buttons:
+		button.disabled = true
+	var obj := _current_object()
+	var vocab := GameManager.get_vocabulary_entry(obj.maya)
+	feedback_lbl.text = "✓ %s\n%s" % [vocab.estructura, vocab.traduccion]
+	feedback_lbl.add_theme_color_override("font_color", Color("2e8b57"))
+	_place_object(obj.maya, animate)
+	progress_lbl.text = "%d / %d muebles recuperados" % [room_items.size(), OBJECTS.size()]
+	next_button.show()
+	next_button.grab_focus()
+	guide.watch_continue(next_button)
+	if animate:
+		guide.page_to_book(request_art.global_position, $UI/TopBar/BookBtn.get_global_rect().get_center())
+	GameManager.checkpoint(self)
+
+func _advance_round() -> void:
+	if not _waiting:
 		return
 	round_index += 1
 	if round_index >= TOTAL_ROUNDS:
-		_completing = true
 		_on_level_complete()
 	else:
 		_show_round()
 
-func _on_wrong() -> void:
-	feedback_lbl.text = "Ese hechizo no es el correcto... intenta de nuevo."
-	feedback_lbl.add_theme_color_override("font_color", Color(0.6, 0.15, 0.15))
-	var tween: Tween = create_tween()
-	tween.tween_property(animal_spr, "position:x", animal_spr.position.x - 10, 0.05)
-	tween.tween_property(animal_spr, "position:x", animal_spr.position.x + 20, 0.05)
-	tween.tween_property(animal_spr, "position:x", animal_spr.position.x - 10, 0.05)
-	tween.tween_property(animal_spr, "position:x", animal_spr.position.x, 0.05)
+func _show_help() -> void:
+	if _waiting:
+		guide.point_at(next_button)
+		return
+	for button: Button in _choice_buttons:
+		if button.text == _current_object().maya:
+			guide.point_at(button)
+			feedback_lbl.text = "Toca una palabra. El objeto aparecerá en la casa."
+			return
 
-# ─── Completar nivel ────────────────────────────────────────────────────────
 func _on_level_complete() -> void:
-	GameManager.complete_level(2, 1)
-	completion.show_completion(
-		"¡Mundo 2 · Nivel 1 completado!",
-		"Aprendiste a lanzar hechizos para construir la casa maya.",
-		"Siguiente mundo →"
-	)
-
-func _on_magic_points_changed(new_total: int) -> void:
-	magic_lbl.text = "%d pts mágicos" % new_total
-
-func _safe_navigate(key: String) -> void:
 	_completing = true
-	GameManager.go_to_scene(key)
+	guide.stop()
+	next_button.hide()
+	GameManager.complete_level(2, 1)
+	completion.show_completion("¡La casa está lista!", "Recuperaste los muebles de tus amigos.", "Al taller →")
+	GameManager.checkpoint(self)
+
+func _on_magic_points_changed(value: int) -> void:
+	magic_lbl.text = GameManager.recovered_pages_text()
 
 func _on_menu_pressed() -> void:
-	_safe_navigate("main_menu")
+	GameManager.go_to_scene("main_menu")
 
 func _on_next_level_pressed() -> void:
-	_safe_navigate("world2_story1")
+	GameManager.go_to_scene("world2_story1")
 
 func _on_book_pressed() -> void:
 	libro.show_book()
 
 func _on_replay_pressed() -> void:
-	get_tree().reload_current_scene()
+	GameManager.replay_scene(GameManager.scene_key_for(self))
+
+func get_checkpoint_state() -> Dictionary:
+	return {"order": round_order, "round": round_index, "waiting": _waiting}

@@ -15,7 +15,7 @@ Esta guía explica cómo abrir, ejecutar y mantener el repositorio. La presentac
 3. Espera a que Godot importe los SVG y las escenas.
 4. Pulsa **F5** para ejecutar el juego completo.
 
-La escena principal es `res://scenes/Intro.tscn`. No es necesario cambiarla a `MainMenu.tscn`: la introducción forma parte del flujo oficial. El botón **Saltar intro** sí lleva directamente al menú.
+La escena principal es `res://scenes/MainMenu.tscn`. **Jugar** abre una introducción breve, seguida del huracán y la exploración; **Continuar** recupera el punto guardado. **Saltar intro** pasa a la exploración de la isla.
 
 ## Configuración esencial
 
@@ -139,7 +139,7 @@ El orden oficial vive en `GameManager.LEVEL_ORDER`:
 4. Mundo 4, nivel 1: *In k'a'at* en fases guiada y de recuerdo.
 5. Mundo 5, nivel 1: recapitulación, cortesía y portal de regreso.
 
-Cada nivel debe llamar `GameManager.complete_level(mundo, nivel)` con su identidad real. El botón **Continuar** consulta el primer elemento incompleto de `LEVEL_ORDER`; no construye nombres de escena suponiendo que todos pertenecen al Mundo 1.
+Cada nivel debe llamar `GameManager.complete_level(mundo, nivel)` con su identidad real. **Continuar** usa `resume_scene_key` y el checkpoint de la escena. Para partidas antiguas sin checkpoint, consulta el primer elemento incompleto de `LEVEL_ORDER`.
 
 Para agregar un nivel:
 
@@ -297,9 +297,12 @@ El progreso se guarda automáticamente como `user://kalin_save.json`. Incluye:
 - versión del formato;
 - puntos mágicos;
 - palabras aprendidas;
-- identificadores `w<numero>_l<numero>` de los niveles completados.
+- identificadores `w<numero>_l<numero>` de los niveles completados;
+- escena pendiente, estado de cada escena y tutoriales ya practicados (formato 2).
 
-El botón **Reiniciar progreso** elimina ese archivo. Los datos inválidos se descartan y un JSON dañado genera una advertencia sin impedir que el juego inicie. Al modificar el formato de guardado, incrementa `SAVE_VERSION` y conserva una migración para las partidas existentes.
+**Ajustes · volver a empezar** pide confirmación antes de eliminar la partida. Los datos inválidos se descartan y un JSON dañado genera una advertencia sin impedir que el juego inicie. `SaveRepository.CURRENT_VERSION` es la versión canónica. El formato 1 conserva palabras, puntos y niveles; sólo el formato 0 infiere niveles desde vocabulario antiguo.
+
+Para una escena nueva, implementar `get_checkpoint_state() -> Dictionary` y restaurar con `GameManager.get_scene_state(self)`. Guardar tras acciones completas mediante `GameManager.checkpoint(self)`. La navegación y el cierre de ventana capturan también el estado actual. Usar `GameManager.replay_scene()` para repetir desde el principio sin borrar los logros. El libro usa `PROCESS_MODE_ALWAYS` mientras pausa el árbol; los temporizadores de un ejercicio deben respetar esa pausa.
 
 ## Audio pendiente
 
@@ -312,6 +315,10 @@ La validación automática de catálogo, rutas, escenas, tableros, alias y nombr
 ```powershell
 godot_console.exe --headless --path . --script res://tests/validate_project.gd
 godot_console.exe --headless --path . --script res://tests/validate_learning_flow.gd
+godot_console.exe --headless --path . --script res://tests/validate_main_menu.gd
+godot_console.exe --headless --path . --script res://tests/validate_intro.gd
+godot_console.exe --headless --path . --script res://tests/validate_ux.gd
+godot_console.exe --headless --path . --script res://tests/validate_adventure.gd
 ```
 
 `validate_project.gd` revisa también que cada exploración tenga sendero, objetos
@@ -328,4 +335,4 @@ aldea lleva al Capítulo 1.
 6. Cerrar y abrir el juego para verificar el guardado.
 7. Repetir el Mundo 4 con las palabras ya aprendidas.
 8. Completar el Mundo 5 y confirmar que el portal llegue al 100 %.
-9. Abrir el libro y comprobar ilustraciones, marcadores futuros y navegación por páginas.
+9. Abrir el libro y comprobar ilustraciones, pausa del ejercicio y navegación por páginas.

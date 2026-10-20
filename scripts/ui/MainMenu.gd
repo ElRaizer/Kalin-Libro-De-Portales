@@ -9,14 +9,37 @@ extends Node2D
 @onready var play_btn:   Button = $UI/Center/VBox/PlayBtn
 
 var level_buttons: Array[Button] = []
+var selected_world := 1
+var world_buttons: Array[Button] = []
+var reset_confirmation: ConfirmationDialog
 
 func _ready() -> void:
+	selected_world = int(GameManager.get_level_info(GameManager.next_unlocked_scene()).get("world", 1))
+	if GameManager.resume_scene_key.begins_with("world"):
+		selected_world = clampi(GameManager.resume_scene_key.trim_prefix("world").get_slice("_", 0).to_int(), 1, 5)
 	_setup_level_buttons()
+	_build_world_map()
+	reset_confirmation = ConfirmationDialog.new()
+	reset_confirmation.theme = preload("res://themes/kalin_theme.tres")
+	reset_confirmation.title = "Volver a empezar"
+	reset_confirmation.dialog_text = "¿Borrar las páginas recuperadas y empezar otra aventura?"
+	reset_confirmation.ok_button_text = "Borrar partida"
+	reset_confirmation.cancel_button_text = "Conservar mi aventura"
+	reset_confirmation.confirmed.connect(GameManager.reset_save)
+	$UI.add_child(reset_confirmation)
+	reset_confirmation.get_label().add_theme_color_override("font_color", Color("3b2415"))
+	reset_confirmation.get_label().add_theme_font_size_override("font_size", 21)
+	reset_confirmation.get_label().autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	reset_confirmation.get_label().custom_minimum_size = Vector2(460, 100)
+	reset_confirmation.get_ok_button().theme_type_variation = &"KalinSecondaryButton"
+	reset_confirmation.get_ok_button().custom_minimum_size = Vector2(160, 48)
+	reset_confirmation.get_cancel_button().theme_type_variation = &"KalinPrimaryButton"
+	reset_confirmation.get_cancel_button().custom_minimum_size = Vector2(250, 48)
 	_refresh_ui()
 	play_btn.grab_focus()
 	GameManager.magic_points_changed.connect(_on_progress_changed)
 	GameManager.level_completed.connect(_on_level_completed)
-	GameManager.progress_reset.connect(_refresh_ui)
+	GameManager.progress_reset.connect(_on_progress_reset)
 
 func _setup_level_buttons() -> void:
 	level_buttons.clear()
@@ -30,20 +53,22 @@ func _setup_level_buttons() -> void:
 			button.pressed.connect(_on_level_pressed.bind(index))
 
 func _refresh_ui() -> void:
-	magic_lbl.text = "%d puntos mágicos" % GameManager.magic_points
+	magic_lbl.text = "%d / %d páginas recuperadas" % [GameManager.words_learned.size(), GameManager.get_learnable_word_count()]
 	var word_count: int = GameManager.words_learned.size()
 	book_btn.text  = "Libro de Hechizos  (%d palabras)" % word_count
 	_refresh_level_buttons()
 
 	# Texto del botón Jugar según progreso
 	var next: String = GameManager.next_unlocked_scene()
-	if next == "main_menu":
+	if not GameManager.resume_scene_key.is_empty():
+		play_btn.text = "Continuar →"
+	elif next == "main_menu":
 		play_btn.text = "¡Completado! Jugar de nuevo"
-	elif GameManager.completed_levels.is_empty():
-		play_btn.text = "Comenzar aventura"
+	elif GameManager.resume_scene_key.is_empty() and GameManager.completed_levels.is_empty():
+		play_btn.text = "Jugar →"
 	else:
-		var info: Dictionary = GameManager.get_level_info(next)
-		play_btn.text = "Continuar — %s" % info.get("name", "Siguiente nivel")
+		play_btn.text = "Continuar →"
+	_refresh_world_map()
 
 func _refresh_level_buttons() -> void:
 	for index: int in range(level_buttons.size()):
@@ -53,6 +78,7 @@ func _refresh_level_buttons() -> void:
 			continue
 
 		var level_data: Dictionary = GameManager.LEVEL_ORDER[index]
+		button.visible = int(level_data.world) == selected_world
 		var completed: bool = GameManager.is_level_completed(level_data.world, level_data.level)
 		var unlocked: bool = completed or index == 0
 		if index > 0:
@@ -63,14 +89,15 @@ func _refresh_level_buttons() -> void:
 		button.focus_mode = Control.FOCUS_ALL if unlocked else Control.FOCUS_NONE
 		button.tooltip_text = _level_tooltip(level_data, completed, unlocked)
 		var status: String = "✓" if completed else ("▶" if unlocked else "🔒")
-		button.text = "%s  %d. %s" % [status, index + 1, level_data.name]
+		button.text = "%s  %d · %s" % [status, int(level_data.level), level_data.get("map_label", level_data.name)]
 
-func _level_tooltip(_level_data: Dictionary, completed: bool, unlocked: bool) -> String:
+func _level_tooltip(level_data: Dictionary, completed: bool, unlocked: bool) -> String:
+	var title: String = str(level_data.name) + "\n"
 	if completed:
-		return "Nivel completado · Haz clic para volver a jugar"
+		return title + "Completado · Toca para repetir"
 	if unlocked:
-		return "Haz clic para jugar este nivel"
-	return "Completa el nivel anterior para desbloquearlo"
+		return title + "Toca para continuar la aventura"
+	return title + "Completa la parada anterior"
 
 func _on_level_pressed(index: int) -> void:
 	if index < 0 or index >= GameManager.LEVEL_ORDER.size():
@@ -78,15 +105,25 @@ func _on_level_pressed(index: int) -> void:
 	var button: Button = level_buttons[index]
 	if button.disabled:
 		return
-	GameManager.go_to_scene(GameManager.LEVEL_ORDER[index].scene_key)
+	var key: String = GameManager.LEVEL_ORDER[index].scene_key
+	if GameManager.is_level_completed(GameManager.LEVEL_ORDER[index].world, GameManager.LEVEL_ORDER[index].level):
+		GameManager.replay_scene(key)
+	else:
+		var info: Dictionary = GameManager.LEVEL_ORDER[index]
+		var entry_scenes: Array[String] = [key, str(info.story_key)]
+		if index == 0:
+			entry_scenes.append_array(["intro", "world1_explore1", "world1_story1"])
+		elif key == "world2_level1":
+			entry_scenes.append("world1_cine2")
+		if GameManager.resume_scene_key in entry_scenes:
+			GameManager.continue_adventure()
+		elif GameManager.scene_states.has(key):
+			GameManager.go_to_scene(key)
+		else:
+			GameManager.go_to_scene("intro" if index == 0 else str(info.story_key))
 
 func _on_play_pressed() -> void:
-	var next: String = GameManager.next_unlocked_scene()
-	if next == "main_menu":
-		next = GameManager.LEVEL_ORDER[0].scene_key
-	# Antes del nivel pendiente se muestra su capítulo de historia, si existe.
-	var info: Dictionary = GameManager.get_level_info(next)
-	GameManager.go_to_scene(info.get("story_key", next))
+	GameManager.continue_adventure()
 
 func _on_progress_changed(_new_total: int) -> void:
 	_refresh_ui()
@@ -98,7 +135,60 @@ func _on_book_pressed() -> void:
 	libro.show_book()
 
 func _on_reset_pressed() -> void:
-	GameManager.reset_save()
+	reset_confirmation.popup_centered(Vector2i(520, 210))
+	reset_confirmation.get_cancel_button().grab_focus()
 
 func _on_quit_pressed() -> void:
-	get_tree().quit()
+	GameManager.quit_game()
+
+func _on_progress_reset() -> void:
+	selected_world = 1
+	_refresh_ui()
+
+func _build_world_map() -> void:
+	var icons: Array[String] = ["res://Arte/ilustraciones/ui_isla.svg", "res://Arte/ilustraciones/ui_casa.svg", "res://Arte/ilustraciones/ui_libro.svg", "res://Arte/ilustraciones/comida_janal.svg", "res://Arte/ilustraciones/ui_portal.svg"]
+	var names: Array[String] = ["La isla", "La casa", "El taller", "La comida", "El portal"]
+	var map := Control.new()
+	map.name = "WorldMap"
+	map.position = Vector2(92, 180)
+	map.size = Vector2(1096, 200)
+	map.theme = preload("res://themes/kalin_theme.tres")
+	$UI.add_child(map)
+	var trail := Line2D.new()
+	trail.width = 12
+	trail.default_color = Color("e8ddb8")
+	trail.begin_cap_mode = Line2D.LINE_CAP_ROUND
+	trail.end_cap_mode = Line2D.LINE_CAP_ROUND
+	map.add_child(trail)
+	for index: int in range(5):
+		var point := Vector2(110 + index * 220, 96 + (-12 if index % 2 == 0 else 12))
+		trail.add_point(point)
+		var button := Button.new()
+		button.position = point - Vector2(96, 82)
+		button.size = Vector2(192, 164)
+		button.theme_type_variation = &"KalinSecondaryButton"
+		button.icon = load(icons[index])
+		button.expand_icon = true
+		button.add_theme_constant_override("icon_max_width", 98)
+		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+		button.text = names[index]
+		button.add_theme_font_size_override("font_size", 20)
+		button.pressed.connect(_select_world.bind(index + 1))
+		map.add_child(button)
+		world_buttons.append(button)
+
+func _select_world(world: int) -> void:
+	selected_world = world
+	_refresh_level_buttons()
+	_refresh_world_map()
+
+func _refresh_world_map() -> void:
+	for index: int in range(world_buttons.size()):
+		var unlocked := index == 0
+		for level: Dictionary in GameManager.LEVEL_ORDER:
+			if int(level.world) == index + 1:
+				var level_index: int = GameManager.LEVEL_ORDER.find(level)
+				unlocked = unlocked or level_index == 0 or GameManager.is_level_completed(GameManager.LEVEL_ORDER[level_index - 1].world, GameManager.LEVEL_ORDER[level_index - 1].level)
+		world_buttons[index].disabled = not unlocked
+		world_buttons[index].modulate = Color.WHITE if selected_world == index + 1 else Color(0.85, 0.85, 0.85)

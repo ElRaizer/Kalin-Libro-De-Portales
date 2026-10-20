@@ -8,6 +8,9 @@ func _initialize() -> void:
 	call_deferred("_capture_all")
 
 func _capture_all() -> void:
+	var manager: Node = root.get_node("GameManager")
+	manager._save_repository = load("res://scripts/data/SaveRepository.gd").new("user://capture_validation_progress.json")
+	manager.scene_states.clear()
 	DirAccess.make_dir_absolute(ProjectSettings.globalize_path(OUTPUT_DIR))
 	await _capture_scene("res://scenes/world1/Exploracion1_OrillaIsla.tscn", "exploracion.png")
 	await _capture_scene("res://scenes/world4/Level4_YoQuiero.tscn", "world4.png")
