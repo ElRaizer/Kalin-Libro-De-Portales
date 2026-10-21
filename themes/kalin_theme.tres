@@ -308,6 +308,33 @@ expand_margin_top = 32.0
 expand_margin_right = 8.0
 expand_margin_bottom = 8.0
 
+[sub_resource type="StyleBoxFlat" id="VolumeTrack"]
+content_margin_top = 6.0
+content_margin_bottom = 6.0
+bg_color = Color(0.72, 0.6, 0.42, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="VolumeFill"]
+content_margin_top = 6.0
+content_margin_bottom = 6.0
+bg_color = Color(0.13, 0.55, 0.5, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="VolumeFillHover"]
+content_margin_top = 6.0
+content_margin_bottom = 6.0
+bg_color = Color(0.85, 0.62, 0.15, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [resource]
 AcceptDialog/styles/panel = SubResource("CreamPanel")
 KalinAdjectiveButton/base_type = &"Button"
@@ -392,6 +419,11 @@ KalinStoryActor/styles/normal = SubResource("StoryActorNormal")
 KalinStoryActor/styles/pressed = SubResource("StoryActorHover")
 KalinTopBarPanel/base_type = &"Panel"
 KalinTopBarPanel/styles/panel = SubResource("TopBarPanel")
+KalinVolumeSlider/base_type = &"HSlider"
+KalinVolumeSlider/styles/focus = SubResource("KeyboardFocus")
+KalinVolumeSlider/styles/grabber_area = SubResource("VolumeFill")
+KalinVolumeSlider/styles/grabber_area_highlight = SubResource("VolumeFillHover")
+KalinVolumeSlider/styles/slider = SubResource("VolumeTrack")
 Window/colors/title_color = Color(1, 0.96, 0.78, 1)
 Window/constants/title_height = 32
 Window/styles/embedded_border = SubResource("DialogFrame")

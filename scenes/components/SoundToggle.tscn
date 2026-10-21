@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/components/SoundToggle.gd" id="1_sonido"]
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="2_tema"]
+
+[node name="SoundToggle" type="Button"]
+custom_minimum_size = Vector2(150, 40)
+offset_right = 150.0
+offset_bottom = 40.0
+theme = ExtResource("2_tema")
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 18
+toggle_mode = true
+button_pressed = true
+text = "Sonido: sí"
+script = ExtResource("1_sonido")

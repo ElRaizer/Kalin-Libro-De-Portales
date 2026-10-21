@@ -1,0 +1,47 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/components/VolumeControls.gd" id="1_volumen"]
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="2_tema"]
+
+[node name="VolumeControls" type="GridContainer"]
+offset_right = 400.0
+offset_bottom = 74.0
+theme = ExtResource("2_tema")
+theme_override_constants/h_separation = 18
+theme_override_constants/v_separation = 12
+columns = 2
+script = ExtResource("1_volumen")
+
+[node name="MusicLabel" type="Label" parent="."]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23137255, 0.14117648, 0.08235294, 1)
+theme_override_font_sizes/font_size = 20
+text = "Música"
+
+[node name="MusicSlider" type="HSlider" parent="."]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+tooltip_text = "Volumen de la música"
+theme_type_variation = &"KalinVolumeSlider"
+max_value = 1.0
+step = 0.05
+value = 0.8
+
+[node name="EffectsLabel" type="Label" parent="."]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.23137255, 0.14117648, 0.08235294, 1)
+theme_override_font_sizes/font_size = 20
+text = "Sonidos"
+
+[node name="EffectsSlider" type="HSlider" parent="."]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+tooltip_text = "Volumen de los efectos y del ambiente"
+theme_type_variation = &"KalinVolumeSlider"
+max_value = 1.0
+step = 0.05
+value = 1.0

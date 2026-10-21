@@ -38,9 +38,12 @@ func open_pause() -> void:
 	GameManager.checkpoint_current_scene()
 	get_tree().paused = true
 	shade.show()
+	AudioManager.play_sfx("pausa_abrir")
 	resume_button.grab_focus()
 
 func resume_game() -> void:
+	if shade.visible:
+		AudioManager.play_sfx("pausa_cerrar")
 	shade.hide()
 	get_tree().paused = false
 	if is_instance_valid(_previous_focus) and _previous_focus.is_visible_in_tree():

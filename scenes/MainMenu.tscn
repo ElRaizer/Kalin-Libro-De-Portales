@@ -6,6 +6,7 @@
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="3_theme"]
 [ext_resource type="PackedScene" path="res://scenes/components/WorldMap.tscn" id="editor_5"]
 [ext_resource type="PackedScene" path="res://scenes/components/ResetConfirmation.tscn" id="editor_6"]
+[ext_resource type="PackedScene" path="res://scenes/components/SoundToggle.tscn" id="7_sonido"]
 
 [node name="MainMenu" type="Node2D" unique_id=2139944658]
 script = ExtResource("1")
@@ -25,6 +26,9 @@ offset_top = 10.0
 offset_right = 1260.0
 offset_bottom = 50.0
 theme = ExtResource("3_theme")
+
+[node name="SoundToggle" parent="UI/TopBar" instance=ExtResource("7_sonido")]
+layout_mode = 2
 
 [node name="MagicLabel" type="Label" parent="UI/TopBar" unique_id=1894398251]
 layout_mode = 2
