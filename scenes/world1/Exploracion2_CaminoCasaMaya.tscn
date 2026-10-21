@@ -32,6 +32,7 @@ next_scene_key = "world1_cine2"
 objective_text = "Sigue el sendero hasta la Casa Maya →"
 intro_speaker = "Narrador"
 intro_lines = Array[String](["Kalin y sus amigos caminan hacia la Casa Maya, al final del sendero.", "El huracán dejó restos del hogar regados por el solar. ¡Hay que mirarlos bien!"])
+footstep_surface = "tierra"
 
 [node name="Imagen" parent="Cielo" index="0"]
 texture = ExtResource("3_r")

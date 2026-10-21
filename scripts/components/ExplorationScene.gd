@@ -44,6 +44,10 @@ const COLOR_NOTICE := Color("ffd27a")
 @export var intro_lines: Array[String] = []
 @export var intro_surprised: bool = false
 
+@export_category("Sonido")
+## Suelo que pisa Kalin; elige la familia de pasos del catálogo de audio.
+@export_enum("arena", "tierra", "pasto", "piedra") var footstep_surface: String = "tierra"
+
 # ─── Estado ──────────────────────────────────────────────────────────────────
 var spots: Array[ExplorationSpot] = []
 var discovered: int = 0
@@ -260,13 +264,19 @@ func walk(direction: float, delta: float) -> void:
 	kalin_sprite.flip_h = direction < 0.0
 	if moved < 0.01:
 		if direction > 0.0 and limit < _max_x:
+			if not (_notice_tween and _notice_tween.is_running()):
+				AudioManager.play_sfx("camino_bloqueado")
 			_show_notice("Algo bloquea el camino. ¡Examínalo!")
 		_has_target = false
 		_idle()
 		return
 	guide.stop()
 	_place_kalin(new_x)
+	var previous_step := int(_walk_phase / PI)
 	_walk_phase += moved / STEP_LENGTH * PI
+	# Un paso suena cada vez que Kalin apoya el pie (media vuelta de la zancada).
+	if int(_walk_phase / PI) != previous_step:
+		AudioManager.play_footstep(footstep_surface)
 	var stride: float = sin(_walk_phase)
 	kalin_sprite.position.y = _kalin_base_position.y - absf(stride) * WALK_BOUNCE
 	kalin_sprite.rotation = _kalin_base_rotation + stride * WALK_TILT
@@ -346,12 +356,15 @@ func open_spot(spot: ExplorationSpot) -> void:
 	_has_target = false
 	_pending_spot = null
 	_face(spot.global_position.x)
+	if not spot.is_goal:
+		AudioManager.play_sfx("examinar_objeto")
 	_start_dialogue(spot.speaker, spot.dialogue_lines(), spot.surprised)
 
 func _close_spot(spot: ExplorationSpot) -> void:
 	var first_time: bool = not spot.examined
 	spot.mark_examined()
 	if spot.is_goal:
+		AudioManager.play_sfx("meta_alcanzada")
 		_finish()
 		return
 	if not first_time:
@@ -361,6 +374,7 @@ func _close_spot(spot: ExplorationSpot) -> void:
 		_show_notice("¡Encontraste tu libro! Las palabras volverán con tus hechizos.")
 	if spot.vocabulary_word != "":
 		words_found += 1
+		AudioManager.play_sfx("palabra_anotada")
 		_show_notice("Anotaste «%s» en tu libro" % spot.vocabulary_word, true)
 	_update_counter()
 	var tween: Tween = spot.play_reaction(kalin.global_position + Vector2(0.0, -120.0))
@@ -368,6 +382,7 @@ func _close_spot(spot: ExplorationSpot) -> void:
 		return
 	_resolving = true
 	magic.restart()
+	AudioManager.play_sfx("magia_apartar" if spot.reaction == ExplorationSpot.Reaction.APARTAR else "recoger_objeto")
 	tween.finished.connect(_on_reaction_finished)
 
 func _on_reaction_finished() -> void:
@@ -409,6 +424,9 @@ func _start_dialogue(speaker: String, lines: Array[String], surprised: bool) -> 
 	prompt_button.hide()
 
 func advance_dialogue() -> void:
+	var text_complete: bool = _dialogue.text_tween == null or not _dialogue.text_tween.is_running()
+	if _dialogue.is_open() and text_complete:
+		AudioManager.play_sfx("dialogo_avanzar")
 	_dialogue.advance()
 
 func is_dialogue_open() -> bool:

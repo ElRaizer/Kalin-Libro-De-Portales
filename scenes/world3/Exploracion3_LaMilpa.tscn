@@ -30,6 +30,7 @@ next_scene_key = "world4_level1"
 objective_text = "Recorre la milpa hasta tus amigos →"
 intro_speaker = "Kalin"
 intro_lines = Array[String](["¡Cuánto maíz! Y también hay plátanos, frutas y calabazas.", "Mis amigos tienen hambre. Buscaré lo que cada uno pidió con su «In k'a'at»."])
+footstep_surface = "pasto"
 
 [node name="Imagen" parent="Cielo" index="0"]
 texture = ExtResource("3_r")

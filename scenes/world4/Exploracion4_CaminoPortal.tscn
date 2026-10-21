@@ -30,6 +30,7 @@ next_scene_key = "world5_level1"
 objective_text = "Sigue el Sak Beh hasta el portal →"
 intro_speaker = "Narrador"
 intro_lines = Array[String](["Amanece sobre el Sak Beh. El libro de Kalin brilla y señala hacia el final del camino.", "Allí late el Portal de Regreso. En el camino hay lugares donde se usan las palabras amables."])
+footstep_surface = "piedra"
 
 [node name="Imagen" parent="Cielo" index="0"]
 texture = ExtResource("3_r")

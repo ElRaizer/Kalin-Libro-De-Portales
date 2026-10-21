@@ -17,6 +17,7 @@ next_scene_key = "world1_story1"
 objective_text = "Sigue el sendero hasta las casas →"
 intro_lines = Array[String](["¿Dónde estoy? ¡Voy a seguir esas huellas!"])
 intro_surprised = true
+footstep_surface = "arena"
 
 [node name="Kaax" type="Sprite2D" parent="Animales" index="0" unique_id=539945058]
 position = Vector2(3320, 592)

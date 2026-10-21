@@ -237,7 +237,7 @@ color = Color(0.03, 0.06, 0.1, 1)
 
 [node name="LearningGuide" parent="." instance=ExtResource("editor_8")]
 
-[node name="ContinueButton" type="Button" parent="UI"]
+[node name="ContinueButton" type="Button" parent="UI" groups=["sin_sonido_clic"]]
 offset_left = 1024
 offset_top = 646
 offset_right = 1256
