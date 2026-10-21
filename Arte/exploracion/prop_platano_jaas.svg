@@ -1,0 +1,20 @@
+<svg viewBox="0 0 270 260" xmlns="http://www.w3.org/2000/svg">
+<ellipse cx="135" cy="250" rx="70" ry="8" fill="#000000" opacity="0.18"/><g>
+<path d="M 126.0 246.0 L 129.0 76.0 L 141.0 76.0 L 144.0 246.0 Z" fill="#7BA83C"/>
+<path d="M 135.0 76.0 Q 75.0 54.0 15.0 104.0 Q 75.0 90.0 135.0 86.0 Z" fill="#2E8A32"/>
+<path d="M 135.0 76.0 Q 75.0 72.0 15.0 104.0" stroke="#1E6A26" stroke-width="2" fill="none" opacity="0.6"/>
+<path d="M 135.0 76.0 Q 100.0 -14.0 65.0 36.0 Q 100.0 22.0 135.0 86.0 Z" fill="#3A9A3A"/>
+<path d="M 135.0 76.0 Q 100.0 4.0 65.0 36.0" stroke="#1E6A26" stroke-width="2" fill="none" opacity="0.6"/>
+<path d="M 135.0 76.0 Q 135.0 -38.0 135.0 12.0 Q 135.0 -2.0 135.0 86.0 Z" fill="#34923A"/>
+<path d="M 135.0 76.0 Q 135.0 -20.0 135.0 12.0" stroke="#1E6A26" stroke-width="2" fill="none" opacity="0.6"/>
+<path d="M 135.0 76.0 Q 171.0 -12.0 207.0 38.0 Q 171.0 24.0 135.0 86.0 Z" fill="#3A9A3A"/>
+<path d="M 135.0 76.0 Q 171.0 6.0 207.0 38.0" stroke="#1E6A26" stroke-width="2" fill="none" opacity="0.6"/>
+<path d="M 135.0 76.0 Q 196.0 56.0 257.0 106.0 Q 196.0 92.0 135.0 86.0 Z" fill="#2E8A32"/>
+<path d="M 135.0 76.0 Q 196.0 74.0 257.0 106.0" stroke="#1E6A26" stroke-width="2" fill="none" opacity="0.6"/>
+<path d="M 147.0 94.0 q 8 18 -2 34" stroke="#E4C440" stroke-width="9" fill="none" stroke-linecap="round"/>
+<path d="M 154.0 97.0 q 8 18 -2 34" stroke="#E4C440" stroke-width="9" fill="none" stroke-linecap="round"/>
+<path d="M 161.0 100.0 q 8 18 -2 34" stroke="#E4C440" stroke-width="9" fill="none" stroke-linecap="round"/>
+<path d="M 168.0 103.0 q 8 18 -2 34" stroke="#E4C440" stroke-width="9" fill="none" stroke-linecap="round"/>
+<path d="M 175.0 106.0 q 8 18 -2 34" stroke="#E4C440" stroke-width="9" fill="none" stroke-linecap="round"/>
+</g>
+</svg>

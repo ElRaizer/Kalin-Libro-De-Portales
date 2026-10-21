@@ -1,0 +1,11 @@
+<svg viewBox="0 0 240 270" xmlns="http://www.w3.org/2000/svg">
+<ellipse cx="120" cy="260" rx="96" ry="8" fill="#000000" opacity="0.18"/>
+<circle cx="120" cy="120" r="100" fill="#FFD050" opacity="0.12"/>
+<rect x="22" y="70" width="42" height="190" rx="8" fill="#EDE7D4"/><rect x="176" y="70" width="42" height="190" rx="8" fill="#EDE7D4"/>
+<rect x="52" y="70" width="12" height="190" fill="#CFC8B0" opacity="0.7"/><rect x="206" y="70" width="12" height="190" fill="#CFC8B0" opacity="0.7"/>
+<path d="M 12 82 Q 120 -14 228 82 L 218 100 Q 120 22 22 100 Z" fill="#E4DDC6"/>
+<path d="M 12 82 Q 120 -14 228 82 L 224 90 Q 120 6 16 90 Z" fill="#F6F2E2"/>
+<g stroke="#E8A020" stroke-width="4" fill="none" stroke-linecap="round"><circle cx="43" cy="130" r="10"/><path d="M 33 160 L 53 160"/><path d="M 33 178 L 53 178"/><circle cx="197" cy="130" r="10"/><path d="M 187 160 L 207 160"/><path d="M 187 178 L 207 178"/></g>
+<path d="M 120 52 L 120 96" stroke="#9C9276" stroke-width="3"/><path d="M 110 96 L 130 96 L 126 124 L 114 124 Z" fill="#FFD050"/><ellipse cx="120" cy="112" rx="26" ry="30" fill="#FFD050" opacity="0.25"/>
+
+</svg>

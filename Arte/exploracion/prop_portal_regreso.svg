@@ -1,0 +1,16 @@
+<svg viewBox="0 0 380 420" xmlns="http://www.w3.org/2000/svg">
+<ellipse cx="190" cy="410" rx="140" ry="8" fill="#000000" opacity="0.18"/>
+<defs><radialGradient id="luz" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#FFFFFF"/><stop offset="0.45" stop-color="#BFE8FF"/><stop offset="1" stop-color="#6A9AFF"/></radialGradient>
+<radialGradient id="aura" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#FFE890" stop-opacity="0.55"/><stop offset="1" stop-color="#FFE890" stop-opacity="0"/></radialGradient></defs>
+<circle cx="190" cy="206" r="190" fill="url(#aura)"/>
+<circle cx="190" cy="206" r="132" fill="url(#luz)"/>
+<circle cx="190" cy="206" r="132" fill="none" stroke="#EDE7D4" stroke-width="26"/>
+<circle cx="190" cy="206" r="132" fill="none" stroke="#C9C2AA" stroke-width="26" stroke-dasharray="6 40" opacity="0.7"/>
+<circle cx="190" cy="206" r="148" fill="none" stroke="#FFD050" stroke-width="5"/><circle cx="190" cy="206" r="116" fill="none" stroke="#FFD050" stroke-width="3" opacity="0.8"/>
+<g stroke="#E8A020" stroke-width="5" stroke-linecap="round" fill="none">
+<circle cx="190" cy="206" r="14"/><path d="M 190 192 L 190 176"/><path d="M 190 220 L 190 236"/><path d="M 176 206 L 160 206"/><path d="M 204 206 L 220 206"/>
+</g>
+<rect x="58" y="350" width="264" height="50" rx="10" fill="#EDE7D4"/><rect x="58" y="350" width="264" height="12" rx="6" fill="#FFFFFF" opacity="0.6"/>
+<g fill="#FFFFFF" opacity="0.85"><circle cx="110" cy="120" r="3"/><circle cx="270" cy="90" r="4"/><circle cx="300" cy="230" r="3"/><circle cx="82" cy="250" r="4"/><circle cx="190" cy="44" r="3"/></g>
+
+</svg>
