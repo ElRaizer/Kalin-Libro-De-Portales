@@ -4,3 +4,6 @@ builds/
 export/
 *.tmp
 .ui-review/
+
+# Caché de Python del generador de audio
+__pycache__/
