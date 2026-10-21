@@ -20,6 +20,7 @@ class_name StoryScene
 @export var normal_texture: Texture2D
 @export var surprised_texture: Texture2D
 const STORY_ANIMATOR = preload("res://scripts/components/StoryAnimator.gd")
+const STORY_SOUND = preload("res://scripts/components/StorySound.gd")
 @export var entry_distance: float = 460.0
 @export var entry_stagger: float = 0.12
 @export var hop_height: float = 22.0
@@ -53,6 +54,9 @@ var _waiting_to_continue: bool = false
 var _navigating: bool = false
 var _text_tween: Tween
 var _animator: RefCounted
+var _sound: RefCounted
+## Mientras se restaura una partida guardada no suenan aciertos repetidos.
+var _restoring: bool = false
 var _bubble_scale: Vector2
 var _bubble_tween: Tween
 var guide: LearningGuide
@@ -113,6 +117,7 @@ func _ready() -> void:
 		self, ambient, background, background_next, kalin, effects_root,
 		title_card, title_label, subtitle_label, flash_rect, celebration
 	)
+	_sound = STORY_SOUND.new()
 	guide = $LearningGuide
 	vignette = $Stage/Vignette
 	vignette.mood_changed.connect(_on_vignette_mood)
@@ -145,6 +150,7 @@ func _ready() -> void:
 			_apply_mood(beats[index].mood)
 	beat_index = saved_beat - 1
 	_next_beat()
+	_restoring = true
 	var met: Variant = state.get("met", [])
 	if current_beat().kind == StoryBeat.Kind.CONOCER and met is Array:
 		for word: Variant in met:
@@ -158,6 +164,7 @@ func _ready() -> void:
 			_on_choice_pressed(current_beat().target_word, choices_box.get_child(answer_index))
 		elif current_beat().kind == StoryBeat.Kind.EXPLORAR:
 			_resolve_interaction()
+	_restoring = false
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _navigating:
@@ -174,6 +181,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if _is_revealing_text():
 		_complete_text()
 	elif _waiting_to_continue:
+		_play_sfx("dialogo_avanzar")
 		_next_beat()
 
 # ─── Momentos ────────────────────────────────────────────────────────────────
@@ -196,7 +204,9 @@ func _show_beat(beat: StoryBeat) -> void:
 	_apply_mood(beat.mood)
 	_apply_effects(beat.effects)
 	_apply_kalin_pose(beat.kalin_pose)
-	_play_kalin_motion(_effective_motion(beat))
+	var motion := _effective_motion(beat)
+	var waking: bool = _kalin_sleeping and motion == StoryBeat.KalinMotion.QUIETO
+	_play_kalin_motion(motion)
 	_set_stage_actors(beat.actors)
 	for effect_name: String in ["ConfetiPaginas", "ConfetiChispas"]:
 		(effects_root.get_node(effect_name) as CPUParticles2D).visible = beat.kind != StoryBeat.Kind.EXPLORAR
@@ -215,6 +225,7 @@ func _show_beat(beat: StoryBeat) -> void:
 	if beat.flash:
 		_flash_screen()
 	_show_title(beat.title, beat.subtitle)
+	_sound.play_beat(beat, motion, waking)
 	_schedule_auto_advance(beat)
 	match beat.kind:
 		StoryBeat.Kind.EXPLORAR:
@@ -332,6 +343,7 @@ func _on_actor_pressed(word: String) -> void:
 		_guess_actor(word, beat.target_word)
 
 func _meet_actor(word: String) -> void:
+	_play_sfx("animal_tocar")
 	CharacterReaction.play(actor_buttons[word])
 	_show_word_bubble(word, COLOR_SUCCESS)
 	if word not in _known_words:
@@ -355,7 +367,9 @@ func _guess_actor(word: String, target: String) -> void:
 		_set_hint("¡Casi! Ese es %s. Busca a %s." % [word, target], COLOR_HINT)
 		_shake(actor_buttons[word])
 		CharacterReaction.play(actor_buttons[word], false)
+		_play_sfx("error_suave")
 		return
+	_play_sfx("acierto")
 	_show_word_bubble(word, COLOR_SUCCESS)
 	if word not in _known_words:
 		_known_words.append(word)
@@ -404,7 +418,9 @@ func _on_choice_pressed(word: String, button: Button) -> void:
 		button.text = "%s\n%s" % [word, entry.get("spanish", "")]
 		_set_hint("Esa palabra significa «%s». ¡Intenta otra!" % str(entry.get("spanish", "")).to_lower(), COLOR_HINT)
 		_shake(button)
+		_play_sfx("error_suave")
 		return
+	_play_sfx("acierto")
 	var target_entry: Dictionary = GameManager.get_vocabulary_entry(word)
 	var phrase: String = beat.reveal_phrase if beat.reveal_phrase != "" else str(target_entry.get("estructura", word))
 	var translation: String = beat.reveal_translation if beat.reveal_translation != "" else str(target_entry.get("traduccion", ""))
@@ -590,7 +606,12 @@ func _on_continue_pressed() -> void:
 	if _is_revealing_text():
 		_complete_text()
 	elif _waiting_to_continue:
+		_play_sfx("dialogo_avanzar")
 		_next_beat()
+
+func _play_sfx(key: String) -> void:
+	if not _restoring:
+		AudioManager.play_sfx(key)
 
 func _show_meet_hint() -> void:
 	if not _actor_input_allowed() or current_beat().kind != StoryBeat.Kind.CONOCER:

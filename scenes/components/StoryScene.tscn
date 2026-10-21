@@ -417,7 +417,7 @@ offset_top = 150
 offset_right = 1200
 offset_bottom = 500
 
-[node name="ContinueButton" type="Button" parent="UI/DialogueBox"]
+[node name="ContinueButton" type="Button" parent="UI/DialogueBox" groups=["sin_sonido_clic"]]
 theme = ExtResource("4_theme")
 theme_type_variation = &"KalinPrimaryButton"
 text = "Continuar →"

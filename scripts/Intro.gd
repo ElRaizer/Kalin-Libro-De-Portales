@@ -73,6 +73,7 @@ func _advance() -> void:
 	if panel_index >= panels.size():
 		_go_to_level1()
 	else:
+		AudioManager.play_sfx("pagina_pasar")
 		_show_panel(panel_index)
 
 func _show_panel(idx: int) -> void:

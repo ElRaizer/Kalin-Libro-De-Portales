@@ -84,3 +84,10 @@ enum Effect {
 ## Si es mayor que 0, el momento avanza solo tras estos segundos (cinemática).
 ## El jugador puede adelantarlo con clic, Espacio o Enter.
 @export_range(0.0, 10.0, 0.1) var auto_advance: float = 0.0
+
+@export_category("Sonido")
+## Efecto extra al empezar el momento. Los efectos visuales ya suenan solos
+## (trueno, caracol, viento, pasos...); úsalo solo para algo especial.
+@export var sound: AudioStream
+## Cambia la música desde este momento (vacío: sigue la del catálogo).
+@export var music: AudioStream
