@@ -47,6 +47,7 @@ const COLOR_NOTICE := Color("ffd27a")
 # ─── Estado ──────────────────────────────────────────────────────────────────
 var spots: Array[ExplorationSpot] = []
 var discovered: int = 0
+var words_found: int = 0
 var _ground_points: PackedVector2Array = PackedVector2Array()
 var _ground_xs: PackedFloat32Array = PackedFloat32Array()
 var _min_x: float = 0.0
@@ -345,7 +346,7 @@ func open_spot(spot: ExplorationSpot) -> void:
 	_has_target = false
 	_pending_spot = null
 	_face(spot.global_position.x)
-	_start_dialogue(spot.speaker, spot.lines, spot.surprised)
+	_start_dialogue(spot.speaker, spot.dialogue_lines(), spot.surprised)
 
 func _close_spot(spot: ExplorationSpot) -> void:
 	var first_time: bool = not spot.examined
@@ -358,6 +359,9 @@ func _close_spot(spot: ExplorationSpot) -> void:
 	discovered += 1
 	if spot.name == &"Pagina":
 		_show_notice("¡Encontraste tu libro! Las palabras volverán con tus hechizos.")
+	if spot.vocabulary_word != "":
+		words_found += 1
+		_show_notice("Anotaste «%s» en tu libro" % spot.vocabulary_word, true)
 	_update_counter()
 	var tween: Tween = spot.play_reaction(kalin.global_position + Vector2(0.0, -120.0))
 	if tween == null:
@@ -371,15 +375,24 @@ func _on_reaction_finished() -> void:
 
 func _update_counter() -> void:
 	var total: int = 0
+	var total_words: int = 0
 	for spot: ExplorationSpot in spots:
 		if not spot.is_goal:
 			total += 1
+		if spot.vocabulary_word != "":
+			total_words += 1
 	counter_label.text = "Descubrimientos: %d / %d" % [discovered, total]
+	if total_words > 0:
+		counter_label.text += "   ·   Palabras mayas: %d / %d" % [words_found, total_words]
 	counter_label.visible = total > 0
 
-func _show_notice(text: String) -> void:
+## Muestra un aviso breve sobre la meta. Los avisos de vocabulario reemplazan al
+## anterior para que cada palabra anotada se vea completa.
+func _show_notice(text: String, replace_current: bool = false) -> void:
 	if _notice_tween and _notice_tween.is_running():
-		return
+		if not replace_current:
+			return
+		_notice_tween.kill()
 	objective_label.text = text
 	objective_label.add_theme_color_override("font_color", COLOR_NOTICE)
 	_notice_tween = create_tween()

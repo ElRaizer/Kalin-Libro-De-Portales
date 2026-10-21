@@ -13,6 +13,8 @@ enum Reaction {
 	RECOGER,   ## Vuela hacia Kalin y desaparece (lo guarda en su libro).
 }
 
+## Se lee el diccionario desde GameContent para que el objeto también funcione en el editor y en las pruebas.
+const CONTENT: GDScript = preload("res://scripts/data/GameContent.gd")
 const PULSE_SPEED := 3.0
 const PULSE_STRENGTH := 0.22
 const LIFT_HEIGHT := 70.0
@@ -40,6 +42,15 @@ const MAGIC_TINT := Color(1.4, 1.35, 1.0)
 @export var surprised: bool = false
 ## Distancia horizontal a la que Kalin puede examinar el objeto.
 @export_range(40.0, 400.0, 10.0) var reach_radius: float = 150.0
+
+@export_category("Vocabulario")
+## Palabra maya de GameContent.VOCABULARY que Kalin anota al terminar el diálogo.
+## Se añade sola una última línea con la palabra, su significado y la frase
+## modelo. Solo repasa: aprenderla y ganar magia sigue siendo trabajo del nivel.
+@export var vocabulary_word: String = "":
+	set(value):
+		vocabulary_word = value
+		update_configuration_warnings()
 
 @export_category("Camino")
 ## Kalin no puede pasar de este punto hasta examinarlo.
@@ -119,6 +130,26 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 # ─── API para ExplorationScene ───────────────────────────────────────────────
+
+## Líneas del diálogo: las del Inspector más la de vocabulario, si hay palabra.
+func dialogue_lines() -> Array[String]:
+	var result: Array[String] = lines.duplicate()
+	var vocabulary_line: String = vocabulary_text()
+	if vocabulary_line != "":
+		result.append(vocabulary_line)
+	return result
+
+## Texto (con BBCode) que presenta la palabra maya; vacío si no existe en el diccionario.
+func vocabulary_text() -> String:
+	if vocabulary_word == "":
+		return ""
+	var entry: Dictionary = CONTENT.VOCABULARY.get(vocabulary_word, {})
+	if entry.is_empty():
+		return ""
+	var text: String = "Palabra maya: [color=#ffd27a][b]%s[/b][/color] significa «%s»." % [vocabulary_word, entry.spanish]
+	if entry.estructura != vocabulary_word:
+		text += " Se dice «%s»: %s." % [entry.estructura, entry.traduccion]
+	return text
 
 ## true mientras el objeto impide que Kalin siga avanzando.
 func is_blocking() -> bool:
