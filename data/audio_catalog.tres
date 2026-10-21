@@ -1,0 +1,276 @@
+[gd_resource type="Resource" script_class="AudioCatalog" format=3]
+
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_arena_1.ogg" id="1_dpcwb"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_arena_2.ogg" id="2_nf5vs"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_arena_3.ogg" id="3_bijds"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_arena_4.ogg" id="4_aslau"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_tierra_1.ogg" id="5_mjnh3"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_tierra_2.ogg" id="6_vmh73"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_tierra_3.ogg" id="7_xu8lr"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_tierra_4.ogg" id="8_w2wdo"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_pasto_1.ogg" id="9_vtja3"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_pasto_2.ogg" id="10_3symh"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_pasto_3.ogg" id="11_7mb2y"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_pasto_4.ogg" id="12_mb3u5"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_piedra_1.ogg" id="13_1cweg"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_piedra_2.ogg" id="14_gg2iv"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_piedra_3.ogg" id="15_phpqp"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pasos_piedra_4.ogg" id="16_vgaxq"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/trueno_1.ogg" id="17_cxsmy"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/trueno_2.ogg" id="18_6sne5"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/acierto.ogg" id="19_5yi16"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/animal_tocar.ogg" id="20_5p666"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/boton_clic.ogg" id="21_lwbhp"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/boton_pasar.ogg" id="22_6vi4u"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/camino_bloqueado.ogg" id="23_xr6ve"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/camino_borrar.ogg" id="24_1yo15"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/camino_conectado.ogg" id="25_60mk3"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/camino_trazo.ogg" id="26_vcmjp"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/cartel_caracol.ogg" id="27_4arli"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/chispas_magia.ogg" id="28_kc0h0"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/comida_servir.ogg" id="29_1k7ya"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/despertar.ogg" id="30_vdpi0"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/destello.ogg" id="31_3krau"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/dialogo_avanzar.ogg" id="32_527ml"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/error_suave.ogg" id="33_3sprx"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/examinar_objeto.ogg" id="34_c343m"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/hechizo_lanzar.ogg" id="35_xyk7u"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/hojas_viento.ogg" id="36_lbi2q"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/libro_abrir.ogg" id="37_rvk2b"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/libro_cerrar.ogg" id="38_crx41"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/magia_apartar.ogg" id="39_3wkor"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/mapa_seleccionar.ogg" id="40_mstp3"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/meta_alcanzada.ogg" id="41_0lnj4"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/mision_pausa.ogg" id="42_v0gna"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/muebles_volando.ogg" id="43_elxja"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/nivel_completado.ogg" id="44_rgbsm"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pagina_pasar.ogg" id="45_dmpcw"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pagina_recuperada.ogg" id="46_nutkh"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/paginas_revolotear.ogg" id="47_f04wm"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/palabra_anotada.ogg" id="48_cfq5x"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/palabra_aprendida.ogg" id="49_8adpa"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/palabra_regresar.ogg" id="50_swbij"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/palabra_soltar.ogg" id="51_3vdsc"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/palabra_tomar.ogg" id="52_yby4b"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/panel_abrir.ogg" id="53_6ijic"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/panel_cerrar.ogg" id="54_taj52"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pausa_abrir.ogg" id="55_5msc5"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/pausa_cerrar.ogg" id="56_yowg4"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/portal_abrir.ogg" id="57_xdclx"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/portal_cruzar.ogg" id="58_tpotf"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/portal_energia.ogg" id="59_mty2x"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/recoger_objeto.ogg" id="62_l8jao"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/retumbo.ogg" id="63_iehnq"]
+[ext_resource type="AudioStream" path="res://Audio/efectos/salto.ogg" id="64_djkng"]
+[ext_resource type="AudioStream" path="res://Audio/ambiente/ambiente_lluvia_tormenta.ogg" id="65_s2bac"]
+[ext_resource type="AudioStream" path="res://Audio/ambiente/ambiente_olas_mar.ogg" id="66_3m18j"]
+[ext_resource type="AudioStream" path="res://Audio/ambiente/ambiente_selva_pajaros.ogg" id="67_klvw6"]
+[ext_resource type="AudioStream" path="res://Audio/ambiente/ambiente_aldea_dia.ogg" id="68_p0nnr"]
+[ext_resource type="AudioStream" path="res://Audio/ambiente/ambiente_grillos_atardecer.ogg" id="69_m28hu"]
+[ext_resource type="AudioStream" path="res://Audio/ambiente/ambiente_viento_suave.ogg" id="70_wjo22"]
+[ext_resource type="AudioStream" path="res://Audio/ambiente/ambiente_milpa_manana.ogg" id="71_ellu1"]
+[ext_resource type="AudioStream" path="res://Audio/ambiente/ambiente_portal_zumbido.ogg" id="72_etc4c"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_intro_libro.ogg" id="73_4qvgo"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_menu_principal.ogg" id="74_x02we"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_huracan.ogg" id="75_7xgxm"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_orilla_isla.ogg" id="76_vqpux"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_sak_beh.ogg" id="77_12dfq"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_aldea_animales.ogg" id="78_qutdr"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_camino_solar.ogg" id="79_f3h1f"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_casa_vacia.ogg" id="80_0cw52"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_jarana_casa_maya.ogg" id="81_d3ncm"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_taller_adjetivos.ogg" id="82_0ujyo"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_milpa_manana.ogg" id="83_8y6hi"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_cocina_aldea.ogg" id="84_rapvh"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_camino_portal.ogg" id="85_te63x"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_portal_regreso.ogg" id="86_5q8ce"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_despedida.ogg" id="87_24x2s"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_regreso_casa.ogg" id="88_ofmy0"]
+[ext_resource type="Script" path="res://scripts/data/AudioCatalog.gd" id="89_5ndh1"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_kc4nk"]
+random_pitch = 1.08
+random_volume_offset_db = 2.0
+streams_count = 4
+stream_0/stream = ExtResource("1_dpcwb")
+stream_1/stream = ExtResource("2_nf5vs")
+stream_2/stream = ExtResource("3_bijds")
+stream_3/stream = ExtResource("4_aslau")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_agc6i"]
+random_pitch = 1.08
+random_volume_offset_db = 2.0
+streams_count = 4
+stream_0/stream = ExtResource("5_mjnh3")
+stream_1/stream = ExtResource("6_vmh73")
+stream_2/stream = ExtResource("7_xu8lr")
+stream_3/stream = ExtResource("8_w2wdo")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_ud3ar"]
+random_pitch = 1.08
+random_volume_offset_db = 2.0
+streams_count = 4
+stream_0/stream = ExtResource("9_vtja3")
+stream_1/stream = ExtResource("10_3symh")
+stream_2/stream = ExtResource("11_7mb2y")
+stream_3/stream = ExtResource("12_mb3u5")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_xdl3a"]
+random_pitch = 1.08
+random_volume_offset_db = 2.0
+streams_count = 4
+stream_0/stream = ExtResource("13_1cweg")
+stream_1/stream = ExtResource("14_gg2iv")
+stream_2/stream = ExtResource("15_phpqp")
+stream_3/stream = ExtResource("16_vgaxq")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_4j3m1"]
+random_pitch = 1.08
+random_volume_offset_db = 2.0
+streams_count = 2
+stream_0/stream = ExtResource("17_cxsmy")
+stream_1/stream = ExtResource("18_6sne5")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_c64ct"]
+random_pitch = 1.12
+streams_count = 1
+stream_0/stream = ExtResource("20_5p666")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_2idj5"]
+random_pitch = 1.06
+streams_count = 1
+stream_0/stream = ExtResource("21_lwbhp")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_86rb8"]
+random_pitch = 1.1
+streams_count = 1
+stream_0/stream = ExtResource("28_kc0h0")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_41tcj"]
+random_pitch = 1.08
+streams_count = 1
+stream_0/stream = ExtResource("32_527ml")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_10630"]
+random_pitch = 1.1
+streams_count = 1
+stream_0/stream = ExtResource("45_dmpcw")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_m47de"]
+random_pitch = 1.06
+streams_count = 1
+stream_0/stream = ExtResource("51_3vdsc")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_2ah1j"]
+random_pitch = 1.06
+streams_count = 1
+stream_0/stream = ExtResource("52_yby4b")
+
+[resource]
+script = ExtResource("89_5ndh1")
+rain_ambience = ExtResource("65_s2bac")
+scene_music = Dictionary[String, AudioStream]({
+"intro": ExtResource("73_4qvgo"),
+"main_menu": ExtResource("74_x02we"),
+"world1_cine1": ExtResource("75_7xgxm"),
+"world1_cine2": ExtResource("80_0cw52"),
+"world1_explore1": ExtResource("76_vqpux"),
+"world1_explore2": ExtResource("79_f3h1f"),
+"world1_level1": ExtResource("77_12dfq"),
+"world1_level2": ExtResource("77_12dfq"),
+"world1_level3": ExtResource("77_12dfq"),
+"world1_level4": ExtResource("77_12dfq"),
+"world1_story1": ExtResource("76_vqpux"),
+"world1_story2": ExtResource("78_qutdr"),
+"world1_story3": ExtResource("78_qutdr"),
+"world1_story4": ExtResource("78_qutdr"),
+"world1_story5": ExtResource("78_qutdr"),
+"world2_level1": ExtResource("81_d3ncm"),
+"world2_story1": ExtResource("81_d3ncm"),
+"world3_explore1": ExtResource("83_8y6hi"),
+"world3_level1": ExtResource("82_0ujyo"),
+"world3_story1": ExtResource("78_qutdr"),
+"world4_explore1": ExtResource("85_te63x"),
+"world4_level1": ExtResource("84_rapvh"),
+"world4_story1": ExtResource("85_te63x"),
+"world5_cine1": ExtResource("88_ofmy0"),
+"world5_level1": ExtResource("86_5q8ce"),
+"world5_story1": ExtResource("87_24x2s")
+})
+scene_ambience = Dictionary[String, AudioStream]({
+"world1_cine1": ExtResource("65_s2bac"),
+"world1_cine2": ExtResource("70_wjo22"),
+"world1_explore1": ExtResource("66_3m18j"),
+"world1_explore2": ExtResource("69_m28hu"),
+"world1_level1": ExtResource("67_klvw6"),
+"world1_level2": ExtResource("67_klvw6"),
+"world1_level3": ExtResource("67_klvw6"),
+"world1_level4": ExtResource("66_3m18j"),
+"world1_story1": ExtResource("66_3m18j"),
+"world1_story2": ExtResource("67_klvw6"),
+"world1_story3": ExtResource("67_klvw6"),
+"world1_story4": ExtResource("66_3m18j"),
+"world1_story5": ExtResource("68_p0nnr"),
+"world2_level1": ExtResource("68_p0nnr"),
+"world2_story1": ExtResource("68_p0nnr"),
+"world3_explore1": ExtResource("71_ellu1"),
+"world3_level1": ExtResource("68_p0nnr"),
+"world3_story1": ExtResource("68_p0nnr"),
+"world4_explore1": ExtResource("72_etc4c"),
+"world4_level1": ExtResource("68_p0nnr"),
+"world4_story1": ExtResource("72_etc4c"),
+"world5_cine1": ExtResource("69_m28hu"),
+"world5_level1": ExtResource("72_etc4c"),
+"world5_story1": ExtResource("72_etc4c")
+})
+effects = Dictionary[String, AudioStream]({
+"acierto": ExtResource("19_5yi16"),
+"animal_tocar": SubResource("AudioStreamRandomizer_c64ct"),
+"boton_clic": SubResource("AudioStreamRandomizer_2idj5"),
+"boton_pasar": ExtResource("22_6vi4u"),
+"camino_bloqueado": ExtResource("23_xr6ve"),
+"camino_borrar": ExtResource("24_1yo15"),
+"camino_conectado": ExtResource("25_60mk3"),
+"camino_trazo": ExtResource("26_vcmjp"),
+"cartel_caracol": ExtResource("27_4arli"),
+"chispas_magia": SubResource("AudioStreamRandomizer_86rb8"),
+"comida_servir": ExtResource("29_1k7ya"),
+"despertar": ExtResource("30_vdpi0"),
+"destello": ExtResource("31_3krau"),
+"dialogo_avanzar": SubResource("AudioStreamRandomizer_41tcj"),
+"error_suave": ExtResource("33_3sprx"),
+"examinar_objeto": ExtResource("34_c343m"),
+"hechizo_lanzar": ExtResource("35_xyk7u"),
+"hojas_viento": ExtResource("36_lbi2q"),
+"libro_abrir": ExtResource("37_rvk2b"),
+"libro_cerrar": ExtResource("38_crx41"),
+"magia_apartar": ExtResource("39_3wkor"),
+"mapa_seleccionar": ExtResource("40_mstp3"),
+"meta_alcanzada": ExtResource("41_0lnj4"),
+"mision_pausa": ExtResource("42_v0gna"),
+"muebles_volando": ExtResource("43_elxja"),
+"nivel_completado": ExtResource("44_rgbsm"),
+"pagina_pasar": SubResource("AudioStreamRandomizer_10630"),
+"pagina_recuperada": ExtResource("46_nutkh"),
+"paginas_revolotear": ExtResource("47_f04wm"),
+"palabra_anotada": ExtResource("48_cfq5x"),
+"palabra_aprendida": ExtResource("49_8adpa"),
+"palabra_regresar": ExtResource("50_swbij"),
+"palabra_soltar": SubResource("AudioStreamRandomizer_m47de"),
+"palabra_tomar": SubResource("AudioStreamRandomizer_2ah1j"),
+"panel_abrir": ExtResource("53_6ijic"),
+"panel_cerrar": ExtResource("54_taj52"),
+"pasos_arena": SubResource("AudioStreamRandomizer_kc4nk"),
+"pasos_pasto": SubResource("AudioStreamRandomizer_ud3ar"),
+"pasos_piedra": SubResource("AudioStreamRandomizer_xdl3a"),
+"pasos_tierra": SubResource("AudioStreamRandomizer_agc6i"),
+"pausa_abrir": ExtResource("55_5msc5"),
+"pausa_cerrar": ExtResource("56_yowg4"),
+"portal_abrir": ExtResource("57_xdclx"),
+"portal_cruzar": ExtResource("58_tpotf"),
+"portal_energia": ExtResource("59_mty2x"),
+"recoger_objeto": ExtResource("62_l8jao"),
+"retumbo": ExtResource("63_iehnq"),
+"salto": ExtResource("64_djkng"),
+"trueno": SubResource("AudioStreamRandomizer_4j3m1")
+})
