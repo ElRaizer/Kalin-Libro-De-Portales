@@ -81,14 +81,17 @@ Kalin-Libro-De-Portales/
 │   │   ├── Level4_AguaYCielo.tscn
 │   │   ├── Historia1_IslaAnimales.tscn ... Historia5_FiestaIsla.tscn
 │   │   ├── Exploracion1_OrillaIsla.tscn
+│   │   ├── Exploracion2_CaminoCasaMaya.tscn
 │   │   ├── Cine1_NocheHuracan.tscn
 │   │   └── Cine2_CasaMayaVacia.tscn
 │   ├── world2/
 │   │   └── Level2_ConstruyendoPalabras.tscn
 │   ├── world3/
-│   │   └── Level3_HechizosAdjetivos.tscn
+│   │   ├── Level3_HechizosAdjetivos.tscn
+│   │   └── Exploracion3_LaMilpa.tscn
 │   ├── world4/
-│   │   └── Level4_YoQuiero.tscn
+│   │   ├── Level4_YoQuiero.tscn
+│   │   └── Exploracion4_CaminoPortal.tscn
 │   └── world5/
 │       ├── Level5_PortalDeRegreso.tscn
 │       ├── Historia9_Despedida.tscn
@@ -248,7 +251,12 @@ Una exploración deja que el jugador camine con Kalin por un sendero lineal
 antes de un capítulo. La plantilla es `res://scenes/components/ExplorationScene.tscn`
 (script `ExplorationScene.gd`) y cada exploración la hereda sin script propio.
 La primera es `scenes/world1/Exploracion1_OrillaIsla.tscn` (clave
-`world1_explore1`): va entre `world1_cine1` y `world1_story1`.
+`world1_explore1`): va entre `world1_cine1` y `world1_story1`. Las otras tres
+son `Exploracion2_CaminoCasaMaya.tscn` (`world1_explore2`, entre
+`world1_story5` y `world1_cine2`), `world3/Exploracion3_LaMilpa.tscn`
+(`world3_explore1`, entre `world3_story1` y `world4_level1`) y
+`world4/Exploracion4_CaminoPortal.tscn` (`world4_explore1`, entre
+`world4_story1` y `world5_level1`).
 
 Estructura de la plantilla:
 
@@ -277,13 +285,16 @@ Cada `ExplorationSpot` define:
 | `surprised` | Kalin pone cara de sorpresa mientras habla. |
 | `reach_radius` | Distancia horizontal desde la que se puede examinar. |
 | `blocks_path` | Kalin no puede pasar hasta examinarlo. Debe usar la reacción `APARTAR`. |
+| `vocabulary_word` | Palabra de `GameManager.VOCABULARY` (definida en `scripts/data/GameContent.gd`; por ejemplo `mayak`). Al terminar el diálogo se agrega sola una línea con la palabra, su significado y la frase modelo, Kalin la anota y el contador sube. Solo repasa: no llama a `learn_word`. Debe existir en el diccionario (lo valida `validate_project.gd`). |
 | `is_goal` | Al terminar su diálogo la exploración continúa hacia `next_scene_key`. Debe haber exactamente una meta y ser el último punto del sendero. |
 | `auto_trigger` | El diálogo se abre solo al llegar (útil para la meta). |
 | `reaction` | `NINGUNA` (deja de brillar), `APARTAR` (la magia lo levanta y lo quita) o `RECOGER` (vuela hacia Kalin). |
 
-El dibujo va en el nodo hijo `Sprite` de cada instancia (activa **Hijos
-editables**); su `offset` debe dejar la base del objeto en el origen para que
-se apoye en el sendero. Los objetos sin examinar brillan con el nodo `Brillo`.
+El dibujo se configura en el propio `ExplorationSpot`, sin editar sus hijos
+internos: `spot_texture`, `sprite_offset` (debe dejar la base del objeto en el
+origen para que se apoye en el sendero) y `sprite_scale`. Los objetos sin
+examinar brillan con el nodo `Brillo`, que se ajusta con `glow_position` y
+`glow_extents`.
 
 Para agregar una exploración:
 
@@ -294,7 +305,7 @@ Para agregar una exploración:
 4. Regístrala en `GameManager.SCENE_PATHS` con una clave `worldN_exploreM`.
 5. Cambia el `next_scene_key` de la escena anterior para que apunte a ella.
 
-Arte de las exploraciones: el cielo (`bg_isla_cielo.svg`, 1700 × 720) debe ser
+Arte de las exploraciones: cada una tiene su propio cielo y terreno (`bg_isla_*`, `bg_explora_*`) con el mismo `Path2D`, así los objetos se acomodan igual. El cielo (`bg_isla_cielo.svg`, 1700 × 720) debe ser
 más ancho que la pantalla para el parallax; el terreno deja transparente la
 parte alta para que se vea el cielo; los objetos viven en `Arte/exploracion/`.
 Se mantiene el estilo de formas planas y degradados suaves. Para sombras y
@@ -345,11 +356,13 @@ godot_console.exe --headless --path . --script res://tests/validate_animation_lo
 con diálogo y dibujo, una sola meta al final y las acciones de entrada.
 `validate_learning_flow.gd` recorre la exploración de la orilla: el diálogo de
 entrada detiene a Kalin, el tronco no deja pasar hasta examinarlo y llegar a la
-aldea lleva al Capítulo 1.
+aldea lleva al Capítulo 1. También recorre las exploraciones con vocabulario:
+cada objeto presenta su palabra, el contador de palabras mayas llega al total,
+el obstáculo detiene a Kalin y la meta continúa hacia la escena indicada.
 
 1. Abrir el proyecto con Godot 4.6 y comprobar que no existan errores de análisis.
 2. Ejecutar la introducción y probar **Saltar intro**.
-3. Recorrer la exploración de la orilla con teclado y con clic, y comprobar que termina en el Capítulo 1.
+3. Recorrer las cuatro exploraciones con teclado y con clic, y comprobar que la orilla termina en el Capítulo 1 y que las otras muestran las palabras mayas.
 4. Completar al menos un nivel de cada mundo.
 5. Volver al menú entre niveles y comprobar **Continuar**.
 6. Cerrar y abrir el juego para verificar el guardado.

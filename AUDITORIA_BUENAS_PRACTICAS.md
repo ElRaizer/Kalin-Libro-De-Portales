@@ -20,7 +20,7 @@ autoloads, recursos y persistencia.
 | Portabilidad | Corregido | Git registra `scenes/world2` con la misma capitalización usada por las rutas. Se añadieron reglas de fin de línea y editor. |
 | Carga de recursos | Corregido | Los fondos, retratos y expresiones usan referencias a recursos en escenas y en `visual_catalog.tres`; las plantillas variables están asignadas en el inspector. |
 | Pruebas automáticas | Mejorado | La validación comprueba todas las escenas registradas, las instancia y revisa la configuración de cada tablero. También revisa la estructura de las exploraciones y recorre la de la orilla (bloqueo, reacción y meta). |
-| Exploraciones | Cumple | `ExplorationScene` y `ExplorationSpot` se configuran desde el Inspector; los objetos avisan en el editor si les falta diálogo y la altura de Kalin sale del `Path2D` en vez de valores fijos. |
+| Exploraciones | Cumple | `ExplorationScene` y `ExplorationSpot` se configuran desde el Inspector; los objetos avisan en el editor si les falta diálogo y la altura de Kalin sale del `Path2D` en vez de valores fijos. Las cuatro exploraciones reutilizan los mismos componentes y el vocabulario se lee del diccionario único (`GameManager.VOCABULARY`), sin duplicar palabras en las escenas. |
 | Arte SVG | Corregido | Las sombras de Kalin y los animales usaban `rgba(...)`, que el importador de Godot dibuja como negro sólido; ahora usan `fill-opacity`. |
 | Estilo GDScript | Mejorado | Se separaron varias instrucciones por línea, se sustituyeron cierres innecesarios por métodos/bind y se retiró estado muerto. |
 

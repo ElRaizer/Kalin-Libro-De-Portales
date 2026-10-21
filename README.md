@@ -11,7 +11,7 @@ Videojuego educativo desarrollado en Godot para practicar vocabulario y estructu
 - Progreso local con guardado automático de escena, ronda, selección y caminos parciales.
 - Ocho escenas jugables distribuidas en cinco mundos.
 - Nueve capítulos de historia animados y tres cinemáticas que acompañan toda la aventura, desde la noche del huracán hasta el regreso de Kalin.
-- Una exploración libre de la isla antes del primer capítulo: el jugador camina con Kalin por la orilla, examina objetos y llega a la aldea de los animales.
+- Cuatro exploraciones libres: la orilla de la isla antes del primer capítulo y tres recorridos más (camino a la Casa Maya, la milpa y el camino al portal) que repasan vocabulario maya antes de los mundos 2, 4 y 5.
 - Los audios de pronunciación están planeados, pero todavía no han sido grabados.
 
 El proyecto es un prototipo funcional en desarrollo. La navegación principal, el libro de hechizos y el guardado están implementados; todavía quedan mecánicas y contenido narrativo por ampliar.
@@ -104,6 +104,23 @@ cruza el palmar y el Sak Beh roto y termina en la aldea.
   el Capítulo 1.
 
 La exploración se puede saltar con **Saltar exploración**. `Esc` abre la pausa.
+
+### Exploraciones con vocabulario
+
+Tres recorridos más usan los mismos controles y suman un objetivo de
+aprendizaje: cada objeto importante presenta una palabra maya. Al examinarlo,
+Kalin la dice, aparece su significado y la frase modelo, la anota en su libro
+(aviso «Anotaste …») y el panel cuenta las **Palabras mayas**. Solo repasan:
+las palabras se aprenden y dan magia en el nivel, no en la exploración.
+
+| Exploración | Va entre | Ambiente | Palabras |
+|---|---|---|---|
+| Camino a la Casa Maya | Capítulo 5 y la cinemática de la Casa Maya vacía | Atardecer en el solar | mayak, lak, ch'áak, chan, janal |
+| La milpa | Capítulo 7 y el nivel «Yo quiero» | Mañana entre maíz y plátanos | ja', ja'as, pak'al, K'úum |
+| El camino al portal | Capítulo 8 y el nivel del portal | Amanecer sobre el Sak Beh | Bix a beel, Yuum bo'otik, Ka xi'ik tech jats'uts, Tak ti' uláak' k'iin |
+
+Cada una tiene un obstáculo que Kalin aparta con magia (ramas, una valla caída
+o zarzas) y una meta que lleva a la siguiente escena.
 
 ### Cinemáticas y animaciones
 
