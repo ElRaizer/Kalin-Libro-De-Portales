@@ -76,25 +76,6 @@ const LEVEL_ORDER: Array[Dictionary] = [
 
 const FUTURE_VOCABULARY: Array[String] = ["T'uut'"]
 
-const BOOK_ILLUSTRATIONS: Dictionary = {
-	"mayak": "res://Arte/ilustraciones/objeto_mayak.svg", "lak": "res://Arte/ilustraciones/objeto_lak.svg",
-	"ch'áak": "res://Arte/ilustraciones/objeto_chaak.svg", "chan": "res://Arte/ilustraciones/objeto_chan.svg",
-	"janal": "res://Arte/ilustraciones/comida_janal.svg", "ja'": "res://Arte/ilustraciones/comida_ja.svg",
-	"ja'as": "res://Arte/ilustraciones/comida_jaas.svg", "pak'al": "res://Arte/ilustraciones/comida_pakal.svg",
-	"K'úum": "res://Arte/ilustraciones/comida_kuum.svg",
-	"mejen": "res://Arte/ilustraciones/cualidad_mejen.svg", "nojoch": "res://Arte/ilustraciones/cualidad_nojoch.svg",
-	"Jats'uts": "res://Arte/ilustraciones/cualidad_jatsuts.svg", "ki'": "res://Arte/ilustraciones/cualidad_ki.svg",
-	"jach'": "res://Arte/ilustraciones/cualidad_jach.svg",
-	"Peek'": "res://Arte/sprites/animal_peek.svg", "Miis": "res://Arte/sprites/animal_miis.svg",
-	"Kaax": "res://Arte/sprites/animal_kaax.svg", "Áak": "res://Arte/sprites/animal_aak.svg",
-	"Kéej": "res://Arte/sprites/animal_keej.svg", "K'éek'en": "res://Arte/sprites/animal_keek_en.svg",
-	"Ma'ax": "res://Arte/sprites/animal_maax.svg", "Kuuts": "res://Arte/sprites/animal_kuuts.svg",
-	"Báalam": "res://Arte/sprites/animal_baalam.svg", "T'u'ul": "res://Arte/sprites/animal_tuul.svg",
-	"Kay": "res://Arte/sprites/animal_kay.svg", "Ch'íich'": "res://Arte/sprites/animal_chiich.svg",
-	"Bix a beel": "res://Arte/ilustraciones/cortesia_saludo.svg", "Yuum bo'otik": "res://Arte/ilustraciones/cortesia_gracias.svg",
-	"Ka xi'ik tech jats'uts": "res://Arte/ilustraciones/cortesia_camino.svg", "Tak ti' uláak' k'iin": "res://Arte/ilustraciones/cortesia_despedida.svg",
-}
-
 const VOCABULARY_ALIASES: Dictionary = {
 	"Míis": "Miis", "Káax": "Kaax", "Aak": "Áak", "Aak'": "Áak", "Áak'": "Áak",
 	"K'uum": "K'úum", "Ja'as": "ja'as", "T'uut": "T'uut'",

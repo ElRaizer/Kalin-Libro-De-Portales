@@ -42,6 +42,17 @@ enum Cell { EMPTY, OBSTACLE, WORD, DESTINATION, PATH }
 		grid_origin = value
 		_schedule_rebuild()
 
+@export_category("Plantillas visuales")
+@export var tile_scene: PackedScene
+@export var word_scene: PackedScene
+@export var destination_scene: PackedScene
+@export var cursor_scene: PackedScene
+@export var path_line_scene: PackedScene
+@export var path_tip_scene: PackedScene
+@export var word_style: StyleBoxFlat
+@export var destination_style: StyleBoxFlat
+@export var concealed_style: StyleBoxFlat
+
 @export_category("Recursos visuales")
 @export var empty_tile: Texture2D:
 	set(value):
@@ -88,6 +99,7 @@ enum Cell { EMPTY, OBSTACLE, WORD, DESTINATION, PATH }
 		_schedule_rebuild()
 
 @export_category("Editor")
+@export_tool_button("Actualizar nodos del tablero", "Reload") var update_board_nodes: Callable = rebuild_preview
 @export var show_preview_in_editor: bool = true:
 	set(value):
 		show_preview_in_editor = value
@@ -123,6 +135,13 @@ var obstacle_reveal_tweens: Dictionary = {}
 var _renderer: RefCounted
 var _obstacle_hints: RefCounted
 var _path_controller: RefCounted
+var destination_word_colors := true
+
+func set_destination_word_colors(enabled: bool) -> void:
+	destination_word_colors = enabled
+	for index: int in destination_nodes:
+		var color: Color = words[index].color if enabled else Color("b99562")
+		(destination_nodes[index] as Panel).add_theme_stylebox_override("panel", _get_renderer().destination_style(color))
 
 const NEARBY_OBSTACLE_FADE_SECONDS := 0.22
 const ALL_OBSTACLES_FADE_SECONDS := 0.45
@@ -132,7 +151,10 @@ func _ready() -> void:
 	selection_ring.visible = false
 	if Engine.is_editor_hint():
 		_watch_word_changes()
-		rebuild_preview()
+		if preview_root.get_child_count() == 0:
+			rebuild_preview()
+		else:
+			_get_renderer().bind_saved_nodes()
 	else:
 		start_game()
 
@@ -142,7 +164,23 @@ func _get_configuration_warnings() -> PackedStringArray:
 ## Devuelve problemas de configuración que pueden revisarse tanto en el
 ## editor como desde las pruebas automatizadas.
 func get_configuration_issues() -> PackedStringArray:
-	return CONFIG_VALIDATOR.validate(columns, rows, empty_tile, obstacle_tile, obstacles, words)
+	var issues: PackedStringArray = CONFIG_VALIDATOR.validate(columns, rows, empty_tile, obstacle_tile, obstacles, words)
+	var saved_preview := get_node_or_null("Preview")
+	if saved_preview == null:
+		issues.append("Falta el nodo Preview del tablero.")
+		return issues
+	if words.is_empty():
+		return issues
+	var complete := saved_preview.has_node("KeyboardCursor")
+	for row: int in range(rows):
+		for column: int in range(columns):
+			complete = complete and saved_preview.has_node("Tile_%d_%d" % [column, row])
+	for index: int in range(words.size()):
+		for prefix: String in ["Word", "Destination", "PathLine", "PathTip"]:
+			complete = complete and saved_preview.has_node("%s_%d" % [prefix, index])
+	if not complete:
+		issues.append("Pulsa Actualizar nodos del tablero y guarda la escena antes de jugar.")
+	return issues
 
 func _exit_tree() -> void:
 	for word in _watched_words:
@@ -152,8 +190,13 @@ func _exit_tree() -> void:
 
 ## Permite que una escena de nivel o el Inspector fuerce la actualización.
 func rebuild_preview() -> void:
+	if not Engine.is_editor_hint() and is_inside_tree():
+		push_error("Los nodos del tablero se generan desde el editor, antes de jugar.")
+		return
 	_rebuild_queued = false
 	_get_renderer().rebuild_preview()
+	if Engine.is_editor_hint() and is_inside_tree():
+		update_configuration_warnings()
 
 func _get_renderer() -> RefCounted:
 	if not is_instance_valid(_renderer):
@@ -173,7 +216,7 @@ func _get_path_controller() -> RefCounted:
 ## Inicializa el estado jugable con las propiedades editadas en el Inspector.
 func start_game() -> void:
 	_setup_game_state()
-	rebuild_preview()
+	_get_renderer().bind_saved_nodes()
 	input_enabled = true
 
 func cell_to_local_position(cell: Vector2i) -> Vector2:
@@ -225,17 +268,14 @@ func conceal_destination_clues() -> void:
 		if label:
 			label.text = "?"
 			label.add_theme_font_size_override("font_size", 24)
-		var style := StyleBoxFlat.new()
-		style.bg_color = Color("e7dcc2")
-		style.border_color = Color("766d62")
-		style.set_border_width_all(3)
-		style.set_corner_radius_all(6)
-		destination.add_theme_stylebox_override("panel", style)
+		destination.add_theme_stylebox_override("panel", concealed_style)
+
 
 func _schedule_rebuild() -> void:
-	if Engine.is_editor_hint() and is_inside_tree():
-		update_configuration_warnings()
-	if _rebuild_queued or not is_inside_tree():
+	if not Engine.is_editor_hint() or not is_inside_tree():
+		return
+	update_configuration_warnings()
+	if _rebuild_queued:
 		return
 	_rebuild_queued = true
 	call_deferred("rebuild_preview")
@@ -339,17 +379,10 @@ func _first_available_word_cell() -> Vector2i:
 	return Vector2i.ZERO
 
 func _add_keyboard_cursor() -> void:
-	keyboard_cursor = Panel.new()
+	keyboard_cursor = cursor_scene.instantiate() as Panel
 	keyboard_cursor.name = "KeyboardCursor"
-	keyboard_cursor.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	keyboard_cursor.z_index = 20
-	var cursor_style := StyleBoxFlat.new()
-	cursor_style.bg_color = Color(0, 0, 0, 0)
-	cursor_style.border_color = Color("fff06a")
-	cursor_style.set_border_width_all(5)
-	cursor_style.set_corner_radius_all(8)
-	keyboard_cursor.add_theme_stylebox_override(&"panel", cursor_style)
 	preview_root.add_child(keyboard_cursor)
+	keyboard_cursor.owner = owner if owner != null else self
 	_update_keyboard_cursor()
 
 func _update_keyboard_cursor() -> void:
@@ -501,7 +534,8 @@ func focus_first_path(enabled: bool) -> void:
 		word_nodes[index].visible = not enabled or index == 0
 		destination_nodes[index].visible = not enabled or index == 0
 	for cell: Vector2i in tile_rects:
-		(tile_rects[cell] as Control).modulate.a = 1.0 if not enabled or (cell.y == words[0].start_cell.y and cell.x <= words[0].destination_cell.x) else 0.2
+		var tile: Control = tile_rects[cell]
+		tile.modulate.a = _get_renderer()._base_color(tile).a * (1.0 if not enabled or (cell.y == words[0].start_cell.y and cell.x <= words[0].destination_cell.x) else 0.2)
 
 func get_path_state() -> Dictionary:
 	var saved: Dictionary = {}
@@ -543,3 +577,6 @@ func restore_path_state(state: Dictionary) -> void:
 	active_index = -1
 	drawing = false
 	_refresh_all_path_visuals()
+
+func cancel_drawing() -> void:
+	_stop_drawing()

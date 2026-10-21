@@ -21,7 +21,7 @@ const VOCABULARY: Dictionary = CONTENT.VOCABULARY
 const SCENE_PATHS: Dictionary = CONTENT.SCENE_PATHS
 const LEVEL_ORDER: Array[Dictionary] = CONTENT.LEVEL_ORDER
 const FUTURE_VOCABULARY: Array[String] = CONTENT.FUTURE_VOCABULARY
-const BOOK_ILLUSTRATIONS: Dictionary = CONTENT.BOOK_ILLUSTRATIONS
+@export var visual_catalog: VisualCatalog = preload("res://data/visual_catalog.tres")
 const VOCABULARY_ALIASES: Dictionary = CONTENT.VOCABULARY_ALIASES
 
 const MAGIC_PER_WORD: int = 10
@@ -74,11 +74,32 @@ func get_learnable_word_count() -> int:
 	return get_learnable_vocabulary_keys().size()
 
 func recovered_pages_text() -> String:
-	return "%d %s" % [words_learned.size(), "página" if words_learned.size() == 1 else "páginas"]
+	var count := get_recovered_word_count()
+	return "%d %s" % [count, "página" if count == 1 else "páginas"]
+
+func get_recovered_word_count() -> int:
+	var count := 0
+	for word: String in words_learned:
+		if word in VOCABULARY and word not in FUTURE_VOCABULARY:
+			count += 1
+	return count
 
 func get_book_illustration(maya_word: String) -> String:
-	var key: String = _resolve_vocab_key(maya_word)
-	return str(BOOK_ILLUSTRATIONS.get(key, ""))
+	var texture := get_visual_texture(maya_word)
+	return texture.resource_path if texture else ""
+
+func get_visual_texture(maya_word: String) -> Texture2D:
+	var key := _resolve_vocab_key(maya_word)
+	return visual_catalog.texture_for(key if not key.is_empty() else maya_word)
+
+func get_visual_expression(maya_word: String, expression: String) -> Texture2D:
+	return visual_catalog.expression_for(_resolve_vocab_key(maya_word), expression)
+
+func get_visual_key(texture: Texture2D) -> String:
+	for entry: VisualEntry in visual_catalog.entries:
+		if entry.texture == texture or texture in entry.expressions.values():
+			return entry.key
+	return ""
 
 func get_audio_filename(maya_word: String) -> String:
 	var key: String = _resolve_vocab_key(maya_word)

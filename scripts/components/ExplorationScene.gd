@@ -3,15 +3,15 @@
 ## examina objetos (ExplorationSpot) y al llegar a la meta empieza el capítulo
 ## de historia indicado en `next_scene_key`.
 ##   Controles: ← → o A D para caminar, clic o toque para ir a un punto,
-##   E / Espacio / Enter para examinar y avanzar el diálogo, Esc para saltar.
+##   E / Espacio / Enter para examinar y avanzar el diálogo, Esc para pausar.
 ## Cada exploración hereda esta escena: dibuja su terreno, ajusta el Path2D
 ## «Sendero» y coloca instancias de ExplorationSpot dentro de «Spots», todo
 ## desde el editor y sin escribir código.
 extends Node2D
 class_name ExplorationScene
 
-const KALIN_NORMAL: Texture2D = preload("res://Arte/sprites/kalin_normal.svg")
-const KALIN_SURPRISED: Texture2D = preload("res://Arte/sprites/kalin_surprised.svg")
+@export var normal_texture: Texture2D
+@export var surprised_texture: Texture2D
 const DIALOGUE_PRESENTER = preload("res://scripts/components/DialoguePresenter.gd")
 const ARRIVE_DISTANCE := 8.0
 const STEP_LENGTH := 70.0                  # píxeles recorridos en cada zancada
@@ -66,6 +66,11 @@ var _notice_tween: Tween
 var _dialogue: RefCounted
 var _intro_done := false
 var guide: LearningGuide
+@onready var continue_button: Button = $UI/ContinueButton
+var _kalin_base_scale: Vector2
+var _kalin_base_position: Vector2
+var _kalin_base_rotation: float
+var _objective_color: Color
 
 # ─── Nodos ───────────────────────────────────────────────────────────────────
 @onready var sendero: Path2D = $Sendero
@@ -95,7 +100,7 @@ func _ready() -> void:
 	skip_button.pressed.connect(_finish)
 	prompt_button.pressed.connect(_on_prompt_pressed)
 	dialogue_box.hide()
-	hint_label.add_theme_color_override("font_color", COLOR_HINT)
+	_objective_color = objective_label.get_theme_color("font_color")
 	_dialogue = DIALOGUE_PRESENTER.new(self, dialogue_box, speaker_label, dialogue_text, hint_label, _speaker_name, _set_dialogue_pose, _on_dialogue_finished, CHAR_REVEAL_SECONDS)
 	prompt_button.hide()
 	_arrow_base_x = arrow.position.x
@@ -108,25 +113,13 @@ func _ready() -> void:
 		if animal is Sprite2D:
 			_animal_bases[animal] = (animal as Sprite2D).position
 	_place_kalin(_min_x)
-	guide = LearningGuide.new()
-	add_child(guide)
-	var help := Button.new()
-	help.position = Vector2(666, 12)
-	help.size = Vector2(150, 46)
-	help.theme = preload("res://themes/kalin_theme.tres")
-	help.theme_type_variation = &"KalinSecondaryButton"
-	help.text = "? Ayuda"
-	help.pressed.connect(_show_help)
-	$UI.add_child(help)
-	var menu := Button.new()
-	menu.position = Vector2(832, 12)
-	menu.size = Vector2(180, 46)
-	menu.theme = help.theme
-	menu.theme_type_variation = &"KalinSecondaryButton"
-	menu.text = "Menú"
-	menu.pressed.connect(_on_menu_pressed)
-	$UI.add_child(menu)
-	controls_label.text = "← →   ·   Toca para caminar"
+	guide = $LearningGuide
+	_kalin_base_scale = kalin_sprite.scale
+	_kalin_base_position = kalin_sprite.position
+	_kalin_base_rotation = kalin_sprite.rotation
+	continue_button.pressed.connect(advance_dialogue)
+	$UI/HelpButton.pressed.connect(_show_help)
+	$UI/MenuButton.pressed.connect(_on_menu_pressed)
 	var state := GameManager.get_scene_state(self)
 	var examined: Variant = state.get("examined", [])
 	for spot: ExplorationSpot in spots:
@@ -154,6 +147,7 @@ func _ready() -> void:
 		call_deferred("_show_help")
 
 func _process(delta: float) -> void:
+	continue_button.visible = is_dialogue_open()
 	_time += delta
 	walk(Input.get_axis(&"kalin_izquierda", &"kalin_derecha"), delta)
 	_update_nearby_spot()
@@ -165,7 +159,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
 		get_viewport().set_input_as_handled()
-		_finish()
+		PauseMenu.open_pause()
 		return
 	var is_click: bool = event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT
 	if _dialogue.is_open():
@@ -215,10 +209,15 @@ func ground_y(x: float) -> float:
 
 func _configure_camera() -> void:
 	var viewport_size: Vector2 = get_viewport_rect().size
-	camera.limit_left = 0
-	camera.limit_top = 0
-	camera.limit_bottom = int(viewport_size.y)
-	camera.limit_right = int(maxf(_max_x + viewport_size.x * 0.1, viewport_size.x))
+	# Sólo completar los límites sin configurar; los del Inspector tienen prioridad.
+	if camera.limit_left == -10000000:
+		camera.limit_left = 0
+	if camera.limit_top == -10000000:
+		camera.limit_top = 0
+	if camera.limit_bottom == 10000000:
+		camera.limit_bottom = int(viewport_size.y)
+	if camera.limit_right == 10000000:
+		camera.limit_right = int(maxf(_max_x + viewport_size.x * 0.1, viewport_size.x))
 
 ## Límite derecho actual: el primer obstáculo sin resolver o el final.
 func walk_limit() -> float:
@@ -268,19 +267,19 @@ func walk(direction: float, delta: float) -> void:
 	_place_kalin(new_x)
 	_walk_phase += moved / STEP_LENGTH * PI
 	var stride: float = sin(_walk_phase)
-	kalin_sprite.position.y = -absf(stride) * WALK_BOUNCE
-	kalin_sprite.rotation = stride * WALK_TILT
-	kalin_sprite.scale = Vector2.ONE
+	kalin_sprite.position.y = _kalin_base_position.y - absf(stride) * WALK_BOUNCE
+	kalin_sprite.rotation = _kalin_base_rotation + stride * WALK_TILT
+	kalin_sprite.scale = _kalin_base_scale
 	_check_auto_trigger()
 
 func _place_kalin(x: float) -> void:
 	kalin.position = Vector2(x, ground_y(x))
 
 func _idle() -> void:
-	kalin_sprite.position.y = lerpf(kalin_sprite.position.y, 0.0, 0.3)
-	kalin_sprite.rotation = lerpf(kalin_sprite.rotation, 0.0, 0.3)
+	kalin_sprite.position.y = lerpf(kalin_sprite.position.y, _kalin_base_position.y, 0.3)
+	kalin_sprite.rotation = lerpf(kalin_sprite.rotation, _kalin_base_rotation, 0.3)
 	var breath: float = 1.0 + sin(_time * BREATH_SPEED) * BREATH_SCALE
-	kalin_sprite.scale = Vector2(1.0, breath)
+	kalin_sprite.scale = _kalin_base_scale * Vector2(1.0, breath)
 
 func _walk_to_point(world_point: Vector2) -> void:
 	_pending_spot = null
@@ -357,6 +356,8 @@ func _close_spot(spot: ExplorationSpot) -> void:
 	if not first_time:
 		return
 	discovered += 1
+	if spot.name == &"Pagina":
+		_show_notice("¡Encontraste tu libro! Las palabras volverán con tus hechizos.")
 	_update_counter()
 	var tween: Tween = spot.play_reaction(kalin.global_position + Vector2(0.0, -120.0))
 	if tween == null:
@@ -387,7 +388,7 @@ func _show_notice(text: String) -> void:
 
 func _restore_objective() -> void:
 	objective_label.text = objective_text
-	objective_label.remove_theme_color_override("font_color")
+	objective_label.add_theme_color_override("font_color", _objective_color)
 
 # ─── Diálogo ─────────────────────────────────────────────────────────────────
 func _start_dialogue(speaker: String, lines: Array[String], surprised: bool) -> void:
@@ -401,9 +402,11 @@ func is_dialogue_open() -> bool:
 	return _dialogue.is_open()
 
 func _set_dialogue_pose(surprised: bool) -> void:
-	kalin_sprite.texture = KALIN_SURPRISED if surprised else KALIN_NORMAL
+	kalin_sprite.texture = surprised_texture if surprised else normal_texture
 
 func _on_dialogue_finished() -> void:
+	if is_instance_valid(continue_button):
+		continue_button.hide()
 	var spot: ExplorationSpot = _active_spot
 	_active_spot = null
 	if spot != null:

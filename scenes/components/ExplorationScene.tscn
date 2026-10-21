@@ -1,12 +1,22 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/components/ExplorationScene.gd" id="1_script"]
+
 [ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_isla_cielo.svg" id="2_cielo"]
+
 [ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_isla_sendero.svg" id="3_terreno"]
+
 [ext_resource type="Texture2D" path="res://Arte/sprites/kalin_normal.svg" id="4_kalin"]
+
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="5_theme"]
+
 [ext_resource type="Texture2D" path="res://Arte/efectos/fx_chispa.svg" id="6_chispa"]
+
 [ext_resource type="Texture2D" path="res://Arte/exploracion/ui_flecha_camino.svg" id="7_flecha"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/LearningGuide.tscn" id="editor_8"]
+
+[ext_resource type="Texture2D" path="res://Arte/sprites/kalin_surprised.svg" id="editor_9"]
 
 [sub_resource type="Curve2D" id="Curve_sendero"]
 _data = {
@@ -23,6 +33,8 @@ colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
 
 [node name="ExplorationScene" type="Node2D"]
 script = ExtResource("1_script")
+normal_texture = ExtResource("4_kalin")
+surprised_texture = ExtResource("editor_9")
 
 [node name="Cielo" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.15, 1)
@@ -151,9 +163,9 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.07, 0.2, 0.15, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 16
-text = "← → / A D: caminar   ·   clic: ir   ·   E: examinar"
 horizontal_alignment = 2
 vertical_alignment = 1
+text = "← →   ·   Toca para caminar"
 
 [node name="PromptButton" type="Button" parent="UI"]
 offset_right = 200.0
@@ -215,9 +227,40 @@ theme_override_colors/font_color = Color(0.96, 0.9, 0.72, 1)
 theme_override_font_sizes/font_size = 17
 text = "▶ Continuar"
 horizontal_alignment = 2
+visible = false
 
 [node name="Fade" type="ColorRect" parent="UI"]
 offset_right = 1280.0
 offset_bottom = 720.0
 mouse_filter = 2
 color = Color(0.03, 0.06, 0.1, 1)
+
+[node name="LearningGuide" parent="." instance=ExtResource("editor_8")]
+
+[node name="ContinueButton" type="Button" parent="UI"]
+offset_left = 1024
+offset_top = 646
+offset_right = 1256
+offset_bottom = 704
+theme = ExtResource("5_theme")
+theme_type_variation = &"KalinPrimaryButton"
+text = "Continuar →"
+visible = false
+
+[node name="HelpButton" type="Button" parent="UI"]
+offset_left = 666
+offset_top = 12
+offset_right = 816
+offset_bottom = 58
+theme = ExtResource("5_theme")
+theme_type_variation = &"KalinSecondaryButton"
+text = "? Ayuda"
+
+[node name="MenuButton" type="Button" parent="UI"]
+offset_left = 832
+offset_top = 12
+offset_right = 1012
+offset_bottom = 58
+theme = ExtResource("5_theme")
+theme_type_variation = &"KalinSecondaryButton"
+text = "Menú"

@@ -5,6 +5,7 @@ signal word_dropped(value: String)
 
 @export_enum("noun", "adjective", "food", "modifier") var accepted_kind: String = "noun"
 var _base_modulate := Color.WHITE
+var _base_scale := Vector2.ONE
 var _slot_tween: Tween
 var _compatible_drag_active: bool = false
 var _valid_hover: bool = false
@@ -17,6 +18,8 @@ const NOUN_COLOR := Color("176b67")
 const ADJECTIVE_COLOR := Color("704c9f")
 
 func _ready() -> void:
+	_base_modulate = modulate
+	_base_scale = scale
 	_initialize()
 
 func _initialize() -> void:
@@ -38,11 +41,19 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 func pop() -> void:
 	if _slot_tween and _slot_tween.is_valid():
 		_slot_tween.kill()
-	scale = Vector2(0.9, 0.9)
-	modulate = Color(1.15, 1.12, 0.82, 1.0)
+	scale = _base_scale * 0.9
+	modulate = _base_modulate * Color(1.15, 1.12, 0.82, 1.0)
 	_slot_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	_slot_tween.tween_property(self, "scale", Vector2.ONE, 0.24)
+	_slot_tween.tween_property(self, "scale", _base_scale, 0.24)
 	_slot_tween.tween_property(self, "modulate", _base_modulate, 0.3)
+
+func pulse_error() -> void:
+	if _slot_tween and _slot_tween.is_valid():
+		_slot_tween.kill()
+	scale = _base_scale
+	_slot_tween = create_tween()
+	_slot_tween.tween_property(self, "modulate", _base_modulate * Color(1.25, 0.55, 0.55, 1.0), 0.08)
+	_slot_tween.tween_property(self, "modulate", _base_modulate, 0.2)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_DRAG_BEGIN:
@@ -110,17 +121,15 @@ func _refresh_pivot() -> void:
 	pivot_offset = size * 0.5
 
 func _glow() -> void:
-	if scale.x > 1.03:
-		return
 	if _slot_tween and _slot_tween.is_valid():
 		_slot_tween.kill()
 	_slot_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_SINE)
-	_slot_tween.tween_property(self, "scale", Vector2(1.055, 1.055), 0.1)
-	_slot_tween.tween_property(self, "modulate", Color(1.18, 1.13, 0.72, 1.0), 0.1)
+	_slot_tween.tween_property(self, "scale", _base_scale * 1.055, 0.1)
+	_slot_tween.tween_property(self, "modulate", _base_modulate * Color(1.18, 1.13, 0.72, 1.0), 0.1)
 
 func _reset_visual() -> void:
 	if _slot_tween and _slot_tween.is_valid():
 		_slot_tween.kill()
 	_slot_tween = create_tween().set_parallel(true)
-	_slot_tween.tween_property(self, "scale", Vector2.ONE, 0.1)
+	_slot_tween.tween_property(self, "scale", _base_scale, 0.1)
 	_slot_tween.tween_property(self, "modulate", _base_modulate, 0.1)

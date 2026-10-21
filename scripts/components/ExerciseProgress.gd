@@ -1,6 +1,17 @@
 extends RefCounted
 class_name ExerciseProgress
 
+## JSON vuelve a leer los números como float. Normalizar antes de usar Array.has.
+static func restore_markers(value: Variant, limit: int) -> Array[int]:
+	var markers: Array[int] = []
+	if value is Array:
+		for entry: Variant in value:
+			if (entry is int or entry is float) and entry == int(entry):
+				var index := int(entry)
+				if index >= 0 and index < limit and index not in markers:
+					markers.append(index)
+	return markers
+
 ## Restaurar sólo planes completos y válidos; un guardado antiguo puede no tenerlos.
 static func order_or(value: Variant, count: int, fallback: Array[int]) -> Array[int]:
 	if value is not Array or value.size() != count:

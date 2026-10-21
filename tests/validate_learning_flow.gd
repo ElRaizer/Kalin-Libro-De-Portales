@@ -41,6 +41,7 @@ func _validate_story_runtime() -> void:
 		story._next_beat()
 		var beat: StoryBeat = story.current_beat()
 		if beat.kind == StoryBeat.Kind.CONOCER and not checked_meet:
+			await _ready_actor_input(story)
 			checked_meet = true
 			if story._waiting_to_continue:
 				failures.append("La historia avanza antes de conocer a los animales")
@@ -49,6 +50,7 @@ func _validate_story_runtime() -> void:
 			if not story._waiting_to_continue:
 				failures.append("Conocer a todos los animales no habilita el avance")
 		elif beat.kind == StoryBeat.Kind.ADIVINAR and not checked_guess:
+			await _ready_actor_input(story)
 			checked_guess = true
 			for word: String in beat.actors:
 				if word != beat.target_word:
@@ -62,6 +64,13 @@ func _validate_story_runtime() -> void:
 	if not checked_meet or not checked_guess:
 		failures.append("El primer capítulo debe incluir los momentos CONOCER y ADIVINAR")
 	story.queue_free()
+	await process_frame
+
+func _ready_actor_input(story: Node) -> void:
+	story._complete_text()
+	for tween: Tween in story._actor_tweens.values().duplicate():
+		if tween.is_valid():
+			tween.custom_step(2.0)
 	await process_frame
 
 ## Recorre la exploración de la orilla: el diálogo de entrada detiene a Kalin,
@@ -239,9 +248,9 @@ func _validate_world4_runtime() -> void:
 	var level := packed.instantiate()
 	root.add_child(level)
 	await process_frame
-	if level.round_plan.size() != level.CHALLENGES.size() * 2:
+	if level.round_plan.size() != level.challenges.size() * 2:
 		failures.append("Mundo 4 no creó sus fases guiada y de recuerdo")
-	if level.food_buttons.size() != 5 or level.modifier_buttons.size() != 3:
+	if level.food_buttons.size() != level.foods.size() or level.modifier_buttons.size() != level.modifiers.size():
 		failures.append("Mundo 4 no creó todas las opciones de alimento y cualidad")
 	var challenge: ExerciseEntry = level._current_challenge()
 	level._select_food(challenge.food)
@@ -261,13 +270,13 @@ func _validate_world5_runtime() -> void:
 	var level := packed.instantiate()
 	root.add_child(level)
 	await process_frame
-	if level.option_buttons.size() != 3:
-		failures.append("Mundo 5 debe mostrar tres respuestas por fragmento")
-	if int(level.portal_energy.max_value) != level.CHALLENGES.size():
+	if level.option_buttons.size() != 4:
+		failures.append("Mundo 5 debe mostrar cuatro respuestas por fragmento")
+	if int(level.portal_energy.max_value) != level.challenges.size():
 		failures.append("La energía del portal no representa todos los fragmentos")
 	if not level.completion.next_pressed.is_connected(level._on_epilogue_pressed):
 		failures.append("Cerrar la aventura debe abrir el epílogo de la historia")
-	var current: ExerciseEntry = level.CHALLENGES[level.challenge_index]
+	var current: ExerciseEntry = level.challenges[level.challenge_index]
 	if current.correct not in current.options:
 		failures.append("El primer fragmento del Mundo 5 no puede resolverse")
 	level.queue_free()

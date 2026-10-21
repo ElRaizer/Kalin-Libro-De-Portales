@@ -36,7 +36,7 @@ speaker = "Miis"
 text = "Antes de irte, ¿cómo nos dices «muchas gracias»?"
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 target_word = "Yuum bo'otik"
-options = Array[String](["Bix a beel", "Yuum bo'otik", "Tak ti' uláak' k'iin"])
+options = Array[String](["Bix a beel", "Yuum bo'otik", "Tak ti' uláak' k'iin", "Ka xi'ik tech jats'uts"])
 effects = 16
 
 [sub_resource type="Resource" id="Beat_5"]
@@ -53,7 +53,7 @@ speaker = "Peek'"
 text = "Nosotros te deseamos buen viaje. ¿Cómo se dice «que te vaya bien»?"
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 target_word = "Ka xi'ik tech jats'uts"
-options = Array[String](["Bix a beel", "Ka xi'ik tech jats'uts", "janal"])
+options = Array[String](["Bix a beel", "Ka xi'ik tech jats'uts", "janal", "Yuum bo'otik"])
 effects = 16
 
 [sub_resource type="Resource" id="Beat_7"]
@@ -63,7 +63,7 @@ speaker = "Kaax"
 text = "Y para despedirnos hasta la próxima vez, decimos..."
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 target_word = "Tak ti' uláak' k'iin"
-options = Array[String](["Yuum bo'otik", "Ka xi'ik tech jats'uts", "Tak ti' uláak' k'iin"])
+options = Array[String](["Yuum bo'otik", "Ka xi'ik tech jats'uts", "Tak ti' uláak' k'iin", "Bix a beel"])
 effects = 16
 
 [node name="Historia9" instance=ExtResource("1_base")]

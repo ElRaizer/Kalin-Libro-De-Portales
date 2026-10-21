@@ -22,8 +22,9 @@ config/features=PackedStringArray("4.6", "Forward Plus")
 [autoload]
 
 WindowManager="*res://scripts/autoloads/WindowManager.gd"
-GameManager="*res://scripts/autoloads/GameManager.gd"
-AccessibilityManager="*res://scripts/autoloads/AccessibilityManager.gd"
+GameManager="*res://scenes/components/GameManager.tscn"
+AccessibilityManager="*res://scenes/components/AccessibilityManager.tscn"
+PauseMenu="*res://scenes/components/PauseMenu.tscn"
 
 [display]
 

@@ -79,6 +79,7 @@ const MAGIC_TINT := Color(1.4, 1.35, 1.0)
 var examined: bool = false
 var _time: float = 0.0
 var _reaction_tween: Tween
+var _base_modulate: Color
 
 # ─── Nodos ───────────────────────────────────────────────────────────────────
 @onready var sprite: Sprite2D = $Sprite
@@ -89,6 +90,7 @@ func _ready() -> void:
 	_apply_visual_configuration()
 	if Engine.is_editor_hint():
 		return
+	_base_modulate = sprite.modulate
 	_time = randf() * TAU
 
 func _apply_visual_configuration() -> void:
@@ -108,7 +110,7 @@ func _process(delta: float) -> void:
 	# Un pulso de luz suave indica que el objeto todavía guarda algo.
 	_time += delta
 	var pulse: float = (sin(_time * PULSE_SPEED) + 1.0) * 0.5 * PULSE_STRENGTH
-	sprite.modulate = Color(1.0 + pulse, 1.0 + pulse, 1.0 + pulse * 0.5)
+	sprite.modulate = _base_modulate * Color(1.0 + pulse, 1.0 + pulse, 1.0 + pulse * 0.5)
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
@@ -143,7 +145,7 @@ func prompt_anchor() -> Vector2:
 func mark_examined() -> void:
 	examined = true
 	glow.emitting = false
-	sprite.modulate = Color.WHITE
+	sprite.modulate = _base_modulate
 
 ## Anima la reacción configurada y devuelve el Tween (o null si no hay).
 ## `collector` es la posición global hacia la que vuela un objeto recogido.

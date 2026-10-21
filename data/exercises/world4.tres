@@ -1,0 +1,125 @@
+[gd_resource type="Resource" script_class="ExerciseSet" format=3 uid="uid://d4bav7ro0vjv3"]
+
+[ext_resource type="Script" uid="uid://c5idu2th63kpg" path="res://scripts/data/ExerciseEntry.gd" id="entry"]
+[ext_resource type="Script" uid="uid://bk5vcps6fqkbt" path="res://scripts/data/ExerciseSet.gd" id="set"]
+[ext_resource type="Texture2D" uid="uid://ci3k8myufu2wx" path="res://Arte/sprites/animal_aak.svg" id="texture_0"]
+[ext_resource type="Texture2D" uid="uid://bt5cevfxvdhq8" path="res://Arte/sprites/animal_kaax.svg" id="texture_1"]
+[ext_resource type="Texture2D" uid="uid://brvdw65fjsm7f" path="res://Arte/sprites/animal_keej.svg" id="texture_2"]
+[ext_resource type="Texture2D" uid="uid://buun81673e5ys" path="res://Arte/sprites/animal_keek_en.svg" id="texture_3"]
+[ext_resource type="Texture2D" uid="uid://bjtthugdl1hx" path="res://Arte/sprites/animal_miis.svg" id="texture_4"]
+[ext_resource type="Texture2D" uid="uid://c82xhit3gbmdq" path="res://Arte/sprites/animal_peek.svg" id="texture_5"]
+
+[sub_resource type="Resource" id="challenges_1"]
+script = ExtResource("entry")
+animal = "Peek'"
+animal_spanish = "Perro"
+sprite = ExtResource("texture_5")
+food = "ja'"
+phrase = "In k'a'at ja'"
+translation = "Quiero agua"
+
+[sub_resource type="Resource" id="challenges_2"]
+script = ExtResource("entry")
+animal = "Miis"
+animal_spanish = "Gato"
+sprite = ExtResource("texture_4")
+food = "ja'as"
+modifier = "mejen"
+phrase = "In k'a'at ja'as mejen"
+translation = "Quiero un plátano pequeño"
+
+[sub_resource type="Resource" id="challenges_3"]
+script = ExtResource("entry")
+animal = "Kaax"
+animal_spanish = "Gallina"
+sprite = ExtResource("texture_1")
+food = "pak'al"
+phrase = "In k'a'at pak'al"
+translation = "Quiero fruta"
+
+[sub_resource type="Resource" id="challenges_4"]
+script = ExtResource("entry")
+animal = "Áak"
+animal_spanish = "Tortuga"
+sprite = ExtResource("texture_0")
+food = "K'úum"
+modifier = "nojoch"
+phrase = "In k'a'at K'úum nojoch"
+translation = "Quiero una calabaza grande"
+
+[sub_resource type="Resource" id="challenges_5"]
+script = ExtResource("entry")
+animal = "K'éek'en"
+animal_spanish = "Cerdo"
+sprite = ExtResource("texture_3")
+food = "janal"
+phrase = "In k'a'at janal"
+translation = "Quiero comida"
+
+[sub_resource type="Resource" id="challenges_6"]
+script = ExtResource("entry")
+animal = "Kéej"
+animal_spanish = "Venado"
+sprite = ExtResource("texture_2")
+food = "ja'as"
+phrase = "In k'a'at ja'as"
+translation = "Quiero plátano"
+
+[sub_resource type="Resource" id="foods_1"]
+script = ExtResource("entry")
+maya = "ja'"
+spanish = "agua"
+emoji = "💧"
+
+[sub_resource type="Resource" id="foods_2"]
+script = ExtResource("entry")
+maya = "ja'as"
+spanish = "plátano"
+emoji = "🍌"
+
+[sub_resource type="Resource" id="foods_3"]
+script = ExtResource("entry")
+maya = "pak'al"
+spanish = "fruta"
+emoji = "🍎"
+
+[sub_resource type="Resource" id="foods_4"]
+script = ExtResource("entry")
+maya = "K'úum"
+spanish = "calabaza"
+emoji = "🎃"
+
+[sub_resource type="Resource" id="foods_5"]
+script = ExtResource("entry")
+maya = "janal"
+spanish = "comida"
+emoji = "🍲"
+
+[sub_resource type="Resource" id="modifiers_1"]
+script = ExtResource("entry")
+spanish = "sin cualidad"
+symbol = "—"
+
+[sub_resource type="Resource" id="modifiers_2"]
+script = ExtResource("entry")
+maya = "mejen"
+spanish = "pequeño/a"
+symbol = "◌"
+
+[sub_resource type="Resource" id="modifiers_3"]
+script = ExtResource("entry")
+maya = "nojoch"
+spanish = "grande"
+symbol = "⬢"
+
+[sub_resource type="Resource" id="modifiers_4"]
+script = ExtResource("entry")
+maya = "ki'"
+spanish = "delicioso/a"
+
+[resource]
+script = ExtResource("set")
+content_world = 4
+foods = Array[ExtResource("entry")]([SubResource("foods_1"), SubResource("foods_2"), SubResource("foods_3"), SubResource("foods_4"), SubResource("foods_5")])
+modifiers = Array[ExtResource("entry")]([SubResource("modifiers_1"), SubResource("modifiers_2"), SubResource("modifiers_3"), SubResource("modifiers_4")])
+challenges = Array[ExtResource("entry")]([SubResource("challenges_1"), SubResource("challenges_2"), SubResource("challenges_3"), SubResource("challenges_4"), SubResource("challenges_5"), SubResource("challenges_6")])

@@ -17,7 +17,7 @@ func _initialize() -> void:
 	await scene_changed
 	var intro: Node = current_scene
 	await create_timer(0.4).timeout
-	intro.set("panel_index", intro.PANELS.size() - 1)
+	intro.set("panel_index", intro.panels.size() - 1)
 	intro.set("is_animating", false)
 	intro.set("text_revealed", true)
 
@@ -27,7 +27,7 @@ func _initialize() -> void:
 	intro.call("_input", click)
 
 	await scene_changed
-	if current_scene == null or current_scene.scene_file_path != GameManager.SCENE_PATHS.world1_cine1:
+	if current_scene == null or current_scene.scene_file_path != manager.SCENE_PATHS.world1_cine1:
 		failures.append("La introducción no abrió la cinemática del huracán después del panel final")
 
 	# La cinemática crea temporizadores al entrar; esperar permite que el árbol

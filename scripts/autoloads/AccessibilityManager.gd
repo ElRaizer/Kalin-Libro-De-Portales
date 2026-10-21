@@ -5,7 +5,8 @@ extends Node
 ## amarillo represente únicamente la navegación por teclado.
 
 var _mouse_focused_control: Control
-var _empty_focus_style := StyleBoxEmpty.new()
+var _saved_focus_style: StyleBox
+@export var empty_focus_style: StyleBoxEmpty
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton or event is InputEventMouseMotion:
@@ -32,17 +33,22 @@ func _is_navigation_event(event: InputEventKey) -> bool:
 func _hide_keyboard_visuals() -> void:
 	var focused := get_viewport().gui_get_focus_owner()
 	if is_instance_valid(focused):
-		if is_instance_valid(_mouse_focused_control) and _mouse_focused_control != focused:
-			_mouse_focused_control.remove_theme_stylebox_override(&"focus")
-		_mouse_focused_control = focused
-		focused.add_theme_stylebox_override(&"focus", _empty_focus_style)
+		if _mouse_focused_control != focused:
+			_restore_focus_style()
+			_mouse_focused_control = focused
+			_saved_focus_style = focused.get_theme_stylebox(&"focus") if focused.has_theme_stylebox_override(&"focus") else null
+		focused.add_theme_stylebox_override(&"focus", empty_focus_style)
 	get_tree().call_group(&"keyboard_focus_visual", &"set_keyboard_visual_visible", false)
 
 func _show_keyboard_visuals() -> void:
-	if is_instance_valid(_mouse_focused_control):
-		_mouse_focused_control.remove_theme_stylebox_override(&"focus")
-	_mouse_focused_control = null
-	var focused := get_viewport().gui_get_focus_owner()
-	if is_instance_valid(focused):
-		focused.remove_theme_stylebox_override(&"focus")
+	_restore_focus_style()
 	get_tree().call_group(&"keyboard_focus_visual", &"set_keyboard_visual_visible", true)
+
+func _restore_focus_style() -> void:
+	if is_instance_valid(_mouse_focused_control):
+		if _saved_focus_style:
+			_mouse_focused_control.add_theme_stylebox_override(&"focus", _saved_focus_style)
+		else:
+			_mouse_focused_control.remove_theme_stylebox_override(&"focus")
+	_mouse_focused_control = null
+	_saved_focus_style = null

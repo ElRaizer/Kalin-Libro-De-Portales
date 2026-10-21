@@ -12,6 +12,7 @@ enum Kind {
 	CONOCER,   ## El jugador toca a cada animal para escuchar su nombre.
 	ADIVINAR,  ## El jugador elige al animal que se nombra en maya.
 	ELEGIR,    ## El jugador elige una palabra maya entre opciones escritas.
+	EXPLORAR, ## La situación se representa en bucle; el jugador decide cuándo seguir.
 }
 
 enum KalinPose { NORMAL, SORPRENDIDO, OCULTO }
@@ -63,6 +64,9 @@ enum Effect {
 @export var reveal_translation: String = ""
 ## Muestra la celebración "¡Página recuperada!".
 @export var celebrate_page: bool = false
+## Vacío, camino, casa, tamano, hambre o portal.
+@export_enum("ninguna", "camino", "casa", "tamano", "hambre", "portal") var visual_scene: String = "ninguna"
+@export var visual_solved: bool = false
 
 @export_category("Animación")
 ## Color ambiental de la escena; el cambio se hace con una transición suave.

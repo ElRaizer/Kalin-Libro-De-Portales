@@ -17,6 +17,7 @@ class_name GridPathLevel
 @export var selection_instruction: String = "Arrastra desde \"%s\" hasta \"%s\"."
 
 @export_category("Llegada a casa")
+@export var arriving_animal_scene: PackedScene
 ## Ritmo por casilla: las rutas largas conservan la misma velocidad.
 @export_range(0.25, 0.8, 0.05) var arrival_step_seconds: float = 0.42
 const ARRIVAL_HOP_HEIGHT := 9.0
@@ -28,7 +29,10 @@ var _dialogue_serial: int = 0
 var _arrival_animating := false
 var _dialogue_word_index := -1
 var guide: LearningGuide
-var continue_button: Button
+@onready var continue_button: Button = $UI/DialoguePanel/ContinueButton
+@onready var arrival_button: Button = $UI/ArrivalButton
+var arrival_tween: Tween
+@onready var mission_progress: MissionProgress = $UI/MissionProgress
 
 @onready var grid_board: GridBoard = $GridBoard
 @onready var dialogue: Panel = $UI/DialoguePanel
@@ -36,6 +40,7 @@ var continue_button: Button
 @onready var dlg_hint: Label = $UI/DialoguePanel/VBox/Hint
 @onready var dlg_icon: TextureRect = $UI/DialoguePanel/WordIcon
 @onready var dlg_vbox: VBoxContainer = $UI/DialoguePanel/VBox
+@onready var _dialogue_text_left: float = $UI/DialoguePanel/VBox.offset_left
 @onready var level_header: LevelHeader = $UI/LevelHeader
 @onready var instr_lbl: Label = $UI/InstrPanel/InstrLbl
 @onready var completion_overlay: CompletionOverlay = $UI/CompletionOverlay
@@ -47,16 +52,10 @@ func _ready() -> void:
 	_set_default_instruction()
 	_set_mouse_passthrough(dialogue)
 	dialogue.mouse_filter = Control.MOUSE_FILTER_STOP
-	continue_button = Button.new()
-	continue_button.text = "Continuar →"
-	continue_button.theme = preload("res://themes/kalin_theme.tres")
-	continue_button.theme_type_variation = &"KalinPrimaryButton"
-	continue_button.position = Vector2(572, 140)
-	continue_button.size = Vector2(220, 46)
 	continue_button.pressed.connect(_close_dialogue)
-	dialogue.add_child(continue_button)
-	$UI/DialoguePanel/VBox/SkipLbl.hide()
 	guide = LearningGuide.install(self, $UI/LevelHeader/Bar, _show_help)
+	# Conserva los estilos y colores de las casas guardados desde el Inspector.
+	arrival_button.pressed.connect(_speed_up_arrival)
 	level_header.menu_pressed.connect(_on_menu_pressed)
 	level_header.book_pressed.connect(_on_book_pressed)
 	completion_overlay.next_pressed.connect(_on_next_level_pressed)
@@ -68,6 +67,7 @@ func _ready() -> void:
 	grid_board.invalid_move.connect(_on_invalid_move)
 	var state := GameManager.get_scene_state(self)
 	grid_board.restore_path_state(state.get("board", {}) if state.get("board", {}) is Dictionary else {})
+	mission_progress.update_progress(grid_board.connected.size(), grid_board.words.size(), "Lleva a tus amigos a casa")
 	var pending_word := clampi(int(state.get("dialogue_word", -1)), -1, grid_board.words.size() - 1)
 	grid_board.focus_first_path(level_number == 1 and "paths" not in GameManager.tutorials_seen and grid_board.connected.is_empty())
 	if bool(state.get("complete", false)):
@@ -114,12 +114,7 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 	dlg_hint.text = word.explanation if not word.explanation.is_empty() else "%s significa %s." % [word.maya_word, word.spanish_word]
 	dlg_icon.texture = word.sprite
 	dlg_icon.visible = word.sprite != null
-	if dlg_icon.visible:
-		dlg_vbox.offset_left = 108.0
-		dlg_vbox.offset_right = 800.0
-	else:
-		dlg_vbox.offset_left = 24.0
-		dlg_vbox.offset_right = 796.0
+	dlg_vbox.offset_left = _dialogue_text_left if dlg_icon.visible else minf(_dialogue_text_left, dlg_icon.offset_left)
 
 	_dialogue_serial += 1
 	var current_dialogue: int = _dialogue_serial
@@ -127,6 +122,8 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 	grid_board.set_interaction_enabled(false)
 	guide.stop()
 	_arrival_animating = true
+	arrival_button.show()
+	mission_progress.update_progress(grid_board.connected.size(), grid_board.words.size(), "¡El camino está listo!")
 	var arrived := grid_board.destination_nodes[word_index].get_node_or_null("ArrivedAnimal") as Control
 	if arrived:
 		arrived.hide()
@@ -134,7 +131,7 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 		GameManager.mark_tutorial_seen("paths")
 		grid_board.focus_first_path(false)
 	GameManager.checkpoint(self)
-	var walker := TextureRect.new()
+	var walker := arriving_animal_scene.instantiate() as TextureRect
 	walker.name = "ArrivingAnimal"
 	walker.texture = word.sprite
 	walker.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -147,23 +144,27 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 	var route: Array = grid_board.paths[word_index].duplicate()
 	route.append(word.destination_cell)
 	var walk := walker.create_tween()
+	arrival_tween = walk
 	var previous_position := walker.position
 	for step: int in range(route.size()):
 		var next_position := grid_board.cell_to_local_position(route[step])
 		var tilt_direction := 1.0 if step % 2 == 0 else -1.0
 		walk.tween_method(_animate_arrival_step.bind(walker, previous_position, next_position, tilt_direction), 0.0, 1.0, arrival_step_seconds)
 		previous_position = next_position
-	await walk.finished
+	walk.finished.connect(_on_arrival_finished.bind(walker, arrived, current_dialogue, word.destination_cell), CONNECT_ONE_SHOT)
+
+func _on_arrival_finished(walker: TextureRect, arrived: Control, current_dialogue: int, destination_cell: Vector2i) -> void:
 	if not is_inside_tree() or current_dialogue != _dialogue_serial:
 		return
 	walker.queue_free()
 	if arrived:
 		arrived.show()
 	_arrival_animating = false
+	arrival_button.hide()
 	dialogue.visible = true
 	continue_button.grab_focus()
 	guide.watch_continue(continue_button)
-	guide.page_to_book(grid_board.cell_to_local_position(word.destination_cell), $UI/LevelHeader/Bar/BookButton.get_global_rect().get_center())
+	guide.page_to_book(grid_board.cell_to_local_position(destination_cell), $UI/LevelHeader/Bar/BookButton.get_global_rect().get_center())
 
 func _animate_arrival_step(progress: float, walker: TextureRect, start: Vector2, destination: Vector2, tilt_direction: float) -> void:
 	# La misma elevación y balanceo suaves que usa Kalin al explorar.
@@ -250,3 +251,7 @@ func _on_invalid_move(reason: String, cell: Vector2i) -> void:
 
 func get_checkpoint_state() -> Dictionary:
 	return {"board": grid_board.get_path_state(), "complete": _completing, "dialogue_word": _dialogue_word_index, "dialogue_open": _dialogue_open}
+
+func _speed_up_arrival() -> void:
+	if arrival_tween and arrival_tween.is_valid():
+		arrival_tween.set_speed_scale(3.0)

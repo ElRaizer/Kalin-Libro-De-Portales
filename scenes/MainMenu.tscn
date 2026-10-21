@@ -4,6 +4,8 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="2"]
 [ext_resource type="Texture2D" uid="uid://8oxnqwhv7jl6" path="res://Arte/backgrounds/bg_menu.svg" id="2_2wh52"]
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="3_theme"]
+[ext_resource type="PackedScene" path="res://scenes/components/WorldMap.tscn" id="editor_5"]
+[ext_resource type="PackedScene" path="res://scenes/components/ResetConfirmation.tscn" id="editor_6"]
 
 [node name="MainMenu" type="Node2D" unique_id=2139944658]
 script = ExtResource("1")
@@ -52,7 +54,7 @@ theme_override_font_sizes/font_size = 21
 text = "Aprende lengua maya yucateca"
 horizontal_alignment = 1
 
-[node name="LevelsGrid" type="GridContainer" parent="UI"]
+[node name="LevelsGrid" type="GridContainer" parent="UI" unique_id=718081428]
 offset_left = 130.0
 offset_top = 394.0
 offset_right = 1150.0
@@ -62,56 +64,56 @@ theme_override_constants/h_separation = 12
 theme_override_constants/v_separation = 10
 columns = 4
 
-[node name="Level1Button" type="Button" parent="UI/LevelsGrid"]
+[node name="Level1Button" type="Button" parent="UI/LevelsGrid" unique_id=289819492]
 custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "▶  1. Los Caminos Blancos"
 
-[node name="Level2Button" type="Button" parent="UI/LevelsGrid"]
+[node name="Level2Button" type="Button" parent="UI/LevelsGrid" unique_id=2101513147]
 custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "🔒  2. Los Animales del Bosque"
 
-[node name="Level3Button" type="Button" parent="UI/LevelsGrid"]
+[node name="Level3Button" type="Button" parent="UI/LevelsGrid" unique_id=516068143]
 custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "🔒  3. Los Guardianes del Monte"
 
-[node name="Level4Button" type="Button" parent="UI/LevelsGrid"]
+[node name="Level4Button" type="Button" parent="UI/LevelsGrid" unique_id=1585434430]
 custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "🔒  4. Agua y Cielo"
 
-[node name="Level5Button" type="Button" parent="UI/LevelsGrid"]
+[node name="Level5Button" type="Button" parent="UI/LevelsGrid" unique_id=1472238395]
 custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "🔒  5. La Casa Maya"
 
-[node name="Level6Button" type="Button" parent="UI/LevelsGrid"]
+[node name="Level6Button" type="Button" parent="UI/LevelsGrid" unique_id=1016028054]
 custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "🔒  6. Hechizos de Adjetivos"
 
-[node name="Level7Button" type="Button" parent="UI/LevelsGrid"]
+[node name="Level7Button" type="Button" parent="UI/LevelsGrid" unique_id=191654656]
 custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "🔒  7. Yo Quiero"
 
-[node name="Level8Button" type="Button" parent="UI/LevelsGrid"]
+[node name="Level8Button" type="Button" parent="UI/LevelsGrid" unique_id=1595071215]
 custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
@@ -148,7 +150,7 @@ custom_minimum_size = Vector2(440, 40)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 18
-text = "Ajustes · volver a empezar"
+text = "Volver a empezar"
 
 [node name="QuitBtn" type="Button" parent="UI/Center/VBox" unique_id=258813198]
 custom_minimum_size = Vector2(440, 40)
@@ -156,6 +158,21 @@ layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 18
 text = "Salir"
+
+[node name="WorldMap" parent="UI" unique_id=1593679253 instance=ExtResource("editor_5")]
+
+[node name="NextStop" type="Label" parent="UI" unique_id=1765436373]
+offset_left = 200.0
+offset_top = 451.0
+offset_right = 1080.0
+offset_bottom = 473.0
+theme_override_colors/font_color = Color(1, 0.941176, 0.721569, 1)
+theme_override_font_sizes/font_size = 17
+horizontal_alignment = 1
+
+[node name="ResetConfirmation" parent="UI" unique_id=810772695 instance=ExtResource("editor_6")]
+layout_mode = 3
+anchors_preset = 0
 
 [node name="LibroHechizos" parent="." unique_id=1731784252 instance=ExtResource("2")]
 visible = false

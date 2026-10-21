@@ -19,14 +19,22 @@ La escena principal es `res://scenes/MainMenu.tscn`. **Jugar** abre una introduc
 
 ## Configuración esencial
 
-El proyecto ya incluye el autoload requerido:
+El proyecto incluye los siguientes autoloads:
 
 ```ini
 [autoload]
-GameManager="*res://scripts/autoloads/GameManager.gd"
+WindowManager="*res://scripts/autoloads/WindowManager.gd"
+GameManager="*res://scenes/components/GameManager.tscn"
+AccessibilityManager="*res://scenes/components/AccessibilityManager.tscn"
+PauseMenu="*res://scenes/components/PauseMenu.tscn"
 ```
 
 `GameManager` conserva el catálogo canónico de vocabulario, el orden de los niveles, las palabras aprendidas, los puntos mágicos y el guardado local.
+
+La configuración de contenido, arte, controles y plantillas se explica en
+[Configuración desde el editor](GUIA_INSPECTOR.md). Los ejercicios de los mundos
+2–5 usan recursos `ExerciseSet` en `data/exercises/`; las ilustraciones y
+expresiones se asignan en `data/visual_catalog.tres`.
 
 `project.godot` también define tres acciones de entrada para las exploraciones (**Proyecto → Configuración del proyecto → Mapa de entrada**):
 
@@ -75,7 +83,7 @@ Kalin-Libro-De-Portales/
 │   │   ├── Exploracion1_OrillaIsla.tscn
 │   │   ├── Cine1_NocheHuracan.tscn
 │   │   └── Cine2_CasaMayaVacia.tscn
-│   ├── World2/
+│   ├── world2/
 │   │   └── Level2_ConstruyendoPalabras.tscn
 │   ├── world3/
 │   │   └── Level3_HechizosAdjetivos.tscn
@@ -160,6 +168,15 @@ script propio. En el Inspector se configuran:
 - `beats`: lista de recursos `StoryBeat`, uno por momento.
 
 Cada `StoryBeat` define:
+
+La revisión visual incorpora también `kind = EXPLORAR`, `visual_scene` (vacío,
+`camino`, `casa`, `tamano`, `hambre` o `portal`) y `visual_solved`. En EXPLORAR,
+la escena representa el problema automáticamente en un bucle continuo; Continuar
+está disponible sin tocar la animación. Los
+checkpoints narrativos guardan `revision = 2` y migran las posiciones de los
+capítulos abreviados. `PauseMenu` es el autoload que gestiona `Esc` sin saltar
+capítulos. Ver [REVISION_UX_VISUAL.md](REVISION_UX_VISUAL.md) para los componentes
+compartidos de presentación y ayuda.
 
 | Propiedad | Uso |
 |---|---|
@@ -300,7 +317,7 @@ El progreso se guarda automáticamente como `user://kalin_save.json`. Incluye:
 - identificadores `w<numero>_l<numero>` de los niveles completados;
 - escena pendiente, estado de cada escena y tutoriales ya practicados (formato 2).
 
-**Ajustes · volver a empezar** pide confirmación antes de eliminar la partida. Los datos inválidos se descartan y un JSON dañado genera una advertencia sin impedir que el juego inicie. `SaveRepository.CURRENT_VERSION` es la versión canónica. El formato 1 conserva palabras, puntos y niveles; sólo el formato 0 infiere niveles desde vocabulario antiguo.
+**Volver a empezar** pide confirmación antes de eliminar la partida. Los datos inválidos se descartan y un JSON dañado genera una advertencia sin impedir que el juego inicie. `SaveRepository.CURRENT_VERSION` es la versión canónica. El formato 1 conserva palabras, puntos y niveles; sólo el formato 0 infiere niveles desde vocabulario antiguo.
 
 Para una escena nueva, implementar `get_checkpoint_state() -> Dictionary` y restaurar con `GameManager.get_scene_state(self)`. Guardar tras acciones completas mediante `GameManager.checkpoint(self)`. La navegación y el cierre de ventana capturan también el estado actual. Usar `GameManager.replay_scene()` para repetir desde el principio sin borrar los logros. El libro usa `PROCESS_MODE_ALWAYS` mientras pausa el árbol; los temporizadores de un ejercicio deben respetar esa pausa.
 
@@ -319,6 +336,9 @@ godot_console.exe --headless --path . --script res://tests/validate_main_menu.gd
 godot_console.exe --headless --path . --script res://tests/validate_intro.gd
 godot_console.exe --headless --path . --script res://tests/validate_ux.gd
 godot_console.exe --headless --path . --script res://tests/validate_adventure.gd
+godot_console.exe --headless --path . --script res://tests/validate_visual_flow.gd
+godot_console.exe --headless --path . --script res://tests/validate_answer_layout.gd
+godot_console.exe --headless --path . --script res://tests/validate_animation_loops.gd
 ```
 
 `validate_project.gd` revisa también que cada exploración tenga sendero, objetos

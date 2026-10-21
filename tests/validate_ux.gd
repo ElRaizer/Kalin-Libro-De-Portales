@@ -144,7 +144,7 @@ func _objects() -> void:
 	current_scene._advance_round()
 	_check(current_scene.round_index == 1, "La flecha debe avanzar exactamente una ronda")
 	_check(not current_scene.guide.hand.visible and current_scene.guide._continue_target == null, "Cambiar de ronda debe quitar el aviso pendiente")
-	for index: int in range(current_scene.round_index, current_scene.TOTAL_ROUNDS):
+	for index: int in range(current_scene.round_index, current_scene.total_rounds):
 		current_scene._on_choice_pressed(current_scene._current_object().maya)
 		current_scene._advance_round()
 	_check(current_scene.completion.visible and current_scene.completion.get_index() > current_scene.room.get_index(), "El cierre debe quedar por encima de la casa y recibir los clics")
@@ -196,7 +196,7 @@ func _phrases() -> void:
 	_check(current_scene.round_plan == plan and current_scene._awaiting_continue, "Se debe restaurar el plan y el acierto de adjetivos")
 	current_scene._on_cast_pressed()
 	_check(current_scene.round_index == 1, "Continuar adjetivos debe avanzar una ronda")
-	current_scene.round_index = current_scene.CHALLENGES.size()
+	current_scene.round_index = current_scene.challenges.size()
 	current_scene._show_round()
 	for button: Button in current_scene.noun_buttons.values():
 		_check(button.icon == null, "El repaso debe practicar palabras, sin duplicar la pista con iconos en las respuestas")
@@ -227,7 +227,7 @@ func _requests() -> void:
 	_check(current_scene.modifier_slot.text == challenge.modifier, "El tamaño elegido debe aparecer en maya")
 	current_scene._on_serve_pressed()
 	_check(current_scene._awaiting_continue, "La petición completa debe poder entregarse")
-	current_scene.round_index = current_scene.CHALLENGES.size()
+	current_scene.round_index = current_scene.challenges.size()
 	current_scene._show_round()
 	for button: Button in current_scene.food_buttons.values():
 		_check(button.icon == null, "Los alimentos del repaso no deben regalar la respuesta por coincidencia de dibujos")
@@ -237,7 +237,7 @@ func _requests() -> void:
 
 func _portal() -> void:
 	await _scene("world5_level1")
-	current_scene._on_option_pressed(current_scene.CHALLENGES[0].correct)
+	current_scene._on_option_pressed(current_scene.challenges[0].correct)
 	await create_timer(1.3).timeout
 	_check(current_scene.challenge_index == 0 and current_scene.next_button.visible, "La página del portal debe esperar a Continuar")
 	_check(current_scene.guide._continue_target == current_scene.next_button, "El portal debe ofrecer la ayuda diferida de Continuar")
@@ -251,6 +251,7 @@ func _story() -> void:
 	current_scene._meet_actor("Peek'")
 	await _resume()
 	_check(current_scene.beat_index == 2 and "Peek'" in current_scene._met_words, "La historia debe recordar el momento y los animales saludados")
+	current_scene._complete_text()
 	await create_timer(0.7).timeout
 	var target: Control = current_scene.actor_buttons["Miis"]
 	_check(absf(current_scene.guide.hand.position.x - target.get_global_rect().get_center().x + 22) < 1, "La mano debe seguir al siguiente animal durante su entrada")

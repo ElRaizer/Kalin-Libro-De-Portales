@@ -41,6 +41,13 @@ mecánica de sustantivos y adjetivos. `T'uut'` permanece en el catálogo para
 contenido futuro, no se enseña en una escena jugable y no cuenta para completar
 el Libro de Hechizos.
 
+Para mantener grupos pares de botones, las historias incluyen cuatro animales
+en las presentaciones y preguntas: Áak acompaña al primer grupo y Peek' acompaña
+a los grupos siguientes. Los ejercicios de palabras muestran dos o cuatro
+respuestas, conservan siempre la correcta y alternan distractores del catálogo.
+En el Mundo 4, `ki'` también aparece como distractor de cualidad; no se añadieron
+nuevas grafías ni traducciones.
+
 Las frases de cortesía del Mundo 5 se tomaron inicialmente del Prontuario de
 frases de cortesía en maya del INALI. Deben revisarse con una persona hablante
 antes de grabar su pronunciación o considerar definitivo el contenido.

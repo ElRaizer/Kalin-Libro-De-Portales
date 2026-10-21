@@ -2,19 +2,12 @@
 extends "res://scripts/world1/GridPathLevel.gd"
 
 const MEMORY_PREVIEW_SECONDS := 4 # Compatibilidad con herramientas de contenido.
-var preview_button: Button
+@onready var preview_button: Button = $UI/PreviewButton
 var previewing := true
 
 func _ready() -> void:
 	super._ready()
-	preview_button = Button.new()
-	preview_button.position = Vector2(24, 150)
-	preview_button.size = Vector2(164, 54)
-	preview_button.theme = preload("res://themes/kalin_theme.tres")
-	preview_button.theme_type_variation = &"KalinPrimaryButton"
-	preview_button.text = "Listo →"
 	preview_button.pressed.connect(_toggle_preview)
-	$UI.add_child(preview_button)
 	grid_board.set_interaction_enabled(false)
 	_set_instr("Observa las rocas. Pulsa Listo cuando quieras empezar.")
 

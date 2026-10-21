@@ -1,51 +1,13 @@
+@tool
 ## Mundo 5 — El Portal de Regreso
 ## Recapitulación de las estructuras aprendidas y cierre narrativo.
 extends Node2D
-const EXERCISE_ENTRY = preload("res://scripts/data/ExerciseEntry.gd")
 
-const RAW_CHALLENGES: Array[Dictionary] = [
-	{
-		"section": "IDENTIDAD", "prompt": "Ayuda a Peek' a presentarse.",
-		"clue": "🐶  Me llamo Perro", "correct": "In k'aaba'e' Peek'",
-		"options": ["In k'aaba'e' Peek'", "In k'a'at Peek'", "Yuum bo'otik"], "learn": ""
-	},
-	{
-		"section": "OBJETOS", "prompt": "Crea una mesa para tus amigos.",
-		"clue": "🪑  Hay una mesa", "correct": "Ti' yaan jun mayak",
-		"options": ["Ti' yaan jun mayak", "In mayake' mejen", "In k'a'at mayak"], "learn": ""
-	},
-	{
-		"section": "CUALIDADES", "prompt": "Crea una mesa grande.",
-		"clue": "🪑  ⬢  Mi mesa es grande", "correct": "In mayake' nojoch",
-		"options": ["In mayake' nojoch", "In mayake' mejen", "Ti' yaan jun mayak"], "learn": ""
-	},
-	{
-		"section": "PETICIONES", "prompt": "Kalin necesita agua antes de cruzar el portal.",
-		"clue": "💧  Quiero agua", "correct": "In k'a'at ja'",
-		"options": ["In k'a'at ja'", "In k'aaba'e' ja'", "Ti' yaan jun ja'"], "learn": ""
-	},
-	{
-		"section": "SALUDO", "prompt": "Saluda al guardián.",
-		"clue": "☀️  Buenos días", "correct": "Bix a beel",
-		"options": ["Bix a beel", "Yuum bo'otik", "Tak ti' uláak' k'iin"], "learn": "Bix a beel"
-	},
-	{
-		"section": "AGRADECIMIENTO", "prompt": "Agradece la ayuda de tus amigos.",
-		"clue": "🙏  Muchas gracias", "correct": "Yuum bo'otik",
-		"options": ["Yuum bo'otik", "Bix a beel", "Ka xi'ik tech jats'uts"], "learn": "Yuum bo'otik"
-	},
-	{
-		"section": "DESPEDIDA", "prompt": "Despídete antes de volver a casa.",
-		"clue": "👋  Adiós, nos vemos", "correct": "Tak ti' uláak' k'iin",
-		"options": ["Tak ti' uláak' k'iin", "Ka xi'ik tech jats'uts", "In k'a'at ja'as"], "learn": "Tak ti' uláak' k'iin"
-	},
-	{
-		"section": "BUEN CAMINO", "prompt": "Los animales desean que a Kalin le vaya bien.",
-		"clue": "🌿  Que te vaya bien", "correct": "Ka xi'ik tech jats'uts",
-		"options": ["Ka xi'ik tech jats'uts", "Yuum bo'otik", "Bix a beel"], "learn": "Ka xi'ik tech jats'uts"
-	},
-]
-static var CHALLENGES: Array[ExerciseEntry] = EXERCISE_ENTRY.from_dictionaries(RAW_CHALLENGES)
+@export var content: ExerciseSet
+var challenges: Array[ExerciseEntry]:
+	get:
+		return content.challenges
+
 
 const COLOR_SUCCESS := Color("2e8b57")
 const COLOR_ERROR := Color("b93c3c")
@@ -57,14 +19,20 @@ var _awaiting_continue := false
 var _mistakes := 0
 var guide: LearningGuide
 var challenge_art: MeaningIllustration
-var next_button: Button
+@onready var next_button: Button = $UI/NextButton
+@onready var portal_visual: PortalVisual = $PortalVisual
+@onready var mission_progress: MissionProgress = $UI/MissionProgress
+var _help_stage := 0
+@onready var feedback_art: MeaningIllustration = $UI/FeedbackPanel/FeedbackArt
 
 @onready var header: Panel = $UI/LevelHeader
 @onready var section_label: Label = $UI/ChallengePanel/Content/SectionLabel
 @onready var prompt_label: Label = $UI/ChallengePanel/Content/PromptLabel
 @onready var clue_label: Label = $UI/ChallengePanel/Content/ClueLabel
-@onready var options_box: VBoxContainer = $UI/OptionsPanel/Content/Options
+@onready var options_box: GridContainer = $UI/OptionsPanel/Content/Options
 @onready var feedback_label: Label = $UI/FeedbackPanel/FeedbackLabel
+@onready var _feedback_left: float = feedback_label.offset_left
+@onready var _feedback_color: Color = feedback_label.get_theme_color("font_color")
 @onready var progress_label: Label = $UI/PortalStatus/Status/ProgressLabel
 @onready var portal_energy: ProgressBar = $UI/PortalStatus/Status/PortalEnergy
 @onready var portal_label: Label = $UI/PortalStatus/Status/PortalLabel
@@ -73,44 +41,50 @@ var next_button: Button
 @onready var libro: CanvasLayer = $LibroHechizos
 
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		update_configuration_warnings()
+		return
+	var issues := get_configuration_issues()
+	if not issues.is_empty():
+		push_error("Configuración incompleta: " + "; ".join(issues))
+		return
 	header.menu_pressed.connect(_on_menu_pressed)
 	header.book_pressed.connect(_on_book_pressed)
 	completion.next_pressed.connect(_on_epilogue_pressed)
 	completion.replay_pressed.connect(_on_replay_pressed)
 	completion.menu_pressed.connect(_on_menu_pressed)
-	portal_energy.max_value = CHALLENGES.size()
+	portal_energy.max_value = challenges.size()
 	portal_energy.value = 0
 	guide = LearningGuide.install(self, $UI/LevelHeader/Bar, _show_help)
+	for button: Button in options_box.get_children():
+		button.pressed.connect(func(): _on_option_pressed(str(button.get_meta("phrase"))))
 	challenge_art = $UI/ChallengePanel/Content/ChallengeArt
-	next_button = Button.new()
-	next_button.position = Vector2(1050, 592)
-	next_button.size = Vector2(180, 48)
-	next_button.theme = preload("res://themes/kalin_theme.tres")
-	next_button.theme_type_variation = &"KalinPrimaryButton"
-	next_button.text = "Continuar →"
 	next_button.pressed.connect(_advance_challenge)
-	$UI.add_child(next_button)
 	var state := GameManager.get_scene_state(self)
-	challenge_index = clampi(int(state.get("challenge", 0)), 0, CHALLENGES.size())
+	challenge_index = clampi(int(state.get("challenge", 0)), 0, challenges.size())
 	portal_energy.value = challenge_index
+	portal_visual.energy = challenge_index
 	portal_glow.color.a = minf(0.16 + 0.06 * challenge_index, 0.62)
 	_show_challenge()
-	if challenge_index < CHALLENGES.size() and bool(state.get("waiting", false)):
+	if challenge_index < challenges.size() and bool(state.get("waiting", false)):
 		_render_success(false)
 
 func _show_challenge() -> void:
 	guide.stop()
 	next_button.hide()
-	if challenge_index >= CHALLENGES.size():
+	if challenge_index >= challenges.size():
 		_finish_world()
 		return
 	_resolving = false
 	_awaiting_continue = false
 	_mistakes = 0
-	var challenge := CHALLENGES[challenge_index]
-	section_label.text = "Página %d / %d" % [challenge_index + 1, CHALLENGES.size()]
+	_help_stage = 0
+	feedback_art.hide()
+	feedback_label.offset_left = _feedback_left
+	var challenge := challenges[challenge_index]
+	section_label.text = "Página %d / %d" % [challenge_index + 1, challenges.size()]
 	prompt_label.text = challenge.prompt
-	clue_label.text = challenge.clue.get_slice("  ", 1)
+	clue_label.text = challenge.clue
 	var word := "Peek'"
 	var quality := ""
 	match challenge.section:
@@ -122,26 +96,27 @@ func _show_challenge() -> void:
 		"SALUDO", "AGRADECIMIENTO", "DESPEDIDA", "BUEN CAMINO": word = challenge.correct
 	challenge_art.show_meaning(word, quality)
 	feedback_label.text = "Elige el hechizo."
-	feedback_label.add_theme_color_override("font_color", Color("5b4630"))
-	progress_label.text = "%d / %d páginas" % [challenge_index, CHALLENGES.size()]
+	feedback_label.add_theme_color_override("font_color", _feedback_color)
+	progress_label.text = "%d / %d páginas" % [challenge_index, challenges.size()]
 	portal_label.text = "El portal está despertando"
 	_build_options(challenge.options)
+	guide.watch_action(options_box)
+	mission_progress.update_progress(challenge_index, challenges.size(), "El portal · %d / %d" % [challenge_index + 1, challenges.size()])
 	GameManager.checkpoint(self)
 
 func _build_options(options: Array) -> void:
 	for child: Node in options_box.get_children():
-		child.queue_free()
+		(child as Button).hide()
 	option_buttons.clear()
 	var shuffled: Array = options.duplicate()
 	shuffled.shuffle()
-	for phrase: String in shuffled:
-		var button := Button.new()
-		button.custom_minimum_size = Vector2(0, 50)
-		button.theme_type_variation = &"KalinSecondaryButton"
-		button.add_theme_font_size_override("font_size", 19)
+	for index: int in range(shuffled.size()):
+		var phrase: String = shuffled[index]
+		var button := options_box.get_child(index) as Button
+		button.show()
+		button.disabled = false
+		button.set_meta("phrase", phrase)
 		button.text = phrase
-		button.pressed.connect(_on_option_pressed.bind(phrase))
-		options_box.add_child(button)
 		option_buttons.append(button)
 	if not option_buttons.is_empty():
 		option_buttons[0].grab_focus()
@@ -149,10 +124,23 @@ func _build_options(options: Array) -> void:
 func _on_option_pressed(phrase: String) -> void:
 	if _resolving:
 		return
-	var challenge := CHALLENGES[challenge_index]
+	var challenge := challenges[challenge_index]
 	guide.stop()
 	if phrase != challenge.correct:
 		_mistakes += 1
+		feedback_art.show()
+		var created := phrase
+		var quality := "mejen" if phrase.ends_with(" mejen") else ("nojoch" if phrase.ends_with(" nojoch") else "")
+		if phrase.contains("mayak"):
+			created = "mayak"
+		elif phrase.ends_with(" Peek'"):
+			created = "Peek'"
+		elif phrase.ends_with(" ja'"):
+			created = "ja'"
+		elif phrase.ends_with(" ja'as"):
+			created = "ja'as"
+		feedback_art.show_meaning(created, quality)
+		feedback_label.offset_left = maxf(_feedback_left, feedback_art.position.x + feedback_art.size.x + 11)
 		var meaning := GameManager.get_vocabulary_entry(phrase)
 		if not meaning.is_empty():
 			feedback_label.text = "Esa frase dice: %s" % meaning.traduccion
@@ -166,6 +154,7 @@ func _on_option_pressed(phrase: String) -> void:
 			feedback_label.text = "Ese hechizo describe un objeto."
 		feedback_label.add_theme_color_override("font_color", COLOR_ERROR)
 		if _mistakes >= 2:
+			_help_stage = mini(_mistakes - 2, 2)
 			_show_help()
 		return
 	if str(challenge.learn) != "":
@@ -198,17 +187,21 @@ func _on_replay_pressed() -> void:
 	GameManager.replay_scene(GameManager.scene_key_for(self))
 
 func _render_success(animate: bool) -> void:
+	feedback_art.hide()
+	feedback_label.offset_left = _feedback_left
 	_resolving = true
 	_awaiting_continue = true
 	guide.stop()
 	for button: Button in option_buttons:
 		button.disabled = true
-		if button.text == CHALLENGES[challenge_index].correct:
+		if button.text == challenges[challenge_index].correct:
 			button.text = "✓ " + button.text
-	feedback_label.text = "✓ %s" % CHALLENGES[challenge_index].correct
+	feedback_label.text = "✓ %s" % challenges[challenge_index].correct
 	feedback_label.add_theme_color_override("font_color", COLOR_SUCCESS)
 	portal_energy.value = challenge_index + 1
-	progress_label.text = "%d / %d páginas" % [challenge_index + 1, CHALLENGES.size()]
+	portal_visual.set_energy(challenge_index + 1)
+	mission_progress.update_progress(challenge_index + 1, challenges.size(), "El portal · %d / %d" % [challenge_index + 1, challenges.size()])
+	progress_label.text = "%d / %d páginas" % [challenge_index + 1, challenges.size()]
 	create_tween().tween_property(portal_glow, "color:a", minf(0.16 + 0.06 * (challenge_index + 1), 0.62), 0.5)
 	next_button.show()
 	next_button.grab_focus()
@@ -228,10 +221,28 @@ func _show_help() -> void:
 	if _awaiting_continue:
 		guide.point_at(next_button)
 	elif not _resolving:
+		if _help_stage < 2:
+			guide.highlight(challenge_art if _help_stage == 0 else options_box)
+			_help_stage += 1
+			return
 		for button: Button in option_buttons:
-			if button.text == CHALLENGES[challenge_index].correct:
+			if button.text == challenges[challenge_index].correct:
 				guide.point_at(button)
 				return
 
 func get_checkpoint_state() -> Dictionary:
 	return {"challenge": challenge_index, "waiting": _awaiting_continue}
+
+func get_configuration_issues() -> PackedStringArray:
+	if content == null:
+		return PackedStringArray(["Asigna el recurso content del ejercicio."])
+	var issues := content.get_configuration_issues(5)
+	var slots := get_node("UI/OptionsPanel/Content/Options").get_child_count()
+	for challenge: ExerciseEntry in challenges:
+		if challenge != null and challenge.options.size() > slots:
+			issues.append("Añade botones en UI/OptionsPanel/Content/Options para todas las respuestas.")
+			break
+	return issues
+
+func _get_configuration_warnings() -> PackedStringArray:
+	return get_configuration_issues()

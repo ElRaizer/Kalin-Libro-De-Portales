@@ -1,0 +1,132 @@
+[gd_resource type="Resource" script_class="ExerciseSet" format=3 uid="uid://hkg0l4ew52aq"]
+
+[ext_resource type="Script" uid="uid://c5idu2th63kpg" path="res://scripts/data/ExerciseEntry.gd" id="entry"]
+[ext_resource type="Script" uid="uid://bk5vcps6fqkbt" path="res://scripts/data/ExerciseSet.gd" id="set"]
+[ext_resource type="Texture2D" uid="uid://ci3k8myufu2wx" path="res://Arte/sprites/animal_aak.svg" id="texture_0"]
+[ext_resource type="Texture2D" uid="uid://bt5cevfxvdhq8" path="res://Arte/sprites/animal_kaax.svg" id="texture_1"]
+[ext_resource type="Texture2D" uid="uid://brvdw65fjsm7f" path="res://Arte/sprites/animal_keej.svg" id="texture_2"]
+[ext_resource type="Texture2D" uid="uid://buun81673e5ys" path="res://Arte/sprites/animal_keek_en.svg" id="texture_3"]
+[ext_resource type="Texture2D" uid="uid://bjtthugdl1hx" path="res://Arte/sprites/animal_miis.svg" id="texture_4"]
+[ext_resource type="Texture2D" uid="uid://c82xhit3gbmdq" path="res://Arte/sprites/animal_peek.svg" id="texture_5"]
+
+[sub_resource type="Resource" id="adjectives_1"]
+script = ExtResource("entry")
+maya = "mejen"
+spanish = "pequeña"
+
+[sub_resource type="Resource" id="adjectives_2"]
+script = ExtResource("entry")
+maya = "nojoch"
+spanish = "grande"
+
+[sub_resource type="Resource" id="adjectives_3"]
+script = ExtResource("entry")
+maya = "Jats'uts"
+spanish = "bonita"
+
+[sub_resource type="Resource" id="adjectives_4"]
+script = ExtResource("entry")
+maya = "ki'"
+spanish = "deliciosa"
+
+[sub_resource type="Resource" id="adjectives_5"]
+script = ExtResource("entry")
+maya = "jach'"
+spanish = "fuerte"
+
+[sub_resource type="Resource" id="challenges_1"]
+script = ExtResource("entry")
+animal = "Peek'"
+animal_spanish = "Perro"
+sprite = ExtResource("texture_5")
+noun = "chan"
+adjective = "jach'"
+phrase = "In chan'e' jach'"
+translation = "Mi silla es fuerte."
+
+[sub_resource type="Resource" id="challenges_2"]
+script = ExtResource("entry")
+animal = "Miis"
+animal_spanish = "Gato"
+sprite = ExtResource("texture_4")
+noun = "ch'áak"
+adjective = "mejen"
+phrase = "In ch'áake' mejen"
+translation = "Mi cama es pequeña."
+
+[sub_resource type="Resource" id="challenges_3"]
+script = ExtResource("entry")
+animal = "Kaax"
+animal_spanish = "Gallina"
+sprite = ExtResource("texture_1")
+noun = "lak"
+adjective = "Jats'uts"
+phrase = "In lake' Jats'uts"
+translation = "Mi plato es bonito."
+
+[sub_resource type="Resource" id="challenges_4"]
+script = ExtResource("entry")
+animal = "Áak"
+animal_spanish = "Tortuga"
+sprite = ExtResource("texture_0")
+noun = "mayak"
+adjective = "nojoch"
+phrase = "In mayake' nojoch"
+translation = "Mi mesa es grande."
+
+[sub_resource type="Resource" id="challenges_5"]
+script = ExtResource("entry")
+animal = "K'éek'en"
+animal_spanish = "Cerdo"
+sprite = ExtResource("texture_3")
+noun = "janal"
+adjective = "ki'"
+phrase = "In janale' ki'"
+translation = "Mi comida es deliciosa."
+
+[sub_resource type="Resource" id="challenges_6"]
+script = ExtResource("entry")
+animal = "Kéej"
+animal_spanish = "Venado"
+sprite = ExtResource("texture_2")
+noun = "chan"
+adjective = "Jats'uts"
+phrase = "In chan'e' Jats'uts"
+translation = "Mi silla es bonita."
+
+[sub_resource type="Resource" id="nouns_1"]
+script = ExtResource("entry")
+maya = "mayak"
+spanish = "mesa"
+emoji = "🪑"
+
+[sub_resource type="Resource" id="nouns_2"]
+script = ExtResource("entry")
+maya = "lak"
+spanish = "plato"
+emoji = "🍽️"
+
+[sub_resource type="Resource" id="nouns_3"]
+script = ExtResource("entry")
+maya = "ch'áak"
+spanish = "cama"
+emoji = "🛏️"
+
+[sub_resource type="Resource" id="nouns_4"]
+script = ExtResource("entry")
+maya = "chan"
+spanish = "silla"
+emoji = "💺"
+
+[sub_resource type="Resource" id="nouns_5"]
+script = ExtResource("entry")
+maya = "janal"
+spanish = "comida"
+emoji = "🍲"
+
+[resource]
+script = ExtResource("set")
+content_world = 3
+nouns = Array[ExtResource("entry")]([SubResource("nouns_1"), SubResource("nouns_2"), SubResource("nouns_3"), SubResource("nouns_4"), SubResource("nouns_5")])
+adjectives = Array[ExtResource("entry")]([SubResource("adjectives_1"), SubResource("adjectives_2"), SubResource("adjectives_3"), SubResource("adjectives_4"), SubResource("adjectives_5")])
+challenges = Array[ExtResource("entry")]([SubResource("challenges_1"), SubResource("challenges_2"), SubResource("challenges_3"), SubResource("challenges_4"), SubResource("challenges_5"), SubResource("challenges_6")])

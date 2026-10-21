@@ -16,6 +16,13 @@ Videojuego educativo desarrollado en Godot para practicar vocabulario y estructu
 
 El proyecto es un prototipo funcional en desarrollo. La navegación principal, el libro de hechizos y el guardado están implementados; todavía quedan mecánicas y contenido narrativo por ampliar.
 
+La [revisión visual](REVISION_UX_VISUAL.md) añade una introducción más corta,
+peticiones y tarjetas grandes, pistas graduales, bloques de tres peticiones en
+taller y comida, reacciones visuales a las elecciones y cinco situaciones
+narrativas que se animan solas en ciclos continuos. El libro tiene pestañas ilustradas y `Esc`
+abre la pausa. Las pruebas y capturas verifican la implementación; la prueba
+con niños está preparada y sigue pendiente.
+
 ## Organización jugable
 
 Cada **mundo** representa una mecánica. Los **niveles** de un mismo mundo reutilizan esa mecánica y cambian vocabulario, ambientación u otros factores.
@@ -53,9 +60,9 @@ las peticiones; en el repaso se retiran los dibujos de las respuestas.
 
 Entre los niveles se presentan capítulos cortos de historia. En ellos Kalin
 conversa con los animales, que entran con animaciones y se presentan con
-*In k'aaba'e' ___*. El jugador participa de cuatro maneras: avanza los
+*In k'aaba'e' ___*. El jugador participa de cinco maneras: avanza los
 diálogos, toca a cada animal para escuchar su nombre, adivina quién es quién y
-elige la palabra maya que le pide un animal. Si elige mal, el botón muestra el
+elige la palabra maya que le pide un animal y explora pequeñas situaciones visuales. Si elige mal, el botón muestra el
 significado de esa palabra para que el error también enseñe. Cada capítulo
 repasa lo aprendido en el nivel anterior y presenta lo del siguiente.
 
@@ -66,9 +73,9 @@ repasa lo aprendido en el nivel anterior y presenta lo del siguiente.
 | 3 | Después del Mundo 1 · Nivel 2 | Kéej, K'éek'en y Ma'ax | Báalam, Kuuts y T'u'ul |
 | 4 | Después del Mundo 1 · Nivel 3 | Báalam, Kuuts y T'u'ul | Kay, Ch'íich' y Áak |
 | 5 | Después del Mundo 1 · Nivel 4 | Los doce animales | La fiesta y la Casa Maya vacía (cinemática) |
-| 6 | Después del Mundo 2 | mayak, lak y ch'áak | Las cualidades, empezando por *nojoch* |
-| 7 | Después del Mundo 3 | *In mayake' nojoch* y otras frases con adjetivos | *In k'a'at* y *ja'* |
-| 8 | Después del Mundo 4 | *In k'a'at ja'as mejen*, *In k'a'at K'úum nojoch* e *In k'a'at pak'al* | El portal de regreso, *Bix a beel* y *Yuum bo'otik* |
+| 6 | Después del Mundo 2 | La casa amueblada, mediante una escena | Las cualidades, empezando por *nojoch* |
+| 7 | Después del Mundo 3 | Los objetos a la medida, mediante una escena | *In k'a'at* y *ja'* |
+| 8 | Después del Mundo 4 | Los amigos alimentados, mediante una escena | El portal de regreso, *Bix a beel* y *Yuum bo'otik* |
 | 9 | Después del Mundo 5 (epílogo) | Animales y frases de cortesía | Despedida y regreso de Kalin a casa (cinemática final) |
 
 El hilo narrativo sigue el GDD: el huracán borró los caminos (Mundo 1) y se
@@ -77,7 +84,7 @@ su medida (Mundo 3) y comida (Mundo 4). Por último, las palabras amables
 completan el libro y abren el portal (Mundo 5). Con cada capítulo Kalin
 recupera páginas de su Libro de Hechizos.
 
-Los capítulos se pueden saltar con **Saltar historia** o `Esc`. **Continuar**
+Los capítulos se pueden saltar con **Saltar historia**. `Esc` abre la pausa. **Continuar**
 retoma la escena y el momento guardados. En partidas antiguas sin punto de
 continuación, presenta la historia del siguiente nivel pendiente.
 
@@ -96,7 +103,7 @@ cruza el palmar y el Sak Beh roto y termina en la aldea.
 - Al llegar a la aldea, Kaax, Peek' y Miis esperan junto a las casas y empieza
   el Capítulo 1.
 
-La exploración se puede saltar con **Saltar exploración** o `Esc`.
+La exploración se puede saltar con **Saltar exploración**. `Esc` abre la pausa.
 
 ### Cinemáticas y animaciones
 
@@ -130,10 +137,11 @@ No se requieren complementos ni dependencias externas.
 
 - En todos los menús: `Tab` / `Shift+Tab` o flechas para mover el foco; `Enter` o `Espacio` para activar la opción resaltada.
 - Introducción: clic izquierdo, `Espacio` o `Enter` para avanzar; el botón permite saltarla con teclado.
-- Exploración: `←` `→` o `A` `D` para caminar; clic o toque para ir a un punto (o a un objeto, que se examina al llegar); `E`, `Espacio` o `Enter` para examinar y avanzar el diálogo; `Esc` para saltarla.
+- Exploración: `←` `→` o `A` `D` para caminar; clic o toque para ir a un punto (o a un objeto, que se examina al llegar); `E`, `Espacio` o `Enter` para examinar y avanzar el diálogo; `Esc` para pausar.
 - Mundo 1: clic y arrastre, o flechas para mover el cursor del tablero. `Enter` / `Espacio` inicia el camino; las flechas lo trazan y `Esc` lo cancela.
 - Mundos 2, 3, 4 y 5: `Tab` / flechas para elegir una palabra o respuesta y `Enter` / `Espacio` para confirmarla.
 - Libro de hechizos: flechas izquierda/derecha para cambiar de página y `Esc` para cerrarlo. Al cerrar, el foco vuelve al control que abrió el libro.
+- `Esc` pausa la aventura; si el libro está abierto, lo cierra primero. Si hay un trazo activo, detiene ese trazo. La pausa permite seguir jugando o volver al mapa.
 
 ## Documentación
 
@@ -141,6 +149,9 @@ No se requieren complementos ni dependencias externas.
 - [AUDITORIA_BUENAS_PRACTICAS.md](AUDITORIA_BUENAS_PRACTICAS.md): cumplimiento, correcciones y pendientes de diseño.
 - [VOCABULARIO.md](VOCABULARIO.md): grafías adoptadas, normalizaciones y decisiones del GDD.
 - [MEJORAS_UX.md](MEJORAS_UX.md): interacción visual, arte, continuación y pruebas de esta iteración.
+- [REVISION_UX_VISUAL.md](REVISION_UX_VISUAL.md): presentación por pasos, pistas graduales, narrativa visual, bloques, libro y pausa.
+- [ANIMACIONES.md](ANIMACIONES.md): escenas en bucle, expresiones SVG y pruebas de continuidad.
+- [PRUEBA_CON_NINOS.md](PRUEBA_CON_NINOS.md): protocolo de observación y criterios propuestos para la prueba con niños.
 - [Arte/audio/README.md](Arte/audio/README.md): preparación y nombres de los audios pendientes.
 
 ## Trabajo pendiente

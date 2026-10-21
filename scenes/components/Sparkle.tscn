@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[node name="Sparkle" type="Label"]
+text = "✦"
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.847059, 0.352941, 1)

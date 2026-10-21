@@ -13,7 +13,7 @@ func set_visible(value: bool) -> void:
 		var tile := board.tile_rects.get(obstacle) as TextureRect
 		if tile:
 			tile.texture = board.obstacle_tile if value else board.empty_tile
-			tile.modulate = Color.WHITE
+			board._get_renderer().reset_tile(obstacle)
 	board.revealed_obstacles.clear()
 	update_nearby()
 
@@ -61,9 +61,10 @@ func _fade_in(cell: Vector2i) -> void:
 	_kill_tween(cell)
 	if tile.texture != board.obstacle_tile:
 		tile.texture = board.obstacle_tile
-		tile.modulate = Color(1, 1, 1, 0)
+		board._get_renderer().reset_tile(cell)
+		tile.modulate.a = 0
 	var tween := board.create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(tile, "modulate:a", board.nearby_obstacle_opacity, board.NEARBY_OBSTACLE_FADE_SECONDS)
+	tween.tween_property(tile, "modulate:a", board._get_renderer()._base_color(tile).a * board.nearby_obstacle_opacity, board.NEARBY_OBSTACLE_FADE_SECONDS)
 	board.obstacle_reveal_tweens[cell] = tween
 
 func _fade_out(cell: Vector2i) -> void:
@@ -83,7 +84,7 @@ func _finish_hiding(cell: Vector2i) -> void:
 	var tile := board.tile_rects.get(cell) as TextureRect
 	if tile:
 		tile.texture = board.empty_tile
-		tile.modulate = Color.WHITE
+		board._get_renderer().reset_tile(cell)
 
 func _kill_tween(cell: Vector2i) -> void:
 	var tween := board.obstacle_reveal_tweens.get(cell) as Tween

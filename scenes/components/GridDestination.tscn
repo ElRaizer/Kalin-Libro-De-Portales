@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[ext_resource type="StyleBox" path="res://themes/grid_destination.tres" id="editor_1"]
+
+[ext_resource type="Texture2D" path="res://Arte/ilustraciones/ui_casa.svg" id="editor_2"]
+
+[node name="GridDestination" type="Panel"]
+mouse_filter = 2
+z_index = 1
+theme_override_styles/panel = ExtResource("editor_1")
+
+[node name="House" type="TextureRect" parent="."]
+texture = ExtResource("editor_2")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+anchor_right = 1.0
+offset_left = 12.0
+offset_right = -16.0
+offset_bottom = 37.0
+
+[node name="ArrivedAnimal" type="TextureRect" parent="."]
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+visible = false
+offset_left = 27
+offset_top = 14
+offset_right = 49
+offset_bottom = 38
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 1
+vertical_alignment = 2
+autowrap_mode = 3
+mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.231373, 0.141176, 0.082353, 1)

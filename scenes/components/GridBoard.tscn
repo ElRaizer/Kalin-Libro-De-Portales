@@ -1,13 +1,42 @@
 [gd_scene format=3 uid="uid://dyxnxjtjkfis3"]
 
 [ext_resource type="Script" uid="uid://cx35r1p0800c3" path="res://scripts/components/GridBoard.gd" id="1_grid_board"]
+
 [ext_resource type="Texture2D" uid="uid://bq4os63l1a8mj" path="res://Arte/tiles/tile_empty.svg" id="2_empty_tile"]
+
 [ext_resource type="Texture2D" uid="uid://vy48tbb38nv3" path="res://Arte/tiles/tile_obstacle.svg" id="3_obstacle_tile"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/GridTile.tscn" id="editor_4"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/GridWord.tscn" id="editor_5"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/GridDestination.tscn" id="editor_6"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/GridCursor.tscn" id="editor_7"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/PathLine.tscn" id="editor_8"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/PathTip.tscn" id="editor_9"]
+
+[ext_resource type="StyleBox" path="res://themes/grid_word.tres" id="editor_10"]
+
+[ext_resource type="StyleBox" path="res://themes/grid_destination.tres" id="editor_11"]
+
+[ext_resource type="StyleBox" path="res://themes/grid_concealed.tres" id="editor_12"]
 
 [node name="GridBoard" type="Node2D" unique_id=619690527]
 script = ExtResource("1_grid_board")
 empty_tile = ExtResource("2_empty_tile")
 obstacle_tile = ExtResource("3_obstacle_tile")
+tile_scene = ExtResource("editor_4")
+word_scene = ExtResource("editor_5")
+destination_scene = ExtResource("editor_6")
+cursor_scene = ExtResource("editor_7")
+path_line_scene = ExtResource("editor_8")
+path_tip_scene = ExtResource("editor_9")
+word_style = ExtResource("editor_10")
+destination_style = ExtResource("editor_11")
+concealed_style = ExtResource("editor_12")
 
 [node name="SelectionRing" type="ColorRect" parent="."]
 visible = false

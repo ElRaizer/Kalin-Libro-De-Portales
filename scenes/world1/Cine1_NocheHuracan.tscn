@@ -3,12 +3,12 @@
 [ext_resource type="PackedScene" path="res://scenes/components/StoryScene.tscn" id="1_base"]
 [ext_resource type="Script" path="res://scripts/components/StoryBeat.gd" id="2_beat"]
 [ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_noche_huracan.svg" id="3_bg_huracan"]
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level1.svg" id="4_bg_isla"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea.svg" id="4_bg_isla"]
 
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Esa noche, mientras Kalin caía por el portal, un huracán cruzó la isla de los animales."
+text = "Un huracán cruzó la isla."
 background = ExtResource("3_bg_huracan")
 kalin_pose = 2
 effects = 3
@@ -21,7 +21,7 @@ auto_advance = 1.8
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Las páginas de su libro se soltaron y cayeron entre la lluvia como estrellas de papel."
+text = "Las páginas volaron con el viento."
 kalin_pose = 2
 effects = 11
 flash = true
@@ -30,7 +30,7 @@ auto_advance = 1.8
 [sub_resource type="Resource" id="Beat_3"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "El viento arrancó las hojas, levantó las olas y borró los Caminos Blancos, el Sak Beh."
+text = "Los caminos desaparecieron."
 kalin_pose = 2
 effects = 3
 screen_shake = true
@@ -39,7 +39,7 @@ auto_advance = 1.8
 [sub_resource type="Resource" id="Beat_4"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Al amanecer, la tormenta se fue. En la orilla, un joven aprendiz de hechicero dormía profundamente."
+text = "Al amanecer, Kalin llegó a la orilla."
 background = ExtResource("4_bg_isla")
 mood = 5
 effects = 16
@@ -49,7 +49,7 @@ auto_advance = 2.2
 [sub_resource type="Resource" id="Beat_5"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Kalin abrió los ojos. Su aventura en la isla estaba a punto de comenzar."
+text = "¡Sigue las huellas!"
 kalin_pose = 1
 mood = 1
 effects = 16

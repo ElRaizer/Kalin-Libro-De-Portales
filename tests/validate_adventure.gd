@@ -22,7 +22,7 @@ func _run() -> void:
 		if int(info.world) == 1:
 			await _complete_paths()
 		elif int(info.world) == 2:
-			for attempt: int in range(current_scene.TOTAL_ROUNDS):
+			for attempt: int in range(current_scene.total_rounds):
 				current_scene._on_choice_pressed(current_scene._current_object().maya)
 				current_scene._advance_round()
 		elif int(info.world) == 3:
@@ -40,8 +40,8 @@ func _run() -> void:
 				current_scene._on_serve_pressed()
 				current_scene._on_serve_pressed()
 		else:
-			for attempt: int in range(current_scene.CHALLENGES.size()):
-				current_scene._on_option_pressed(current_scene.CHALLENGES[current_scene.challenge_index].correct)
+			for attempt: int in range(current_scene.challenges.size()):
+				current_scene._on_option_pressed(current_scene.challenges[current_scene.challenge_index].correct)
 				current_scene._advance_challenge()
 		if not manager.is_level_completed(info.world, info.level):
 			failures.append("No se completó " + info.scene_key)
