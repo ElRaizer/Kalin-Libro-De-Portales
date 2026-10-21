@@ -18,9 +18,11 @@ func show_block(title: String, situation: String, word: String = "", quality: St
 		vignette.show_reward(word, quality, animal_word)
 	get_parent().move_child(self, -1)
 	show()
+	SoundCue.play(self, "mision_pausa")
 	continue_button.grab_focus()
 
 func _continue() -> void:
+	SoundCue.play(self, "panel_cerrar")
 	hide()
 	vignette.show_situation("")
 	if is_instance_valid(_previous_focus) and _previous_focus.is_visible_in_tree():

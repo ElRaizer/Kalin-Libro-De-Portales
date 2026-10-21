@@ -348,5 +348,6 @@ text = "Audio próximamente"
 horizontal_alignment = 1
 
 [node name="AudioPlayer" type="AudioStreamPlayer" parent="."]
+bus = &"Voces"
 
 [node name="Categories" parent="BG/Book" instance=ExtResource("editor_3")]

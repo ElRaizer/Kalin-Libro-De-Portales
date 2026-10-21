@@ -18,6 +18,9 @@ signal word_connected(word: GridWordData, word_index: int)
 signal path_reset(word: GridWordData, word_index: int)
 signal drawing_stopped
 signal invalid_move(reason: String, cell: Vector2i)
+## El jugador alarga o recorta el camino que está dibujando (para el sonido).
+signal path_extended(word_index: int, length: int)
+signal path_retracted(word_index: int, length: int)
 
 enum Cell { EMPTY, OBSTACLE, WORD, DESTINATION, PATH }
 

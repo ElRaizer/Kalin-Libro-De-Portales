@@ -128,6 +128,7 @@ func _on_option_pressed(phrase: String) -> void:
 	guide.stop()
 	if phrase != challenge.correct:
 		_mistakes += 1
+		AudioManager.play_sfx("error_suave")
 		feedback_art.show()
 		var created := phrase
 		var quality := "mejen" if phrase.ends_with(" mejen") else ("nojoch" if phrase.ends_with(" nojoch") else "")
@@ -157,6 +158,8 @@ func _on_option_pressed(phrase: String) -> void:
 			_help_stage = mini(_mistakes - 2, 2)
 			_show_help()
 		return
+	AudioManager.play_sfx("acierto")
+	AudioManager.play_sfx("portal_energia")
 	if str(challenge.learn) != "":
 		GameManager.learn_word(challenge.learn)
 	_render_success(true)
@@ -215,6 +218,8 @@ func _advance_challenge() -> void:
 	if not _awaiting_continue:
 		return
 	challenge_index += 1
+	if challenge_index >= challenges.size():
+		AudioManager.play_sfx("portal_abrir")
 	_show_challenge()
 
 func _show_help() -> void:

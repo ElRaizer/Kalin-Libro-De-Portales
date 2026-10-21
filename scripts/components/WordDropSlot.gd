@@ -36,6 +36,7 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	_reset_visual()
+	SoundCue.play(self, "palabra_soltar")
 	word_dropped.emit(str(data.get("value", "")))
 
 func pop() -> void:

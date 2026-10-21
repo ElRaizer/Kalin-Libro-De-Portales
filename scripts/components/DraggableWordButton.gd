@@ -48,6 +48,7 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
 	_owns_hidden_cursor = true
 	_punch(Vector2(0.92, 0.92), Vector2.ONE)
+	SoundCue.play(self, "palabra_tomar")
 	return {"kind": StringName(word_kind), "value": word_value, "source": self}
 
 func _notification(what: int) -> void:
@@ -63,6 +64,7 @@ func _notification(what: int) -> void:
 		# Si se soltó fuera de un destino, revertimos la marca temporal del arrastre.
 		if not get_viewport().gui_is_drag_successful():
 			button_pressed = false
+			SoundCue.play(self, "palabra_regresar")
 		_punch(Vector2(1.08, 1.08), Vector2.ONE)
 		_is_drag_source = false
 

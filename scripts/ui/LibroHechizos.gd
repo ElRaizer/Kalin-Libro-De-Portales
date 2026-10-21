@@ -79,9 +79,12 @@ func show_book() -> void:
 	_spread_index = clampi(_spread_index, 0, maxi(_spread_count() - 1, 0))
 	_render_spread()
 	visible = true
+	AudioManager.play_sfx("libro_abrir")
 	close_button.grab_focus()
 
 func hide_book() -> void:
+	if visible:
+		AudioManager.play_sfx("libro_cerrar")
 	visible = false
 	if _owns_pause:
 		get_tree().paused = false
@@ -192,12 +195,14 @@ func _previous_spread() -> void:
 	if _spread_index <= 0:
 		return
 	_spread_index -= 1
+	AudioManager.play_sfx("pagina_pasar")
 	_render_spread()
 
 func _next_spread() -> void:
 	if _spread_index >= _spread_count() - 1:
 		return
 	_spread_index += 1
+	AudioManager.play_sfx("pagina_pasar")
 	_render_spread()
 
 func _play_visible_audio(slot: int) -> void:

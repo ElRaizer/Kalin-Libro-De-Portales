@@ -168,11 +168,13 @@ func _on_choice_pressed(word: String) -> void:
 		return
 	guide.stop()
 	if word == _current_object().maya:
+		AudioManager.play_sfx("acierto")
 		GameManager.learn_word(word)
 		GameManager.mark_tutorial_seen("objects")
 		_render_success(true)
 	else:
 		_mistakes += 1
+		AudioManager.play_sfx("error_suave")
 		choice_preview.show()
 		choice_preview.show_meaning(word)
 		feedback_lbl.offset_left = maxf(_feedback_left, choice_preview.position.x + choice_preview.size.x + 11)

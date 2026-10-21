@@ -254,6 +254,8 @@ func _on_serve_pressed() -> void:
 	if selected_food != challenge.food or selected_modifier != challenge.modifier:
 		_show_incorrect_feedback(challenge)
 		return
+	AudioManager.play_sfx("acierto")
+	AudioManager.play_sfx("comida_servir")
 	GameManager.learn_word(challenge.food)
 	if challenge.modifier != "":
 		GameManager.learn_word(challenge.modifier)
@@ -261,6 +263,7 @@ func _on_serve_pressed() -> void:
 	_render_success(true)
 
 func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
+	AudioManager.play_sfx("error_suave")
 	_mistakes += 1
 	guide.stop()
 	result_art.show()

@@ -259,6 +259,8 @@ func _on_cast_pressed() -> void:
 	if selected_noun != challenge.noun or selected_adjective != challenge.adjective:
 		_show_incorrect_feedback(challenge)
 		return
+	AudioManager.play_sfx("acierto")
+	AudioManager.play_sfx("hechizo_lanzar")
 	GameManager.learn_word(challenge.noun)
 	GameManager.learn_word(challenge.adjective)
 	GameManager.mark_tutorial_seen("phrases")
@@ -266,6 +268,7 @@ func _on_cast_pressed() -> void:
 
 func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
 	_mistakes += 1
+	AudioManager.play_sfx("error_suave")
 	guide.stop()
 	result_art.show()
 	result_art.show_meaning(selected_noun, selected_adjective)

@@ -143,6 +143,7 @@ func _build_world_map() -> void:
 	kalin_marker.set_meta("map_offset", kalin_marker.position - world_buttons[0].position)
 
 func _select_world(world: int) -> void:
+	AudioManager.play_sfx("mapa_seleccionar")
 	selected_world = world
 	_refresh_level_buttons()
 	_refresh_world_map()

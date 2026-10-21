@@ -22,6 +22,10 @@ class_name GridPathLevel
 @export_range(0.25, 0.8, 0.05) var arrival_step_seconds: float = 0.42
 const ARRIVAL_HOP_HEIGHT := 9.0
 const ARRIVAL_TILT := 0.06
+## Semitonos (escala pentatónica) que suben con cada casilla del camino.
+const PATH_NOTES: Array[int] = [-12, -10, -8, -5, -3, 0, 2, 4, 7, 9, 12]
+## Suelo del Sak Beh por el que caminan los animales al llegar a casa.
+const ARRIVAL_FOOTSTEPS := "piedra"
 
 var _completing: bool = false
 var _dialogue_open: bool = false
@@ -65,6 +69,9 @@ func _ready() -> void:
 	grid_board.word_connected.connect(_on_word_connected)
 	grid_board.drawing_stopped.connect(_on_drawing_stopped)
 	grid_board.invalid_move.connect(_on_invalid_move)
+	grid_board.path_extended.connect(_on_path_length_changed)
+	grid_board.path_retracted.connect(_on_path_length_changed)
+	grid_board.path_reset.connect(_on_path_reset)
 	var state := GameManager.get_scene_state(self)
 	grid_board.restore_path_state(state.get("board", {}) if state.get("board", {}) is Dictionary else {})
 	mission_progress.update_progress(grid_board.connected.size(), grid_board.words.size(), "Lleva a tus amigos a casa")
@@ -92,12 +99,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func _on_word_selected(word: GridWordData) -> void:
+	AudioManager.play_sfx("animal_tocar")
 	guide.stop()
 	var start_name: String = word.get_start_text().replace("\n", " ")
 	var destination_name: String = word.get_destination_text().replace("\n", " ")
 	_set_instr(selection_instruction % [start_name, destination_name])
 
 func _on_word_connected(word: GridWordData, word_index: int) -> void:
+	AudioManager.play_sfx("camino_conectado")
 	GameManager.learn_word(word.maya_word)
 	_show_word_dialogue(word, word_index)
 
@@ -149,6 +158,7 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 	for step: int in range(route.size()):
 		var next_position := grid_board.cell_to_local_position(route[step])
 		var tilt_direction := 1.0 if step % 2 == 0 else -1.0
+		walk.tween_callback(AudioManager.play_footstep.bind(ARRIVAL_FOOTSTEPS))
 		walk.tween_method(_animate_arrival_step.bind(walker, previous_position, next_position, tilt_direction), 0.0, 1.0, arrival_step_seconds)
 		previous_position = next_position
 	walk.finished.connect(_on_arrival_finished.bind(walker, arrived, current_dialogue, word.destination_cell), CONNECT_ONE_SHOT)
@@ -241,6 +251,7 @@ func _show_help() -> void:
 		return
 
 func _on_invalid_move(reason: String, cell: Vector2i) -> void:
+	AudioManager.play_sfx("camino_bloqueado")
 	_set_instr(reason)
 	var tile: Control = grid_board.tile_rects.get(cell)
 	if tile:
@@ -248,6 +259,14 @@ func _on_invalid_move(reason: String, cell: Vector2i) -> void:
 		var tween := create_tween()
 		tween.tween_property(tile, "modulate", Color("f0a060"), 0.08)
 		tween.tween_property(tile, "modulate", tint, 0.25)
+
+func _on_path_reset(_word: GridWordData, _word_index: int) -> void:
+	AudioManager.play_sfx("camino_borrar")
+
+## Cada casilla del camino suena una nota más aguda de la escala pentatónica.
+func _on_path_length_changed(_word_index: int, length: int) -> void:
+	var semitones: int = PATH_NOTES[(maxi(length, 1) - 1) % PATH_NOTES.size()]
+	AudioManager.play_sfx("camino_trazo", pow(2.0, semitones / 12.0))
 
 func get_checkpoint_state() -> Dictionary:
 	return {"board": grid_board.get_path_state(), "complete": _completing, "dialogue_word": _dialogue_word_index, "dialogue_open": _dialogue_open}

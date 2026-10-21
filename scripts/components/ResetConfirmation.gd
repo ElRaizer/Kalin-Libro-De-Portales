@@ -13,9 +13,12 @@ func _ready() -> void:
 func show_dialog() -> void:
 	_previous_focus = get_viewport().gui_get_focus_owner()
 	show()
+	SoundCue.play(self, "panel_abrir")
 	cancel_button.grab_focus()
 
 func _close() -> void:
+	if visible:
+		SoundCue.play(self, "panel_cerrar")
 	hide()
 	if is_instance_valid(_previous_focus):
 		_previous_focus.grab_focus()

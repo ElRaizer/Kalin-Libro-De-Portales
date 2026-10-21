@@ -50,6 +50,7 @@ func try_retract(cell: Vector2i) -> bool:
 	board._reset_tile(removed_cell)
 	board._refresh_path_line(board.active_index)
 	board._update_nearby_obstacle_clues()
+	board.path_retracted.emit(board.active_index, path.size())
 	return true
 
 func extend(cell: Vector2i) -> void:
@@ -67,6 +68,9 @@ func extend(cell: Vector2i) -> void:
 	board._set_path_tile_tint(cell, board.words[board.active_index].color)
 	board._refresh_path_line(board.active_index)
 	board._update_nearby_obstacle_clues()
+	# Al restaurar una partida no se dibuja: solo suena cuando el jugador traza.
+	if board.drawing:
+		board.path_extended.emit(board.active_index, board.paths[board.active_index].size())
 
 func clear(index: int) -> void:
 	for cell: Vector2i in board.paths.get(index, []):
