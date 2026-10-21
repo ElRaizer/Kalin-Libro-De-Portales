@@ -4,14 +4,6 @@ Revisión realizada sobre Godot 4.6.3. El criterio principal es la documentació
 oficial de Godot sobre organización de proyectos y escenas, estilo GDScript,
 autoloads, recursos y persistencia.
 
-Actualización del 20 de octubre de 2026: se aplicó la revisión de configuración
-del inspector. Los controles fijos y las composiciones visuales se guardan en
-escenas, los ejercicios en recursos editables y el arte en un catálogo de
-referencias explícitas. La guía vigente está en [GUIA_INSPECTOR.md](GUIA_INSPECTOR.md).
-Los cuatro tableros, los espacios para actores y los botones de respuesta
-también están guardados en escenas y se reutilizan. Se retiraron las
-herramientas temporales de migración; Python no es una dependencia del juego.
-
 ## Resumen
 
 | Área | Estado | Resultado |
