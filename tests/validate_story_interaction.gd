@@ -156,8 +156,9 @@ func _check_resume() -> void:
 	story = _mount("world1_story1", false)
 	await _ready_input(story)
 	_check((story.actor_buttons["Peek'"] as Button).disabled and not (story.actor_buttons["Miis"] as Button).disabled, "Continuar debe conservar el saludo ya realizado y habilitar los pendientes")
-	(story.actor_buttons["Miis"] as Button).pressed.emit()
-	(story.actor_buttons["Kaax"] as Button).pressed.emit()
+	for word: String in story.current_beat().actors:
+		if word not in story._met_words:
+			(story.actor_buttons[word] as Button).pressed.emit()
 	manager.checkpoint(story)
 	await _release(story)
 	story = _mount("world1_story1", false)

@@ -151,14 +151,15 @@ func _show_round() -> void:
 	food_slot.text = "alimento"
 	_update_modifier_slot()
 	_update_choice_labels(guided)
+	PHRASE_BUILDER.show_even_choices(food_buttons, challenge.food, round_index)
+	_configure_keyboard_navigation()
 	_update_button_states()
 	_set_choices_enabled(true)
 	serve_button.text = "Servir ✦"
 	_refresh_step()
 	mission_progress.update_progress(round_index, round_plan.size(), "La comida · %d / 3 · %s" % [round_index % 3 + 1, "Con ayuda" if guided else ("Una pista" if round_index < challenges.size() + 3 else "A tu turno")])
 	progress_label.text = "%s %d / %d" % ["Aprende" if guided else "Repasa", round_index % challenges.size() + 1, challenges.size()]
-	if not food_buttons.is_empty():
-		(food_buttons.values()[0] as Button).grab_focus()
+	PHRASE_BUILDER.focus_first_visible(food_grid)
 	if round_index == 0 and "requests" not in GameManager.tutorials_seen:
 		call_deferred("_show_help")
 	else:
@@ -175,8 +176,7 @@ func _refresh_step() -> void:
 	ExercisePresentation.focus_step(food_grid, modifier_grid, not selected_food.is_empty(), needs_size)
 	$UI/ChoicesPanel/Content/ModifierHeading.visible = needs_size
 	$UI/ChoicesPanel/Content/FoodHeading.text = "1 · Alimento" + ("  ✓" if not selected_food.is_empty() else "")
-	$UI/ChoicesPanel/Content/ModifierHeading.text = "2 · Tamaño" + ("  ✓" if not selected_modifier.is_empty() else "")
-	(modifier_buttons[""] as Button).visible = not selected_modifier.is_empty()
+	$UI/ChoicesPanel/Content/ModifierHeading.text = "2 · Cualidad" + ("  ✓" if not selected_modifier.is_empty() else "")
 	for button: Button in food_buttons.values():
 		if not button.has_meta("food_base_size"):
 			button.set_meta("food_base_size", button.custom_minimum_size)
@@ -193,7 +193,7 @@ func _update_choice_labels(guided: bool) -> void:
 		button.icon = GameManager.get_visual_texture(food.maya) if guided else null
 	for modifier: ExerciseEntry in modifiers:
 		var button: Button = modifier_buttons[modifier.maya]
-		button.text = "Quitar tamaño ↻" if modifier.maya == "" else ("%s\n%s" % [modifier.maya, modifier.spanish] if bridge else modifier.maya)
+		button.text = "Sin cualidad ↻" if modifier.maya == "" else ("%s\n%s" % [modifier.maya, modifier.spanish] if bridge else modifier.maya)
 		button.icon = GameManager.get_visual_texture(modifier.maya) if guided and modifier.maya != "" else null
 
 func _update_modifier_slot() -> void:

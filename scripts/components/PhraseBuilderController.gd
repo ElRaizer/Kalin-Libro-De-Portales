@@ -28,6 +28,25 @@ static func configure_navigation(first_grid: Container, second_grid: Container, 
 			button.focus_neighbor_top = button.get_path_to(first[target_index])
 		button.focus_neighbor_bottom = button.get_path_to(action_button)
 
+## Conserva la respuesta correcta y alterna los distractores sin cambiar la lección.
+## El orden depende de la ronda para que una partida reanudada conserve sus opciones.
+static func show_even_choices(buttons: Dictionary, correct: String, round_index: int) -> void:
+	var words: Array = buttons.keys()
+	var count := mini(4, words.size())
+	count -= count % 2
+	var visible_words: Array = [correct]
+	for offset: int in range(words.size()):
+		var word: String = words[(round_index + offset) % words.size()]
+		if word != correct and visible_words.size() < count:
+			visible_words.append(word)
+	for word: String in buttons:
+		(buttons[word] as Button).visible = word in visible_words
+
+static func focus_first_visible(grid: Container) -> void:
+	var buttons := _buttons_in(grid)
+	if not buttons.is_empty():
+		buttons[0].grab_focus()
+
 static func set_button_states(first: Dictionary, first_value: String, second: Dictionary, second_value: String) -> void:
 	for value: String in first:
 		(first[value] as Button).button_pressed = value == first_value
@@ -65,7 +84,7 @@ static func build_two_phase_plan(count: int, shuffle_guided: bool = false) -> Ar
 static func _buttons_in(grid: Container) -> Array[Button]:
 	var buttons: Array[Button] = []
 	for child: Node in grid.get_children():
-		if child is Button:
+		if child is Button and (child as Button).visible:
 			buttons.append(child as Button)
 	return buttons
 

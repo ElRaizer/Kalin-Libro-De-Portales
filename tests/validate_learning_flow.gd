@@ -250,7 +250,7 @@ func _validate_world4_runtime() -> void:
 	await process_frame
 	if level.round_plan.size() != level.challenges.size() * 2:
 		failures.append("Mundo 4 no creó sus fases guiada y de recuerdo")
-	if level.food_buttons.size() != 5 or level.modifier_buttons.size() != 3:
+	if level.food_buttons.size() != level.foods.size() or level.modifier_buttons.size() != level.modifiers.size():
 		failures.append("Mundo 4 no creó todas las opciones de alimento y cualidad")
 	var challenge: ExerciseEntry = level._current_challenge()
 	level._select_food(challenge.food)
@@ -270,8 +270,8 @@ func _validate_world5_runtime() -> void:
 	var level := packed.instantiate()
 	root.add_child(level)
 	await process_frame
-	if level.option_buttons.size() != 3:
-		failures.append("Mundo 5 debe mostrar tres respuestas por fragmento")
+	if level.option_buttons.size() != 4:
+		failures.append("Mundo 5 debe mostrar cuatro respuestas por fragmento")
 	if int(level.portal_energy.max_value) != level.challenges.size():
 		failures.append("La energía del portal no representa todos los fragmentos")
 	if not level.completion.next_pressed.is_connected(level._on_epilogue_pressed):

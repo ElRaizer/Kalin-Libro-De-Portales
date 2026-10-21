@@ -144,7 +144,9 @@ func _build_choices() -> void:
 	var pool: Array[ExerciseEntry] = objects.duplicate()
 	pool.erase(_current_object())
 	pool.shuffle()
-	var count := mini(round_index + 2, objects.size()) if current_phase == 0 else objects.size()
+	# Dos opciones al empezar y cuatro después, siempre en filas completas de dos.
+	var count := mini(2 if current_phase == 0 and round_index == 0 else 4, objects.size())
+	count -= count % 2
 	pool = pool.slice(0, count - 1)
 	pool.append(_current_object())
 	pool.shuffle()

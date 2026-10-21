@@ -42,7 +42,7 @@ speaker = "Peek'"
 text = "Quiero agua: In k'a'at ja'. ¿Encuentras ja'?"
 actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
 target_word = "ja'"
-options = Array[String](["janal", "ja'", "ja'as"])
+options = Array[String](["janal", "ja'", "ja'as", "K'úum"])
 
 [sub_resource type="Resource" id="Beat_9"]
 script = ExtResource("2_beat")

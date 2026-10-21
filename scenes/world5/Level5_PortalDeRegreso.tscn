@@ -138,9 +138,11 @@ text = "Elige la frase correcta"
 horizontal_alignment = 1
 visible = false
 
-[node name="Options" type="VBoxContainer" parent="UI/OptionsPanel/Content"]
+[node name="Options" type="GridContainer" parent="UI/OptionsPanel/Content"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 2
 
 [node name="FeedbackPanel" type="Panel" parent="UI"]
 theme = ExtResource("5_theme")
@@ -237,3 +239,7 @@ text = "Hechizo 2"
 [node name="Choice3" parent="UI/OptionsPanel/Content/Options" instance=ExtResource("editor_14")]
 layout_mode = 2
 text = "Hechizo 3"
+
+[node name="Choice4" parent="UI/OptionsPanel/Content/Options" instance=ExtResource("editor_14")]
+layout_mode = 2
+text = "Hechizo 4"

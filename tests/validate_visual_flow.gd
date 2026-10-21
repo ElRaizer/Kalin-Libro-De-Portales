@@ -88,7 +88,7 @@ func _run() -> void:
 	_check(level._awaiting_continue, "Agua se sirve directamente")
 	level.serve_button.pressed.emit()
 	_check(level.modifier_grid.visible and level.modifier_slot.visible, "El plátano pequeño debe mostrar los tamaños y su espacio")
-	_check(not (level.modifier_buttons[""] as Button).visible, "No se debe ofrecer Sin tamaño como un paso obligatorio")
+	_check((level.modifier_buttons[""] as Button).visible, "Sin cualidad debe conservar su lugar para mantener cuatro opciones, sin ser un paso obligatorio")
 	for key: String in ["world1_level1", "world1_level2", "world1_level3", "world1_level4"]:
 		await _scene(key)
 		var board: GridBoard = current_scene.grid_board

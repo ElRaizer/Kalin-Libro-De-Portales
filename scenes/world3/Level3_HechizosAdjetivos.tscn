@@ -282,7 +282,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/h_separation = 10
-columns = 5
+columns = 4
 
 [node name="MayakButton" type="Button" parent="UI/ChoicesPanel/Content/NounGrid" unique_id=1459634447]
 custom_minimum_size = Vector2(150, 94)
@@ -345,6 +345,7 @@ script = ExtResource("6_hf7mu")
 word_value = "chan"
 
 [node name="JanalButton" type="Button" parent="UI/ChoicesPanel/Content/NounGrid" unique_id=1590516451]
+visible = false
 custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinNounButton"
@@ -370,7 +371,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/h_separation = 10
-columns = 5
+columns = 4
 
 [node name="MejenButton" type="Button" parent="UI/ChoicesPanel/Content/AdjectiveGrid" unique_id=402339599]
 custom_minimum_size = Vector2(150, 94)
@@ -437,6 +438,7 @@ word_value = "ki'"
 word_kind = "adjective"
 
 [node name="JachButton" type="Button" parent="UI/ChoicesPanel/Content/AdjectiveGrid" unique_id=536984818]
+visible = false
 custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinAdjectiveButton"

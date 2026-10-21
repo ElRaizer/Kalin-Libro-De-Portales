@@ -148,13 +148,15 @@ func _show_round() -> void:
 	translation_label.text = ""
 	_update_slots()
 	_update_choice_labels()
+	PHRASE_BUILDER.show_even_choices(noun_buttons, challenge.noun, round_index)
+	PHRASE_BUILDER.show_even_choices(adjective_buttons, challenge.adjective, round_index)
+	_configure_keyboard_navigation()
 	_set_choices_enabled(true)
 	cast_button.text = "Crear ✦"
 	_refresh_step()
 	mission_progress.update_progress(round_index, round_plan.size(), _phase_caption())
 	progress_label.text = "%s %d / %d" % ["Aprende" if guided else "Repasa", round_index % challenges.size() + 1, challenges.size()]
-	if not noun_buttons.is_empty():
-		(noun_buttons.values()[0] as Button).grab_focus()
+	PHRASE_BUILDER.focus_first_visible(noun_grid)
 	if round_index == 0 and "phrases" not in GameManager.tutorials_seen:
 		call_deferred("_show_help")
 	else:

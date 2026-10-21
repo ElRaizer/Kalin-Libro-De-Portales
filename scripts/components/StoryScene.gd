@@ -80,7 +80,7 @@ var _kalin_sleeping: bool:
 @onready var bubble_maya: Label = $UI/WordBubble/Content/MayaLabel
 @onready var bubble_spanish: Label = $UI/WordBubble/Content/SpanishLabel
 @onready var celebration: Label = $UI/Celebration
-@onready var choices_box: HBoxContainer = $UI/Choices
+@onready var choices_box: GridContainer = $UI/Choices
 @onready var speaker_label: Label = $UI/DialogueBox/SpeakerLabel
 @onready var dialogue_text: RichTextLabel = $UI/DialogueBox/DialogueText
 @onready var hint_label: Label = $UI/DialogueBox/HintLabel
@@ -631,8 +631,12 @@ func get_configuration_issues() -> PackedStringArray:
 			issues.append("CONOCER necesita animales en actors.")
 		if beat.kind == StoryBeat.Kind.ADIVINAR and beat.target_word not in beat.actors:
 			issues.append("El animal objetivo debe aparecer en actors.")
+		if beat.kind in [StoryBeat.Kind.CONOCER, StoryBeat.Kind.ADIVINAR] and beat.actors.size() % 2 != 0:
+			issues.append("Las interacciones con animales necesitan una cantidad par de botones.")
 		if beat.kind == StoryBeat.Kind.ELEGIR and (beat.options.size() < 2 or beat.target_word not in beat.options):
 			issues.append("ELEGIR necesita opciones que incluyan la respuesta correcta.")
+		if beat.kind == StoryBeat.Kind.ELEGIR and beat.options.size() % 2 != 0:
+			issues.append("ELEGIR necesita una cantidad par de respuestas para completar las filas.")
 		if beat.kind == StoryBeat.Kind.EXPLORAR and beat.visual_scene not in ["camino", "casa", "tamano", "hambre", "portal"]:
 			issues.append("Selecciona una situación visual para EXPLORAR.")
 	return issues

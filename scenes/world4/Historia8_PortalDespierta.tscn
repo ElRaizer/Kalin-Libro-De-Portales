@@ -50,7 +50,7 @@ speaker = "Kaax"
 text = "Yuum bo'otik: muchas gracias. ¿Lo encuentras?"
 actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
 target_word = "Yuum bo'otik"
-options = Array[String](["Tak ti' uláak' k'iin", "Yuum bo'otik", "Bix a beel"])
+options = Array[String](["Tak ti' uláak' k'iin", "Yuum bo'otik", "Bix a beel", "Ka xi'ik tech jats'uts"])
 effects = 24
 
 [sub_resource type="Resource" id="Beat_9"]

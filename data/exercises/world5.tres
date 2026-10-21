@@ -9,7 +9,7 @@ section = "IDENTIDAD"
 prompt = "Ayuda a Peek' a presentarse."
 clue = "Me llamo Perro"
 correct = "In k'aaba'e' Peek'"
-options = Array[String](["In k'aaba'e' Peek'", "In k'a'at Peek'", "Yuum bo'otik"])
+options = Array[String](["In k'aaba'e' Peek'", "In k'a'at Peek'", "Yuum bo'otik", "Ti' yaan jun mayak"])
 
 [sub_resource type="Resource" id="challenges_2"]
 script = ExtResource("entry")
@@ -17,7 +17,7 @@ section = "OBJETOS"
 prompt = "Crea una mesa para tus amigos."
 clue = "Hay una mesa"
 correct = "Ti' yaan jun mayak"
-options = Array[String](["Ti' yaan jun mayak", "In mayake' mejen", "In k'a'at mayak"])
+options = Array[String](["Ti' yaan jun mayak", "In mayake' mejen", "In k'a'at mayak", "Yuum bo'otik"])
 
 [sub_resource type="Resource" id="challenges_3"]
 script = ExtResource("entry")
@@ -25,7 +25,7 @@ section = "CUALIDADES"
 prompt = "Crea una mesa grande."
 clue = "Mi mesa es grande"
 correct = "In mayake' nojoch"
-options = Array[String](["In mayake' nojoch", "In mayake' mejen", "Ti' yaan jun mayak"])
+options = Array[String](["In mayake' nojoch", "In mayake' mejen", "Ti' yaan jun mayak", "In k'a'at mayak"])
 
 [sub_resource type="Resource" id="challenges_4"]
 script = ExtResource("entry")
@@ -33,7 +33,7 @@ section = "PETICIONES"
 prompt = "Kalin necesita agua antes de cruzar el portal."
 clue = "Quiero agua"
 correct = "In k'a'at ja'"
-options = Array[String](["In k'a'at ja'", "In k'aaba'e' ja'", "Ti' yaan jun ja'"])
+options = Array[String](["In k'a'at ja'", "In k'aaba'e' ja'", "Ti' yaan jun ja'", "Yuum bo'otik"])
 
 [sub_resource type="Resource" id="challenges_5"]
 script = ExtResource("entry")
@@ -41,7 +41,7 @@ section = "SALUDO"
 prompt = "Saluda al guardián."
 clue = "Buenos días"
 correct = "Bix a beel"
-options = Array[String](["Bix a beel", "Yuum bo'otik", "Tak ti' uláak' k'iin"])
+options = Array[String](["Bix a beel", "Yuum bo'otik", "Tak ti' uláak' k'iin", "Ka xi'ik tech jats'uts"])
 learn = "Bix a beel"
 
 [sub_resource type="Resource" id="challenges_6"]
@@ -50,7 +50,7 @@ section = "AGRADECIMIENTO"
 prompt = "Agradece la ayuda de tus amigos."
 clue = "Muchas gracias"
 correct = "Yuum bo'otik"
-options = Array[String](["Yuum bo'otik", "Bix a beel", "Ka xi'ik tech jats'uts"])
+options = Array[String](["Yuum bo'otik", "Bix a beel", "Ka xi'ik tech jats'uts", "Tak ti' uláak' k'iin"])
 learn = "Yuum bo'otik"
 
 [sub_resource type="Resource" id="challenges_7"]
@@ -59,7 +59,7 @@ section = "DESPEDIDA"
 prompt = "Despídete antes de volver a casa."
 clue = "Adiós, nos vemos"
 correct = "Tak ti' uláak' k'iin"
-options = Array[String](["Tak ti' uláak' k'iin", "Ka xi'ik tech jats'uts", "In k'a'at ja'as"])
+options = Array[String](["Tak ti' uláak' k'iin", "Ka xi'ik tech jats'uts", "In k'a'at ja'as", "Yuum bo'otik"])
 learn = "Tak ti' uláak' k'iin"
 
 [sub_resource type="Resource" id="challenges_8"]
@@ -68,7 +68,7 @@ section = "BUEN CAMINO"
 prompt = "Los animales desean que a Kalin le vaya bien."
 clue = "Que te vaya bien"
 correct = "Ka xi'ik tech jats'uts"
-options = Array[String](["Ka xi'ik tech jats'uts", "Yuum bo'otik", "Bix a beel"])
+options = Array[String](["Ka xi'ik tech jats'uts", "Yuum bo'otik", "Bix a beel", "Tak ti' uláak' k'iin"])
 learn = "Ka xi'ik tech jats'uts"
 
 [resource]

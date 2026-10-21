@@ -337,6 +337,7 @@ godot_console.exe --headless --path . --script res://tests/validate_intro.gd
 godot_console.exe --headless --path . --script res://tests/validate_ux.gd
 godot_console.exe --headless --path . --script res://tests/validate_adventure.gd
 godot_console.exe --headless --path . --script res://tests/validate_visual_flow.gd
+godot_console.exe --headless --path . --script res://tests/validate_answer_layout.gd
 godot_console.exe --headless --path . --script res://tests/validate_animation_loops.gd
 ```
 

@@ -112,9 +112,14 @@ maya = "nojoch"
 spanish = "grande"
 symbol = "⬢"
 
+[sub_resource type="Resource" id="modifiers_4"]
+script = ExtResource("entry")
+maya = "ki'"
+spanish = "delicioso/a"
+
 [resource]
 script = ExtResource("set")
 content_world = 4
 foods = Array[ExtResource("entry")]([SubResource("foods_1"), SubResource("foods_2"), SubResource("foods_3"), SubResource("foods_4"), SubResource("foods_5")])
-modifiers = Array[ExtResource("entry")]([SubResource("modifiers_1"), SubResource("modifiers_2"), SubResource("modifiers_3")])
+modifiers = Array[ExtResource("entry")]([SubResource("modifiers_1"), SubResource("modifiers_2"), SubResource("modifiers_3"), SubResource("modifiers_4")])
 challenges = Array[ExtResource("entry")]([SubResource("challenges_1"), SubResource("challenges_2"), SubResource("challenges_3"), SubResource("challenges_4"), SubResource("challenges_5"), SubResource("challenges_6")])

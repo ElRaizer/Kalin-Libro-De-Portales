@@ -17,20 +17,20 @@ script = ExtResource("2_beat")
 speaker = "Narrador"
 text = "¡Hay amigos en la isla!"
 kalin_pose = 1
-actors = Array[String](["Peek'", "Miis", "Kaax"])
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 
 [sub_resource type="Resource" id="Beat_3"]
 script = ExtResource("2_beat")
 kind = 1
 speaker = "Narrador"
 text = "Salúdalos: toca a cada uno."
-actors = Array[String](["Peek'", "Miis", "Kaax"])
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 
 [sub_resource type="Resource" id="Beat_4"]
 script = ExtResource("2_beat")
 speaker = "Peek'"
 text = "¡El camino está roto!"
-actors = Array[String](["Peek'", "Miis", "Kaax"])
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 kind = 4
 visual_scene = "camino"
 
@@ -38,21 +38,21 @@ visual_scene = "camino"
 script = ExtResource("2_beat")
 speaker = "Kalin"
 text = "¡Vamos a repararlo!"
-actors = Array[String](["Peek'", "Miis", "Kaax"])
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
 kind = 2
 speaker = "Peek'"
 text = "¿Quién es Miis?"
-actors = Array[String](["Peek'", "Miis", "Kaax"])
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 target_word = "Miis"
 
 [sub_resource type="Resource" id="Beat_7"]
 script = ExtResource("2_beat")
 speaker = "Kaax"
-text = "Lleva a cada amigo a su casa."
-actors = Array[String](["Peek'", "Miis", "Kaax"])
+text = "Lleva a Peek', Miis y Kaax a sus casas."
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 
 [node name="Historia1" instance=ExtResource("1_base")]
 chapter_title = "Mundo 1 · Capítulo 1 — La isla de los animales"

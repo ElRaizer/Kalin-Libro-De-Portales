@@ -7,5 +7,6 @@ theme = ExtResource("editor_1")
 expand_icon = true
 theme_override_constants/icon_max_width = 60
 theme_type_variation = "KalinNounButton"
-custom_minimum_size = Vector2(220, 84)
+custom_minimum_size = Vector2(220, 76)
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20

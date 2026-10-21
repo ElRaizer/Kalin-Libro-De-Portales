@@ -133,7 +133,7 @@ offset_bottom = 550.0
 theme = ExtResource("4_theme")
 theme_override_constants/h_separation = 20
 theme_override_constants/v_separation = 20
-columns = 3
+columns = 2
 
 [node name="FeedbackPanel" type="Panel" parent="UI" unique_id=1856786680]
 offset_left = 24.0
@@ -249,5 +249,6 @@ layout_mode = 2
 text = "Opción 4"
 
 [node name="Choice5" parent="UI/ChoicesGrid" instance=ExtResource("editor_13")]
+visible = false
 layout_mode = 2
 text = "Opción 5"

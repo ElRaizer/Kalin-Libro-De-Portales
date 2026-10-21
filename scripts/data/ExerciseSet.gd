@@ -34,6 +34,8 @@ func get_configuration_issues(world: int) -> PackedStringArray:
 			if list_name == "challenges" and world == 5:
 				if entry.correct.is_empty() or entry.correct not in entry.options or entry.options.size() < 2:
 					issues.append("El reto %d necesita varias opciones y su respuesta correcta." % (index + 1))
+				if entry.options.size() % 2 != 0:
+					issues.append("El reto %d necesita una cantidad par de respuestas." % (index + 1))
 			elif list_name != "challenges" and list_name != "modifiers" and entry.maya.is_empty():
 				issues.append("%s[%d] no tiene una palabra maya." % [list_name, index])
 			if list_name == "challenges" and world in [3, 4]:

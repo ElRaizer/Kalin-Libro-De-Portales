@@ -316,8 +316,8 @@ func _validate_world4() -> void:
 		failures.append("El Mundo 4 debe contener las seis peticiones del GDD")
 	if world4_script.foods.size() != 5:
 		failures.append("El Mundo 4 debe ofrecer los cinco alimentos de sus peticiones")
-	if world4_script.modifiers.size() != 3:
-		failures.append("El Mundo 4 debe permitir elegir sin cualidad, mejen o nojoch")
+	if world4_script.modifiers.size() != 4:
+		failures.append("El Mundo 4 debe ofrecer cuatro cualidades, incluyendo Sin cualidad y el distractor ki'")
 	for challenge: ExerciseEntry in world4_script.challenges:
 		for field: String in ["animal", "sprite", "food", "phrase", "translation"]:
 			if str(challenge.get(field)).is_empty():

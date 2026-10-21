@@ -204,8 +204,8 @@ text = "1  Elige el alimento"
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme_override_constants/h_separation = 8
-columns = 5
+theme_override_constants/h_separation = 10
+columns = 4
 
 [node name="JaButton" type="Button" parent="UI/ChoicesPanel/Content/FoodGrid" unique_id=1076074617]
 custom_minimum_size = Vector2(150, 94)
@@ -272,6 +272,7 @@ word_value = "K'úum"
 word_kind = "food"
 
 [node name="JanalButton" type="Button" parent="UI/ChoicesPanel/Content/FoodGrid" unique_id=1461897973]
+visible = false
 custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinNounButton"
@@ -298,7 +299,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/h_separation = 10
-columns = 3
+columns = 4
 
 [node name="NoModifierButton" type="Button" parent="UI/ChoicesPanel/Content/ModifierGrid" unique_id=513387801]
 custom_minimum_size = Vector2(150, 94)
@@ -345,6 +346,22 @@ expand_icon = true
 theme_override_constants/icon_max_width = 56
 script = ExtResource("8_3urg7")
 word_value = "nojoch"
+word_kind = "modifier"
+
+[node name="KiButton" type="Button" parent="UI/ChoicesPanel/Content/ModifierGrid"]
+custom_minimum_size = Vector2(150, 94)
+layout_mode = 2
+theme_type_variation = &"KalinAdjectiveButton"
+theme_override_font_sizes/font_size = 19
+toggle_mode = true
+text = "ki'
+delicioso/a"
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+theme_override_constants/icon_max_width = 56
+script = ExtResource("8_3urg7")
+word_value = "ki'"
 word_kind = "modifier"
 
 [node name="FeedbackPanel" type="Panel" parent="UI" unique_id=2101980638]
