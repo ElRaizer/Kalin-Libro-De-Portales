@@ -12,6 +12,9 @@ func _initialize() -> void:
 	await _validate_story_choice_runtime()
 	await _validate_cinematic_runtime()
 	await _validate_exploration_runtime()
+	await _validate_vocabulary_exploration_runtime("res://scenes/world1/Exploracion2_CaminoCasaMaya.tscn", "world1_cine2", 5)
+	await _validate_vocabulary_exploration_runtime("res://scenes/world3/Exploracion3_LaMilpa.tscn", "world4_level1", 4)
+	await _validate_vocabulary_exploration_runtime("res://scenes/world4/Exploracion4_CaminoPortal.tscn", "world5_level1", 4)
 	await _validate_world4_runtime()
 	await _validate_world5_runtime()
 	await _validate_book_runtime()
@@ -131,6 +134,65 @@ func _validate_exploration_runtime() -> void:
 		failures.append("Terminar el diálogo de la meta debe continuar la historia")
 	if exploration.next_scene_key != "world1_story1":
 		failures.append("La exploración de la orilla debe llevar al Capítulo 1")
+	exploration.queue_free()
+	await process_frame
+
+## Las exploraciones con vocabulario presentan cada palabra maya al examinar su
+## objeto, la anotan en el contador, detienen a Kalin en el obstáculo y la meta
+## continúa hacia la escena indicada.
+func _validate_vocabulary_exploration_runtime(scene_path: String, next_key: String, word_count: int) -> void:
+	var packed := load(scene_path) as PackedScene
+	if packed == null:
+		failures.append("No se pudo cargar la exploración %s" % scene_path)
+		return
+	var exploration := packed.instantiate()
+	root.add_child(exploration)
+	await process_frame
+	_close_exploration_dialogue(exploration)
+	var blocker: Node = null
+	for spot: Node in exploration.spots:
+		if spot.blocks_path:
+			blocker = spot
+		if spot.vocabulary_word == "":
+			continue
+		var lines: Array[String] = spot.dialogue_lines()
+		if lines.size() != spot.lines.size() + 1 or not lines[lines.size() - 1].contains(spot.vocabulary_word):
+			failures.append("%s: %s no presenta su palabra maya" % [scene_path, spot.name])
+		exploration.open_spot(spot)
+		_close_exploration_dialogue(exploration)
+		var guard: int = 0
+		while exploration._resolving and guard < 600:
+			await process_frame
+			guard += 1
+	if exploration.words_found != word_count:
+		failures.append("%s: se esperaban %d palabras anotadas y hay %d" % [scene_path, word_count, exploration.words_found])
+	if not exploration.counter_label.text.contains("Palabras mayas: %d / %d" % [word_count, word_count]):
+		failures.append("%s: el contador no muestra las palabras mayas" % scene_path)
+	if blocker == null:
+		failures.append("%s debe tener un obstáculo" % scene_path)
+	else:
+		exploration.kalin.position.x = exploration.walk_limit() - 600.0
+		for step: int in range(300):
+			exploration.walk(1.0, 0.1)
+		if exploration.kalin.position.x > blocker.global_position.x - exploration.BLOCK_MARGIN + 0.5:
+			failures.append("%s: Kalin atravesó el obstáculo sin examinarlo" % scene_path)
+		exploration.open_spot(blocker)
+		_close_exploration_dialogue(exploration)
+		var wait: int = 0
+		while exploration._resolving and wait < 600:
+			await process_frame
+			wait += 1
+	for step: int in range(400):
+		exploration.walk(1.0, 0.1)
+		if exploration.is_dialogue_open():
+			break
+	if not exploration.is_dialogue_open():
+		failures.append("%s: llegar al final debe abrir la meta" % scene_path)
+	_close_exploration_dialogue(exploration)
+	if not exploration._navigating:
+		failures.append("%s: terminar la meta debe continuar la historia" % scene_path)
+	if exploration.next_scene_key != next_key:
+		failures.append("%s debe continuar hacia %s" % [scene_path, next_key])
 	exploration.queue_free()
 	await process_frame
 

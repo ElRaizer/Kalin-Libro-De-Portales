@@ -458,8 +458,13 @@ func _validate_story_chain() -> void:
 	var expected: Dictionary = {
 		"world1_cine1": "world1_explore1",
 		"world1_explore1": "world1_story1",
-		"world1_story5": "world1_cine2",
+		"world1_story5": "world1_explore2",
+		"world1_explore2": "world1_cine2",
 		"world1_cine2": "world2_level1",
+		"world3_story1": "world3_explore1",
+		"world3_explore1": "world4_level1",
+		"world4_story1": "world4_explore1",
+		"world4_explore1": "world5_level1",
 		"world5_story1": "world5_cine1",
 		"world5_cine1": "main_menu",
 	}
@@ -517,6 +522,8 @@ func _validate_exploration(scene_path: String, exploration: Node) -> void:
 		for line: String in spot.lines:
 			if line.strip_edges() == "":
 				failures.append("%s: %s tiene una línea vacía" % [scene_path, spot.name])
+		if spot.vocabulary_word != "" and spot.vocabulary_text() == "":
+			failures.append("%s: %s usa una palabra fuera del vocabulario: %s" % [scene_path, spot.name, spot.vocabulary_word])
 		if spot.position.x < start_x or spot.position.x > end_x:
 			failures.append("%s: %s está fuera del sendero" % [scene_path, spot.name])
 		if spot.blocks_path and spot.reaction != ExplorationSpot.Reaction.APARTAR:
