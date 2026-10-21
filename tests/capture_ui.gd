@@ -20,6 +20,8 @@ func _capture_all() -> void:
 	await _capture_book()
 	await _capture_scene("res://scenes/world5/Level5_PortalDeRegreso.tscn", "world5.png")
 	await _capture_completion()
+	await _capture_scene("res://scenes/MainMenu.tscn", "menu_sonido.png")
+	await _capture_pause()
 	print("Capturas visuales creadas en %s" % OUTPUT_DIR)
 	quit(0)
 
@@ -60,6 +62,21 @@ func _capture_completion() -> void:
 	await create_timer(0.4).timeout
 	await RenderingServer.frame_post_draw
 	_save_viewport("completion.png")
+
+## Menú de pausa con los controles de volumen sobre un nivel.
+func _capture_pause() -> void:
+	var error := change_scene_to_file("res://scenes/world2/Level2_ConstruyendoPalabras.tscn")
+	if error != OK:
+		push_error("No se pudo abrir el Mundo 2 para la pausa")
+		return
+	await scene_changed
+	await process_frame
+	var pause_menu := root.get_node("PauseMenu")
+	pause_menu.open_pause()
+	await process_frame
+	await RenderingServer.frame_post_draw
+	_save_viewport("pausa_volumen.png")
+	pause_menu.resume_game()
 
 func _save_viewport(filename: String) -> void:
 	var image := root.get_texture().get_image()
