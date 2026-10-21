@@ -12,6 +12,7 @@ Videojuego educativo desarrollado en Godot para practicar vocabulario y estructu
 - Ocho escenas jugables distribuidas en cinco mundos.
 - Nueve capítulos de historia animados y tres cinemáticas que acompañan toda la aventura, desde la noche del huracán hasta el regreso de Kalin.
 - Cuatro exploraciones libres: la orilla de la isla antes del primer capítulo y tres recorridos más (camino a la Casa Maya, la milpa y el camino al portal) que repasan vocabulario maya antes de los mundos 2, 4 y 5.
+- Música, ambientes y efectos de sonido en todas las escenas: 16 piezas musicales, 8 ambientes y más de 60 efectos con instrumentos de la península (marimba, flauta de carrizo, jarana, tunkul, caracol). Todo se genera por síntesis, sin derechos de autor de terceros, y el volumen se ajusta en la pausa.
 - Los audios de pronunciación están planeados, pero todavía no han sido grabados.
 
 El proyecto es un prototipo funcional en desarrollo. La navegación principal, el libro de hechizos y el guardado están implementados; todavía quedan mecánicas y contenido narrativo por ampliar.
@@ -158,7 +159,8 @@ No se requieren complementos ni dependencias externas.
 - Mundo 1: clic y arrastre, o flechas para mover el cursor del tablero. `Enter` / `Espacio` inicia el camino; las flechas lo trazan y `Esc` lo cancela.
 - Mundos 2, 3, 4 y 5: `Tab` / flechas para elegir una palabra o respuesta y `Enter` / `Espacio` para confirmarla.
 - Libro de hechizos: flechas izquierda/derecha para cambiar de página y `Esc` para cerrarlo. Al cerrar, el foco vuelve al control que abrió el libro.
-- `Esc` pausa la aventura; si el libro está abierto, lo cierra primero. Si hay un trazo activo, detiene ese trazo. La pausa permite seguir jugando o volver al mapa.
+- `Esc` pausa la aventura; si el libro está abierto, lo cierra primero. Si hay un trazo activo, detiene ese trazo. La pausa permite seguir jugando, volver al mapa y ajustar el volumen de la música y de los sonidos.
+- Menú principal: el botón **Sonido** silencia o activa todo el audio.
 
 ## Documentación
 
@@ -169,11 +171,13 @@ No se requieren complementos ni dependencias externas.
 - [REVISION_UX_VISUAL.md](REVISION_UX_VISUAL.md): presentación por pasos, pistas graduales, narrativa visual, bloques, libro y pausa.
 - [ANIMACIONES.md](ANIMACIONES.md): escenas en bucle, expresiones SVG y pruebas de continuidad.
 - [PRUEBA_CON_NINOS.md](PRUEBA_CON_NINOS.md): protocolo de observación y criterios propuestos para la prueba con niños.
-- [Arte/audio/README.md](Arte/audio/README.md): preparación y nombres de los audios pendientes.
+- [AUDIO.md](AUDIO.md): música por escena, ambientes, efectos, configuración en el Inspector y cómo regenerar el audio.
+- [Arte/audio/README.md](Arte/audio/README.md): preparación y nombres de las pronunciaciones pendientes.
 
 ## Trabajo pendiente
 
 - Grabar, revisar e integrar las pronunciaciones.
+- Escuchar la música y los efectos con el equipo y con niños, y ajustar en `data/audio_catalog.tres` o en `tools/generar_audio/` lo que no convenza.
 - Diseñar más niveles para los mundos 2, 3 y 4.
 - Ampliar las variaciones y la dificultad de los mundos 2, 3 y 4.
 - Validar las frases de cortesía del Mundo 5 con una persona hablante o especialista.

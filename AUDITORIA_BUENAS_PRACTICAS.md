@@ -21,6 +21,7 @@ autoloads, recursos y persistencia.
 | Carga de recursos | Corregido | Los fondos, retratos y expresiones usan referencias a recursos en escenas y en `visual_catalog.tres`; las plantillas variables están asignadas en el inspector. |
 | Pruebas automáticas | Mejorado | La validación comprueba todas las escenas registradas, las instancia y revisa la configuración de cada tablero. También revisa la estructura de las exploraciones y recorre la de la orilla (bloqueo, reacción y meta). |
 | Exploraciones | Cumple | `ExplorationScene` y `ExplorationSpot` se configuran desde el Inspector; los objetos avisan en el editor si les falta diálogo y la altura de Kalin sale del `Path2D` en vez de valores fijos. Las cuatro exploraciones reutilizan los mismos componentes y el vocabulario se lee del diccionario único (`GameManager.VOCABULARY`), sin duplicar palabras en las escenas. |
+| Audio | Cumple | `AudioManager` es un autoload de escena con reproductores creados en el editor; qué suena en cada escena vive en el recurso `AudioCatalog` (Inspector) y no en el código. Buses separados (`Musica`, `Ambiente`, `Efectos`, `Voces`), volumen persistente en `user://` y nombres de archivo en español validados. Los efectos con retraso se procesan en una cola del autoload, sin temporizadores pendientes al salir. |
 | Arte SVG | Corregido | Las sombras de Kalin y los animales usaban `rgba(...)`, que el importador de Godot dibuja como negro sólido; ahora usan `fill-opacity`. |
 | Estilo GDScript | Mejorado | Se separaron varias instrucciones por línea, se sustituyeron cierres innecesarios por métodos/bind y se retiró estado muerto. |
 
@@ -34,6 +35,9 @@ autoloads, recursos y persistencia.
   reintroducirse listas `RAW_*` ni recursos creados desde diccionarios estáticos.
 - Las escenas del Mundo 1 heredan un controlador común y contienen sus datos en
   recursos: evita duplicar la mecánica.
+- La música y los efectos se asignan en `data/audio_catalog.tres`. Los botones
+  suenan solos y la historia suena según sus `StoryBeat`: no hace falta código
+  de audio en cada escena nueva.
 - `GameManager.VOCABULARY` funciona como fuente única. No deben duplicarse
   traducciones o metadatos en nuevos controladores.
 - JSON es suficiente para el estado actual, que es pequeño y solo contiene
@@ -72,7 +76,7 @@ Antes de integrar un cambio, ejecutar:
 Después, probar manualmente la escena modificada y al menos una transición de
 entrada y salida. No deben ignorarse advertencias nuevas del editor.
 
-El comando importa el proyecto y ejecuta las nueve suites, incluida la prueba
+El comando importa el proyecto y ejecuta las trece suites, incluidas la prueba de audio y la prueba
 de respeto del inspector. Los datos de prueba quedan aislados de la partida
 real. La notificación de cambios de `GridWordData` y la conservación de la
 escala inicial de Kalin tienen regresiones específicas.

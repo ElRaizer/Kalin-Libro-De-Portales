@@ -27,7 +27,10 @@ WindowManager="*res://scripts/autoloads/WindowManager.gd"
 GameManager="*res://scenes/components/GameManager.tscn"
 AccessibilityManager="*res://scenes/components/AccessibilityManager.tscn"
 PauseMenu="*res://scenes/components/PauseMenu.tscn"
+AudioManager="*res://scenes/components/AudioManager.tscn"
 ```
+
+`AudioManager` cambia la música y el ambiente de cada escena según `data/audio_catalog.tres`, reproduce los efectos por nombre y guarda el volumen. Los detalles están en [AUDIO.md](AUDIO.md).
 
 `GameManager` conserva el catálogo canónico de vocabulario, el orden de los niveles, las palabras aprendidas, los puntos mágicos y el guardado local.
 
@@ -52,6 +55,16 @@ Kalin-Libro-De-Portales/
 ├── README.md
 ├── INSTRUCCIONES.md
 ├── VOCABULARIO.md
+├── AUDIO.md
+├── default_bus_layout.tres
+├── Audio/
+│   ├── musica/      (musica_*.ogg, en bucle)
+│   ├── ambiente/    (ambiente_*.ogg, en bucle)
+│   └── efectos/
+├── data/
+│   └── audio_catalog.tres
+├── tools/
+│   └── generar_audio/   (síntesis en Python de todo el audio)
 ├── themes/
 │   └── kalin_theme.tres
 ├── Arte/
@@ -332,9 +345,13 @@ El progreso se guarda automáticamente como `user://kalin_save.json`. Incluye:
 
 Para una escena nueva, implementar `get_checkpoint_state() -> Dictionary` y restaurar con `GameManager.get_scene_state(self)`. Guardar tras acciones completas mediante `GameManager.checkpoint(self)`. La navegación y el cierre de ventana capturan también el estado actual. Usar `GameManager.replay_scene()` para repetir desde el principio sin borrar los logros. El libro usa `PROCESS_MODE_ALWAYS` mientras pausa el árbol; los temporizadores de un ejercicio deben respetar esa pausa.
 
-## Audio pendiente
+## Música y efectos
 
-Los audios todavía no están grabados. Cuando estén disponibles, colócalos en `Arte/audio/` como archivos OGG. Los nombres técnicos eliminan acentos, apóstrofes y espacios para que sean portables entre sistemas. La tabla completa está en [Arte/audio/README.md](Arte/audio/README.md).
+La música, los ambientes y los efectos ya están integrados. Qué suena en cada escena se cambia en `data/audio_catalog.tres` desde el Inspector; un botón nuevo suena solo, y un nivel nuevo solo necesita su clave en el catálogo. Para pedir un efecto desde el código se usa `AudioManager.play_sfx("nombre")`, o `SoundCue.play(self, "nombre")` en componentes reutilizables. Todo se explica en [AUDIO.md](AUDIO.md).
+
+## Pronunciaciones pendientes
+
+Las pronunciaciones todavía no están grabadas. Cuando estén disponibles, colócalos en `Arte/audio/` como archivos OGG. Los nombres técnicos eliminan acentos, apóstrofes y espacios para que sean portables entre sistemas. La tabla completa está en [Arte/audio/README.md](Arte/audio/README.md).
 
 ## Comprobación antes de integrar cambios
 
@@ -350,7 +367,13 @@ godot_console.exe --headless --path . --script res://tests/validate_adventure.gd
 godot_console.exe --headless --path . --script res://tests/validate_visual_flow.gd
 godot_console.exe --headless --path . --script res://tests/validate_answer_layout.gd
 godot_console.exe --headless --path . --script res://tests/validate_animation_loops.gd
+godot_console.exe --headless --path . --script res://tests/validate_audio.gd
 ```
+
+`validate_audio.gd` revisa los buses, que cada escena tenga música, que la
+música y los ambientes se repitan en bucle, los nombres de archivo, que todo
+efecto pedido en el código exista en el catálogo y que botones, aciertos,
+historia y exploraciones suenen.
 
 `validate_project.gd` revisa también que cada exploración tenga sendero, objetos
 con diálogo y dibujo, una sola meta al final y las acciones de entrada.
@@ -369,3 +392,4 @@ el obstáculo detiene a Kalin y la meta continúa hacia la escena indicada.
 7. Repetir el Mundo 4 con las palabras ya aprendidas.
 8. Completar el Mundo 5 y confirmar que el portal llegue al 100 %.
 9. Abrir el libro y comprobar ilustraciones, pausa del ejercicio y navegación por páginas.
+10. Escuchar el cambio de música entre escenas, mover los deslizadores de volumen en la pausa y comprobar que se recuerdan al reiniciar.
