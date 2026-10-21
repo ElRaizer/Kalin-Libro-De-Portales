@@ -71,7 +71,7 @@ auto_advance = 2.0
 
 [node name="Historia8" unique_id=1313455233 instance=ExtResource("1_base")]
 chapter_title = "Mundo 4 · Capítulo 8 — El portal despierta"
-next_scene_key = "world5_level1"
+next_scene_key = "world4_explore1"
 beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_5"), SubResource("Beat_6"), SubResource("Beat_7"), SubResource("Beat_8"), SubResource("Beat_9"), SubResource("Beat_10")])
 
 [node name="Button" parent="Stage/Actors/Actor1" index="0"]

@@ -66,5 +66,5 @@ mood = 2
 
 [node name="Historia5" instance=ExtResource("1_base")]
 chapter_title = "Mundo 1 · Capítulo 5 — La fiesta de la isla"
-next_scene_key = "world1_cine2"
+next_scene_key = "world1_explore2"
 beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5"), SubResource("Beat_6"), SubResource("Beat_7")])

@@ -1,0 +1,112 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/ExplorationScene.tscn" id="1_r"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/ExplorationSpot.tscn" id="2_r"]
+
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_explora_amanecer_cielo.svg" id="3_r"]
+
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_explora_camino_portal.svg" id="4_r"]
+
+[ext_resource type="Texture2D" path="res://Arte/sprites/animal_peek.svg" id="5_r"]
+
+[ext_resource type="Texture2D" path="res://Arte/sprites/animal_kaax.svg" id="6_r"]
+
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_estela_alba.svg" id="7_r"]
+
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_zarzas.svg" id="8_r"]
+
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_ofrenda.svg" id="9_r"]
+
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_arco_despedida.svg" id="10_r"]
+
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_piedra_sakbeh.svg" id="11_r"]
+
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_portal_regreso.svg" id="12_r"]
+
+[node name="Exploracion4" instance=ExtResource("1_r")]
+chapter_title = "Mundo 5 · Exploración — El camino al portal"
+next_scene_key = "world5_level1"
+objective_text = "Sigue el Sak Beh hasta el portal →"
+intro_speaker = "Narrador"
+intro_lines = Array[String](["Amanece sobre el Sak Beh. El libro de Kalin brilla y señala hacia el final del camino.", "Allí late el Portal de Regreso. En el camino hay lugares donde se usan las palabras amables."])
+
+[node name="Imagen" parent="Cielo" index="0"]
+texture = ExtResource("3_r")
+
+[node name="Terreno" parent="." index="1"]
+texture = ExtResource("4_r")
+
+[node name="Peek" type="Sprite2D" parent="Animales" index="0"]
+position = Vector2(3150, 590)
+scale = Vector2(1.4, 1.4)
+texture = ExtResource("5_r")
+offset = Vector2(0, -58)
+
+[node name="Kaax" type="Sprite2D" parent="Animales" index="1"]
+position = Vector2(3240, 596)
+scale = Vector2(1.3, 1.3)
+texture = ExtResource("6_r")
+offset = Vector2(0, -58)
+
+[node name="Estela" parent="Spots" index="0" instance=ExtResource("2_r")]
+position = Vector2(700, 634)
+lines = Array[String](["Una estela con un sol tallado. ¡Justo está saliendo el sol de verdad!", "Peek' me enseñó que por la mañana se saluda así."])
+vocabulary_word = "Bix a beel"
+spot_texture = ExtResource("7_r")
+sprite_offset = Vector2(0, -117)
+glow_position = Vector2(0, -130)
+glow_extents = Vector2(60, 70)
+
+[node name="Zarzas" parent="Spots" index="1" instance=ExtResource("2_r")]
+position = Vector2(1350, 644)
+prompt = "Mover con magia"
+lines = Array[String](["Un muro de zarzas con espinas cierra el sendero.", "No quiero lastimar las plantas... las apartaré con cuidado."])
+reach_radius = 190
+blocks_path = true
+reaction = 1
+spot_texture = ExtResource("8_r")
+sprite_offset = Vector2(0, -117)
+glow_position = Vector2(0, -120)
+glow_extents = Vector2(150, 70)
+
+[node name="Ofrenda" parent="Spots" index="2" instance=ExtResource("2_r")]
+position = Vector2(1900, 630)
+lines = Array[String](["Alguien dejó flores y velas encendidas en este altar de piedra.", "Es una forma de dar las gracias. Yo también tengo mucho que agradecer."])
+vocabulary_word = "Yuum bo'otik"
+spot_texture = ExtResource("9_r")
+sprite_offset = Vector2(0, -67)
+glow_position = Vector2(0, -70)
+glow_extents = Vector2(70, 30)
+
+[node name="Arco" parent="Spots" index="3" instance=ExtResource("2_r")]
+position = Vector2(2500, 618)
+lines = Array[String](["Un arco blanco con un farol encendido. Marca el último tramo del camino.", "Aquí se despide uno de quien se va, deseándole buen viaje."])
+vocabulary_word = "Ka xi'ik tech jats'uts"
+spot_texture = ExtResource("10_r")
+sprite_offset = Vector2(0, -127)
+glow_position = Vector2(0, -110)
+glow_extents = Vector2(70, 70)
+
+[node name="Piedra" parent="Spots" index="4" instance=ExtResource("2_r")]
+position = Vector2(2950, 606)
+lines = Array[String](["Otra piedra del Sak Beh, con una mano tallada que dice adiós.", "Mis amigos prometieron que nos volveremos a ver."])
+vocabulary_word = "Tak ti' uláak' k'iin"
+sprite_scale = Vector2(1.1, 1.1)
+spot_texture = ExtResource("11_r")
+sprite_offset = Vector2(0, -92)
+glow_position = Vector2(0, -120)
+
+[node name="Portal" parent="Spots" index="5" instance=ExtResource("2_r")]
+position = Vector2(3500, 584)
+prompt = "Acercarse"
+lines = Array[String](["El portal late con una luz suave... pero sus runas están apagadas.", "Aún faltan las palabras amables de mi libro. ¡Vamos a recuperarlas!"])
+surprised = true
+reach_radius = 200
+is_goal = true
+auto_trigger = true
+sprite_scale = Vector2(0.9, 0.9)
+spot_texture = ExtResource("12_r")
+sprite_offset = Vector2(0, -192)
+glow_position = Vector2(0, -180)
+glow_extents = Vector2(120, 120)
