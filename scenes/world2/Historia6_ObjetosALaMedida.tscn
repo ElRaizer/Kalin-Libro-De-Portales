@@ -46,13 +46,13 @@ text = "Grande se dice nojoch. ¿Lo encuentras?"
 actors = Array[String](["Peek'", "Áak"])
 target_word = "nojoch"
 options = Array[String](["mejen", "nojoch", "ki'", "Jats'uts"])
-reveal_phrase = "In mayake' nojoch"
-reveal_translation = "Mi mesa es grande."
+reveal_phrase = "mayak · nojoch"
+reveal_translation = "Mesa grande."
 
 [sub_resource type="Resource" id="Beat_9"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "¡Ahora sí! In mayake' nojoch."
+text = "¡Ahora sí! mayak · nojoch."
 actors = Array[String](["Áak", "K'éek'en", "Kéej", "Miis"])
 visual_scene = "tamano"
 visual_solved = true

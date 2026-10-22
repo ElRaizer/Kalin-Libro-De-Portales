@@ -33,8 +33,8 @@ script = ExtResource("entry")
 animal = "Kaax"
 animal_spanish = "Gallina"
 sprite = ExtResource("texture_1")
-food = "pak'al"
-phrase = "In k'a'at pak'al"
+food = "ich"
+phrase = "In k'a'at ich"
 translation = "Quiero fruta"
 
 [sub_resource type="Resource" id="challenges_4"]
@@ -79,7 +79,7 @@ emoji = "🍌"
 
 [sub_resource type="Resource" id="foods_3"]
 script = ExtResource("entry")
-maya = "pak'al"
+maya = "ich"
 spanish = "fruta"
 emoji = "🍎"
 

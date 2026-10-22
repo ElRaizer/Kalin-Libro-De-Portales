@@ -4,7 +4,7 @@ class_name SaveRepository
 ## Único punto de acceso al archivo de progreso. Mantiene los detalles de JSON
 ## y FileAccess fuera de GameManager para que puedan probarse por separado.
 
-const CURRENT_VERSION := 2
+const CURRENT_VERSION := 3
 const DEFAULT_PATH := "user://kalin_save.json"
 
 var save_path: String
@@ -15,21 +15,40 @@ func _init(path: String = DEFAULT_PATH) -> void:
 func save_progress(progress: Dictionary) -> Error:
 	var serialized := progress.duplicate(true)
 	serialized["version"] = CURRENT_VERSION
-	var file := FileAccess.open(save_path, FileAccess.WRITE)
+	var temporary := save_path + ".tmp"
+	var file := FileAccess.open(temporary, FileAccess.WRITE)
 	if file == null:
 		return FileAccess.get_open_error()
 	file.store_string(JSON.stringify(serialized, "\t"))
+	file.flush()
 	var error := file.get_error()
 	file.close()
-	return error
+	if error != OK:
+		return error
+	# Nunca truncar el archivo válido antes de terminar la escritura nueva.
+	if FileAccess.file_exists(save_path) and not _read_progress(save_path).has("_load_error"):
+		error = DirAccess.copy_absolute(save_path, save_path + ".bak")
+		if error != OK:
+			return error
+	return DirAccess.rename_absolute(temporary, save_path)
 
 ## Devuelve un diccionario vacío si no existe partida o si no puede usarse.
 ## La clave `_load_error` permite al consumidor distinguir un archivo ausente
 ## de uno dañado sin acoplarse a JSON ni FileAccess.
 func load_progress() -> Dictionary:
-	if not FileAccess.file_exists(save_path):
+	var result := _read_progress(save_path)
+	if result.get("_unsupported_version", false):
+		return result
+	if result.has("_load_error") or result.is_empty():
+		var backup := _read_progress(save_path + ".bak")
+		if not backup.is_empty() and not backup.has("_load_error"):
+			return backup
+	return result
+
+func _read_progress(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
 		return {}
-	var file := FileAccess.open(save_path, FileAccess.READ)
+	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
 		return {"_load_error": "No se pudo leer el progreso (error %d)." % FileAccess.get_open_error()}
 	var json := JSON.new()
@@ -42,16 +61,16 @@ func load_progress() -> Dictionary:
 	var data: Dictionary = json.data
 	var loaded_version := int(data.get("version", 0))
 	if loaded_version > CURRENT_VERSION:
-		return {"_load_error": "El progreso usa una versión más reciente (%d)." % loaded_version}
+		return {"_load_error": "El progreso usa una versión más reciente (%d)." % loaded_version, "_unsupported_version": true}
 	return data
 
 func delete_progress() -> Error:
-	if not FileAccess.file_exists(save_path):
-		return OK
-	var directory := DirAccess.open(save_path.get_base_dir())
-	if directory == null:
-		return ERR_CANT_OPEN
-	return directory.remove(save_path.get_file())
+	for path: String in [save_path, save_path + ".bak", save_path + ".tmp"]:
+		if FileAccess.file_exists(path):
+			var error := DirAccess.remove_absolute(path)
+			if error != OK:
+				return error
+	return OK
 
 static func sanitize_completed_levels(value: Variant, level_order: Array[Dictionary]) -> Array[String]:
 	var sanitized: Array[String] = []
@@ -76,13 +95,22 @@ static func sanitize_scene_state(value: Dictionary) -> Dictionary:
 			state.erase(key)
 		elif key != "x":
 			state[key] = int(clampf(float(number), -1 if key == "dialogue_word" else 0, 10000))
-	for key: String in ["waiting", "complete", "dialogue_open", "resolved", "intro_done"]:
+	for key: String in ["waiting", "complete", "dialogue_open", "resolved", "intro_done", "cards", "naming_pending"]:
 		if state.has(key) and state[key] is not bool:
 			state.erase(key)
 	for key: String in ["noun", "adjective", "food", "modifier", "active"]:
 		if state.has(key) and state[key] is not String:
 			state.erase(key)
-	for key: String in ["known", "met", "examined", "order", "plan"]:
+	for key: String in ["known", "met", "examined", "order", "plan", "named", "mission_met", "delivered", "task_indices"]:
 		if state.has(key) and state[key] is not Array:
 			state.erase(key)
+	for key: String in ["attempt", "carried", "task_support"]:
+		if state.has(key) and state[key] is not Dictionary:
+			state.erase(key)
+	if state.has("layout_seed"):
+		var seed_value: Variant = state.layout_seed
+		if not (seed_value is float or seed_value is int) or not is_finite(float(seed_value)):
+			state.erase("layout_seed")
+		else:
+			state.layout_seed = clampi(int(seed_value), 1, 2000000000)
 	return state

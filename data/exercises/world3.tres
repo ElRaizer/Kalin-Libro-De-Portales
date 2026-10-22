@@ -31,7 +31,7 @@ spanish = "deliciosa"
 
 [sub_resource type="Resource" id="adjectives_5"]
 script = ExtResource("entry")
-maya = "jach'"
+maya = "chich"
 spanish = "fuerte"
 
 [sub_resource type="Resource" id="challenges_1"]
@@ -39,20 +39,20 @@ script = ExtResource("entry")
 animal = "Peek'"
 animal_spanish = "Perro"
 sprite = ExtResource("texture_5")
-noun = "chan"
-adjective = "jach'"
-phrase = "In chan'e' jach'"
-translation = "Mi silla es fuerte."
+noun = "k'áanche'"
+adjective = "chich"
+phrase = "k'áanche' · chich"
+translation = "Silla fuerte."
 
 [sub_resource type="Resource" id="challenges_2"]
 script = ExtResource("entry")
 animal = "Miis"
 animal_spanish = "Gato"
 sprite = ExtResource("texture_4")
-noun = "ch'áak"
+noun = "k'áan"
 adjective = "mejen"
-phrase = "In ch'áake' mejen"
-translation = "Mi cama es pequeña."
+phrase = "k'áan · mejen"
+translation = "Hamaca pequeña."
 
 [sub_resource type="Resource" id="challenges_3"]
 script = ExtResource("entry")
@@ -61,8 +61,8 @@ animal_spanish = "Gallina"
 sprite = ExtResource("texture_1")
 noun = "lak"
 adjective = "Jats'uts"
-phrase = "In lake' Jats'uts"
-translation = "Mi plato es bonito."
+phrase = "lak · Jats'uts"
+translation = "Plato bonito."
 
 [sub_resource type="Resource" id="challenges_4"]
 script = ExtResource("entry")
@@ -71,8 +71,8 @@ animal_spanish = "Tortuga"
 sprite = ExtResource("texture_0")
 noun = "mayak"
 adjective = "nojoch"
-phrase = "In mayake' nojoch"
-translation = "Mi mesa es grande."
+phrase = "mayak · nojoch"
+translation = "Mesa grande."
 
 [sub_resource type="Resource" id="challenges_5"]
 script = ExtResource("entry")
@@ -81,18 +81,18 @@ animal_spanish = "Cerdo"
 sprite = ExtResource("texture_3")
 noun = "janal"
 adjective = "ki'"
-phrase = "In janale' ki'"
-translation = "Mi comida es deliciosa."
+phrase = "janal · ki'"
+translation = "Comida deliciosa."
 
 [sub_resource type="Resource" id="challenges_6"]
 script = ExtResource("entry")
 animal = "Kéej"
 animal_spanish = "Venado"
 sprite = ExtResource("texture_2")
-noun = "chan"
+noun = "k'áanche'"
 adjective = "Jats'uts"
-phrase = "In chan'e' Jats'uts"
-translation = "Mi silla es bonita."
+phrase = "k'áanche' · Jats'uts"
+translation = "Silla bonita."
 
 [sub_resource type="Resource" id="nouns_1"]
 script = ExtResource("entry")
@@ -108,13 +108,13 @@ emoji = "🍽️"
 
 [sub_resource type="Resource" id="nouns_3"]
 script = ExtResource("entry")
-maya = "ch'áak"
-spanish = "cama"
+maya = "k'áan"
+spanish = "hamaca"
 emoji = "🛏️"
 
 [sub_resource type="Resource" id="nouns_4"]
 script = ExtResource("entry")
-maya = "chan"
+maya = "k'áanche'"
 spanish = "silla"
 emoji = "💺"
 

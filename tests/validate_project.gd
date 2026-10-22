@@ -376,10 +376,10 @@ func _validate_world3_runtime() -> void:
 		failures.append("La interfaz del Mundo 3 no creó las cinco opciones de adjetivo")
 	if cast_button == null or not cast_button.disabled:
 		failures.append("El hechizo debe permanecer bloqueado hasta elegir ambas palabras")
-	if level.noun_buttons.has("chan") and level.adjective_buttons.has("jach'"):
-		(level.noun_buttons["chan"] as Button).pressed.emit()
-		(level.adjective_buttons["jach'"] as Button).pressed.emit()
-		if level.selected_noun != "chan" or level.selected_adjective != "jach'":
+	if level.noun_buttons.has("k'áanche'") and level.adjective_buttons.has("chich"):
+		(level.noun_buttons["k'áanche'"] as Button).pressed.emit()
+		(level.adjective_buttons["chich"] as Button).pressed.emit()
+		if level.selected_noun != "k'áanche'" or level.selected_adjective != "chich":
 			failures.append("Los botones del Mundo 3 no actualizan la frase seleccionada")
 		if cast_button.disabled:
 			failures.append("El botón de hechizo no se habilita al completar los dos espacios")

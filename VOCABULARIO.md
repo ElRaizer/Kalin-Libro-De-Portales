@@ -1,76 +1,43 @@
-# Vocabulario y normalización ortográfica
+# Vocabulario y cotejo documental
 
-Este archivo registra las grafías usadas por el juego. La referencia ortográfica general es la [Norma de escritura para la lengua maya del INALI](https://site.inali.gob.mx/Micrositios/normas/maya), complementada con el [Diccionario Maya de la Universidad Autónoma de Yucatán](https://www.mayas.uady.mx/diccionario/).
+Revisión del 21 de octubre de 2026. Referencia principal: [Diccionario Básico Español–Maya–Español de la UADY](https://www.mayas.uady.mx/diccionario/), de Juan R. Bastarrachea, Ermilo Yah Pech y Fidencio Briceño Chel, edición de 1992.
 
-## Criterio del proyecto
+El cotejo comprueba palabras y sentidos documentados. **No constituye una validación por hablantes de las frases, su sintaxis, su adecuación regional ni su pronunciación.** Las grabaciones siguen pendientes. Las cuatro fórmulas de cortesía conservan su referencia en el [prontuario del INALI](https://site.inali.gob.mx/Micrositios/Prontuarios/maya.html); no se atribuyen al diccionario de la UADY.
 
-- Los textos visibles usan una grafía canónica única.
-- El código utiliza el apóstrofo ASCII `'` para representar el cierre glotal y evitar diferencias técnicas entre caracteres tipográficos.
-- Las claves antiguas se migran automáticamente al cargar una partida.
-- Los nombres de audio eliminan acentos y apóstrofos, pero la interfaz conserva la grafía completa.
-- Se mantiene el vocabulario y el significado pedagógico definidos por el GDD. Las observaciones lexicográficas que cambian esos significados se documentan, pero no sustituyen el contenido sin una revisión posterior del GDD.
+La trazabilidad por entrada está en `data/vocabulary_sources.json`: fuente, enlace, sentido consultado y estado. La validación automática comprueba que todas las palabras del catálogo tengan referencia y que las formas retiradas no reaparezcan como respuestas nuevas.
 
-## Normalizaciones realizadas
+## Correcciones aplicadas
 
-| Variante anterior | Grafía adoptada | Nota |
+| Antes | Ahora | Evidencia y decisión |
 |---|---|---|
-| `Míis` | `Miis` | Gato |
-| `Káax` | `Kaax` | Gallina |
-| `Aak'` / `Áak'` | `Áak` | Tortuga |
-| `K'uum` | `K'úum` | Calabaza; confirmada para el proyecto |
-| `Ja'as` | `ja'as` | Plátano; se normalizó la mayúscula en listas y frases internas |
-| `T'uut` | `T'uut'` | Loro; entrada reservada para contenido futuro |
+| `chan` = silla | `k'áanche'` = silla | [UADY, Silla](https://www.mayas.uady.mx/diccionario/s_esp.html). La forma anterior deja de ser respuesta de silla. |
+| `jach'` = fuerte | `chich` = fuerte | [UADY, CHICH](https://www.mayas.uady.mx/diccionario/ch_maya.html). [JACH](https://www.mayas.uady.mx/diccionario/j_maya.html) figura como intensificador, no como el adjetivo enseñado antes. |
+| `pak'al` = fruta | `ich` = fruta | [UADY, Fruta](https://www.mayas.uady.mx/diccionario/f_esp.html). La [entrada P](https://www.mayas.uady.mx/diccionario/p_maya.html) distingue además plantío y naranja agria: no confundir esas grafías con fruta genérica. |
+| `ch'áak` = cama | `k'áan` = hamaca | No se encontró en la consulta respaldo claro para la asociación anterior. Se sustituye el concepto por [Hamaca](https://www.mayas.uady.mx/diccionario/h_esp.html), con ilustración nueva. No se afirma que hamaca y cama sean sinónimos. |
+| `Kuuts` = pavo | `Kuuts` = pavo de monte | Se precisa el sentido de [KUUTS](https://www.mayas.uady.mx/diccionario/k_maya.html). |
 
-Las palabras `Peek'`, `Kéej`, `K'éek'en`, `Ma'ax`, `Báalam`, `Kuuts`, `T'u'ul`, `Kay` y `Ch'íich'` ya coinciden con la escritura adoptada.
+## Entradas conservadas tras el cotejo
 
-## Vocabulario por mundo
+| Grupo | Palabras | Referencias |
+|---|---|---|
+| Aldea | `Peek'`, `Miis`, `Kaax`, `Áak` | [P](https://www.mayas.uady.mx/diccionario/p_maya.html), [M](https://www.mayas.uady.mx/diccionario/m_maya.html), [Gallina](https://www.mayas.uady.mx/diccionario/g_esp.html), [Áak](https://www.mayas.uady.mx/diccionario/a_maya.html) |
+| Bosque y monte | `Kéej`, `K'éek'en`, `Ma'ax`, `Báalam`, `Kuuts`, `T'u'ul` | [K](https://www.mayas.uady.mx/diccionario/k_maya.html), [K glotal](https://www.mayas.uady.mx/diccionario/k_glotal_maya.html), [M](https://www.mayas.uady.mx/diccionario/m_maya.html), [Jaguar](https://www.mayas.uady.mx/diccionario/j_esp.html), [T glotal](https://www.mayas.uady.mx/diccionario/t_glotal_maya.html) |
+| Agua y cielo | `Kay`, `Ch'íich'` | [K](https://www.mayas.uady.mx/diccionario/k_maya.html), [Pájaro](https://www.mayas.uady.mx/diccionario/p_esp.html) |
+| Casa | `mayak`, `lak`, `janal` | [Mesa](https://www.mayas.uady.mx/diccionario/m_esp.html), [Lak](https://www.mayas.uady.mx/diccionario/l_maya.html), [Janal](https://www.mayas.uady.mx/diccionario/j_maya.html). La ilustración de lak representa un plato de barro. |
+| Cualidades | `mejen`, `nojoch`, `Jats'uts`, `ki'` | [M](https://www.mayas.uady.mx/diccionario/m_maya.html), [N](https://www.mayas.uady.mx/diccionario/n_maya.html), [J](https://www.mayas.uady.mx/diccionario/j_maya.html), [K](https://www.mayas.uady.mx/diccionario/k_maya.html) |
+| Comida | `ja'`, `ja'as`, `K'úum` | [J](https://www.mayas.uady.mx/diccionario/j_maya.html), [Plátano](https://www.mayas.uady.mx/diccionario/p_esp.html), [Calabaza](https://www.mayas.uady.mx/diccionario/c_esp.html) |
+| Reservada | `T'uut'` | [T glotal](https://www.mayas.uady.mx/diccionario/t_glotal_maya.html). No cuenta para completar las páginas. |
 
-| Mundo | Nivel | Vocabulario |
-|---:|---:|---|
-| 1 | 1 | `Peek'`, `Miis`, `Kaax` |
-| 1 | 2 | `Kéej`, `K'éek'en`, `Ma'ax` |
-| 1 | 3 | `Báalam`, `Kuuts`, `T'u'ul` |
-| 1 | 4 | `Kay`, `Ch'íich'`, `Áak` |
-| 2 | 1 | `mayak`, `lak`, `ch'áak`, `chan`, `janal` |
-| 3 | 1 | `mejen`, `nojoch`, `Jats'uts`, `ki'`, `jach'` |
-| 4 | 1 | `ja'`, `ja'as`, `pak'al`, `K'úum` |
-| 5 | 1 | `Bix a beel`, `Yuum bo'otik`, `Ka xi'ik tech jats'uts`, `Tak ti' uláak' k'iin` |
+Las claves conservan el apóstrofo ASCII; la entrada escrita acepta también el tipográfico. Se conservan vocales largas, tonos y cierres glotales. No se trata una palabra sin apóstrofo como si fuera la misma palabra.
 
-`Jats'uts` y `jach'` se incorporaron al Mundo 3 durante la reconstrucción de su
-mecánica de sustantivos y adjetivos. `T'uut'` permanece en el catálogo para
-contenido futuro, no se enseña en una escena jugable y no cuenta para completar
-el Libro de Hechizos.
+## Frases y combinaciones
 
-Para mantener grupos pares de botones, las historias incluyen cuatro animales
-en las presentaciones y preguntas: Áak acompaña al primer grupo y Peek' acompaña
-a los grupos siguientes. Los ejercicios de palabras muestran dos o cuatro
-respuestas, conservan siempre la correcta y alternan distractores del catálogo.
-En el Mundo 4, `ki'` también aparece como distractor de cualidad; no se añadieron
-nuevas grafías ni traducciones.
+El taller muestra fichas léxicas separadas con `·`, por ejemplo `mayak · nojoch`: objeto y cualidad. No se presenta esa concatenación como una oración completa validada. Se retiró la generación de supuestas flexiones posesivas a partir del primer ejemplo de cada sustantivo.
 
-Las frases de cortesía del Mundo 5 se tomaron inicialmente del Prontuario de
-frases de cortesía en maya del INALI. Deben revisarse con una persona hablante
-antes de grabar su pronunciación o considerar definitivo el contenido.
+Las presentaciones, peticiones y cortesías conservan material del prototipo y su referencia documental cuando existe. Deben revisarse como enunciados completos con las personas hablantes antes de grabarlos o considerarlos definitivos. Un diccionario de palabras aisladas no acredita automáticamente una estructura gramatical construida por el juego.
 
-## Decisiones conservadas del GDD
+## Partidas anteriores
 
-La consulta lexicográfica produjo observaciones de significado para `ch'áak`, `chan`, `pak'al` y `jach'`. Por decisión del proyecto, se conservan las asociaciones del GDD:
+Los identificadores retirados migran a las páginas nuevas para conservar logros, pero no se aceptan como respuestas correctas. La sustitución cama → hamaca es una migración de contenido, no una equivalencia léxica. Los ejercicios afectados se reinician al migrar un checkpoint anterior al formato 3; se conservan niveles completados y puntos.
 
-| Palabra del GDD | Significado conservado en el juego |
-|---|---|
-| `ch'áak` | Cama |
-| `chan` | Silla |
-| `pak'al` | Fruta |
-| `jach'` | Fuerte |
-
-Estas cuatro entradas deben revisarse junto con el GDD y una persona especialista antes de presentar el juego como material lingüístico validado. La UADY documenta, por ejemplo, `k'áanche'` para silla, `ich` para fruta y otras formas para fuerte; no se aplicaron esos cambios porque alterarían el vocabulario pedagógico solicitado.
-
-## Recomendación para futuras incorporaciones
-
-Antes de agregar una palabra nueva:
-
-1. Confirmar grafía, significado y contexto de uso con al menos una fuente institucional.
-2. Validar la frase completa, no solo la palabra aislada.
-3. Registrar una única clave en `GameManager.VOCABULARY`.
-4. Agregar alias solamente si una versión anterior ya pudo quedar guardada.
-5. Validar pronunciación y audio con una persona hablante de maya yucateco.
+Los logros antiguos se interpretan como descubrimientos. No se inventan recuerdos independientes ni se transfieren evidencias a traducciones corregidas.

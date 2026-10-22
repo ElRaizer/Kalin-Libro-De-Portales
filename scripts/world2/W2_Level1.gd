@@ -9,7 +9,7 @@
 ##   Fase 2 (Recuerda):  dos peticiones con traducción de transición y después
 ##                       sólo las palabras mayas en las respuestas.
 ## Vocabulario centralizado en GameManager.VOCABULARY, mundo 2 nivel 1:
-##   mayak (mesa), lak (plato), ch'áak (cama), chan (silla), janal (comida)
+##   mayak (mesa), lak (plato), k'áan (hamaca), k'áanche' (silla), janal (comida)
 extends Node2D
 
 @export var content: ExerciseSet
@@ -39,6 +39,10 @@ var room_items: Dictionary = {}
 @onready var choice_preview: MeaningIllustration = $UI/FeedbackPanel/ChoicePreview
 var _help_stage := 0
 var _blocks_seen: Array[int] = []
+var _attempt := LearningAttempt.new()
+var _layout_seed := 1
+var _practice_fallback := false
+@onready var recall: RecallPanel = $UI/RecallPanel
 
 @onready var animal_spr: TextureRect = $UI/RequestPanel/AnimalSprite
 @onready var need_lbl: Label = $UI/RequestPanel/VBox/NeedLbl
@@ -65,6 +69,9 @@ func _ready() -> void:
 		round_order.append(index)
 	round_order.shuffle()
 	var state := GameManager.get_scene_state(self)
+	_attempt.restore(state.get("attempt"))
+	_practice_fallback = bool(state.get("cards", false))
+	_layout_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
 	_blocks_seen = ExerciseProgress.restore_markers(state.get("blocks"), total_rounds)
 	round_order = ExerciseProgress.order_or(state.get("order"), objects.size(), round_order)
 	round_index = clampi(int(state.get("round", 0)), 0, total_rounds)
@@ -77,12 +84,16 @@ func _ready() -> void:
 	for button: Button in choices_grid.get_children():
 		button.pressed.connect(func(): _on_choice_pressed(str(button.get_meta("word"))))
 	next_button.pressed.connect(_advance_round)
+	recall.submitted.connect(func(): _on_choice_pressed(recall.first.text))
+	recall.practice_requested.connect(_practice_with_cards)
 	mission_break.continued.connect(func(): guide.watch_action(choices_grid))
 	_restore_room()
 	if round_index >= total_rounds:
 		_on_level_complete()
 	else:
 		_show_round()
+		if recall.visible:
+			recall.first.text = str(state.get("recall_text", ""))
 		if bool(state.get("waiting", false)):
 			_render_success(false)
 
@@ -112,7 +123,11 @@ func _show_round() -> void:
 	choice_preview.hide()
 	feedback_lbl.offset_left = _feedback_left
 	_waiting = false
-	_mistakes = 0
+	var continuing := _attempt.context == "world2:%d@%d" % [round_index, _layout_seed]
+	_attempt.begin("world2:%d@%d" % [round_index, _layout_seed])
+	_mistakes = _attempt.mistakes
+	_practice_fallback = _practice_fallback if continuing else false
+	recall.hide()
 	_help_stage = 0
 	next_button.hide()
 	feedback_lbl.text = "Elige el hechizo para ayudar."
@@ -120,14 +135,20 @@ func _show_round() -> void:
 	var obj := _current_object()
 	var vocab := GameManager.get_vocabulary_entry(obj.maya)
 	current_phase = 0 if round_index < objects.size() else 1
+	if current_phase == 0:
+		GameManager.learn_word(obj.maya)
 	animal_spr.texture = obj.sprite
-	need_lbl.text = obj.request if current_phase == 0 else "¿Qué palabra crea este objeto?"
+	need_lbl.text = obj.request if current_phase == 0 else "Escribe en maya: %s" % vocab.spanish.to_lower()
 	word_lbl.text = "%s · %s" % [obj.maya, vocab.spanish] if current_phase == 0 else ""
 	request_art.show_meaning(obj.maya)
+	request_art.visible = current_phase == 0 or _practice_fallback
 	phase_lbl.text = "%s · %d / %d" % ["Aprende" if current_phase == 0 else "Recuerda", round_index % objects.size() + 1, objects.size()]
 	progress_lbl.text = "%d / %d muebles recuperados" % [mini(round_index, objects.size()), objects.size()]
 	mission_progress.update_progress(round_index, total_rounds, "La casa · %d / %d · %s" % [round_index % objects.size() + 1, objects.size(), "Con ayuda" if current_phase == 0 else ("Una pista" if round_index < objects.size() + 2 else "A tu turno")])
 	_build_choices()
+	choices_grid.visible = current_phase == 0 or _practice_fallback
+	if current_phase == 1 and not _practice_fallback:
+		recall.configure(["Objeto"])
 	if round_index == 0 and "objects" not in GameManager.tutorials_seen:
 		call_deferred("_show_help")
 	else:
@@ -143,13 +164,22 @@ func _build_choices() -> void:
 	_choice_buttons.clear()
 	var pool: Array[ExerciseEntry] = objects.duplicate()
 	pool.erase(_current_object())
-	pool.shuffle()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("%d:%d" % [_layout_seed, round_index])
+	pool.sort_custom(func(a: ExerciseEntry, b: ExerciseEntry): return a.maya < b.maya)
+	for index: int in range(pool.size() - 1, 0, -1):
+		var other := rng.randi_range(0, index)
+		var swap: ExerciseEntry = pool[index]
+		pool[index] = pool[other]
+		pool[other] = swap
 	# Dos opciones al empezar y cuatro después, siempre en filas completas de dos.
 	var count := mini(2 if current_phase == 0 and round_index == 0 else 4, objects.size())
 	count -= count % 2
 	pool = pool.slice(0, count - 1)
 	pool.append(_current_object())
-	pool.shuffle()
+	var correct_position := rng.randi_range(0, pool.size() - 1)
+	var correct_item := pool.pop_back() as ExerciseEntry
+	pool.insert(correct_position, correct_item)
 	for index: int in range(pool.size()):
 		var obj := pool[index]
 		var button := choices_grid.get_child(index) as Button
@@ -157,7 +187,7 @@ func _build_choices() -> void:
 		button.disabled = false
 		button.set_meta("word", obj.maya)
 		button.text = obj.maya
-		if current_phase == 1 and round_index < objects.size() + 2:
+		if current_phase == 1 and _practice_fallback:
 			button.text += "\n" + str(GameManager.get_vocabulary_entry(obj.maya).spanish)
 		button.icon = GameManager.get_visual_texture(obj.maya) if current_phase == 0 else null
 		_choice_buttons.append(button)
@@ -167,25 +197,34 @@ func _on_choice_pressed(word: String) -> void:
 	if _completing or _waiting:
 		return
 	guide.stop()
+	if current_phase == 1 and not _practice_fallback:
+		var match_result := RecallPanel.match_word(word, _current_object().maya)
+		if match_result.correct:
+			word = match_result.word
+			_attempt.supported = _attempt.supported or match_result.supported
 	if word == _current_object().maya:
 		GameManager.learn_word(word)
+		GameManager.record_learning([word], "recall" if current_phase == 1 else "practice", _attempt.context, _attempt.supported, _attempt.mistakes)
 		GameManager.mark_tutorial_seen("objects")
 		_render_success(true)
 	else:
+		_attempt.miss()
 		_mistakes += 1
 		choice_preview.show()
 		choice_preview.show_meaning(word)
 		feedback_lbl.offset_left = maxf(_feedback_left, choice_preview.position.x + choice_preview.size.x + 11)
 		CharacterReaction.play(animal_spr, false)
 		var meaning := GameManager.get_vocabulary_entry(word)
-		feedback_lbl.text = "%s significa %s. Busca el objeto de la imagen." % [word, meaning.spanish]
+		feedback_lbl.text = "%s significa %s. Revisa la petición." % [word, meaning.spanish] if not meaning.is_empty() else "Revisa tu palabra. Puedes usar los acentos o volver a practicar."
 		feedback_lbl.add_theme_color_override("font_color", Color("b56a1f"))
 		if _mistakes >= 2:
 			_help_stage = mini(_mistakes - 2, 2)
 			_show_help()
+		GameManager.checkpoint(self)
 
 func _render_success(animate: bool) -> void:
 	_waiting = true
+	recall.hide()
 	mission_progress.update_progress(round_index + 1, total_rounds, "La casa · %d / %d · ¡Creado!" % [round_index % objects.size() + 1, objects.size()])
 	choice_preview.hide()
 	feedback_lbl.offset_left = _feedback_left
@@ -222,6 +261,10 @@ func _show_help() -> void:
 	if _waiting:
 		guide.point_at(next_button)
 		return
+	mark_learning_help()
+	if recall.visible:
+		_practice_with_cards()
+		return
 	if not (round_index == 0 and "objects" not in GameManager.tutorials_seen) and _help_stage < 2:
 		guide.highlight(request_art if _help_stage == 0 else choices_grid)
 		_help_stage += 1
@@ -251,13 +294,27 @@ func _on_next_level_pressed() -> void:
 	GameManager.go_to_scene("world2_story1")
 
 func _on_book_pressed() -> void:
-	libro.show_book()
+	libro.show_book($UI/TopBar/BookBtn)
 
 func _on_replay_pressed() -> void:
 	GameManager.replay_scene(GameManager.scene_key_for(self))
 
 func get_checkpoint_state() -> Dictionary:
-	return {"order": round_order, "round": round_index, "waiting": _waiting, "blocks": _blocks_seen}
+	return {"order": round_order, "round": round_index, "waiting": _waiting, "blocks": _blocks_seen, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "cards": _practice_fallback, "recall_text": recall.first.text}
+
+func mark_learning_help() -> void:
+	if not _waiting and not _completing:
+		_attempt.supported = true
+		GameManager.checkpoint(self)
+
+func _practice_with_cards() -> void:
+	mark_learning_help()
+	_practice_fallback = true
+	recall.hide()
+	choices_grid.show()
+	request_art.show()
+	_build_choices()
+	feedback_lbl.text = "Practiquemos. Después podrás recordarla en otra situación."
 
 func get_configuration_issues() -> PackedStringArray:
 	if content == null:

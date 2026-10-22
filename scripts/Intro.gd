@@ -56,6 +56,11 @@ func _input(event: InputEvent) -> void:
 		_advance()
 	elif event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode in [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER]:
+			var focused := get_viewport().gui_get_focus_owner()
+			if focused is BaseButton and focused != continue_button:
+				get_viewport().set_input_as_handled()
+				(focused as BaseButton).pressed.emit()
+				return
 			get_viewport().set_input_as_handled()
 			_advance()
 

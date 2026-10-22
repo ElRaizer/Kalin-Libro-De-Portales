@@ -23,6 +23,9 @@ var challenge_art: MeaningIllustration
 @onready var portal_visual: PortalVisual = $PortalVisual
 @onready var mission_progress: MissionProgress = $UI/MissionProgress
 var _help_stage := 0
+var _attempt := LearningAttempt.new()
+var _layout_seed := 1
+@onready var recall: RecallPanel = $UI/RecallPanel
 @onready var feedback_art: MeaningIllustration = $UI/FeedbackPanel/FeedbackArt
 
 @onready var header: Panel = $UI/LevelHeader
@@ -60,12 +63,18 @@ func _ready() -> void:
 		button.pressed.connect(func(): _on_option_pressed(str(button.get_meta("phrase"))))
 	challenge_art = $UI/ChallengePanel/Content/ChallengeArt
 	next_button.pressed.connect(_advance_challenge)
+	recall.submitted.connect(func(): _on_option_pressed(recall.first.text))
+	recall.practice_requested.connect(_practice_with_cards)
 	var state := GameManager.get_scene_state(self)
+	_attempt.restore(state.get("attempt"))
+	_layout_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
 	challenge_index = clampi(int(state.get("challenge", 0)), 0, challenges.size())
 	portal_energy.value = challenge_index
 	portal_visual.energy = challenge_index
 	portal_glow.color.a = minf(0.16 + 0.06 * challenge_index, 0.62)
 	_show_challenge()
+	if recall.visible:
+		recall.first.text = str(state.get("recall_text", ""))
 	if challenge_index < challenges.size() and bool(state.get("waiting", false)):
 		_render_success(false)
 
@@ -77,11 +86,16 @@ func _show_challenge() -> void:
 		return
 	_resolving = false
 	_awaiting_continue = false
-	_mistakes = 0
+	_attempt.begin("world5:%d@%d" % [challenge_index, _layout_seed])
+	_mistakes = _attempt.mistakes
+	recall.hide()
+	options_box.show()
 	_help_stage = 0
 	feedback_art.hide()
 	feedback_label.offset_left = _feedback_left
 	var challenge := challenges[challenge_index]
+	if not challenge.learn.is_empty() and challenge_index >= 4:
+		GameManager.learn_word(challenge.learn)
 	section_label.text = "Página %d / %d" % [challenge_index + 1, challenges.size()]
 	prompt_label.text = challenge.prompt
 	clue_label.text = challenge.clue
@@ -100,6 +114,11 @@ func _show_challenge() -> void:
 	progress_label.text = "%d / %d páginas" % [challenge_index, challenges.size()]
 	portal_label.text = "El portal está despertando"
 	_build_options(challenge.options)
+	challenge_art.visible = challenge_index >= 4 or _attempt.supported
+	if challenge_index < 4 and not _attempt.supported:
+		options_box.hide()
+		recall.configure(["Hechizo completo"])
+		feedback_label.text = "Recuerda tu hechizo. Puedes volver a practicar."
 	guide.watch_action(options_box)
 	mission_progress.update_progress(challenge_index, challenges.size(), "El portal · %d / %d" % [challenge_index + 1, challenges.size()])
 	GameManager.checkpoint(self)
@@ -109,7 +128,13 @@ func _build_options(options: Array) -> void:
 		(child as Button).hide()
 	option_buttons.clear()
 	var shuffled: Array = options.duplicate()
-	shuffled.shuffle()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("%d:%d" % [_layout_seed, challenge_index])
+	for index: int in range(shuffled.size() - 1, 0, -1):
+		var other := rng.randi_range(0, index)
+		var swap: Variant = shuffled[index]
+		shuffled[index] = shuffled[other]
+		shuffled[other] = swap
 	for index: int in range(shuffled.size()):
 		var phrase: String = shuffled[index]
 		var button := options_box.get_child(index) as Button
@@ -126,7 +151,13 @@ func _on_option_pressed(phrase: String) -> void:
 		return
 	var challenge := challenges[challenge_index]
 	guide.stop()
+	if recall.visible:
+		var match_result := RecallPanel.match_word(phrase, challenge.correct)
+		if match_result.correct:
+			phrase = match_result.word
+			_attempt.supported = _attempt.supported or match_result.supported
 	if phrase != challenge.correct:
+		_attempt.miss()
 		_mistakes += 1
 		feedback_art.show()
 		var created := phrase
@@ -156,9 +187,18 @@ func _on_option_pressed(phrase: String) -> void:
 		if _mistakes >= 2:
 			_help_stage = mini(_mistakes - 2, 2)
 			_show_help()
+		GameManager.checkpoint(self)
 		return
 	if str(challenge.learn) != "":
 		GameManager.learn_word(challenge.learn)
+	var evidence_words: Array[String] = []
+	if not challenge.learn.is_empty():
+		evidence_words.append(challenge.learn)
+	if evidence_words.is_empty():
+		for word: String in GameManager.get_learnable_vocabulary_keys():
+			if word in challenge.correct.split(" ", false):
+				evidence_words.append(word)
+	GameManager.record_learning(evidence_words, "recall" if challenge_index < 4 else "practice", _attempt.context, _attempt.supported, _attempt.mistakes)
 	_render_success(true)
 
 func _finish_world() -> void:
@@ -181,7 +221,7 @@ func _on_epilogue_pressed() -> void:
 	GameManager.go_to_scene("world5_story1")
 
 func _on_book_pressed() -> void:
-	libro.show_book()
+	libro.show_book($UI/LevelHeader/Bar/BookButton)
 
 func _on_replay_pressed() -> void:
 	GameManager.replay_scene(GameManager.scene_key_for(self))
@@ -191,6 +231,7 @@ func _render_success(animate: bool) -> void:
 	feedback_label.offset_left = _feedback_left
 	_resolving = true
 	_awaiting_continue = true
+	recall.hide()
 	guide.stop()
 	for button: Button in option_buttons:
 		button.disabled = true
@@ -221,6 +262,10 @@ func _show_help() -> void:
 	if _awaiting_continue:
 		guide.point_at(next_button)
 	elif not _resolving:
+		mark_learning_help()
+		if recall.visible:
+			_practice_with_cards()
+			return
 		if _help_stage < 2:
 			guide.highlight(challenge_art if _help_stage == 0 else options_box)
 			_help_stage += 1
@@ -231,7 +276,19 @@ func _show_help() -> void:
 				return
 
 func get_checkpoint_state() -> Dictionary:
-	return {"challenge": challenge_index, "waiting": _awaiting_continue}
+	return {"challenge": challenge_index, "waiting": _awaiting_continue, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "recall_text": recall.first.text}
+
+func mark_learning_help() -> void:
+	if not _resolving:
+		_attempt.supported = true
+		GameManager.checkpoint(self)
+
+func _practice_with_cards() -> void:
+	mark_learning_help()
+	recall.hide()
+	options_box.show()
+	challenge_art.show()
+	feedback_label.text = "Practiquemos. El portal seguirá esperando."
 
 func get_configuration_issues() -> PackedStringArray:
 	if content == null:

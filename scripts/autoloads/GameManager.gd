@@ -8,6 +8,7 @@ signal word_learned(word_data: Dictionary)
 signal magic_points_changed(new_total: int)
 signal level_completed(world: int, level: int)
 signal progress_reset
+signal learning_changed
 
 var magic_points: int = 0
 var words_learned: Dictionary = {}
@@ -15,6 +16,8 @@ var completed_levels: Array[String] = []
 var resume_scene_key: String = ""
 var scene_states: Dictionary = {}
 var tutorials_seen: Array[String] = []
+var learning_progress: Dictionary = {}
+var learning_clock := 0
 
 ## Alias de compatibilidad para consumidores existentes.
 const VOCABULARY: Dictionary = CONTENT.VOCABULARY
@@ -58,6 +61,34 @@ func learn_word(maya_word: String) -> void:
 func has_learned_word(maya_word: String) -> bool:
 	var key: String = _resolve_vocab_key(maya_word)
 	return key != "" and key in words_learned
+
+func record_learning(words: Array, phase: String, context: String, supported: bool = false, mistakes: int = 0) -> void:
+	var fresh := false
+	for word: String in words:
+		var key := _resolve_vocab_key(word)
+		if not key.is_empty() and context not in LearningProgress.sanitize(learning_progress.get(key)).contexts:
+			fresh = true
+	if not fresh:
+		return
+	learning_clock += 1
+	for word: String in words:
+		var key := _resolve_vocab_key(word)
+		if key.is_empty():
+			continue
+		learn_word(key)
+		var record := LearningProgress.sanitize(learning_progress.get(key))
+		LearningProgress.record_result(record, phase, context, supported, mistakes, learning_clock)
+		learning_progress[key] = record
+	learning_changed.emit()
+	_save()
+
+func learning_caption(word: String) -> String:
+	return LearningProgress.caption(LearningProgress.sanitize(learning_progress.get(_resolve_vocab_key(word))))
+
+func mark_learning_support() -> void:
+	var scene := get_tree().current_scene
+	if is_instance_valid(scene) and scene.has_method("mark_learning_help"):
+		scene.mark_learning_help()
 
 func get_vocabulary_entry(maya_word: String) -> Dictionary:
 	var key: String = _resolve_vocab_key(maya_word)
@@ -178,6 +209,8 @@ func reset_save() -> void:
 	resume_scene_key = ""
 	scene_states.clear()
 	tutorials_seen.clear()
+	learning_progress.clear()
+	learning_clock = 0
 	magic_points_changed.emit(0)
 	progress_reset.emit()
 	var error: Error = _get_save_repository().delete_progress()
@@ -189,7 +222,7 @@ func _add_magic(amount: int) -> void:
 	magic_points_changed.emit(magic_points)
 
 func _save() -> void:
-	var data: Dictionary = {"version": SAVE_VERSION, "magic_points": magic_points, "words_learned": words_learned, "completed_levels": completed_levels, "resume_scene_key": resume_scene_key, "scene_states": scene_states, "tutorials_seen": tutorials_seen}
+	var data: Dictionary = {"version": SAVE_VERSION, "magic_points": magic_points, "words_learned": words_learned, "completed_levels": completed_levels, "resume_scene_key": resume_scene_key, "scene_states": scene_states, "tutorials_seen": tutorials_seen, "learning_progress": learning_progress, "learning_clock": learning_clock}
 	var error: Error = _get_save_repository().save_progress(data)
 	if error != OK:
 		push_warning("GameManager: no se pudo guardar el progreso (error %d)" % error)
@@ -219,16 +252,30 @@ func _load_save() -> void:
 			if tutorial is String and tutorial not in tutorials_seen:
 				tutorials_seen.append(tutorial)
 	words_learned = {}
+	learning_progress.clear()
+	var clock_value: Variant = result.get("learning_clock", 0)
+	learning_clock = clampi(int(clock_value), 0, 1000000) if (clock_value is int or clock_value is float) and is_finite(float(clock_value)) else 0
 	var loaded_words: Variant = result.get("words_learned", {})
 	if loaded_words is Dictionary:
 		for old_key: String in loaded_words:
 			var canonical_key := _resolve_vocab_key(old_key)
 			if canonical_key != "":
 				words_learned[canonical_key] = VOCABULARY[canonical_key].duplicate()
+	var evidence: Variant = result.get("learning_progress", {})
+	if evidence is Dictionary:
+		for word: String in evidence:
+			if word in VOCABULARY and word in words_learned:
+				learning_progress[word] = LearningProgress.sanitize(evidence[word])
+	# Los logros antiguos son descubrimientos, nunca pruebas de recuerdo. Los
+	# checkpoints con IDs de vocabulario sustituidos deben recrear sus opciones.
+	if int(result.get("version", 0)) < 3:
+		for key: String in scene_states.keys():
+			if key.begins_with("world2_level") or key.begins_with("world3_level") or key.begins_with("world4_level") or key.begins_with("world5_level"):
+				scene_states.erase(key)
 	# Sólo los guardados anteriores al sistema de niveles necesitan esta inferencia.
 	if int(result.get("version", 0)) == 0:
 		_migrate_completed_stage_from_words(3, 1, ["mejen", "nojoch", "ki'"])
-		_migrate_completed_stage_from_words(4, 1, ["ja'", "ja'as", "pak'al", "K'úum"])
+		_migrate_completed_stage_from_words(4, 1, ["ja'", "ja'as", "ich", "K'úum"])
 	magic_points_changed.emit(magic_points)
 
 func _sanitize_completed_levels(value: Variant) -> Array[String]:

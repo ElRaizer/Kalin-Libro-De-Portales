@@ -122,7 +122,7 @@ func _on_level_completed(_world: int, _level: int) -> void:
 	_refresh_ui()
 
 func _on_book_pressed() -> void:
-	libro.show_book()
+	libro.show_book(book_btn)
 
 func _on_reset_pressed() -> void:
 	reset_confirmation.show_dialog()

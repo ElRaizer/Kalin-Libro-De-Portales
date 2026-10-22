@@ -1,0 +1,191 @@
+{
+  "checked_on": "2026-10-21",
+  "scope": "Cotejo léxico documental; no certifica pronunciación, flexión, sintaxis ni adecuación regional.",
+  "dictionary": "Diccionario Básico Español–Maya–Español, Bastarrachea, Yah Pech y Briceño Chel, 1992, edición web UADY.",
+  "speaker_review_pending": true,
+  "pronunciation_pending": true,
+  "entries": {
+	"Peek'": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/p_maya.html",
+	  "sense": "Perro"
+	},
+	"Miis": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/m_maya.html",
+	  "sense": "Gato"
+	},
+	"Kaax": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/g_esp.html",
+	  "sense": "Gallina"
+	},
+	"Áak": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/a_maya.html",
+	  "sense": "Tortuga"
+	},
+	"Kéej": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/k_maya.html",
+	  "sense": "Venado"
+	},
+	"K'éek'en": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/k_glotal_maya.html",
+	  "sense": "Cerdo"
+	},
+	"Ma'ax": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/m_maya.html",
+	  "sense": "Mono"
+	},
+	"T'uut'": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/t_glotal_maya.html",
+	  "sense": "Loro"
+	},
+	"mayak": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/m_esp.html",
+	  "sense": "Mesa"
+	},
+	"lak": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/l_maya.html",
+	  "sense": "Plato de barro"
+	},
+	"k'áan": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/h_esp.html",
+	  "sense": "Hamaca"
+	},
+	"k'áanche'": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/s_esp.html",
+	  "sense": "Silla"
+	},
+	"janal": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/j_maya.html",
+	  "sense": "Comida"
+	},
+	"mejen": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/m_maya.html",
+	  "sense": "Pequeño"
+	},
+	"nojoch": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/n_maya.html",
+	  "sense": "Grande"
+	},
+	"Jats'uts": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/j_maya.html",
+	  "sense": "Bonito"
+	},
+	"ki'": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/k_maya.html",
+	  "sense": "Sabroso"
+	},
+	"chich": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/ch_maya.html",
+	  "sense": "Fuerte"
+	},
+	"ja'": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/j_maya.html",
+	  "sense": "Agua"
+	},
+	"ja'as": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/p_esp.html",
+	  "sense": "Plátano"
+	},
+	"ich": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/f_esp.html",
+	  "sense": "Fruta"
+	},
+	"K'úum": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/c_esp.html",
+	  "sense": "Calabaza"
+	},
+	"Kuuts": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/k_maya.html",
+	  "sense": "Pavo de monte"
+	},
+	"Báalam": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/j_esp.html",
+	  "sense": "Jaguar"
+	},
+	"T'u'ul": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/t_glotal_maya.html",
+	  "sense": "Conejo"
+	},
+	"Kay": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/k_maya.html",
+	  "sense": "Pez"
+	},
+	"Ch'íich'": {
+	  "status": "lexical_cross_check",
+	  "institution": "UADY",
+	  "url": "https://www.mayas.uady.mx/diccionario/p_esp.html",
+	  "sense": "Pájaro"
+	},
+	"Bix a beel": {
+	  "status": "phrase_reference_pending_speaker_review",
+	  "institution": "INALI",
+	  "url": "https://site.inali.gob.mx/Micrositios/Prontuarios/maya.html"
+	},
+	"Yuum bo'otik": {
+	  "status": "phrase_reference_pending_speaker_review",
+	  "institution": "INALI",
+	  "url": "https://site.inali.gob.mx/Micrositios/Prontuarios/maya.html"
+	},
+	"Ka xi'ik tech jats'uts": {
+	  "status": "phrase_reference_pending_speaker_review",
+	  "institution": "INALI",
+	  "url": "https://site.inali.gob.mx/Micrositios/Prontuarios/maya.html"
+	},
+	"Tak ti' uláak' k'iin": {
+	  "status": "phrase_reference_pending_speaker_review",
+	  "institution": "INALI",
+	  "url": "https://site.inali.gob.mx/Micrositios/Prontuarios/maya.html"
+	}
+  }
+}

@@ -47,7 +47,7 @@ func show_meaning(maya_word: String, modifier: String = "") -> void:
 	picture.texture = catalog.texture_for(word)
 	reference.texture = picture.texture
 	quality_badge.texture = null
-	var contexts := {"Jats'uts": "fx_decoracion", "ki'": "fx_aroma", "jach'": "prop_peso"}
+	var contexts := {"Jats'uts": "fx_decoracion", "ki'": "fx_aroma", "chich": "prop_peso"}
 	if quality in contexts:
 		quality_badge.texture = catalog.texture_for(contexts[quality])
 	_layout_art()
@@ -78,7 +78,7 @@ func _layout_art() -> void:
 		picture.position = Vector2(0, size.y * 0.15)
 		quality_badge.size = size * Vector2(0.44, 0.44)
 		quality_badge.position = size * Vector2(0.48, 0.02)
-		if quality == "jach'":
+		if quality == "chich":
 			quality_badge.position = size * Vector2(0.26, 0.24)
 
 func celebrate() -> void:

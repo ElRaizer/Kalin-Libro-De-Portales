@@ -112,7 +112,7 @@ func _run() -> void:
 				_assert_ignored(story, context)
 				if beat.kind == StoryBeat.Kind.ELEGIR:
 					_check(not story.word_bubble.visible and story.choices_box.visible, context + ": los saludos no deben tapar las respuestas")
-					var answer := story.choices_box.get_child(beat.options.find(beat.target_word)) as Button
+					var answer := story.choice_for_word(beat.target_word) as Button
 					answer.pressed.emit()
 					_assert_ignored(story, context + ", tras responder la pregunta")
 			if index + 1 < story.beats.size():
@@ -177,7 +177,7 @@ func _check_resume() -> void:
 		if expected_kind == StoryBeat.Kind.ADIVINAR:
 			(story.actor_buttons[beat.target_word] as Button).pressed.emit()
 		else:
-			(story.choices_box.get_child(beat.options.find(beat.target_word)) as Button).pressed.emit()
+			(story.choice_for_word(beat.target_word) as Button).pressed.emit()
 		manager.checkpoint(story)
 		await _release(story)
 		story = _mount(key, false)

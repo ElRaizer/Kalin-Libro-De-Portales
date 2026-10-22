@@ -42,6 +42,7 @@ func _capture_book() -> void:
 	}
 	var book := current_scene.get_node("LibroHechizos")
 	book.show_book()
+	await book.motion.opened
 	await process_frame
 	await RenderingServer.frame_post_draw
 	_save_viewport("book.png")

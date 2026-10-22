@@ -1,34 +1,19 @@
 [gd_scene format=3 uid="uid://b55van14jkj3b"]
 
-[ext_resource type="Script" path="res://scripts/world3/W3_Level1.gd" id="1_jgljc"]
-
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_taller.svg" id="2_bu3ic"]
-
-[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="3_b8p1p"]
-
-[ext_resource type="Script" path="res://scripts/components/DraggableWordButton.gd" id="6_hf7mu"]
-
-[ext_resource type="PackedScene" path="res://scenes/components/CompletionOverlay.tscn" id="7_4ma2w"]
-
-[ext_resource type="Script" path="res://scripts/components/CompletionOverlay.gd" id="8_o3kbg"]
-
+[ext_resource type="Script" uid="uid://cmj8x3eg7tafw" path="res://scripts/world3/W3_Level1.gd" id="1_jgljc"]
+[ext_resource type="Texture2D" uid="uid://c28g4trwditkf" path="res://Arte/backgrounds/bg_taller.svg" id="2_bu3ic"]
+[ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="3_b8p1p"]
+[ext_resource type="Script" uid="uid://3tucogv2ix4h" path="res://scripts/components/DraggableWordButton.gd" id="6_hf7mu"]
+[ext_resource type="PackedScene" uid="uid://d2drg7vtn5ctw" path="res://scenes/components/CompletionOverlay.tscn" id="7_4ma2w"]
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="10_wcqt4"]
-
-[ext_resource type="Script" path="res://scripts/ui/LibroHechizos.gd" id="11_hlaie"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/MeaningIllustration.tscn" id="editor_12"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/MissionProgress.tscn" id="editor_13"]
-
-[ext_resource type="PackedScene" path="res://scenes/components/LearningGuide.tscn" id="editor_14"]
-
-[ext_resource type="Resource" path="res://data/exercises/world3.tres" id="editor_15"]
-
+[ext_resource type="PackedScene" uid="uid://b7ia6v4dsjvv4" path="res://scenes/components/LearningGuide.tscn" id="editor_14"]
+[ext_resource type="Resource" uid="uid://hkg0l4ew52aq" path="res://data/exercises/world3.tres" id="editor_15"]
 [ext_resource type="PackedScene" path="res://scenes/components/MissionBreak.tscn" id="editor_16"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/HelpButton.tscn" id="editor_17"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/WordDropSlot.tscn" id="editor_18"]
+[ext_resource type="PackedScene" uid="uid://7qq7tpptcsub" path="res://scenes/components/RecallPanel.tscn" id="recall_panel"]
 
 [node name="Level3" type="Node2D" unique_id=1006187822]
 script = ExtResource("1_jgljc")
@@ -95,7 +80,8 @@ text = "0 pts mágicos"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="HelpButton" parent="UI/TopBar/Bar" instance=ExtResource("editor_17")]
+[node name="HelpButton" parent="UI/TopBar/Bar" unique_id=1616247603 instance=ExtResource("editor_17")]
+layout_mode = 2
 
 [node name="BookButton" type="Button" parent="UI/TopBar/Bar" unique_id=1816703495]
 custom_minimum_size = Vector2(125, 0)
@@ -214,7 +200,7 @@ custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.23, 0.13, 0.06, 1)
 theme_override_font_sizes/font_size = 32
-text = "In"
+text = "✦"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -288,6 +274,7 @@ columns = 4
 custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinNounButton"
+theme_override_constants/icon_max_width = 56
 theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "mayak
@@ -295,7 +282,6 @@ Mesa"
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
-theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "mayak"
 
@@ -303,6 +289,7 @@ word_value = "mayak"
 custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinNounButton"
+theme_override_constants/icon_max_width = 56
 theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "lak
@@ -310,7 +297,6 @@ Plato"
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
-theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "lak"
 
@@ -318,37 +304,38 @@ word_value = "lak"
 custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinNounButton"
+theme_override_constants/icon_max_width = 56
 theme_override_font_sizes/font_size = 19
 toggle_mode = true
-text = "ch'áak
-Cama"
+text = "k'áan
+Hamaca"
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
-theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
-word_value = "ch'áak"
+word_value = "k'áan"
 
 [node name="ChanButton" type="Button" parent="UI/ChoicesPanel/Content/NounGrid" unique_id=801170274]
 custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinNounButton"
+theme_override_constants/icon_max_width = 56
 theme_override_font_sizes/font_size = 19
 toggle_mode = true
-text = "chan
+text = "k'áanche'
 Silla"
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
-theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
-word_value = "chan"
+word_value = "k'áanche'"
 
 [node name="JanalButton" type="Button" parent="UI/ChoicesPanel/Content/NounGrid" unique_id=1590516451]
 visible = false
 custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinNounButton"
+theme_override_constants/icon_max_width = 56
 theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "janal
@@ -356,7 +343,6 @@ Comida"
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
-theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "janal"
 
@@ -377,6 +363,7 @@ columns = 4
 custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinAdjectiveButton"
+theme_override_constants/icon_max_width = 56
 theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "mejen
@@ -384,7 +371,6 @@ Pequeña"
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
-theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "mejen"
 word_kind = "adjective"
@@ -393,6 +379,7 @@ word_kind = "adjective"
 custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinAdjectiveButton"
+theme_override_constants/icon_max_width = 56
 theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "nojoch
@@ -400,7 +387,6 @@ Grande"
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
-theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "nojoch"
 word_kind = "adjective"
@@ -409,6 +395,7 @@ word_kind = "adjective"
 custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinAdjectiveButton"
+theme_override_constants/icon_max_width = 56
 theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "Jats'uts
@@ -416,7 +403,6 @@ Bonita"
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
-theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "Jats'uts"
 word_kind = "adjective"
@@ -425,6 +411,7 @@ word_kind = "adjective"
 custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinAdjectiveButton"
+theme_override_constants/icon_max_width = 56
 theme_override_font_sizes/font_size = 19
 toggle_mode = true
 text = "ki'
@@ -432,7 +419,6 @@ Deliciosa"
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
-theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
 word_value = "ki'"
 word_kind = "adjective"
@@ -442,17 +428,26 @@ visible = false
 custom_minimum_size = Vector2(150, 94)
 layout_mode = 2
 theme_type_variation = &"KalinAdjectiveButton"
+theme_override_constants/icon_max_width = 56
 theme_override_font_sizes/font_size = 19
 toggle_mode = true
-text = "jach'
+text = "chich
 Fuerte"
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
-theme_override_constants/icon_max_width = 56
 script = ExtResource("6_hf7mu")
-word_value = "jach'"
+word_value = "chich"
 word_kind = "adjective"
+
+[node name="RecallPanel" parent="UI/ChoicesPanel" unique_id=254475335 instance=ExtResource("recall_panel")]
+visible = false
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 858.0
+offset_bottom = 274.0
+external_submit = true
 
 [node name="FeedbackPanel" type="Panel" parent="UI" unique_id=117290722]
 offset_left = 388.0
@@ -479,6 +474,13 @@ text = "El libro mágico espera tu hechizo."
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
+
+[node name="ResultArt" parent="UI/FeedbackPanel" unique_id=991365299 instance=ExtResource("editor_12")]
+layout_mode = 0
+offset_left = 12.0
+offset_top = -6.0
+offset_right = 136.0
+offset_bottom = 70.0
 
 [node name="StatusPanel" type="Panel" parent="UI" unique_id=320159823]
 visible = false
@@ -520,14 +522,7 @@ horizontal_alignment = 2
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="CompletionOverlay" type="Control" parent="UI" unique_id=564096683 instance=ExtResource("7_4ma2w")]
-visible = false
-layout_mode = 3
-anchors_preset = 0
-offset_right = 1280.0
-offset_bottom = 720.0
-mouse_filter = 1
-script = ExtResource("8_o3kbg")
+[node name="CompletionOverlay" parent="UI" unique_id=564096683 instance=ExtResource("7_4ma2w")]
 
 [node name="CastButton" type="Button" parent="UI" unique_id=1488227754]
 custom_minimum_size = Vector2(232, 58)
@@ -548,21 +543,13 @@ offset_top = 647.0
 offset_right = 998.0
 offset_bottom = 705.0
 
-[node name="LibroHechizos" type="CanvasLayer" parent="." unique_id=1529531518 instance=ExtResource("10_wcqt4")]
-layer = 10
+[node name="MissionBreak" parent="UI" unique_id=1879478778 instance=ExtResource("editor_16")]
+layout_mode = 3
+
+[node name="LibroHechizos" parent="." unique_id=1529531518 instance=ExtResource("10_wcqt4")]
 visible = false
-script = ExtResource("11_hlaie")
 
-[node name="LearningGuide" parent="." instance=ExtResource("editor_14")]
-
-[node name="MissionBreak" parent="UI" instance=ExtResource("editor_16")]
-
-[node name="ResultArt" parent="UI/FeedbackPanel" instance=ExtResource("editor_12")]
-offset_left = 12
-offset_top = -6
-offset_right = 136
-offset_bottom = 70
+[node name="LearningGuide" parent="." unique_id=437520220 instance=ExtResource("editor_14")]
 
 [connection signal="pressed" from="UI/TopBar/Bar/BackButton" to="." method="_on_menu_pressed"]
-
 [connection signal="pressed" from="UI/TopBar/Bar/BookButton" to="." method="_on_book_pressed"]

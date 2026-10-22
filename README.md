@@ -9,19 +9,27 @@ Videojuego educativo desarrollado en Godot para practicar vocabulario y estructu
 - Ventana redimensionable entre **960 × 540** y **1920 × 1080**, con escalado proporcional 16:9.
 - Escena principal: `res://scenes/MainMenu.tscn`, con mapa de cinco lugares.
 - Progreso local con guardado automático de escena, ronda, selección y caminos parciales.
-- Ocho escenas jugables distribuidas en cinco mundos.
+- Ocho niveles distribuidos en cinco mundos y una misión de encargos en la aldea.
 - Nueve capítulos de historia animados y tres cinemáticas que acompañan toda la aventura, desde la noche del huracán hasta el regreso de Kalin.
 - Una exploración libre de la isla antes del primer capítulo: el jugador camina con Kalin por la orilla, examina objetos y llega a la aldea de los animales.
 - Los audios de pronunciación están planeados, pero todavía no han sido grabados.
 
 El proyecto es un prototipo funcional en desarrollo. La navegación principal, el libro de hechizos y el guardado están implementados; todavía quedan mecánicas y contenido narrativo por ampliar.
 
-La [revisión visual](REVISION_UX_VISUAL.md) añade una introducción más corta,
+La [revisión visual](APRENDIZAJE_Y_MISION.md) añade una introducción más corta,
 peticiones y tarjetas grandes, pistas graduales, bloques de tres peticiones en
 taller y comida, reacciones visuales a las elecciones y cinco situaciones
 narrativas que se animan solas en ciclos continuos. El libro tiene pestañas ilustradas y `Esc`
 abre la pausa. Las pruebas y capturas verifican la implementación; la prueba
-con niños está preparada y sigue pendiente.
+con niños sigue pendiente.
+
+## Aprendizaje y misión de encargos
+
+Las páginas cuentan descubrimientos. El libro distingue además práctica, primer recuerdo y recuperaciones sin ayuda en situaciones separadas. La segunda vuelta de casa, taller y comida usa respuestas escritas sin dibujos de solución. Siempre se puede volver a las tarjetas; consultar el libro, pedir pistas o corregir errores se registra como práctica apoyada. Las posiciones se guardan por intento y varían entre rondas.
+
+Tras la historia del portal, **Los encargos de la aldea** permite caminar, recibir peticiones, crear objetos, transportarlos y entregarlos a sus destinatarios. Hay seis encargos de autor; cada partida selecciona tres y prioriza palabras con menos evidencia de recuerdo. También se puede abrir `scenes/world4/Mision_EncargosAldea.tscn` con F6.
+
+El vocabulario fue cotejado documentalmente con la UADY; las fuentes por entrada y los cambios se detallan en [VOCABULARIO.md](VOCABULARIO.md). Las frases completas y pronunciaciones siguen pendientes de revisión con personas hablantes. El diseño de aprendizaje, la misión y la migración del guardado se explican en [APRENDIZAJE_Y_MISION.md](APRENDIZAJE_Y_MISION.md).
 
 ## Organización jugable
 
@@ -55,6 +63,12 @@ alimentos se entregan. Las frases recuperadas esperan a **Continuar**; tras
 cuatro segundos sin interacción, la mano señala el botón. El
 Libro de Hechizos pausa el ejercicio y usa las mismas ilustraciones SVG que
 las peticiones; en el repaso se retiran los dibujos de las respuestas.
+
+El libro viaja desde su botón hasta el centro, se abre y regresa al cerrarse.
+Las páginas y las categorías cambian con una transición breve; las flechas
+del teclado permiten hojearlo y `Esc` lo cierra. Cada entrada muestra su
+estado de aprendizaje y el botón de pronunciación. Mientras falta la grabación,
+el botón muestra un aviso y permanece en silencio.
 
 ## Historia
 
@@ -148,10 +162,7 @@ No se requieren complementos ni dependencias externas.
 - [INSTRUCCIONES.md](INSTRUCCIONES.md): instalación, estructura técnica y mantenimiento.
 - [AUDITORIA_BUENAS_PRACTICAS.md](AUDITORIA_BUENAS_PRACTICAS.md): cumplimiento, correcciones y pendientes de diseño.
 - [VOCABULARIO.md](VOCABULARIO.md): grafías adoptadas, normalizaciones y decisiones del GDD.
-- [MEJORAS_UX.md](MEJORAS_UX.md): interacción visual, arte, continuación y pruebas de esta iteración.
-- [REVISION_UX_VISUAL.md](REVISION_UX_VISUAL.md): presentación por pasos, pistas graduales, narrativa visual, bloques, libro y pausa.
-- [ANIMACIONES.md](ANIMACIONES.md): escenas en bucle, expresiones SVG y pruebas de continuidad.
-- [PRUEBA_CON_NINOS.md](PRUEBA_CON_NINOS.md): protocolo de observación y criterios propuestos para la prueba con niños.
+- [APRENDIZAJE_Y_MISION.md](APRENDIZAJE_Y_MISION.md): evidencia por palabra, recuerdo sin ayuda, encargos y pruebas.
 - [Arte/audio/README.md](Arte/audio/README.md): preparación y nombres de los audios pendientes.
 
 ## Trabajo pendiente

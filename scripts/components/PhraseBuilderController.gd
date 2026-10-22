@@ -41,6 +41,31 @@ static func show_even_choices(buttons: Dictionary, correct: String, round_index:
 			visible_words.append(word)
 	for word: String in buttons:
 		(buttons[word] as Button).visible = word in visible_words
+	# La posición se fija durante el intento y cambia entre rondas. La semilla
+	# guardada por la escena reproduce la misma disposición al continuar.
+	var grid: Node = (buttons[correct] as Button).get_parent()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("%s:%d:%s" % [grid.get_meta("layout_seed", 1), round_index, grid.name])
+	var shuffled: Array = buttons.values()
+	for index: int in range(shuffled.size() - 1, 0, -1):
+		var other := rng.randi_range(0, index)
+		var swap: Variant = shuffled[index]
+		shuffled[index] = shuffled[other]
+		shuffled[other] = swap
+	for button: Button in shuffled:
+		grid.move_child(button, -1)
+
+static func shuffle_grid(grid: Container, seed_value: int) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_value
+	var children := grid.get_children()
+	for index: int in range(children.size() - 1, 0, -1):
+		var other := rng.randi_range(0, index)
+		var swap: Node = children[index]
+		children[index] = children[other]
+		children[other] = swap
+	for child: Node in children:
+		grid.move_child(child, -1)
 
 static func focus_first_visible(grid: Container) -> void:
 	var buttons := _buttons_in(grid)

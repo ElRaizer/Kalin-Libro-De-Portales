@@ -41,6 +41,10 @@ var target_art: MeaningIllustration
 @onready var mission_break: MissionBreak = $UI/MissionBreak
 var _help_stage := 0
 var _blocks_seen: Array[int] = []
+var _attempt := LearningAttempt.new()
+var _layout_seed := 1
+var _practice_fallback := false
+@onready var recall: RecallPanel = $UI/ChoicesPanel/RecallPanel
 
 @onready var spell_panel: Panel = $UI/SpellPanel
 @onready var choices_panel: Panel = $UI/ChoicesPanel
@@ -77,6 +81,10 @@ func _ready() -> void:
 	_build_choice_buttons()
 	_configure_keyboard_navigation()
 	cast_button.pressed.connect(_on_cast_pressed)
+	recall.submitted.connect(_on_cast_pressed)
+	recall.practice_requested.connect(_practice_with_cards)
+	recall.first.text_changed.connect(_on_recall_changed)
+	recall.second.text_changed.connect(_on_recall_changed)
 	GameManager.magic_points_changed.connect(_on_magic_points_changed)
 	_on_magic_points_changed(GameManager.magic_points)
 	completion.next_pressed.connect(_on_next_level_pressed)
@@ -89,10 +97,18 @@ func _ready() -> void:
 		guide.watch_action(noun_slot)
 	)
 	var state := GameManager.get_scene_state(self)
+	_attempt.restore(state.get("attempt"))
+	_practice_fallback = bool(state.get("cards", false))
+	_layout_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
+	noun_grid.set_meta("layout_seed", _layout_seed)
+	adjective_grid.set_meta("layout_seed", _layout_seed)
 	_blocks_seen = ExerciseProgress.restore_markers(state.get("blocks"), challenges.size() * 2)
 	round_plan = ExerciseProgress.restore_rounds(state.get("plan"), challenges.size(), round_plan)
 	round_index = clampi(int(state.get("round", 0)), 0, round_plan.size())
 	_show_round()
+	if recall.visible:
+		recall.first.text = str(state.get("noun", ""))
+		recall.second.text = str(state.get("adjective", ""))
 	if not _resolving:
 		var noun := str(state.get("noun", ""))
 		var adjective := str(state.get("adjective", ""))
@@ -126,7 +142,12 @@ func _show_round() -> void:
 		return
 	_resolving = false
 	_awaiting_continue = false
-	_mistakes = 0
+	var continuing := _attempt.context == "world3:%d@%d" % [round_index, _layout_seed]
+	_attempt.begin("world3:%d@%d" % [round_index, _layout_seed])
+	_mistakes = _attempt.mistakes
+	_practice_fallback = _practice_fallback if continuing else false
+	recall.hide()
+	$UI/ChoicesPanel/Content.show()
 	_help_stage = 0
 	selected_noun = ""
 	selected_adjective = ""
@@ -138,12 +159,16 @@ func _show_round() -> void:
 	feedback_label.add_theme_color_override("font_color", _feedback_color)
 	var challenge := _current_challenge()
 	var guided := _is_guided_phase()
+	if guided:
+		GameManager.learn_word(challenge.noun)
+		GameManager.learn_word(challenge.adjective)
 	animal_sprite.texture = challenge.sprite
 	animal_name.text = challenge.animal
-	phase_label.text = "Aprende" if guided else "Recuerda"
+	phase_label.text = "Práctica" if guided else "Recuerdo"
 	request_label.text = "Ayuda a %s" % challenge.animal
 	target_art.show_meaning(challenge.noun, challenge.adjective)
-	target_badge.text = challenge.translation if guided else ""
+	target_art.visible = guided or _practice_fallback
+	target_badge.text = challenge.translation
 	instruction_label.text = ""
 	translation_label.text = ""
 	_update_slots()
@@ -154,6 +179,11 @@ func _show_round() -> void:
 	_set_choices_enabled(true)
 	cast_button.text = "Crear ✦"
 	_refresh_step()
+	if not guided and not _practice_fallback:
+		$UI/ChoicesPanel/Content.hide()
+		recall.configure(["Objeto", "Cómo es"])
+		feedback_label.text = "Recuerda las dos palabras de la petición."
+		cast_button.disabled = false
 	mission_progress.update_progress(round_index, round_plan.size(), _phase_caption())
 	progress_label.text = "%s %d / %d" % ["Aprende" if guided else "Repasa", round_index % challenges.size() + 1, challenges.size()]
 	PHRASE_BUILDER.focus_first_visible(noun_grid)
@@ -165,7 +195,7 @@ func _show_round() -> void:
 	GameManager.checkpoint(self)
 
 func _phase_caption() -> String:
-	return "El taller · %d / 3 · %s" % [round_index % 3 + 1, "Con ayuda" if _is_guided_phase() else ("Una pista" if round_index < challenges.size() + 3 else "A tu turno")]
+	return "El taller · %d / %d · %s" % [round_index + 1, round_plan.size(), "Práctica" if _is_guided_phase() or _practice_fallback else "Recuerdo sin pistas"]
 
 func _show_block() -> void:
 	if round_index > 0 and round_index % 3 == 0 and round_index not in _blocks_seen:
@@ -176,8 +206,8 @@ func _show_block() -> void:
 
 func _refresh_step() -> void:
 	ExercisePresentation.focus_step(noun_grid, adjective_grid, not selected_noun.is_empty())
-	$UI/ChoicesPanel/Content/NounHeading.text = "1 · Objeto" + ("  ✓" if not selected_noun.is_empty() else "")
-	$UI/ChoicesPanel/Content/AdjectiveHeading.text = "2 · Cómo es" + ("  ✓" if not selected_adjective.is_empty() else "")
+	$UI/ChoicesPanel/Content/NounHeading.text = "1 · Objeto" + ("  · elegido" if not selected_noun.is_empty() else "")
+	$UI/ChoicesPanel/Content/AdjectiveHeading.text = "2 · Cómo es" + ("  · elegido" if not selected_adjective.is_empty() else "")
 
 func _current_challenge() -> ExerciseEntry:
 	return challenges[round_plan[round_index]]
@@ -202,6 +232,9 @@ func _select_noun(word: String) -> void:
 		return
 	guide.stop()
 	selected_noun = word
+	if recall.visible:
+		recall.first.text = word
+		return
 	_refresh_step()
 	_update_slots()
 	_update_button_states()
@@ -212,6 +245,9 @@ func _select_adjective(word: String) -> void:
 		return
 	guide.stop()
 	selected_adjective = word
+	if recall.visible:
+		recall.second.text = word
+		return
 	_refresh_step()
 	_update_slots()
 	_update_button_states()
@@ -233,10 +269,7 @@ func _celebrate_selection(slot: Control) -> void:
 func _update_slots() -> void:
 	noun_slot.text = "objeto"
 	if selected_noun != "":
-		for challenge: ExerciseEntry in challenges:
-			if challenge.noun == selected_noun:
-				noun_slot.text = _phrase_noun(challenge.phrase)
-				break
+		noun_slot.text = selected_noun
 	adjective_slot.text = selected_adjective if selected_adjective != "" else "cómo es"
 	cast_button.disabled = selected_noun == "" or selected_adjective == "" or _resolving
 
@@ -256,15 +289,24 @@ func _on_cast_pressed() -> void:
 	if _resolving:
 		return
 	var challenge := _current_challenge()
+	if recall.visible:
+		var answers := recall.values()
+		var noun_match := RecallPanel.match_word(answers[0], challenge.noun)
+		var adjective_match := RecallPanel.match_word(answers[1], challenge.adjective)
+		selected_noun = noun_match.word
+		selected_adjective = adjective_match.word
+		_attempt.supported = _attempt.supported or noun_match.supported or adjective_match.supported
 	if selected_noun != challenge.noun or selected_adjective != challenge.adjective:
 		_show_incorrect_feedback(challenge)
 		return
 	GameManager.learn_word(challenge.noun)
 	GameManager.learn_word(challenge.adjective)
+	GameManager.record_learning([challenge.noun, challenge.adjective], "practice" if _is_guided_phase() else "recall", _attempt.context, _attempt.supported, _attempt.mistakes)
 	GameManager.mark_tutorial_seen("phrases")
 	_render_success(true)
 
 func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
+	_attempt.miss()
 	_mistakes += 1
 	guide.stop()
 	result_art.show()
@@ -274,7 +316,7 @@ func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
 	var noun_ok: bool = selected_noun == str(challenge.noun)
 	var adjective_ok: bool = selected_adjective == str(challenge.adjective)
 	if not noun_ok and not adjective_ok:
-		feedback_label.text = "Mira la imagen. Cambia el objeto y cómo es."
+		feedback_label.text = "Revisa la petición. Cambia el objeto y cómo es."
 	elif not noun_ok:
 		feedback_label.text = "Cómo es: ✓. Elige el objeto que pidió %s." % str(challenge.animal_spanish).to_lower()
 	else:
@@ -291,6 +333,7 @@ func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
 	if _mistakes >= 2:
 		_help_stage = mini(_mistakes - 2, 2)
 		_show_help()
+	GameManager.checkpoint(self)
 
 func _pulse_error_slots(noun_ok: bool, adjective_ok: bool) -> void:
 	for slot: Control in [noun_slot, adjective_slot]:
@@ -300,8 +343,7 @@ func _pulse_error_slots(noun_ok: bool, adjective_ok: bool) -> void:
 		slot.pulse_error()
 
 func _phrase_noun(phrase: String) -> String:
-	var parts := phrase.split(" ")
-	return parts[1] if parts.size() > 1 else selected_noun
+	return phrase.get_slice(" · ", 0)
 
 func _finish_level() -> void:
 	_resolving = true
@@ -325,7 +367,7 @@ func _on_next_level_pressed() -> void:
 	_safe_navigate("world3_story1")
 
 func _on_book_pressed() -> void:
-	libro.show_book()
+	libro.show_book($UI/TopBar/Bar/BookButton)
 
 func _on_replay_pressed() -> void:
 	GameManager.replay_scene(GameManager.scene_key_for(self))
@@ -333,6 +375,7 @@ func _on_replay_pressed() -> void:
 func _render_success(animate: bool) -> void:
 	_resolving = true
 	_awaiting_continue = true
+	recall.hide()
 	mission_progress.update_progress(round_index + 1, round_plan.size(), "El taller · %d / 3 · ¡Creado!" % [round_index % 3 + 1])
 	guide.stop()
 	_set_choices_enabled(false)
@@ -367,6 +410,10 @@ func _show_help() -> void:
 		return
 	if _resolving:
 		return
+	mark_learning_help()
+	if recall.visible:
+		_practice_with_cards()
+		return
 	var challenge := _current_challenge()
 	var needs_noun := selected_noun != challenge.noun
 	var grid: Control = noun_grid if needs_noun else adjective_grid
@@ -384,7 +431,25 @@ func _show_help() -> void:
 	feedback_label.text = "Elige el objeto." if needs_noun else "Elige cómo es."
 
 func get_checkpoint_state() -> Dictionary:
-	return {"plan": round_plan, "round": round_index, "noun": selected_noun, "adjective": selected_adjective, "waiting": _awaiting_continue, "blocks": _blocks_seen}
+	return {"plan": round_plan, "round": round_index, "noun": recall.first.text if recall.visible else selected_noun, "adjective": recall.second.text if recall.visible else selected_adjective, "waiting": _awaiting_continue, "blocks": _blocks_seen, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "cards": _practice_fallback}
+
+func mark_learning_help() -> void:
+	if not _resolving:
+		_attempt.supported = true
+		GameManager.checkpoint(self)
+
+func _practice_with_cards() -> void:
+	mark_learning_help()
+	_practice_fallback = true
+	recall.hide()
+	$UI/ChoicesPanel/Content.show()
+	target_art.show()
+	_refresh_step()
+	feedback_label.text = "Practiquemos con las tarjetas."
+
+func _on_recall_changed(_text: String) -> void:
+	if recall.visible and not _resolving:
+		cast_button.disabled = false
 
 func get_configuration_issues() -> PackedStringArray:
 	if content == null:

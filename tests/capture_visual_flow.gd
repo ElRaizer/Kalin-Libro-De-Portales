@@ -22,9 +22,13 @@ func _run() -> void:
 		manager.words_learned = manager.VOCABULARY.duplicate(true)
 		current_scene.libro._new_word = ""
 		current_scene.libro.show_book()
+		await current_scene.libro.motion.opened
 		current_scene.libro._select_category(3)
+		while current_scene.libro._turning:
+			await process_frame
 		await _shot("21_libro")
 		current_scene.libro.hide_book()
+		await current_scene.libro.motion.closed
 		quit()
 		return
 	await _scene("world1_level1", "03_camino")
@@ -77,9 +81,13 @@ func _run() -> void:
 	manager.words_learned = manager.VOCABULARY.duplicate(true)
 	current_scene.libro._new_word = ""
 	current_scene.libro.show_book()
+	await current_scene.libro.motion.opened
 	current_scene.libro._select_category(3)
+	while current_scene.libro._turning:
+		await process_frame
 	await _shot("21_libro")
 	current_scene.libro.hide_book()
+	await current_scene.libro.motion.closed
 	await _scene("world3_level1", "temporal")
 	root.get_node("PauseMenu").open_pause()
 	await _shot("22_pausa")

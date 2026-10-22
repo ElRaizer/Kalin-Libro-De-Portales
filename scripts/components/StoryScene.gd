@@ -51,6 +51,9 @@ var _met_words: Array[String] = []
 var _known_words: Array[String] = []
 var _waiting_to_continue: bool = false
 var _navigating: bool = false
+var _attempt := LearningAttempt.new()
+var _layout_seed := 1
+var _last_actor_kind := -1
 var _text_tween: Tween
 var _animator: RefCounted
 var _bubble_scale: Vector2
@@ -121,6 +124,8 @@ func _ready() -> void:
 	$UI/MenuButton.pressed.connect(_on_menu_pressed)
 	_start_kalin_idle()
 	var state: Dictionary = GameManager.get_scene_state(self)
+	_attempt.restore(state.get("attempt"))
+	_layout_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
 	var saved_beat := clampi(int(state.get("beat", 0)), 0, maxi(beats.size() - 1, 0))
 	if int(state.get("revision", 1)) < 2:
 		var legacy_index := int(state.get("beat", 0))
@@ -154,8 +159,7 @@ func _ready() -> void:
 		if current_beat().kind == StoryBeat.Kind.ADIVINAR:
 			_guess_actor(current_beat().target_word, current_beat().target_word)
 		elif current_beat().kind == StoryBeat.Kind.ELEGIR:
-			var answer_index: int = current_beat().options.find(current_beat().target_word)
-			_on_choice_pressed(current_beat().target_word, choices_box.get_child(answer_index))
+			_on_choice_pressed(current_beat().target_word, choice_for_word(current_beat().target_word))
 		elif current_beat().kind == StoryBeat.Kind.EXPLORAR:
 			_resolve_interaction()
 
@@ -189,6 +193,7 @@ func _next_beat() -> void:
 
 func _show_beat(beat: StoryBeat) -> void:
 	guide.stop()
+	_attempt.begin("%s:%d" % [GameManager.scene_key_for(self), beat_index])
 	_waiting_to_continue = false
 	word_bubble.visible = false
 	_clear_choices()
@@ -250,7 +255,10 @@ func _on_vignette_mood(expression: String) -> void:
 
 # ─── Actores ─────────────────────────────────────────────────────────────────
 func _set_stage_actors(words: Array[String]) -> void:
-	if _stage_initialized and words == _stage_words:
+	var kind := int(current_beat().kind)
+	var regroup := kind == StoryBeat.Kind.ADIVINAR and _last_actor_kind != kind
+	_last_actor_kind = kind
+	if _stage_initialized and words == _stage_words and not regroup:
 		return
 	_stage_initialized = true
 	_entering_actors.clear()
@@ -266,8 +274,16 @@ func _set_stage_actors(words: Array[String]) -> void:
 		button.text = ""
 	actor_buttons.clear()
 	_stage_words = words.duplicate()
-	for index: int in range(words.size()):
-		var word: String = words[index]
+	var arranged := words.duplicate()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("%d:%d" % [_layout_seed, beat_index])
+	for index: int in range(arranged.size() - 1, 0, -1):
+		var other := rng.randi_range(0, index)
+		var swap: String = arranged[index]
+		arranged[index] = arranged[other]
+		arranged[other] = swap
+	for index: int in range(arranged.size()):
+		var word: String = arranged[index]
 		var slot := actors_root.get_child(index) as Control
 		var button := slot.get_node("Button") as Button
 		slot.show()
@@ -332,6 +348,7 @@ func _on_actor_pressed(word: String) -> void:
 		_guess_actor(word, beat.target_word)
 
 func _meet_actor(word: String) -> void:
+	GameManager.learn_word(word)
 	CharacterReaction.play(actor_buttons[word])
 	_show_word_bubble(word, COLOR_SUCCESS)
 	if word not in _known_words:
@@ -350,12 +367,17 @@ func _meet_actor(word: String) -> void:
 
 func _guess_actor(word: String, target: String) -> void:
 	if word != target:
+		_attempt.miss()
 		# Repetir el nombre del animal elegido refuerza el vocabulario sin castigar.
 		_show_word_bubble(word, COLOR_RETRY)
 		_set_hint("¡Casi! Ese es %s. Busca a %s." % [word, target], COLOR_HINT)
 		_shake(actor_buttons[word])
 		CharacterReaction.play(actor_buttons[word], false)
+		GameManager.checkpoint(self)
 		return
+	# Reconocer una imagen es práctica; la recuperación escrita se comprueba en
+	# caminos, ejercicios y encargos. No llamar "recuerdo" a una elección al azar.
+	GameManager.record_learning([target], "practice", _attempt.context, _attempt.supported, _attempt.mistakes)
 	_show_word_bubble(word, COLOR_SUCCESS)
 	if word not in _known_words:
 		_known_words.append(word)
@@ -365,8 +387,16 @@ func _guess_actor(word: String, target: String) -> void:
 
 # ─── Opciones escritas (ELEGIR) ──────────────────────────────────────────────
 func _build_choices(options: Array[String]) -> void:
-	for index: int in range(options.size()):
-		var word := options[index]
+	var arranged := options.duplicate()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("%d:%d" % [_layout_seed, beat_index])
+	for index: int in range(arranged.size() - 1, 0, -1):
+		var other := rng.randi_range(0, index)
+		var swap: String = arranged[index]
+		arranged[index] = arranged[other]
+		arranged[other] = swap
+	for index: int in range(arranged.size()):
+		var word: String = arranged[index]
 		var entry: Dictionary = GameManager.get_vocabulary_entry(word)
 		var button := choices_box.get_child(index) as Button
 		button.show()
@@ -380,6 +410,12 @@ func _build_choices(options: Array[String]) -> void:
 	choices_box.visible = true
 	if choices_box.get_child_count() > 0:
 		(choices_box.get_child(0) as Button).grab_focus()
+
+func choice_for_word(word: String) -> Button:
+	for button: Button in choices_box.get_children():
+		if str(button.get_meta("word", "")) == word and button.visible:
+			return button
+	return null
 
 func _clear_choices() -> void:
 	for child: Node in choices_box.get_children():
@@ -399,12 +435,15 @@ func _on_choice_pressed(word: String, button: Button) -> void:
 		return
 	_animate_speaker(beat.speaker)
 	if word != beat.target_word:
+		_attempt.miss()
 		# El botón equivocado revela su significado para que el error enseñe.
 		var entry: Dictionary = GameManager.get_vocabulary_entry(word)
 		button.text = "%s\n%s" % [word, entry.get("spanish", "")]
 		_set_hint("Esa palabra significa «%s». ¡Intenta otra!" % str(entry.get("spanish", "")).to_lower(), COLOR_HINT)
 		_shake(button)
+		GameManager.checkpoint(self)
 		return
+	GameManager.record_learning([word], "practice", _attempt.context, _attempt.supported, _attempt.mistakes)
 	var target_entry: Dictionary = GameManager.get_vocabulary_entry(word)
 	var phrase: String = beat.reveal_phrase if beat.reveal_phrase != "" else str(target_entry.get("estructura", word))
 	var translation: String = beat.reveal_translation if beat.reveal_translation != "" else str(target_entry.get("traduccion", ""))
@@ -604,7 +643,7 @@ func _show_meet_hint() -> void:
 			return
 
 func get_checkpoint_state() -> Dictionary:
-	return {"revision": 2, "beat": maxi(beat_index, 0), "known": _known_words, "met": _met_words, "resolved": _waiting_to_continue}
+	return {"revision": 2, "beat": maxi(beat_index, 0), "known": _known_words, "met": _met_words, "resolved": _waiting_to_continue, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed}
 
 func _on_menu_pressed() -> void:
 	_navigating = true

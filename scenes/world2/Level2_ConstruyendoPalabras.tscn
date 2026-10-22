@@ -26,6 +26,8 @@
 
 [ext_resource type="PackedScene" path="res://scenes/components/ChoiceButton.tscn" id="editor_13"]
 
+[ext_resource type="PackedScene" path="res://scenes/components/RecallPanel.tscn" id="recall_panel"]
+
 [node name="Level2" type="Node2D" unique_id=159115184]
 script = ExtResource("1_xq8dk")
 content = ExtResource("editor_7")
@@ -227,6 +229,12 @@ offset_left = 28
 offset_top = 647
 offset_right = 998
 offset_bottom = 705
+
+[node name="RecallPanel" parent="UI" instance=ExtResource("recall_panel")]
+offset_left = 510.0
+offset_top = 300.0
+offset_right = 1254.0
+offset_bottom = 548.0
 
 [connection signal="pressed" from="UI/TopBar/BackBtn" to="." method="_on_menu_pressed"]
 

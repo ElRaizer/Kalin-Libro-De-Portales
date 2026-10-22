@@ -42,6 +42,10 @@ var _serving: Control
 @onready var mission_break: MissionBreak = $UI/MissionBreak
 var _help_stage := 0
 var _blocks_seen: Array[int] = []
+var _attempt := LearningAttempt.new()
+var _layout_seed := 1
+var _practice_fallback := false
+@onready var recall: RecallPanel = $UI/ChoicesPanel/RecallPanel
 
 @onready var header: Panel = $UI/LevelHeader
 @onready var animal_sprite: TextureRect = $UI/RequestPanel/Content/AnimalSprite
@@ -78,6 +82,10 @@ func _ready() -> void:
 	completion.menu_pressed.connect(_on_menu_pressed)
 	_build_round_plan()
 	_build_choice_buttons()
+	recall.submitted.connect(_on_serve_pressed)
+	recall.practice_requested.connect(_practice_with_cards)
+	recall.first.text_changed.connect(_on_recall_changed)
+	recall.second.text_changed.connect(_on_recall_changed)
 	_configure_keyboard_navigation()
 	guide = LearningGuide.install(self, $UI/LevelHeader/Bar, _show_help)
 	mission_break.continued.connect(func():
@@ -85,10 +93,17 @@ func _ready() -> void:
 		guide.watch_action(food_slot)
 	)
 	var state := GameManager.get_scene_state(self)
+	_attempt.restore(state.get("attempt"))
+	_practice_fallback = bool(state.get("cards", false))
+	_layout_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
+	food_grid.set_meta("layout_seed", _layout_seed)
 	_blocks_seen = ExerciseProgress.restore_markers(state.get("blocks"), challenges.size() * 2)
 	round_plan = ExerciseProgress.restore_plan(state.get("plan"), challenges.size(), round_plan)
 	round_index = clampi(int(state.get("round", 0)), 0, round_plan.size())
 	_show_round()
+	if recall.visible:
+		recall.first.text = str(state.get("food", ""))
+		recall.second.text = str(state.get("modifier", ""))
 	if not _resolving:
 		var food := str(state.get("food", ""))
 		var modifier := str(state.get("modifier", ""))
@@ -131,7 +146,12 @@ func _show_round() -> void:
 		return
 	_resolving = false
 	_awaiting_continue = false
-	_mistakes = 0
+	var continuing := _attempt.context == "world4:%d@%d" % [round_index, _layout_seed]
+	_attempt.begin("world4:%d@%d" % [round_index, _layout_seed])
+	_mistakes = _attempt.mistakes
+	_practice_fallback = _practice_fallback if continuing else false
+	recall.hide()
+	$UI/ChoicesPanel/Content.show()
 	_help_stage = 0
 	selected_food = ""
 	selected_modifier = ""
@@ -139,25 +159,37 @@ func _show_round() -> void:
 	PHRASE_BUILDER.clear_mark(modifier_slot)
 	var challenge := _current_challenge()
 	var guided := _is_guided_phase()
-	phase_label.text = "Aprende" if guided else "Recuerda"
+	if guided:
+		GameManager.learn_word(challenge.food)
+		if not challenge.modifier.is_empty():
+			GameManager.learn_word(challenge.modifier)
+	phase_label.text = "Práctica" if guided else "Recuerdo"
 	animal_label.text = challenge.animal
 	animal_sprite.texture = challenge.sprite
 	request_label.text = challenge.translation if guided else "¿Qué quiere?"
-	request_label.visible = guided
+	request_label.text = challenge.translation
+	request_label.show()
 	instruction_label.text = ""
 	visual_clue.show_meaning(challenge.food, challenge.modifier)
+	visual_clue.visible = guided or _practice_fallback
 	feedback_label.text = "Elige el alimento."
 	feedback_label.add_theme_color_override("font_color", _feedback_color)
 	food_slot.text = "alimento"
 	_update_modifier_slot()
 	_update_choice_labels(guided)
 	PHRASE_BUILDER.show_even_choices(food_buttons, challenge.food, round_index)
+	PHRASE_BUILDER.shuffle_grid(modifier_grid, hash("%d:%d" % [_layout_seed, round_index]))
 	_configure_keyboard_navigation()
 	_update_button_states()
 	_set_choices_enabled(true)
 	serve_button.text = "Servir ✦"
 	_refresh_step()
-	mission_progress.update_progress(round_index, round_plan.size(), "La comida · %d / 3 · %s" % [round_index % 3 + 1, "Con ayuda" if guided else ("Una pista" if round_index < challenges.size() + 3 else "A tu turno")])
+	if not guided and not _practice_fallback:
+		$UI/ChoicesPanel/Content.hide()
+		recall.configure(["Alimento"] if challenge.modifier.is_empty() else ["Alimento", "Cualidad"])
+		serve_button.disabled = false
+		feedback_label.text = "Recuerda las palabras de la petición."
+	mission_progress.update_progress(round_index, round_plan.size(), "La comida · %d / %d · %s" % [round_index + 1, round_plan.size(), "Práctica" if guided or _practice_fallback else "Recuerdo sin pistas"])
 	progress_label.text = "%s %d / %d" % ["Aprende" if guided else "Repasa", round_index % challenges.size() + 1, challenges.size()]
 	PHRASE_BUILDER.focus_first_visible(food_grid)
 	if round_index == 0 and "requests" not in GameManager.tutorials_seen:
@@ -175,8 +207,8 @@ func _refresh_step() -> void:
 	var needs_size := not _current_challenge().modifier.is_empty() or not selected_modifier.is_empty()
 	ExercisePresentation.focus_step(food_grid, modifier_grid, not selected_food.is_empty(), needs_size)
 	$UI/ChoicesPanel/Content/ModifierHeading.visible = needs_size
-	$UI/ChoicesPanel/Content/FoodHeading.text = "1 · Alimento" + ("  ✓" if not selected_food.is_empty() else "")
-	$UI/ChoicesPanel/Content/ModifierHeading.text = "2 · Cualidad" + ("  ✓" if not selected_modifier.is_empty() else "")
+	$UI/ChoicesPanel/Content/FoodHeading.text = "1 · Alimento" + ("  · elegido" if not selected_food.is_empty() else "")
+	$UI/ChoicesPanel/Content/ModifierHeading.text = "2 · Cualidad" + ("  · elegida" if not selected_modifier.is_empty() else "")
 	for button: Button in food_buttons.values():
 		if not button.has_meta("food_base_size"):
 			button.set_meta("food_base_size", button.custom_minimum_size)
@@ -205,6 +237,9 @@ func _select_food(value: String) -> void:
 		return
 	guide.stop()
 	selected_food = value
+	if recall.visible:
+		recall.first.text = value
+		return
 	_refresh_step()
 	food_slot.text = value
 	_update_button_states()
@@ -215,6 +250,9 @@ func _select_modifier(value: String) -> void:
 		return
 	guide.stop()
 	selected_modifier = value
+	if recall.visible:
+		recall.second.text = value
+		return
 	_refresh_step()
 	_update_modifier_slot()
 	_update_button_states()
@@ -251,16 +289,28 @@ func _on_serve_pressed() -> void:
 	if _resolving:
 		return
 	var challenge := _current_challenge()
+	if recall.visible:
+		var answers := recall.values()
+		var food_match := RecallPanel.match_word(answers[0], challenge.food)
+		var modifier_match := RecallPanel.match_word(answers[1], challenge.modifier)
+		selected_food = food_match.word
+		selected_modifier = modifier_match.word
+		_attempt.supported = _attempt.supported or food_match.supported or modifier_match.supported
 	if selected_food != challenge.food or selected_modifier != challenge.modifier:
 		_show_incorrect_feedback(challenge)
 		return
 	GameManager.learn_word(challenge.food)
 	if challenge.modifier != "":
 		GameManager.learn_word(challenge.modifier)
+	var practiced: Array[String] = [challenge.food]
+	if not challenge.modifier.is_empty():
+		practiced.append(challenge.modifier)
+	GameManager.record_learning(practiced, "practice" if _is_guided_phase() else "recall", _attempt.context, _attempt.supported, _attempt.mistakes)
 	GameManager.mark_tutorial_seen("requests")
 	_render_success(true)
 
 func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
+	_attempt.miss()
 	_mistakes += 1
 	guide.stop()
 	result_art.show()
@@ -272,15 +322,16 @@ func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
 	PHRASE_BUILDER.mark_slot(food_slot, food_ok)
 	PHRASE_BUILDER.mark_slot(modifier_slot, modifier_ok)
 	if not food_ok:
-		feedback_label.text = "Mira la imagen. Cambia el alimento."
+		feedback_label.text = "Revisa la petición. Cambia el alimento."
 	elif challenge.modifier == "":
-		feedback_label.text = "Alimento: ✓. No pidió tamaño: elige Sin tamaño."
+		feedback_label.text = "Alimento: ✓. No pidió cualidad: elige Sin cualidad."
 	else:
-		feedback_label.text = "Alimento: ✓. Elige el tamaño de la imagen."
+		feedback_label.text = "Alimento: ✓. Revisa la cualidad que pidió."
 	feedback_label.add_theme_color_override("font_color", COLOR_ERROR)
 	if _mistakes >= 2:
 		_help_stage = mini(_mistakes - 2, 2)
 		_show_help()
+	GameManager.checkpoint(self)
 
 func _finish_level() -> void:
 	_resolving = true
@@ -299,7 +350,7 @@ func _on_next_level_pressed() -> void:
 	GameManager.go_to_scene("world4_story1")
 
 func _on_book_pressed() -> void:
-	libro.show_book()
+	libro.show_book($UI/LevelHeader/Bar/BookButton)
 
 func _on_replay_pressed() -> void:
 	GameManager.replay_scene(GameManager.scene_key_for(self))
@@ -307,6 +358,7 @@ func _on_replay_pressed() -> void:
 func _render_success(animate: bool) -> void:
 	_resolving = true
 	_awaiting_continue = true
+	recall.hide()
 	mission_progress.update_progress(round_index + 1, round_plan.size(), "La comida · %d / 3 · ¡Entregado!" % [round_index % 3 + 1])
 	guide.stop()
 	_set_choices_enabled(false)
@@ -353,6 +405,10 @@ func _show_help() -> void:
 		return
 	if _resolving:
 		return
+	mark_learning_help()
+	if recall.visible:
+		_practice_with_cards()
+		return
 	var challenge := _current_challenge()
 	var needs_food := selected_food != challenge.food
 	if not selected_food.is_empty() and selected_modifier == challenge.modifier and _mistakes == 0:
@@ -371,7 +427,25 @@ func _show_help() -> void:
 	feedback_label.text = "Elige el alimento." if needs_food else "Elige el tamaño."
 
 func get_checkpoint_state() -> Dictionary:
-	return {"plan": round_plan, "round": round_index, "food": selected_food, "modifier": selected_modifier, "waiting": _awaiting_continue, "blocks": _blocks_seen}
+	return {"plan": round_plan, "round": round_index, "food": recall.first.text if recall.visible else selected_food, "modifier": recall.second.text if recall.visible else selected_modifier, "waiting": _awaiting_continue, "blocks": _blocks_seen, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "cards": _practice_fallback}
+
+func mark_learning_help() -> void:
+	if not _resolving:
+		_attempt.supported = true
+		GameManager.checkpoint(self)
+
+func _practice_with_cards() -> void:
+	mark_learning_help()
+	_practice_fallback = true
+	recall.hide()
+	$UI/ChoicesPanel/Content.show()
+	visual_clue.show()
+	_refresh_step()
+	feedback_label.text = "Practiquemos con las tarjetas."
+
+func _on_recall_changed(_text: String) -> void:
+	if recall.visible and not _resolving:
+		serve_button.disabled = false
 
 func get_configuration_issues() -> PackedStringArray:
 	if content == null:

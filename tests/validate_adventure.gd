@@ -98,9 +98,12 @@ func _complete_paths() -> void:
 		if level._arrival_animating:
 			failures.append("La llegada del animal no terminó")
 			return
+		if level._naming_pending:
+			level.recall.first.text = board.words[index].maya_word
+			level._submit_name()
 		level._close_dialogue()
 	if not level.completion_overlay.visible:
-		failures.append("Los caminos deben terminar directamente, sin otra prueba de animales")
+		failures.append("Los caminos y la recuperación de nombres deben completar el nivel")
 	# Una partida detenida en el antiguo repaso debe poder continuar.
 	var key: String = manager.scene_key_for(level)
 	var legacy_state: Dictionary = level.get_checkpoint_state()

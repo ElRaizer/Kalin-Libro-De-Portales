@@ -72,7 +72,7 @@ Antes de integrar un cambio, ejecutar:
 Después, probar manualmente la escena modificada y al menos una transición de
 entrada y salida. No deben ignorarse advertencias nuevas del editor.
 
-El comando importa el proyecto y ejecuta las nueve suites, incluida la prueba
+El comando importa el proyecto y ejecuta las trece suites, incluida la prueba
 de respeto del inspector. Los datos de prueba quedan aislados de la partida
 real. La notificación de cambios de `GridWordData` y la conservación de la
 escala inicial de Kalin tienen regresiones específicas.

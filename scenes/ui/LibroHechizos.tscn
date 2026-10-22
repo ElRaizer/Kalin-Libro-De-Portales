@@ -6,6 +6,30 @@
 
 [ext_resource type="PackedScene" path="res://scenes/components/BookCategories.tscn" id="editor_3"]
 
+[ext_resource type="Script" path="res://scripts/ui/BookMotion.gd" id="motion"]
+[ext_resource type="Texture2D" path="res://Arte/ilustraciones/libro_cubierta.svg" id="cover"]
+[ext_resource type="Texture2D" path="res://Arte/ilustraciones/ui_altavoz.svg" id="speaker"]
+
+[sub_resource type="StyleBoxFlat" id="Badge"]
+bg_color = Color(0.87, 0.89, 0.77, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+content_margin_left = 12.0
+content_margin_right = 12.0
+content_margin_top = 3.0
+content_margin_bottom = 3.0
+
+[sub_resource type="Gradient" id="FoldGradient"]
+offsets = PackedFloat32Array(0, 0.44, 0.5, 0.56, 1)
+colors = PackedColorArray(0.27, 0.15, 0.05, 0, 0.27, 0.15, 0.05, 0.12, 0.27, 0.15, 0.05, 0.3, 0.27, 0.15, 0.05, 0.12, 0.27, 0.15, 0.05, 0)
+
+[sub_resource type="GradientTexture2D" id="FoldShadow"]
+gradient = SubResource("FoldGradient")
+fill_from = Vector2(0, 0)
+fill_to = Vector2(1, 0)
+
 [node name="LibroHechizos" type="CanvasLayer"]
 layer = 10
 script = ExtResource("1_script")
@@ -73,12 +97,14 @@ layout_mode = 0
 offset_left = 22.0
 offset_top = 16.0
 offset_right = 523.0
-theme_override_constants/separation = 7
+theme_override_constants/separation = 5
 offset_bottom = 434.0
 
 [node name="StageLabel" type="Label" parent="BG/Book/Pages/LeftPage/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.56, 0.38, 0.14, 1)
+size_flags_horizontal = 4
+theme_override_styles/normal = SubResource("Badge")
+theme_override_colors/font_color = Color(0.20, 0.34, 0.27, 1)
 theme_override_font_sizes/font_size = 14
 text = "Mundo 1 · Nivel 1"
 horizontal_alignment = 1
@@ -87,7 +113,7 @@ visible = false
 [node name="Illustration" type="Panel" parent="BG/Book/Pages/LeftPage/Content"]
 layout_mode = 2
 theme_type_variation = &"KalinCreamPanel"
-custom_minimum_size = Vector2(0, 146)
+custom_minimum_size = Vector2(0, 128)
 
 [node name="ContextSprite" type="TextureRect" parent="BG/Book/Pages/LeftPage/Content/Illustration"]
 layout_mode = 0
@@ -96,14 +122,14 @@ offset_top = 8.0
 offset_right = 477.0
 expand_mode = 1
 stretch_mode = 5
-offset_bottom = 138.0
+offset_bottom = 120.0
 
 [node name="Placeholder" type="Label" parent="BG/Book/Pages/LeftPage/Content/Illustration"]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 18.0
 offset_right = 477.0
-offset_bottom = 152.0
+offset_bottom = 120.0
 theme_override_colors/font_color = Color(0.57, 0.43, 0.25, 1)
 theme_override_font_sizes/font_size = 24
 text = "✦\nIlustración futura"
@@ -124,8 +150,15 @@ theme_override_font_sizes/font_size = 17
 text = "Traducción"
 horizontal_alignment = 1
 
+[node name="ExampleHeading" type="Label" parent="BG/Book/Pages/LeftPage/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.42, 0.31, 0.15, 1)
+text = "Combinación de ejemplo"
+horizontal_alignment = 1
+
 [node name="ExampleLabel" type="Label" parent="BG/Book/Pages/LeftPage/Content"]
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.30, 0.20, 0.10, 1)
 theme_override_font_sizes/font_size = 16
@@ -154,11 +187,12 @@ autowrap_mode = 3
 visible = false
 
 [node name="AudioButton" type="Button" parent="BG/Book/Pages/LeftPage/Content"]
-custom_minimum_size = Vector2(0, 35)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-theme_type_variation = &"KalinAudioButton"
-disabled = true
-text = "Audio próximamente"
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 16
+text = "Pronunciación · audio próximamente"
+icon = ExtResource("speaker")
 
 [node name="LockedPage" type="Label" parent="BG/Book/Pages/LeftPage"]
 visible = false
@@ -184,12 +218,14 @@ layout_mode = 0
 offset_left = 22.0
 offset_top = 16.0
 offset_right = 523.0
-theme_override_constants/separation = 7
+theme_override_constants/separation = 5
 offset_bottom = 434.0
 
 [node name="StageLabel" type="Label" parent="BG/Book/Pages/RightPage/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.56, 0.38, 0.14, 1)
+size_flags_horizontal = 4
+theme_override_styles/normal = SubResource("Badge")
+theme_override_colors/font_color = Color(0.20, 0.34, 0.27, 1)
 theme_override_font_sizes/font_size = 14
 text = "Mundo 1 · Nivel 1"
 horizontal_alignment = 1
@@ -198,7 +234,7 @@ visible = false
 [node name="Illustration" type="Panel" parent="BG/Book/Pages/RightPage/Content"]
 layout_mode = 2
 theme_type_variation = &"KalinCreamPanel"
-custom_minimum_size = Vector2(0, 146)
+custom_minimum_size = Vector2(0, 128)
 
 [node name="ContextSprite" type="TextureRect" parent="BG/Book/Pages/RightPage/Content/Illustration"]
 layout_mode = 0
@@ -207,14 +243,14 @@ offset_top = 8.0
 offset_right = 477.0
 expand_mode = 1
 stretch_mode = 5
-offset_bottom = 138.0
+offset_bottom = 120.0
 
 [node name="Placeholder" type="Label" parent="BG/Book/Pages/RightPage/Content/Illustration"]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 18.0
 offset_right = 477.0
-offset_bottom = 152.0
+offset_bottom = 120.0
 theme_override_colors/font_color = Color(0.57, 0.43, 0.25, 1)
 theme_override_font_sizes/font_size = 24
 text = "✦\nIlustración futura"
@@ -235,8 +271,15 @@ theme_override_font_sizes/font_size = 17
 text = "Traducción"
 horizontal_alignment = 1
 
+[node name="ExampleHeading" type="Label" parent="BG/Book/Pages/RightPage/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.42, 0.31, 0.15, 1)
+text = "Combinación de ejemplo"
+horizontal_alignment = 1
+
 [node name="ExampleLabel" type="Label" parent="BG/Book/Pages/RightPage/Content"]
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.30, 0.20, 0.10, 1)
 theme_override_font_sizes/font_size = 16
@@ -265,11 +308,12 @@ autowrap_mode = 3
 visible = false
 
 [node name="AudioButton" type="Button" parent="BG/Book/Pages/RightPage/Content"]
-custom_minimum_size = Vector2(0, 35)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-theme_type_variation = &"KalinAudioButton"
-disabled = true
-text = "Audio próximamente"
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 16
+text = "Pronunciación · audio próximamente"
+icon = ExtResource("speaker")
 
 [node name="LockedPage" type="Label" parent="BG/Book/Pages/RightPage"]
 visible = false
@@ -338,11 +382,12 @@ text = "Página siguiente"
 
 [node name="AudioNotice" type="Label" parent="BG"]
 visible = false
-offset_left = 360.0
-offset_top = 654.0
-offset_right = 920.0
-offset_bottom = 690.0
-theme_override_colors/font_color = Color(1, 0.87, 0.4, 1)
+offset_left = 300.0
+offset_top = 574.0
+offset_right = 980.0
+offset_bottom = 600.0
+theme_override_styles/normal = SubResource("Badge")
+theme_override_colors/font_color = Color(0.20, 0.34, 0.27, 1)
 theme_override_font_sizes/font_size = 15
 text = "Audio próximamente"
 horizontal_alignment = 1
@@ -350,3 +395,35 @@ horizontal_alignment = 1
 [node name="AudioPlayer" type="AudioStreamPlayer" parent="."]
 
 [node name="Categories" parent="BG/Book" instance=ExtResource("editor_3")]
+
+[node name="FoldShadow" type="TextureRect" parent="BG/Book"]
+offset_left = 568.0
+offset_top = 124.0
+offset_right = 628.0
+offset_bottom = 578.0
+mouse_filter = 2
+texture = SubResource("FoldShadow")
+
+[node name="FlyingCover" type="TextureRect" parent="."]
+visible = false
+offset_right = 560.0
+offset_bottom = 640.0
+mouse_filter = 2
+texture = ExtResource("cover")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="FlyingCover"]
+offset_left = 90.0
+offset_top = 72.0
+offset_right = 475.0
+offset_bottom = 130.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.94, 0.80, 0.47, 1)
+theme_override_font_sizes/font_size = 26
+text = "Libro de Hechizos Maya"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Motion" type="Node" parent="."]
+script = ExtResource("motion")

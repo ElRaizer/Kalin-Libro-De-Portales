@@ -32,7 +32,7 @@ PauseMenu="*res://scenes/components/PauseMenu.tscn"
 `GameManager` conserva el catálogo canónico de vocabulario, el orden de los niveles, las palabras aprendidas, los puntos mágicos y el guardado local.
 
 La configuración de contenido, arte, controles y plantillas se explica en
-[Configuración desde el editor](GUIA_INSPECTOR.md). Los ejercicios de los mundos
+[Configuración desde el editor](INSTRUCCIONES.md#configuración-esencial). Los ejercicios de los mundos
 2–5 usan recursos `ExerciseSet` en `data/exercises/`; las ilustraciones y
 expresiones se asignan en `data/visual_catalog.tres`.
 
@@ -130,7 +130,7 @@ nombres semánticos, entre ellas:
 - `KalinCreamPanel`, `KalinDialoguePanel` y `KalinCompletionPanel` para paneles.
 - `KalinPrimaryButton`, `KalinNounButton` y `KalinAdjectiveButton` para botones.
 - `KalinNounSlot` y `KalinAdjectiveSlot` para los espacios de construcción de frases.
-- `KalinBookCard` y `KalinAudioButton` para el Libro de Hechizos.
+- `KalinBookCard` para las páginas y `KalinSecondaryButton` para su pronunciación.
 
 Al crear una interfaz nueva, asigna `kalin_theme.tres` al `Control` superior y
 elige la variante adecuada en **Theme Type Variation**. Conserva en los scripts
@@ -175,7 +175,7 @@ la escena representa el problema automáticamente en un bucle continuo; Continua
 está disponible sin tocar la animación. Los
 checkpoints narrativos guardan `revision = 2` y migran las posiciones de los
 capítulos abreviados. `PauseMenu` es el autoload que gestiona `Esc` sin saltar
-capítulos. Ver [REVISION_UX_VISUAL.md](REVISION_UX_VISUAL.md) para los componentes
+capítulos. Ver [REVISION_UX_VISUAL.md](APRENDIZAJE_Y_MISION.md) para los componentes
 compartidos de presentación y ayuda.
 
 | Propiedad | Uso |
@@ -315,7 +315,7 @@ El progreso se guarda automáticamente como `user://kalin_save.json`. Incluye:
 - puntos mágicos;
 - palabras aprendidas;
 - identificadores `w<numero>_l<numero>` de los niveles completados;
-- escena pendiente, estado de cada escena y tutoriales ya practicados (formato 2).
+- escena pendiente, estado de cada escena y tutoriales ya practicados (formato 3).
 
 **Volver a empezar** pide confirmación antes de eliminar la partida. Los datos inválidos se descartan y un JSON dañado genera una advertencia sin impedir que el juego inicie. `SaveRepository.CURRENT_VERSION` es la versión canónica. El formato 1 conserva palabras, puntos y niveles; sólo el formato 0 infiere niveles desde vocabulario antiguo.
 
@@ -323,7 +323,20 @@ Para una escena nueva, implementar `get_checkpoint_state() -> Dictionary` y rest
 
 ## Audio pendiente
 
+La presentación del libro se controla desde `scripts/ui/BookMotion.gd`:
+apertura de 0.49 s y cierre de 0.44 s. `LibroHechizos.gd` anima páginas
+y pestañas en 0.25 s, administra el foco y conserva la pausa hasta terminar
+el cierre. Al abrirlo desde una interfaz nueva, pasar el botón real con
+`libro.show_book(boton)` para que el viaje de ida y vuelta use su posición.
+Los efectos visuales no se guardan como progreso.
+
 Los audios todavía no están grabados. Cuando estén disponibles, colócalos en `Arte/audio/` como archivos OGG. Los nombres técnicos eliminan acentos, apóstrofes y espacios para que sean portables entre sistemas. La tabla completa está en [Arte/audio/README.md](Arte/audio/README.md).
+
+El botón permanece disponible: sin archivo muestra un aviso silencioso; con
+archivo reproduce la grabación. Cambiar de página o cerrar detiene la voz.
+La prueba `tests/validate_book.gd` comprueba pausa, foco, interrupciones,
+botones de origen, numeración y audio pendiente. Acepta
+`-- --capture=<carpeta absoluta>` con renderer real para guardar capturas.
 
 ## Comprobación antes de integrar cambios
 

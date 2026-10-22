@@ -26,7 +26,7 @@
 [ext_resource type="Texture2D" uid="uid://rl7wb5el1tl7" path="res://Arte/ilustraciones/fx_hambre.svg" id="texture_19"]
 [ext_resource type="Texture2D" uid="uid://dnp0qdpua0f1h" path="res://Arte/ilustraciones/fx_huella.svg" id="texture_20"]
 [ext_resource type="Texture2D" uid="uid://c3qlnvt3s60m7" path="res://Arte/ilustraciones/fx_pensamiento.svg" id="texture_21"]
-[ext_resource type="Texture2D" uid="uid://b8kuq0r55hima" path="res://Arte/ilustraciones/objeto_chaak.svg" id="texture_22"]
+[ext_resource type="Texture2D" uid="uid://deq8btn0w731g" path="res://Arte/ilustraciones/objeto_hamaca.svg" id="texture_22"]
 [ext_resource type="Texture2D" uid="uid://dxvlhcgvwktu3" path="res://Arte/ilustraciones/objeto_chan.svg" id="texture_23"]
 [ext_resource type="Texture2D" uid="uid://2oc21m255ccn" path="res://Arte/ilustraciones/objeto_lak.svg" id="texture_24"]
 [ext_resource type="Texture2D" uid="uid://bd7cj6ydmp5fh" path="res://Arte/ilustraciones/objeto_mayak.svg" id="texture_25"]
@@ -185,12 +185,12 @@ texture = ExtResource("texture_8")
 
 [sub_resource type="Resource" id="entry_17"]
 script = ExtResource("entry")
-key = "ch'áak"
+key = "k'áan"
 texture = ExtResource("texture_22")
 
 [sub_resource type="Resource" id="entry_18"]
 script = ExtResource("entry")
-key = "chan"
+key = "k'áanche'"
 texture = ExtResource("texture_23")
 
 [sub_resource type="Resource" id="entry_19"]
@@ -205,7 +205,7 @@ texture = ExtResource("texture_2")
 
 [sub_resource type="Resource" id="entry_21"]
 script = ExtResource("entry")
-key = "jach'"
+key = "chich"
 texture = ExtResource("texture_10")
 
 [sub_resource type="Resource" id="entry_22"]
@@ -240,7 +240,7 @@ texture = ExtResource("texture_14")
 
 [sub_resource type="Resource" id="entry_28"]
 script = ExtResource("entry")
-key = "pak'al"
+key = "ich"
 texture = ExtResource("texture_5")
 
 [sub_resource type="Resource" id="entry_29"]

@@ -1,0 +1,309 @@
+[gd_scene format=3 uid="uid://c410igixn8urf"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/MeaningIllustration.tscn" id="art"]
+[ext_resource type="Texture2D" uid="uid://ctwr7belr7b50" path="res://Arte/backgrounds/bg_aldea_encargos.svg" id="background"]
+[ext_resource type="PackedScene" path="res://scenes/components/ExplorationScene.tscn" id="base"]
+[ext_resource type="Texture2D" uid="uid://bd7cj6ydmp5fh" path="res://Arte/ilustraciones/objeto_mayak.svg" id="bench"]
+[ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="book"]
+[ext_resource type="Texture2D" uid="uid://lyk3k1koslak" path="res://Arte/ilustraciones/ui_casa.svg" id="exit"]
+[ext_resource type="PackedScene" path="res://scenes/components/RecallPanel.tscn" id="recall"]
+[ext_resource type="Script" uid="uid://bhklp1npw61mm" path="res://scripts/world4/VillageMission.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/components/ExplorationSpot.tscn" id="spot"]
+[ext_resource type="Script" uid="uid://dbkqq78fwom5o" path="res://scripts/data/VillageTask.gd" id="task"]
+[ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="theme"]
+
+[sub_resource type="Resource" id="task_0"]
+script = ExtResource("task")
+requester = "Áak"
+request = "Necesito una mesa grande para reunir a mis amigos."
+item = "mayak"
+quality = "nojoch"
+success = "¡Mi mesa grande! Ahora cabemos todos."
+
+[sub_resource type="Resource" id="task_1"]
+script = ExtResource("task")
+requester = "Áak"
+request = "Necesito una silla fuerte que sostenga mi caparazón."
+item = "k'áanche'"
+quality = "chich"
+success = "¡Esta silla sostiene mi caparazón!"
+
+[sub_resource type="Resource" id="task_2"]
+script = ExtResource("task")
+requester = "Peek'"
+request = "Tengo sed. Por favor, tráeme agua."
+item = "ja'"
+success = "¡Gracias por el agua! Ya me siento mejor."
+
+[sub_resource type="Resource" id="task_3"]
+script = ExtResource("task")
+requester = "Peek'"
+request = "Necesito una hamaca pequeña para descansar."
+item = "k'áan"
+quality = "mejen"
+success = "¡Mi hamaca! Voy a descansar un rato."
+
+[sub_resource type="Resource" id="task_4"]
+script = ExtResource("task")
+requester = "Kaax"
+request = "Necesito un plato bonito para nuestra fiesta."
+item = "lak"
+quality = "Jats'uts"
+success = "¡Qué bonito! Pondré mi plato en la fiesta."
+
+[sub_resource type="Resource" id="task_5"]
+script = ExtResource("task")
+requester = "Kaax"
+request = "Necesito comida deliciosa para compartir."
+item = "janal"
+quality = "ki'"
+success = "¡Ya podemos compartir la comida!"
+
+[node name="EncargosAldea" unique_id=522379239 instance=ExtResource("base")]
+script = ExtResource("script")
+tasks = Array[ExtResource("task")]([SubResource("task_0"), SubResource("task_1"), SubResource("task_2"), SubResource("task_3"), SubResource("task_4"), SubResource("task_5")])
+chapter_title = "Misión · Los encargos de la aldea"
+next_scene_key = "world5_level1"
+objective_text = "Habla con tus amigos, crea y entrega sus encargos."
+intro_lines = Array[String](["Antes de irme, ayudaré a mis amigos. Les preguntaré qué necesitan, crearé sus encargos en el taller y se los llevaré."])
+
+[node name="Terreno" parent="." index="1"]
+texture = ExtResource("background")
+
+[node name="Workbench" parent="Spots" index="0" unique_id=1758949882 instance=ExtResource("spot")]
+position = Vector2(450, 600)
+prompt = "Crear en el taller"
+lines = Array[String](["Aquí crearé los encargos de mis amigos."])
+reach_radius = 175.0
+spot_texture = ExtResource("bench")
+sprite_offset = Vector2(0, -65)
+
+[node name="Recipient0" parent="Spots" index="1" unique_id=1468021991 instance=ExtResource("spot")]
+position = Vector2(1120, 600)
+prompt = "Hablar / entregar"
+lines = Array[String](["¿Me ayudas con mi encargo?"])
+reach_radius = 175.0
+sprite_offset = Vector2(0, -65)
+sprite_scale = Vector2(1.35, 1.35)
+
+[node name="Recipient1" parent="Spots" index="2" unique_id=2003822509 instance=ExtResource("spot")]
+position = Vector2(1980, 600)
+prompt = "Hablar / entregar"
+lines = Array[String](["¿Me ayudas con mi encargo?"])
+reach_radius = 175.0
+sprite_offset = Vector2(0, -65)
+sprite_scale = Vector2(1.35, 1.35)
+
+[node name="Recipient2" parent="Spots" index="3" unique_id=1443110497 instance=ExtResource("spot")]
+position = Vector2(2800, 600)
+prompt = "Hablar / entregar"
+lines = Array[String](["¿Me ayudas con mi encargo?"])
+reach_radius = 175.0
+sprite_offset = Vector2(0, -65)
+sprite_scale = Vector2(1.35, 1.35)
+
+[node name="Salida" parent="Spots" index="4" unique_id=306559844 instance=ExtResource("spot")]
+position = Vector2(3500, 590)
+prompt = "Seguir al portal"
+lines = Array[String](["¡Todos recibieron sus encargos! El portal nos espera."])
+reach_radius = 175.0
+is_goal = true
+spot_texture = ExtResource("exit")
+sprite_offset = Vector2(0, -70)
+
+[node name="Carried" parent="Kalin" index="3" unique_id=680233735 instance=ExtResource("art")]
+visible = false
+offset_left = -110.0
+offset_top = -180.0
+offset_right = 30.0
+offset_bottom = -80.0
+
+[node name="ContinueButton" parent="UI" index="8"]
+offset_left = 1024.0
+offset_top = 646.0
+offset_right = 1256.0
+offset_bottom = 704.0
+
+[node name="HelpButton" parent="UI" index="9"]
+offset_left = 666.0
+offset_top = 12.0
+offset_right = 816.0
+offset_bottom = 58.0
+
+[node name="MenuButton" parent="UI" index="10"]
+offset_left = 832.0
+offset_top = 12.0
+offset_right = 1012.0
+offset_bottom = 58.0
+
+[node name="BookButton" type="Button" parent="UI" index="11" unique_id=915995509]
+offset_left = 1040.0
+offset_top = 12.0
+offset_right = 1264.0
+offset_bottom = 58.0
+theme = ExtResource("theme")
+theme_type_variation = &"KalinSecondaryButton"
+text = "Libro"
+
+[node name="CarriedLabel" type="Label" parent="UI" index="12" unique_id=542070985]
+offset_left = 630.0
+offset_top = 630.0
+offset_right = 1250.0
+offset_bottom = 666.0
+theme_override_colors/font_color = Color(1, 0.92, 0.7, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.2, 0.15, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 2
+
+[node name="MissionPanel" type="Panel" parent="UI" index="13" unique_id=229177325]
+visible = false
+offset_left = 340.0
+offset_top = 100.0
+offset_right = 1210.0
+offset_bottom = 590.0
+theme = ExtResource("theme")
+theme_type_variation = &"KalinCreamPanel"
+
+[node name="Title" type="Label" parent="UI/MissionPanel" index="0" unique_id=413034786]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 14.0
+offset_right = 840.0
+offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
+theme_override_font_sizes/font_size = 26
+text = "El taller de la aldea"
+
+[node name="RecallPanel" parent="UI/MissionPanel" index="1" unique_id=298865619 instance=ExtResource("recall")]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 60.0
+offset_right = 852.0
+offset_bottom = 304.0
+external_submit = true
+
+[node name="Cards" type="VBoxContainer" parent="UI/MissionPanel" index="2" unique_id=1101262582]
+visible = false
+layout_mode = 0
+offset_left = 28.0
+offset_top = 76.0
+offset_right = 842.0
+offset_bottom = 270.0
+theme_override_constants/separation = 14
+
+[node name="Nouns" type="HBoxContainer" parent="UI/MissionPanel/Cards" index="0" unique_id=223205707]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Noun0" type="Button" parent="UI/MissionPanel/Cards/Nouns" index="0" unique_id=774604557]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"KalinNounButton"
+
+[node name="Noun1" type="Button" parent="UI/MissionPanel/Cards/Nouns" index="1" unique_id=1483811942]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"KalinNounButton"
+
+[node name="Noun2" type="Button" parent="UI/MissionPanel/Cards/Nouns" index="2" unique_id=152740905]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"KalinNounButton"
+
+[node name="Noun3" type="Button" parent="UI/MissionPanel/Cards/Nouns" index="3" unique_id=2106176074]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"KalinNounButton"
+
+[node name="Qualities" type="HBoxContainer" parent="UI/MissionPanel/Cards" index="1" unique_id=110508208]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Quality0" type="Button" parent="UI/MissionPanel/Cards/Qualities" index="0" unique_id=1924301979]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"KalinAdjectiveButton"
+
+[node name="Quality1" type="Button" parent="UI/MissionPanel/Cards/Qualities" index="1" unique_id=602665131]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"KalinAdjectiveButton"
+
+[node name="Quality2" type="Button" parent="UI/MissionPanel/Cards/Qualities" index="2" unique_id=1016610528]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"KalinAdjectiveButton"
+
+[node name="Quality3" type="Button" parent="UI/MissionPanel/Cards/Qualities" index="3" unique_id=1091320676]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"KalinAdjectiveButton"
+
+[node name="Recipe" type="Label" parent="UI/MissionPanel" index="3" unique_id=1598878512]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 275.0
+offset_right = 842.0
+offset_bottom = 315.0
+theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+
+[node name="Feedback" type="Label" parent="UI/MissionPanel" index="4" unique_id=1046917264]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 326.0
+offset_right = 842.0
+offset_bottom = 402.0
+theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
+theme_override_font_sizes/font_size = 19
+text = "Recuerda tu encargo."
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Close" type="Button" parent="UI/MissionPanel" index="5" unique_id=855907956]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 418.0
+offset_right = 270.0
+offset_bottom = 474.0
+theme_type_variation = &"KalinSecondaryButton"
+text = "Volver a caminar"
+
+[node name="Forge" type="Button" parent="UI/MissionPanel" index="6" unique_id=1120521627]
+layout_mode = 0
+offset_left = 545.0
+offset_top = 418.0
+offset_right = 842.0
+offset_bottom = 474.0
+theme_type_variation = &"KalinPrimaryButton"
+text = "Crear y llevar ✦"
+
+[node name="Delivered" type="Node2D" parent="." index="8" unique_id=1955812620]
+
+[node name="Item0" parent="Delivered" index="0" unique_id=577993654 instance=ExtResource("art")]
+visible = false
+offset_right = 150.0
+offset_bottom = 110.0
+
+[node name="Item1" parent="Delivered" index="1" unique_id=373132263 instance=ExtResource("art")]
+visible = false
+offset_right = 150.0
+offset_bottom = 110.0
+
+[node name="Item2" parent="Delivered" index="2" unique_id=198338938 instance=ExtResource("art")]
+visible = false
+offset_right = 150.0
+offset_bottom = 110.0
+
+[node name="LibroHechizos" parent="." index="9" unique_id=1561099198 instance=ExtResource("book")]
+visible = false
