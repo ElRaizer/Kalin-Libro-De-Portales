@@ -21,6 +21,16 @@ func _ready() -> void:
 
 func open_from(origin: Rect2) -> void:
 	_stop()
+	if get_node("/root/AccessibilityManager").reduced_motion:
+		book.scale = Vector2.ONE
+		book.modulate.a = 1.0
+		shade.color.a = _shade_alpha
+		cover.hide()
+		busy = true
+		closing = false
+		_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		_tween.tween_callback(_finish_soft_open)
+		return
 	busy = true
 	closing = false
 	var center := book.position + book.size * 0.5
@@ -51,6 +61,14 @@ func open_from(origin: Rect2) -> void:
 
 func close_to(destination: Rect2) -> void:
 	_stop()
+	if get_node("/root/AccessibilityManager").reduced_motion:
+		cover.hide()
+		shade.color.a = 0.0
+		busy = true
+		closing = true
+		_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		_tween.tween_callback(_finish_soft_close)
+		return
 	busy = true
 	closing = true
 	# Conservar los valores actuales permite cerrar incluso durante la apertura.
@@ -74,6 +92,15 @@ func close_to(destination: Rect2) -> void:
 
 func _button_scale(rect: Rect2) -> float:
 	return clampf(minf(rect.size.x / cover.size.x, rect.size.y / cover.size.y), 0.04, 0.25)
+
+func _finish_soft_open() -> void:
+	busy = false
+	opened.emit()
+
+func _finish_soft_close() -> void:
+	busy = false
+	closing = false
+	closed.emit()
 
 func _stop() -> void:
 	if _tween:

@@ -26,7 +26,7 @@ Abrir el libro, pedir ayuda, ver las tarjetas, necesitar corrección de acentos 
 - **Comida:** se escribe el alimento y, cuando procede, su cualidad. Se retira el dibujo objetivo durante el recuerdo. Las tarjetas se reordenan entre rondas, no mientras se está decidiendo.
 - **Portal:** los cuatro retos de recapitulación empiezan con respuesta escrita. Las cortesías que aún se introducen se consideran práctica, no recuerdo de algo que nunca se enseñó.
 
-Las respuestas admiten mayúsculas y apóstrofos tipográficos. Si solo faltan acentos, se permite continuar mostrando la grafía canónica, pero el intento se considera apoyado. Los apóstrofos no se eliminan. Hay teclas visibles para vocales acentuadas y cierre glotal, además del teclado normal.
+Las respuestas admiten mayúsculas y apóstrofos tipográficos. Si solo faltan acentos, se permite continuar mostrando la grafía canónica, pero el intento se considera apoyado. Los apóstrofos no se eliminan. Las teclas adicionales de vocales acentuadas y cierre glotal permanecen ocultas por decisión del autor, pendientes de consulta con el profesor; se conserva la entrada mediante teclado.
 
 ## Misión: Los encargos de la aldea
 

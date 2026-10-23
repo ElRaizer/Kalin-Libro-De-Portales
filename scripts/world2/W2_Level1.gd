@@ -156,6 +156,7 @@ func _show_round() -> void:
 	if round_index == objects.size() and round_index not in _blocks_seen:
 		_blocks_seen.append(round_index)
 		mission_break.show_block("¡La casa está amueblada! Ahora prueba tus palabras.", "casa")
+		mission_break.offer_walk("world2_explore1", "world2_level1")
 	GameManager.checkpoint(self)
 
 func _build_choices() -> void:
@@ -281,7 +282,7 @@ func _on_level_complete() -> void:
 	guide.stop()
 	next_button.hide()
 	GameManager.complete_level(2, 1)
-	completion.show_completion("¡La casa está lista!", "Recuperaste los muebles de tus amigos.", "Al taller →")
+	completion.show_completion("¡La casa está lista!", "Recuperaste los muebles de tus amigos. Sal a ver cómo los utilizan.", "Pasear por la aldea →")
 	GameManager.checkpoint(self)
 
 func _on_magic_points_changed(value: int) -> void:
@@ -291,7 +292,7 @@ func _on_menu_pressed() -> void:
 	GameManager.go_to_scene("main_menu")
 
 func _on_next_level_pressed() -> void:
-	GameManager.go_to_scene("world2_story1")
+	GameManager.start_walk("world2_explore1", "world2_story1")
 
 func _on_book_pressed() -> void:
 	libro.show_book($UI/TopBar/BookBtn)

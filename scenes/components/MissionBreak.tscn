@@ -45,3 +45,24 @@ offset_bottom = 704
 theme = ExtResource("editor_3")
 theme_type_variation = &"KalinPrimaryButton"
 text = "Seguir →"
+
+[node name="WalkButton" type="Button" parent="."]
+visible = false
+offset_left = 420.0
+offset_top = 560.0
+offset_right = 860.0
+offset_bottom = 618.0
+theme = ExtResource("editor_3")
+theme_type_variation = &"KalinSecondaryButton"
+text = "Salir a caminar por la aldea"
+
+[node name="WalkHint" type="Label" parent="."]
+visible = false
+offset_left = 290.0
+offset_top = 624.0
+offset_right = 990.0
+offset_bottom = 660.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.9, 1, 0.9, 1)
+text = "Al volver, seguirás desde esta petición."
+horizontal_alignment = 1

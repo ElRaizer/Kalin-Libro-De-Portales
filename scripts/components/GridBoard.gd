@@ -213,6 +213,9 @@ func _get_path_controller() -> RefCounted:
 		_path_controller = PATH_CONTROLLER.new(self)
 	return _path_controller
 
+func get_hint_path(index: int, max_steps: int = 0) -> Array[Vector2i]:
+	return _get_path_controller().hint_path(index, max_steps)
+
 ## Inicializa el estado jugable con las propiedades editadas en el Inspector.
 func start_game() -> void:
 	_setup_game_state()

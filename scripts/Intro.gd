@@ -130,6 +130,9 @@ func _start_typewriter() -> void:
 	main_text.text   = ""
 	main_text.visible_characters = 0
 	main_text.text   = full_text
+	if get_node("/root/AccessibilityManager").instant_text:
+		_finish_typewriter()
+		return
 	typewriter_timer.start()
 
 func _typewriter_tick() -> void:

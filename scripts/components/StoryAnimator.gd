@@ -114,6 +114,9 @@ func _init(
 func start_idle() -> void:
 	if _kalin_idle_tween:
 		_kalin_idle_tween.kill()
+	if _host.get_node("/root/AccessibilityManager").reduced_motion:
+		_kalin.position.y = _kalin_home.y
+		return
 	_kalin_idle_tween = _host.create_tween().set_loops()
 	_kalin_idle_tween.tween_property(_kalin, "position:y", _kalin_home.y - KALIN_BOB, 1.2).set_trans(Tween.TRANS_SINE)
 	_kalin_idle_tween.tween_property(_kalin, "position:y", _kalin_home.y, 1.2).set_trans(Tween.TRANS_SINE)
@@ -181,6 +184,8 @@ func shake_screen() -> void:
 	if _shake_tween:
 		_shake_tween.kill()
 	_host.position = _host_home
+	if _host.get_node("/root/AccessibilityManager").reduced_motion:
+		return
 	_shake_tween = _host.create_tween()
 	var step_time: float = SHAKE_SECONDS / SHAKE_STEPS
 	for step: int in range(SHAKE_STEPS):
@@ -192,9 +197,24 @@ func shake_screen() -> void:
 func flash_screen() -> void:
 	if _flash_tween:
 		_flash_tween.kill()
+	if _host.get_node("/root/AccessibilityManager").reduced_flashes:
+		_flash_rect.modulate.a = 0.0
+		return
 	_flash_rect.modulate.a = FLASH_PEAK
 	_flash_tween = _host.create_tween()
 	_flash_tween.tween_property(_flash_rect, "modulate:a", 0.0, FLASH_SECONDS)
+
+func apply_comfort_settings() -> void:
+	var preferences := _host.get_node("/root/AccessibilityManager")
+	if preferences.reduced_motion:
+		if _shake_tween:
+			_shake_tween.kill()
+		_host.position = _host_home
+		start_idle()
+	if preferences.reduced_flashes:
+		if _flash_tween:
+			_flash_tween.kill()
+		_flash_rect.modulate.a = 0.0
 
 func show_title(title: String, subtitle: String) -> void:
 	if _title_tween:

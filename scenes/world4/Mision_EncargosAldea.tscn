@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://c410igixn8urf"]
 
 [ext_resource type="PackedScene" path="res://scenes/components/MeaningIllustration.tscn" id="art"]
-[ext_resource type="Texture2D" uid="uid://ctwr7belr7b50" path="res://Arte/backgrounds/bg_aldea_encargos.svg" id="background"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_portal.svg" id="background"]
 [ext_resource type="PackedScene" path="res://scenes/components/ExplorationScene.tscn" id="base"]
 [ext_resource type="Texture2D" uid="uid://bd7cj6ydmp5fh" path="res://Arte/ilustraciones/objeto_mayak.svg" id="bench"]
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="book"]
-[ext_resource type="Texture2D" uid="uid://lyk3k1koslak" path="res://Arte/ilustraciones/ui_casa.svg" id="exit"]
+[ext_resource type="Texture2D" path="res://Arte/exploracion/portal_aldea.svg" id="exit"]
 [ext_resource type="PackedScene" path="res://scenes/components/RecallPanel.tscn" id="recall"]
 [ext_resource type="Script" uid="uid://bhklp1npw61mm" path="res://scripts/world4/VillageMission.gd" id="script"]
 [ext_resource type="PackedScene" path="res://scenes/components/ExplorationSpot.tscn" id="spot"]
@@ -104,12 +104,12 @@ sprite_scale = Vector2(1.35, 1.35)
 
 [node name="Salida" parent="Spots" index="4" unique_id=306559844 instance=ExtResource("spot")]
 position = Vector2(3500, 590)
-prompt = "Seguir al portal"
-lines = Array[String](["¡Todos recibieron sus encargos! El portal nos espera."])
+prompt = "Despertar el portal"
+lines = Array[String](["¡Todos recibieron sus encargos! Usaré las palabras del libro para despertar el portal."])
 reach_radius = 175.0
 is_goal = true
 spot_texture = ExtResource("exit")
-sprite_offset = Vector2(0, -70)
+sprite_offset = Vector2(0, -180)
 
 [node name="Carried" parent="Kalin" index="3" unique_id=680233735 instance=ExtResource("art")]
 visible = false

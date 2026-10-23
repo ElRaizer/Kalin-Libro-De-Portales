@@ -84,6 +84,9 @@ func _layout_art() -> void:
 func celebrate() -> void:
 	if celebration and celebration.is_valid():
 		celebration.kill()
+	if get_node("/root/AccessibilityManager").reduced_motion:
+		scale = _base_scale
+		return
 	pivot_offset = size * 0.5
 	scale = _base_scale * 0.75
 	celebration = create_tween()

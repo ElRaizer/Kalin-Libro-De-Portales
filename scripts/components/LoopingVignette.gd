@@ -117,7 +117,8 @@ func _build_support(thought_word: String) -> void:
 
 func _process(delta: float) -> void:
 	if is_visible_in_tree():
-		seek_cycle(elapsed + delta)
+		# Mantener el relato visual a menor velocidad, sin bucles rápidos.
+		seek_cycle(elapsed + delta * (0.2 if get_node("/root/AccessibilityManager").reduced_motion else 1.0))
 
 ## Capturas y validación utilizan la misma línea de tiempo que el juego real.
 func seek_cycle(seconds: float) -> void:

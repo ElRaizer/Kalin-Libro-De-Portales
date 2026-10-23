@@ -7,6 +7,32 @@ extends Node
 var _mouse_focused_control: Control
 var _saved_focus_style: StyleBox
 @export var empty_focus_style: StyleBoxEmpty
+signal preferences_changed
+const PREFERENCES_PATH := "user://kalin_preferences.cfg"
+var reduced_motion := false
+var reduced_flashes := false
+var instant_text := false
+
+func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	var config := ConfigFile.new()
+	if config.load(PREFERENCES_PATH) != OK:
+		return
+	for key: String in ["reduced_motion", "reduced_flashes", "instant_text"]:
+		set(key, config.get_value("comfort", key, false) == true)
+
+func set_preference(key: String, enabled: bool) -> void:
+	if key not in ["reduced_motion", "reduced_flashes", "instant_text"]:
+		return
+	set(key, enabled)
+	var config := ConfigFile.new()
+	for name: String in ["reduced_motion", "reduced_flashes", "instant_text"]:
+		config.set_value("comfort", name, get(name))
+	var error := config.save(PREFERENCES_PATH)
+	if error != OK:
+		push_warning("No se pudieron guardar las preferencias de lectura (error %d)." % error)
+	get_tree().call_group("comfort_visuals", "apply_comfort_settings")
+	preferences_changed.emit()
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton or event is InputEventMouseMotion:

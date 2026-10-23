@@ -7,6 +7,12 @@ var _previous_focus: Control
 func _ready() -> void:
 	resume_button.pressed.connect(resume_game)
 	$Shade/Panel/MenuButton.pressed.connect(_menu)
+	for entry: Array in [["ReducedMotion", "reduced_motion"], ["ReducedFlashes", "reduced_flashes"], ["InstantText", "instant_text"]]:
+		var button := $Shade/Panel.get_node(entry[0]) as CheckButton
+		button.toggled.connect(_preference_toggled.bind(entry[1]))
+
+func _preference_toggled(enabled: bool, key: String) -> void:
+	AccessibilityManager.set_preference(key, enabled)
 
 
 func _input(event: InputEvent) -> void:
@@ -16,7 +22,7 @@ func _input(event: InputEvent) -> void:
 	if scene == null:
 		return
 	var book := scene.get_node_or_null("LibroHechizos")
-	if scene.scene_file_path == GameManager.SCENE_PATHS.main_menu and (book == null or not book.visible):
+	if scene.scene_file_path == GameManager.SCENE_PATHS.main_menu and not shade.visible and (book == null or not book.visible):
 		return
 	get_viewport().set_input_as_handled()
 	if shade.visible:
@@ -24,6 +30,8 @@ func _input(event: InputEvent) -> void:
 		return
 	if book and book.visible:
 		book.hide_book()
+		return
+	if scene.has_method("close_transient_ui") and scene.close_transient_ui():
 		return
 	var board := scene.get_node_or_null("GridBoard")
 	if board and board.drawing:
@@ -38,6 +46,13 @@ func open_pause() -> void:
 	GameManager.checkpoint_current_scene()
 	get_tree().paused = true
 	shade.show()
+	var in_menu: bool = get_tree().current_scene.scene_file_path == GameManager.SCENE_PATHS.main_menu
+	$Shade/Panel/Title.text = "A tu ritmo" if in_menu else "Aventura en pausa"
+	$Shade/Panel/MenuButton.visible = not in_menu
+	resume_button.text = "Volver al mapa" if in_menu else "Seguir jugando →"
+	$Shade/Panel/ReducedMotion.set_pressed_no_signal(AccessibilityManager.reduced_motion)
+	$Shade/Panel/ReducedFlashes.set_pressed_no_signal(AccessibilityManager.reduced_flashes)
+	$Shade/Panel/InstantText.set_pressed_no_signal(AccessibilityManager.instant_text)
 	resume_button.grab_focus()
 
 func resume_game() -> void:

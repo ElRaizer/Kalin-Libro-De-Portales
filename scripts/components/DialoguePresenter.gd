@@ -68,6 +68,9 @@ func _next_line() -> void:
 	if text_tween and text_tween.is_valid():
 		text_tween.kill()
 	text_label.text = value
+	if host.get_node("/root/AccessibilityManager").instant_text:
+		text_label.visible_ratio = 1.0
+		return
 	text_label.visible_ratio = 0.0
 	text_tween = host.create_tween()
 	text_tween.tween_property(text_label, "visible_ratio", 1.0, value.length() * reveal_seconds)

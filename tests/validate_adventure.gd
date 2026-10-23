@@ -55,8 +55,16 @@ func _run() -> void:
 		var expected := "world%d_story1" % int(info.world)
 		if int(info.world) == 1:
 			expected = "world1_story%d" % (int(info.level) + 1)
+		elif int(info.world) in [2, 3]:
+			expected = "world%d_explore1" % int(info.world)
 		if current_scene.scene_file_path != manager.SCENE_PATHS[expected]:
 			failures.append("La salida de %s no abrió %s" % [info.scene_key, expected])
+		if int(info.world) in [2, 3]:
+			current_scene._go_to_next_scene()
+			await scene_changed
+			await process_frame
+			if current_scene.scene_file_path != manager.SCENE_PATHS["world%d_story1" % int(info.world)]:
+				failures.append("El paseo no volvió a la historia correspondiente")
 		if int(info.world) == 5:
 			current_scene._finish_story()
 			await scene_changed

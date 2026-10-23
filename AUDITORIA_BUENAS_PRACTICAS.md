@@ -72,10 +72,15 @@ Antes de integrar un cambio, ejecutar:
 Después, probar manualmente la escena modificada y al menos una transición de
 entrada y salida. No deben ignorarse advertencias nuevas del editor.
 
-El comando importa el proyecto y ejecuta las trece suites, incluida la prueba
+El comando importa el proyecto y ejecuta las quince suites, incluida la prueba
 de respeto del inspector. Los datos de prueba quedan aislados de la partida
 real. La notificación de cambios de `GridWordData` y la conservación de la
 escala inicial de Kalin tienen regresiones específicas.
+
+La revisión de aventura añade pruebas de entrada real, paseos con consecuencias,
+borradores del taller, visitas independientes y preferencias de lectura. Las
+teclas adicionales de acentos se mantienen ocultas por decisión del autor, pendientes
+de consulta con el profesor. Ver [MEJORAS_AVENTURA.md](MEJORAS_AVENTURA.md).
 
 ## Referencias oficiales
 

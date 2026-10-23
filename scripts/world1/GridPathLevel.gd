@@ -53,6 +53,7 @@ var arrival_tween: Tween
 @onready var libro: CanvasLayer = $LibroHechizos
 
 func _ready() -> void:
+	recall.hide()
 	dialogue.visible = false
 	level_header.set_title(level_title)
 	_set_default_instruction()
@@ -273,13 +274,18 @@ func _show_help() -> void:
 	for index: int in range(grid_board.words.size()):
 		if index in grid_board.connected:
 			continue
-		var word: GridWordData = grid_board.words[index]
-		var from := grid_board.cell_to_local_position(word.start_cell) + Vector2.ONE * grid_board.tile_size * 0.5
-		# Demostrar el gesto, sin regalar la ruta de los tableros avanzados.
-		var to := grid_board.cell_to_local_position(word.destination_cell) + Vector2.ONE * grid_board.tile_size * 0.5 if level_number == 1 else from + Vector2(grid_board.tile_size * 2, 0)
-		guide.demonstrate([from, to])
-		_set_instr("Arrastra desde el animal hasta su palabra.")
+		# Los niveles avanzados muestran sólo dos pasos válidos, no la solución.
+		var route := grid_board.get_hint_path(index, 0 if level_number == 1 else 2)
+		if route.size() < 2:
+			continue
+		var points: Array[Vector2] = []
+		for cell: Vector2i in route:
+			points.append(grid_board.cell_to_local_position(cell) + Vector2.ONE * grid_board.tile_size * 0.5)
+		guide.drag_path(grid_board, points)
+		_set_instr("Continúa arrastrando desde la punta del camino." if not grid_board.paths[index].is_empty() else "Arrastra desde el animal hasta su destino.")
 		return
+	guide.stop()
+	_set_instr("Puedes volver a una ficha para rehacer su camino.")
 
 func _on_invalid_move(reason: String, cell: Vector2i) -> void:
 	_set_instr(reason)
@@ -304,6 +310,8 @@ func _restore_destination_texts() -> void:
 			(grid_board.destination_nodes[index].get_node("House") as TextureRect).visible = label.text.length() <= 10
 
 func _practice_name() -> void:
+	if not _naming_pending:
+		return
 	mark_learning_help()
 	var word: GridWordData = grid_board.words[_dialogue_word_index]
 	recall.caption.text = "%s significa %s. Escríbelo para practicar." % [word.maya_word, word.spanish_word.to_lower()]

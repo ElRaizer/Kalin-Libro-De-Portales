@@ -9,6 +9,10 @@ signal magic_points_changed(new_total: int)
 signal level_completed(world: int, level: int)
 signal progress_reset
 signal learning_changed
+signal save_status_changed(message: String)
+var save_status_message := ""
+var load_failed := false
+var practice_return_key := ""
 
 var magic_points: int = 0
 var words_learned: Dictionary = {}
@@ -190,8 +194,11 @@ func go_to_scene(key: String) -> void:
 		push_error("GameManager: clave de escena desconocida '%s'" % key)
 		return
 	checkpoint_current_scene()
+	var leaving_practice := get_tree().current_scene != null and get_tree().current_scene.scene_file_path == SCENE_PATHS.village_practice and key == "main_menu"
 	if key != "main_menu":
 		resume_scene_key = key
+	elif leaving_practice:
+		resume_scene_key = practice_return_key
 	elif get_tree().current_scene != null and get_tree().current_scene.scene_file_path == SCENE_PATHS.world5_cine1:
 		resume_scene_key = ""
 	_save()
@@ -207,6 +214,7 @@ func reset_save() -> void:
 	words_learned = {}
 	completed_levels = []
 	resume_scene_key = ""
+	practice_return_key = ""
 	scene_states.clear()
 	tutorials_seen.clear()
 	learning_progress.clear()
@@ -215,23 +223,69 @@ func reset_save() -> void:
 	progress_reset.emit()
 	var error: Error = _get_save_repository().delete_progress()
 	if error != OK:
+		_set_save_status("No se pudo reiniciar la partida. Puedes volver a intentarlo.")
 		push_warning("GameManager: no se pudo borrar el progreso (error %d)" % error)
+	else:
+		load_failed = false
+		_set_save_status("")
 
 func _add_magic(amount: int) -> void:
 	magic_points += amount
 	magic_points_changed.emit(magic_points)
 
 func _save() -> void:
-	var data: Dictionary = {"version": SAVE_VERSION, "magic_points": magic_points, "words_learned": words_learned, "completed_levels": completed_levels, "resume_scene_key": resume_scene_key, "scene_states": scene_states, "tutorials_seen": tutorials_seen, "learning_progress": learning_progress, "learning_clock": learning_clock}
+	# No sustituir una partida ilegible por datos vacíos al abrir el menú.
+	if load_failed:
+		return
+	var data: Dictionary = {"version": SAVE_VERSION, "magic_points": magic_points, "words_learned": words_learned, "completed_levels": completed_levels, "resume_scene_key": resume_scene_key, "scene_states": scene_states, "tutorials_seen": tutorials_seen, "learning_progress": learning_progress, "learning_clock": learning_clock, "practice_return_key": practice_return_key}
 	var error: Error = _get_save_repository().save_progress(data)
+	_set_save_status("No se pudo guardar. Tu avance sigue en esta sesión. Pulsa Reintentar antes de salir." if error != OK else "")
 	if error != OK:
 		push_warning("GameManager: no se pudo guardar el progreso (error %d)" % error)
+
+func _set_save_status(message: String) -> void:
+	if save_status_message == message:
+		return
+	save_status_message = message
+	save_status_changed.emit(message)
+
+func retry_save() -> void:
+	if load_failed:
+		_load_save()
+		return
+	checkpoint_current_scene()
+	_save()
+
+func visit_village() -> void:
+	if not is_level_completed(4, 1):
+		return
+	if resume_scene_key != "village_practice":
+		practice_return_key = resume_scene_key
+	var previous: Dictionary = scene_states.get("village_practice", {})
+	var delivered: Variant = previous.get("delivered", [])
+	if delivered is Array and delivered.size() >= 3:
+		replay_scene("village_practice")
+	else:
+		go_to_scene("village_practice")
+
+func start_walk(key: String, return_key: String) -> void:
+	if key not in SCENE_PATHS or return_key not in SCENE_PATHS:
+		return
+	checkpoint_current_scene()
+	var saved: Dictionary = scene_states.get(key, {}).duplicate(true)
+	saved["return_scene"] = return_key
+	scene_states[key] = saved
+	go_to_scene(key)
 
 func _load_save() -> void:
 	var result: Dictionary = _get_save_repository().load_progress()
 	if result.has("_load_error"):
+		load_failed = true
+		_set_save_status("No se pudo recuperar tu partida. Reintenta o pide ayuda antes de empezar de nuevo.")
 		push_warning("GameManager: %s" % result._load_error)
 		return
+	load_failed = false
+	_set_save_status("")
 	if result.is_empty():
 		return
 	magic_points = maxi(int(result.get("magic_points", 0)), 0)
@@ -239,6 +293,9 @@ func _load_save() -> void:
 	resume_scene_key = str(result.get("resume_scene_key", ""))
 	if resume_scene_key not in SCENE_PATHS or resume_scene_key == "main_menu":
 		resume_scene_key = ""
+	practice_return_key = str(result.get("practice_return_key", ""))
+	if practice_return_key not in SCENE_PATHS or practice_return_key in ["main_menu", "village_practice"]:
+		practice_return_key = ""
 	scene_states.clear()
 	var loaded_states: Variant = result.get("scene_states", {})
 	if loaded_states is Dictionary:

@@ -87,24 +87,24 @@ static func sanitize_completed_levels(value: Variant, level_order: Array[Diction
 
 static func sanitize_scene_state(value: Dictionary) -> Dictionary:
 	var state := value.duplicate(true)
-	for key: String in ["panel", "beat", "round", "challenge", "dialogue_word", "line", "x"]:
+	for key: String in ["panel", "beat", "round", "challenge", "dialogue_word", "line", "x", "active_task", "choosing", "mistakes"]:
 		if not state.has(key):
 			continue
 		var number: Variant = state[key]
 		if not (number is float or number is int) or not is_finite(float(number)):
 			state.erase(key)
 		elif key != "x":
-			state[key] = int(clampf(float(number), -1 if key == "dialogue_word" else 0, 10000))
-	for key: String in ["waiting", "complete", "dialogue_open", "resolved", "intro_done", "cards", "naming_pending"]:
+			state[key] = int(clampf(float(number), -1 if key in ["dialogue_word", "active_task", "choosing"] else 0, 10000))
+	for key: String in ["waiting", "complete", "dialogue_open", "resolved", "intro_done", "cards", "naming_pending", "workbench_open"]:
 		if state.has(key) and state[key] is not bool:
 			state.erase(key)
-	for key: String in ["noun", "adjective", "food", "modifier", "active"]:
+	for key: String in ["noun", "adjective", "food", "modifier", "active", "return_scene"]:
 		if state.has(key) and state[key] is not String:
 			state.erase(key)
-	for key: String in ["known", "met", "examined", "order", "plan", "named", "mission_met", "delivered", "task_indices"]:
+	for key: String in ["known", "met", "examined", "order", "plan", "named", "mission_met", "delivered", "task_indices", "solved"]:
 		if state.has(key) and state[key] is not Array:
 			state.erase(key)
-	for key: String in ["attempt", "carried", "task_support"]:
+	for key: String in ["attempt", "carried", "task_support", "drafts"]:
 		if state.has(key) and state[key] is not Dictionary:
 			state.erase(key)
 	if state.has("layout_seed"):

@@ -117,6 +117,7 @@ func _ready() -> void:
 		title_card, title_label, subtitle_label, flash_rect, celebration
 	)
 	guide = $LearningGuide
+	add_to_group("comfort_visuals")
 	vignette = $Stage/Vignette
 	vignette.mood_changed.connect(_on_vignette_mood)
 	continue_button = $UI/DialogueBox/ContinueButton
@@ -491,6 +492,10 @@ func _reveal_text(text: String) -> void:
 	if _text_tween:
 		_text_tween.kill()
 	dialogue_text.text = text
+	if get_node("/root/AccessibilityManager").instant_text:
+		dialogue_text.visible_ratio = 1.0
+		call_deferred("_on_text_revealed")
+		return
 	dialogue_text.visible_ratio = 0.0
 	_text_tween = create_tween()
 	_text_tween.tween_property(dialogue_text, "visible_ratio", 1.0, text.length() * char_reveal_seconds)
@@ -498,6 +503,11 @@ func _reveal_text(text: String) -> void:
 
 func _is_revealing_text() -> bool:
 	return _text_tween != null and _text_tween.is_running()
+
+func apply_comfort_settings() -> void:
+	_animator.apply_comfort_settings()
+	if get_node("/root/AccessibilityManager").instant_text:
+		_complete_text()
 
 func _complete_text() -> void:
 	if _text_tween:

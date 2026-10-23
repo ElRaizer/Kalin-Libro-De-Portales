@@ -294,9 +294,14 @@ Para agregar una exploración:
 4. Regístrala en `GameManager.SCENE_PATHS` con una clave `worldN_exploreM`.
 5. Cambia el `next_scene_key` de la escena anterior para que apunte a ella.
 
-Arte de las exploraciones: el cielo (`bg_isla_cielo.svg`, 1700 × 720) debe ser
+Arte de las exploraciones: el cielo (`bg_isla_cielo.svg`, 2560 × 720) debe ser
 más ancho que la pantalla para el parallax; el terreno deja transparente la
 parte alta para que se vea el cielo; los objetos viven en `Arte/exploracion/`.
+Los fondos de aldea (`bg_aldea_encargos.svg` y `bg_aldea_portal.svg`) tienen
+5120 × 720, con margen después del sendero. La cámara obtiene sus límites
+horizontales del terreno, salvo que se hayan configurado explícitamente en el
+Inspector. El fondo del portal se usa en la misión final; la visita de práctica
+conserva la aldea habitual. Kalin se desplaza con saltitos usando su dibujo original.
 Se mantiene el estilo de formas planas y degradados suaves. Para sombras y
 transparencias usa `fill-opacity` en lugar de colores `rgba(...)`: el
 importador SVG de Godot dibuja `rgba(...)` como negro sólido.

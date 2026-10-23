@@ -163,7 +163,7 @@ func _show_round() -> void:
 		GameManager.learn_word(challenge.food)
 		if not challenge.modifier.is_empty():
 			GameManager.learn_word(challenge.modifier)
-	phase_label.text = "Práctica" if guided else "Recuerdo"
+	phase_label.text = "Práctica con tarjetas" if _practice_fallback else ("Práctica" if guided else "Recuerdo")
 	animal_label.text = challenge.animal
 	animal_sprite.texture = challenge.sprite
 	request_label.text = challenge.translation if guided else "¿Qué quiere?"
@@ -201,6 +201,8 @@ func _show_round() -> void:
 		guide.stop()
 		var recent: ExerciseEntry = challenges[int(round_plan[round_index - 1].challenge)]
 		mission_break.show_block("¡Tus amigos recuperan sus fuerzas!", "hambre", recent.food, recent.modifier, recent.animal)
+		if round_index == challenges.size():
+			mission_break.offer_walk("world3_explore1", "world4_level1")
 	GameManager.checkpoint(self)
 
 func _refresh_step() -> void:
@@ -418,7 +420,7 @@ func _show_help() -> void:
 	var slot: Control = food_slot if needs_food else modifier_slot
 	if round_index == 0 and "requests" not in GameManager.tutorials_seen or _help_stage >= 2:
 		var button: Control = food_buttons[challenge.food] if needs_food else modifier_buttons[challenge.modifier]
-		guide.demonstrate([button.get_global_rect().get_center(), slot.get_global_rect().get_center()])
+		guide.drag_between(button, slot)
 	elif _help_stage == 0:
 		guide.highlight(slot)
 	else:
@@ -440,8 +442,13 @@ func _practice_with_cards() -> void:
 	recall.hide()
 	$UI/ChoicesPanel/Content.show()
 	visual_clue.show()
+	_update_choice_labels(false)
 	_refresh_step()
+	phase_label.text = "Práctica con tarjetas"
+	mission_progress.update_progress(round_index, round_plan.size(), "La comida · %d / %d · Práctica con tarjetas" % [round_index + 1, round_plan.size()])
 	feedback_label.text = "Practiquemos con las tarjetas."
+	PHRASE_BUILDER.focus_first_visible(food_grid)
+	GameManager.checkpoint(self)
 
 func _on_recall_changed(_text: String) -> void:
 	if recall.visible and not _resolving:

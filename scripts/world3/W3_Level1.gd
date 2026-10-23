@@ -164,7 +164,7 @@ func _show_round() -> void:
 		GameManager.learn_word(challenge.adjective)
 	animal_sprite.texture = challenge.sprite
 	animal_name.text = challenge.animal
-	phase_label.text = "Práctica" if guided else "Recuerdo"
+	phase_label.text = "Práctica con tarjetas" if _practice_fallback else ("Práctica" if guided else "Recuerdo")
 	request_label.text = "Ayuda a %s" % challenge.animal
 	target_art.show_meaning(challenge.noun, challenge.adjective)
 	target_art.visible = guided or _practice_fallback
@@ -203,6 +203,8 @@ func _show_block() -> void:
 		guide.stop()
 		var recent: ExerciseEntry = challenges[round_plan[round_index - 1]]
 		mission_break.show_block("¡Otro objeto a su medida!", "tamano", recent.noun, recent.adjective, recent.animal)
+		if round_index == challenges.size():
+			mission_break.offer_walk("world3_explore1", "world3_level1")
 
 func _refresh_step() -> void:
 	ExercisePresentation.focus_step(noun_grid, adjective_grid, not selected_noun.is_empty())
@@ -350,7 +352,7 @@ func _finish_level() -> void:
 	_awaiting_continue = false
 	guide.stop()
 	GameManager.complete_level(3, 1)
-	completion.show_completion("¡Objetos a la medida!", "Tus amigos ya tienen lo que necesitan.", "A preparar comida →")
+	completion.show_completion("¡Objetos a la medida!", "Tus palabras cambian los objetos. Sal a probarlas con tus amigos.", "Pasear por la aldea →")
 	GameManager.checkpoint(self)
 
 func _on_magic_points_changed(value: int) -> void:
@@ -364,7 +366,7 @@ func _on_menu_pressed() -> void:
 	_safe_navigate("main_menu")
 
 func _on_next_level_pressed() -> void:
-	_safe_navigate("world3_story1")
+	GameManager.start_walk("world3_explore1", "world3_story1")
 
 func _on_book_pressed() -> void:
 	libro.show_book($UI/TopBar/Bar/BookButton)
@@ -376,7 +378,7 @@ func _render_success(animate: bool) -> void:
 	_resolving = true
 	_awaiting_continue = true
 	recall.hide()
-	mission_progress.update_progress(round_index + 1, round_plan.size(), "El taller · %d / 3 · ¡Creado!" % [round_index % 3 + 1])
+	mission_progress.update_progress(round_index + 1, round_plan.size(), "El taller · %d / %d · ¡Creado!" % [round_index + 1, round_plan.size()])
 	guide.stop()
 	_set_choices_enabled(false)
 	var challenge := _current_challenge()
@@ -422,7 +424,7 @@ func _show_help() -> void:
 		guide.point_at(cast_button)
 	elif round_index == 0 and "phrases" not in GameManager.tutorials_seen or _help_stage >= 2:
 		var button: Control = noun_buttons[challenge.noun] if needs_noun else adjective_buttons[challenge.adjective]
-		guide.demonstrate([button.get_global_rect().get_center(), slot.get_global_rect().get_center()])
+		guide.drag_between(button, slot)
 	elif _help_stage == 0:
 		guide.highlight(slot)
 	else:
@@ -444,8 +446,13 @@ func _practice_with_cards() -> void:
 	recall.hide()
 	$UI/ChoicesPanel/Content.show()
 	target_art.show()
+	_update_choice_labels()
 	_refresh_step()
+	phase_label.text = "Práctica con tarjetas"
+	mission_progress.update_progress(round_index, round_plan.size(), _phase_caption())
 	feedback_label.text = "Practiquemos con las tarjetas."
+	PHRASE_BUILDER.focus_first_visible(noun_grid)
+	GameManager.checkpoint(self)
 
 func _on_recall_changed(_text: String) -> void:
 	if recall.visible and not _resolving:

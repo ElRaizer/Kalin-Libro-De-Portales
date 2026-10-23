@@ -12,6 +12,9 @@ Videojuego educativo desarrollado en Godot para practicar vocabulario y estructu
 - Ocho niveles distribuidos en cinco mundos y una misión de encargos en la aldea.
 - Nueve capítulos de historia animados y tres cinemáticas que acompañan toda la aventura, desde la noche del huracán hasta el regreso de Kalin.
 - Una exploración libre de la isla antes del primer capítulo: el jugador camina con Kalin por la orilla, examina objetos y llega a la aldea de los animales.
+- Dos paseos por la aldea después de casa y taller, con seis necesidades que se resuelven eligiendo hechizos sobre el escenario y cambios que permanecen guardados.
+- Descansos con salida a caminar y regreso a la petición pendiente; visitas independientes a la aldea después del Mundo 4.
+- Opciones de lectura y movimiento desde **A tu ritmo** en el mapa o la pausa.
 - Los audios de pronunciación están planeados, pero todavía no han sido grabados.
 
 El proyecto es un prototipo funcional en desarrollo. La navegación principal, el libro de hechizos y el guardado están implementados; todavía quedan mecánicas y contenido narrativo por ampliar.
@@ -159,9 +162,11 @@ No se requieren complementos ni dependencias externas.
 
 ## Documentación
 
+- [MEJORAS_AVENTURA.md](MEJORAS_AVENTURA.md): paseos, descansos, borradores, comodidad y decisiones pendientes de validación.
+
 - [INSTRUCCIONES.md](INSTRUCCIONES.md): instalación, estructura técnica y mantenimiento.
 - [AUDITORIA_BUENAS_PRACTICAS.md](AUDITORIA_BUENAS_PRACTICAS.md): cumplimiento, correcciones y pendientes de diseño.
-- [VOCABULARIO.md](VOCABULARIO.md): grafías adoptadas, normalizaciones y decisiones del GDD.
+- [VOCABULARIO.md](VOCABULARIO.md): inventario completo para revisión con mayahablantes, palabras y frases con su significado en español, variantes, dudas y hoja de correcciones.
 - [APRENDIZAJE_Y_MISION.md](APRENDIZAJE_Y_MISION.md): evidencia por palabra, recuerdo sin ayuda, encargos y pruebas.
 - [Arte/audio/README.md](Arte/audio/README.md): preparación y nombres de los audios pendientes.
 

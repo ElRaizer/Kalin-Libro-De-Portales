@@ -5,6 +5,7 @@ class_name VillageMission
 ## El taller acepta objetos equivocados; la consecuencia se comprueba con el
 ## destinatario. No basta con acertar una tarjeta para cerrar un encargo.
 @export var tasks: Array[VillageTask] = []
+@export var free_practice := false
 var task_indices: Array[int] = []
 var met: Array[int] = []
 var delivered: Array[int] = []
@@ -15,6 +16,8 @@ var _seed := 1
 var _cards_mode := false
 var _draft_item := ""
 var _draft_quality := ""
+var drafts: Dictionary = {}
+var _restoring_draft := false
 @onready var mission_panel: Panel = $UI/MissionPanel
 @onready var recall: RecallPanel = $UI/MissionPanel/RecallPanel
 @onready var noun_choices: HBoxContainer = $UI/MissionPanel/Cards/Nouns
@@ -30,6 +33,11 @@ func _ready() -> void:
 	met = ExerciseProgress.restore_markers(saved.get("mission_met"), 3)
 	delivered = ExerciseProgress.restore_markers(saved.get("delivered"), 3)
 	active_task = clampi(int(saved.get("active_task", -1)), -1, 2)
+	if saved.get("drafts") is Dictionary:
+		for index: int in range(3):
+			var draft: Variant = saved.drafts.get(str(index))
+			if draft is Dictionary:
+				drafts[str(index)] = {"item": str(draft.get("item", "")).left(100), "quality": str(draft.get("quality", "")).left(100), "cards": draft.get("cards", false) == true}
 	if saved.get("task_support") is Dictionary:
 		for index: int in range(3):
 			task_support[str(index)] = saved.task_support.get(str(index), false) == true
@@ -44,26 +52,36 @@ func _ready() -> void:
 		spot.lines.assign([task.request])
 		spot.spot_texture = GameManager.get_visual_texture(task.requester)
 	super._ready()
-	skip_button.hide()
+	skip_button.visible = free_practice
+	if free_practice:
+		skip_button.text = "Volver al mapa"
 	$UI/BookButton.pressed.connect(func(): $LibroHechizos.show_book($UI/BookButton))
 	$UI/MissionPanel/Close.pressed.connect(_close_workbench)
 	forge_button.pressed.connect(_forge)
 	recall.submitted.connect(_forge)
 	recall.practice_requested.connect(_show_cards)
+	recall.first.text_changed.connect(_draft_changed)
+	recall.second.text_changed.connect(_draft_changed)
 	for button: Button in noun_choices.get_children():
 		button.pressed.connect(func():
 			_draft_item = str(button.get_meta("word"))
 			_update_recipe()
+			GameManager.checkpoint(self)
 		)
 	for button: Button in quality_choices.get_children():
 		button.pressed.connect(func():
 			_draft_quality = str(button.get_meta("word"))
 			_update_recipe()
+			GameManager.checkpoint(self)
 		)
 	mission_panel.hide()
 	_restore_deliveries()
 	_update_carried()
 	_update_counter()
+	if saved.get("workbench_open", false) == true and not is_dialogue_open() and active_task >= 0 and active_task not in delivered:
+		# La ayuda diferida de ExplorationScene debe terminar antes de reabrirlo;
+		# de otro modo interpretaría la restauración como una petición de tarjetas.
+		call_deferred("_open_workbench")
 
 func _restore_tasks(saved: Dictionary) -> void:
 	var loaded: Variant = saved.get("task_indices")
@@ -142,16 +160,33 @@ func _open_workbench() -> void:
 	$UI/MissionPanel/Cards.hide()
 	$UI/MissionPanel/Recipe.hide()
 	_cards_mode = false
+	_restoring_draft = true
 	recall.configure(["Objeto o alimento", "Cualidad · opcional"])
 	recall.second.placeholder_text = "Déjalo vacío si no hace falta"
+	var draft: Dictionary = drafts.get(str(active_task), {})
+	recall.first.text = str(draft.get("item", ""))
+	recall.second.text = str(draft.get("quality", ""))
+	_restoring_draft = false
 	feedback.text = "Recuerda el encargo. Crea algo y llévaselo a quien lo pidió."
-	forge_button.grab_focus()
 	recall.first.grab_focus()
+	if draft.get("cards", false) == true:
+		_show_cards()
+	GameManager.checkpoint(self)
 
 func _close_workbench() -> void:
+	_store_draft()
 	mission_panel.hide()
-	prompt_button.grab_focus()
+	$UI/BookButton.grab_focus()
 	GameManager.checkpoint(self)
+
+func _draft_changed(_text: String) -> void:
+	if mission_panel.visible and not _restoring_draft:
+		GameManager.checkpoint(self)
+
+func _store_draft() -> void:
+	if active_task >= 0 and mission_panel.visible and not _restoring_draft:
+		var values := [_draft_item, _draft_quality] if _cards_mode else recall.values()
+		drafts[str(active_task)] = {"item": values[0], "quality": values[1], "cards": _cards_mode}
 
 func _show_cards() -> void:
 	mark_learning_help()
@@ -159,8 +194,13 @@ func _show_cards() -> void:
 	recall.hide()
 	$UI/MissionPanel/Cards.show()
 	$UI/MissionPanel/Recipe.show()
-	_draft_item = ""
-	_draft_quality = ""
+	var draft: Dictionary = drafts.get(str(active_task), {})
+	_draft_item = str(draft.get("item", ""))
+	_draft_quality = str(draft.get("quality", ""))
+	if not _valid_item(_draft_item):
+		_draft_item = ""
+	if not _valid_quality(_draft_quality):
+		_draft_quality = ""
 	var task := tasks[task_indices[active_task]]
 	var items: Array[String] = [task.item]
 	for word: String in ["mayak", "lak", "k'áanche'", "k'áan", "ja'", "janal", "ich"]:
@@ -181,6 +221,7 @@ func _show_cards() -> void:
 	PhraseBuilderController.shuffle_grid(quality_choices, _seed + active_task + 17)
 	feedback.text = "Puedes consultar el libro y probar tus palabras en el mundo."
 	_update_recipe()
+	GameManager.checkpoint(self)
 
 func _update_recipe() -> void:
 	$UI/MissionPanel/Recipe.text = "%s%s" % [_draft_item if not _draft_item.is_empty() else "Elige un objeto", " · " + _draft_quality if not _draft_quality.is_empty() else ""]
@@ -213,6 +254,7 @@ func _forge() -> void:
 		feedback.text = "Revisa tus palabras. El libro te ayudará a escribirlas."
 		return
 	carried = {"item": item.word, "quality": quality.word, "supported": _cards_mode or item.supported or quality.supported or task_support.get(str(active_task), false), "mistakes": 0}
+	drafts.erase(str(active_task))
 	mission_panel.hide()
 	magic.restart()
 	_update_carried()
@@ -262,7 +304,7 @@ func _update_counter() -> void:
 	if not is_instance_valid(counter_label):
 		return
 	counter_label.text = "Encargos entregados: %d / 3" % delivered.size()
-	objective_label.text = "¡Listo! Sigue hasta la salida →" if delivered.size() == 3 else "Habla con tus amigos, crea y entrega sus encargos."
+	objective_label.text = ("¡Listo! Puedes visitar a tus amigos o volver al mapa." if free_practice else "¡Listo! Sigue hasta la salida →") if delivered.size() == 3 else "Habla con tus amigos, crea y entrega sus encargos."
 
 func mark_learning_help() -> void:
 	if active_task >= 0:
@@ -291,7 +333,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	super._unhandled_input(event)
 
+func close_transient_ui() -> bool:
+	if not mission_panel.visible:
+		return false
+	_close_workbench()
+	return true
+
 func get_checkpoint_state() -> Dictionary:
+	_store_draft()
 	var saved := super.get_checkpoint_state()
-	saved.merge({"layout_seed": _seed, "task_indices": task_indices, "mission_met": met, "delivered": delivered, "active_task": active_task, "carried": carried.duplicate(true), "task_support": task_support.duplicate(true)})
+	saved.merge({"layout_seed": _seed, "task_indices": task_indices, "mission_met": met, "delivered": delivered, "active_task": active_task, "carried": carried.duplicate(true), "task_support": task_support.duplicate(true), "drafts": drafts.duplicate(true), "workbench_open": mission_panel.visible})
 	return saved
