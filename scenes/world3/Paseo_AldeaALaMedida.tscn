@@ -8,6 +8,30 @@
 [ext_resource type="Texture2D" path="res://Arte/sprites/animal_peek.svg" id="actor1"]
 [ext_resource type="Texture2D" path="res://Arte/sprites/animal_kaax.svg" id="actor2"]
 
+[sub_resource type="Resource" id="alternate0"]
+script = ExtResource("task")
+requester = "Áak"
+request = "Quiero servir la comida en un plato bonito para recibir a mis amigos."
+item = "lak"
+quality = "Jats'uts"
+success = "¡El plato quedó bonito! Ya puedo recibir a mis amigos."
+
+[sub_resource type="Resource" id="alternate1"]
+script = ExtResource("task")
+requester = "Peek'"
+request = "Llegarán muchos amigos a comer. Necesito una mesa grande."
+item = "mayak"
+quality = "nojoch"
+success = "¡Una mesa grande! Hay lugar para compartir."
+
+[sub_resource type="Resource" id="alternate2"]
+script = ExtResource("task")
+requester = "Kaax"
+request = "Quiero una hamaca pequeña para descansar en este rincón."
+item = "k'áan"
+quality = "mejen"
+success = "¡La hamaca pequeña cabe justo aquí!"
+
 [sub_resource type="Resource" id="task0"]
 script = ExtResource("task")
 requester = "Áak"
@@ -34,6 +58,7 @@ adjective = "Jats'uts"
 [sub_resource type="Resource" id="encounter0"]
 script = ExtResource("encounter")
 task = SubResource("task0")
+alternate_task = SubResource("alternate0")
 choices = Array[ExtResource("entry")]([SubResource("choice0_0"), SubResource("choice0_1"), SubResource("choice0_2")])
 
 [sub_resource type="Resource" id="task1"]
@@ -62,6 +87,7 @@ adjective = "nojoch"
 [sub_resource type="Resource" id="encounter1"]
 script = ExtResource("encounter")
 task = SubResource("task1")
+alternate_task = SubResource("alternate1")
 choices = Array[ExtResource("entry")]([SubResource("choice1_0"), SubResource("choice1_1"), SubResource("choice1_2")])
 
 [sub_resource type="Resource" id="task2"]
@@ -90,6 +116,7 @@ adjective = "mejen"
 [sub_resource type="Resource" id="encounter2"]
 script = ExtResource("encounter")
 task = SubResource("task2")
+alternate_task = SubResource("alternate2")
 choices = Array[ExtResource("entry")]([SubResource("choice2_0"), SubResource("choice2_1"), SubResource("choice2_2")])
 
 [node name="PaseoAldea" instance=ExtResource("base")]

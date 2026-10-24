@@ -23,6 +23,7 @@ var total_rounds: int:
 	get:
 		return objects.size() * 2
 var round_order: Array[int] = []
+var recall_order: Array[int] = []
 var round_index := 0
 var current_phase := 0
 var _completing := false
@@ -65,15 +66,17 @@ func _ready() -> void:
 	if not issues.is_empty():
 		push_error("Configuración incompleta: " + "; ".join(issues))
 		return
-	for index: int in range(objects.size()):
-		round_order.append(index)
-	round_order.shuffle()
 	var state := GameManager.get_scene_state(self)
 	_attempt.restore(state.get("attempt"))
 	_practice_fallback = bool(state.get("cards", false))
 	_layout_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
+	round_order = ReplayVariation.order(objects.size(), _layout_seed, ReplayVariation.previous(state, "order", []))
 	_blocks_seen = ExerciseProgress.restore_markers(state.get("blocks"), total_rounds)
 	round_order = ExerciseProgress.order_or(state.get("order"), objects.size(), round_order)
+	recall_order = ReplayVariation.order(objects.size(), _layout_seed + 7919, round_order)
+	if state.has("round") and not state.has("recall_order"):
+		recall_order = round_order.duplicate()
+	recall_order = ExerciseProgress.order_or(state.get("recall_order"), objects.size(), recall_order)
 	round_index = clampi(int(state.get("round", 0)), 0, total_rounds)
 	completion.next_pressed.connect(_on_next_level_pressed)
 	completion.replay_pressed.connect(_on_replay_pressed)
@@ -115,7 +118,8 @@ func _restore_room() -> void:
 		_place_object(objects[round_order[index]].maya, false)
 
 func _current_object() -> ExerciseEntry:
-	return objects[round_order[round_index % round_order.size()]]
+	var order := round_order if round_index < objects.size() else recall_order
+	return objects[order[round_index % order.size()]]
 
 func _show_round() -> void:
 	guide.stop()
@@ -301,7 +305,7 @@ func _on_replay_pressed() -> void:
 	GameManager.replay_scene(GameManager.scene_key_for(self))
 
 func get_checkpoint_state() -> Dictionary:
-	return {"order": round_order, "round": round_index, "waiting": _waiting, "blocks": _blocks_seen, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "cards": _practice_fallback, "recall_text": recall.first.text}
+	return {"order": round_order, "recall_order": recall_order, "round": round_index, "waiting": _waiting, "blocks": _blocks_seen, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "cards": _practice_fallback, "recall_text": recall.first.text}
 
 func mark_learning_help() -> void:
 	if not _waiting and not _completing:

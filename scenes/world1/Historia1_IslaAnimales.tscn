@@ -45,6 +45,7 @@ script = ExtResource("2_beat")
 kind = 2
 speaker = "Peek'"
 text = "¿Quién es Miis?"
+question_template = "¿Quién es {animal}?"
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 target_word = "Miis"
 

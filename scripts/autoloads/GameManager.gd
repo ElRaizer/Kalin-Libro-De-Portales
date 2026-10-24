@@ -271,11 +271,15 @@ func visit_village() -> void:
 func start_walk(key: String, return_key: String) -> void:
 	if key not in SCENE_PATHS or return_key not in SCENE_PATHS:
 		return
-	checkpoint_current_scene()
+	# El checkpoint de salida debe ocurrir antes de renovar un paseo completado.
+	go_to_scene(key)
 	var saved: Dictionary = scene_states.get(key, {}).duplicate(true)
+	var solved: Variant = saved.get("solved", [])
+	if solved is Array and solved.size() >= 3:
+		saved = ReplayVariation.replay_state(saved)
 	saved["return_scene"] = return_key
 	scene_states[key] = saved
-	go_to_scene(key)
+	_save()
 
 func _load_save() -> void:
 	var result: Dictionary = _get_save_repository().load_progress()
@@ -382,7 +386,7 @@ func continue_adventure() -> void:
 func replay_scene(key: String) -> void:
 	# Navegar antes de borrar evita que el checkpoint de salida restaure el estado viejo.
 	go_to_scene(key)
-	scene_states.erase(key)
+	scene_states[key] = ReplayVariation.replay_state(scene_states.get(key, {}))
 	_save()
 
 func mark_tutorial_seen(key: String) -> void:

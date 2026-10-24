@@ -187,8 +187,13 @@ func _cards_and_buttons() -> void:
 	scene._select_food(wanted.food)
 	scene._show_help()
 	_control_click(scene.guide, scene.serve_button, "Servir agua")
-	scene.round_index = 1
+	scene.round_index = 0
+	for index: int in range(scene.challenges.size()):
+		if scene.challenges[int(scene.round_plan[index].challenge)].modifier != "":
+			scene.round_index = index
+			break
 	scene._show_round()
+	scene.mission_break.hide()
 	wanted = scene._current_challenge()
 	scene._select_food(wanted.food)
 	await create_timer(0.3).timeout

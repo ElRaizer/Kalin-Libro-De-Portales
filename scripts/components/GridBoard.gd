@@ -216,6 +216,25 @@ func _get_path_controller() -> RefCounted:
 func get_hint_path(index: int, max_steps: int = 0) -> Array[Vector2i]:
 	return _get_path_controller().hint_path(index, max_steps)
 
+## Recoloca los nodos guardados; no genera escena ni modifica recursos compartidos.
+func apply_layout(starts: Array[Vector2i], goals: Array[Vector2i], rocks: Array[Vector2i]) -> void:
+	var session_words: Array[GridWordData] = []
+	for index: int in range(words.size()):
+		var word := words[index].duplicate() as GridWordData
+		word.start_cell = starts[index]
+		word.destination_cell = goals[index]
+		session_words.append(word)
+	words = session_words
+	obstacles = rocks.duplicate()
+	_setup_game_state()
+	for cell: Vector2i in tile_rects:
+		(tile_rects[cell] as TextureRect).texture = obstacle_tile if cell in obstacles else empty_tile
+	for index: int in range(words.size()):
+		(word_nodes[index] as Control).position = cell_to_local_position(starts[index]) + Vector2(2, 2)
+		(destination_nodes[index] as Control).position = cell_to_local_position(goals[index]) + Vector2(2, 2)
+	_update_keyboard_cursor()
+	_refresh_all_path_visuals()
+
 ## Inicializa el estado jugable con las propiedades editadas en el Inspector.
 func start_game() -> void:
 	_setup_game_state()

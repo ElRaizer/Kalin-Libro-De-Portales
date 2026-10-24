@@ -80,7 +80,6 @@ func _ready() -> void:
 	completion.next_pressed.connect(_on_next_level_pressed)
 	completion.replay_pressed.connect(_on_replay_pressed)
 	completion.menu_pressed.connect(_on_menu_pressed)
-	_build_round_plan()
 	_build_choice_buttons()
 	recall.submitted.connect(_on_serve_pressed)
 	recall.practice_requested.connect(_practice_with_cards)
@@ -96,6 +95,7 @@ func _ready() -> void:
 	_attempt.restore(state.get("attempt"))
 	_practice_fallback = bool(state.get("cards", false))
 	_layout_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
+	_build_round_plan(state)
 	food_grid.set_meta("layout_seed", _layout_seed)
 	_blocks_seen = ExerciseProgress.restore_markers(state.get("blocks"), challenges.size() * 2)
 	round_plan = ExerciseProgress.restore_plan(state.get("plan"), challenges.size(), round_plan)
@@ -114,8 +114,8 @@ func _ready() -> void:
 		if bool(state.get("waiting", false)) and food == _current_challenge().food and modifier == _current_challenge().modifier:
 			_render_success(false)
 
-func _build_round_plan() -> void:
-	round_plan = PHRASE_BUILDER.build_two_phase_plan(challenges.size())
+func _build_round_plan(state: Dictionary = {}) -> void:
+	round_plan = ReplayVariation.two_phase(challenges.size(), _layout_seed, true, ReplayVariation.previous(state, "plan", []))
 
 func _build_choice_buttons() -> void:
 	food_buttons = PHRASE_BUILDER.collect_buttons(food_grid, _select_food)

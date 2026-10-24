@@ -4,9 +4,13 @@
 extends Node2D
 
 @export var content: ExerciseSet
+@export var vary_challenges := true
+var _session_challenges: Array[ExerciseEntry] = []
+var _portal_variants: Dictionary = {}
+var _challenge_order: Array[int] = []
 var challenges: Array[ExerciseEntry]:
 	get:
-		return content.challenges
+		return content.challenges if _session_challenges.is_empty() else _session_challenges
 
 
 const COLOR_SUCCESS := Color("2e8b57")
@@ -68,6 +72,11 @@ func _ready() -> void:
 	var state := GameManager.get_scene_state(self)
 	_attempt.restore(state.get("attempt"))
 	_layout_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
+	if vary_challenges:
+		var session := PortalReplay.prepare(content.challenges, state, _layout_seed)
+		_session_challenges.assign(session.challenges)
+		_portal_variants = session.variants
+		_challenge_order.assign(session.order)
 	challenge_index = clampi(int(state.get("challenge", 0)), 0, challenges.size())
 	portal_energy.value = challenge_index
 	portal_visual.energy = challenge_index
@@ -108,6 +117,9 @@ func _show_challenge() -> void:
 			quality = "nojoch"
 		"PETICIONES": word = "ja'"
 		"SALUDO", "AGRADECIMIENTO", "DESPEDIDA", "BUEN CAMINO": word = challenge.correct
+	if not challenge.noun.is_empty():
+		word = challenge.noun
+		quality = challenge.adjective
 	challenge_art.show_meaning(word, quality)
 	feedback_label.text = "Elige el hechizo."
 	feedback_label.add_theme_color_override("font_color", _feedback_color)
@@ -170,6 +182,10 @@ func _on_option_pressed(phrase: String) -> void:
 			created = "ja'"
 		elif phrase.ends_with(" ja'as"):
 			created = "ja'as"
+		var meaning_art := PortalReplay.meaning(phrase)
+		if meaning_art[0] != phrase or phrase in GameManager.VOCABULARY:
+			created = meaning_art[0]
+			quality = meaning_art[1]
 		feedback_art.show_meaning(created, quality)
 		feedback_label.offset_left = maxf(_feedback_left, feedback_art.position.x + feedback_art.size.x + 11)
 		var meaning := GameManager.get_vocabulary_entry(phrase)
@@ -276,7 +292,7 @@ func _show_help() -> void:
 				return
 
 func get_checkpoint_state() -> Dictionary:
-	return {"challenge": challenge_index, "waiting": _awaiting_continue, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "recall_text": recall.first.text}
+	return {"challenge": challenge_index, "waiting": _awaiting_continue, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "recall_text": recall.first.text, "order": _challenge_order.duplicate(), "portal_variants": _portal_variants.duplicate()}
 
 func mark_learning_help() -> void:
 	if not _resolving:

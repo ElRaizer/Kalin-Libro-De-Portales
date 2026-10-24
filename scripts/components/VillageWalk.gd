@@ -6,6 +6,7 @@ var solved: Array[int] = []
 var _choice_index := -1
 var _choice_order: Array[int] = []
 var _layout_seed := 1
+var _encounter_plan: Array[int] = []
 var _return_scene := ""
 var _mistakes := 0
 @onready var choices_root: Node2D = $Choices
@@ -22,6 +23,7 @@ func _ready() -> void:
 	var saved: Dictionary = GameManager.get_scene_state(self)
 	solved = ExerciseProgress.restore_markers(saved.get("solved"), encounters.size())
 	_layout_seed = int(saved.get("layout_seed", randi_range(1, 2000000000)))
+	_prepare_encounters(saved)
 	_return_scene = str(saved.get("return_scene", ""))
 	if not _return_scene.is_empty() and _return_scene in GameManager.SCENE_PATHS:
 		next_scene_key = _return_scene
@@ -44,6 +46,37 @@ func _ready() -> void:
 
 func _encounter_spot(index: int) -> ExplorationSpot:
 	return $Spots.get_node("Visit%d" % index) as ExplorationSpot
+
+func _prepare_encounters(saved: Dictionary) -> void:
+	var stored: Variant = saved.get("encounter_plan")
+	var valid: bool = stored is Array and stored.size() == encounters.size()
+	var used: Array[int] = []
+	if valid:
+		for value: Variant in stored:
+			if not (value is int or value is float) or value != int(value) or int(value) < 0 or int(value) >= encounters.size() * 2 or (int(value) >> 1) in used:
+				valid = false
+				break
+			used.append((int(value) >> 1))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = _layout_seed
+	if valid:
+		_encounter_plan.assign(stored)
+	elif saved.has("solved"):
+		for index: int in range(encounters.size()):
+			_encounter_plan.append(index * 2)
+	else:
+		for index: int in ReplayVariation.order(encounters.size(), _layout_seed):
+			_encounter_plan.append(index * 2 + rng.randi_range(0, 1) if encounters[index].alternate_task != null else index * 2)
+		var previous_plan: Variant = ReplayVariation.previous(saved, "encounter_plan", [])
+		if _encounter_plan == previous_plan and _encounter_plan.size() > 1:
+			_encounter_plan.append(_encounter_plan.pop_front())
+	var session: Array[VillageEncounter] = []
+	for code: int in _encounter_plan:
+		var encounter := encounters[code >> 1].duplicate() as VillageEncounter
+		if code % 2 == 1 and encounter.alternate_task != null:
+			encounter.task = encounter.alternate_task
+		session.append(encounter)
+	encounters = session
 
 func _index_for(spot: ExplorationSpot) -> int:
 	return str(spot.name).trim_prefix("Visit").to_int() if str(spot.name).begins_with("Visit") else -1
@@ -172,5 +205,5 @@ func _show_help() -> void:
 
 func get_checkpoint_state() -> Dictionary:
 	var saved := super.get_checkpoint_state()
-	saved.merge({"solved": solved.duplicate(), "choosing": _choice_index, "mistakes": _mistakes, "layout_seed": _layout_seed, "return_scene": _return_scene})
+	saved.merge({"solved": solved.duplicate(), "choosing": _choice_index, "mistakes": _mistakes, "layout_seed": _layout_seed, "encounter_plan": _encounter_plan.duplicate(), "return_scene": _return_scene})
 	return saved

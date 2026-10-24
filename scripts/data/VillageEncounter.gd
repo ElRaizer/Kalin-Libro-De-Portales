@@ -4,6 +4,7 @@ class_name VillageEncounter
 ## Una necesidad y tres hechizos visibles en el escenario. Es práctica contextual,
 ## nunca evidencia de recuerdo libre: se ven palabras e ilustraciones.
 @export var task: VillageTask
+@export var alternate_task: VillageTask
 @export var choices: Array[ExerciseEntry] = []
 
 func get_configuration_issues() -> PackedStringArray:
@@ -31,4 +32,13 @@ func get_configuration_issues() -> PackedStringArray:
 		found = found or choice.noun == task.item and choice.adjective == task.quality
 	if not found:
 		issues.append("Incluye un hechizo que resuelva la necesidad.")
+	if alternate_task != null:
+		if alternate_task.requester != task.requester or alternate_task.request.is_empty() or alternate_task.success.is_empty():
+			issues.append("La alternativa necesita el mismo personaje y textos completos.")
+		var alternative_found := false
+		for choice: ExerciseEntry in choices:
+			if choice != null:
+				alternative_found = alternative_found or choice.noun == alternate_task.item and choice.adjective == alternate_task.quality
+		if not alternative_found:
+			issues.append("Incluye un hechizo que resuelva la necesidad alternativa.")
 	return issues

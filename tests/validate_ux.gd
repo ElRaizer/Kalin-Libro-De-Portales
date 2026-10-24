@@ -224,6 +224,13 @@ func _requests() -> void:
 	_check(current_scene._awaiting_continue, "Se debe restaurar la petición entregada")
 	current_scene._on_serve_pressed()
 	_check(current_scene.round_index == 1, "Continuar una petición debe avanzar una ronda")
+	# El orden ya varía: localizar un reto con tamaño para comprobar esa regla.
+	for index: int in range(current_scene.challenges.size()):
+		if not current_scene.challenges[int(current_scene.round_plan[index].challenge)].modifier.is_empty():
+			current_scene.round_index = index
+			current_scene._show_round()
+			current_scene.mission_break.hide()
+			break
 	var challenge: ExerciseEntry = current_scene._current_challenge()
 	_check(current_scene.modifier_slot.visible and current_scene.modifier_slot.text.is_empty(), "Una petición con tamaño necesita un espacio vacío donde colocar su palabra")
 	current_scene._select_food(challenge.food)

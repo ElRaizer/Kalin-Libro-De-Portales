@@ -11,6 +11,7 @@ class_name GridPathLevel
 @export var completion_title: String = "¡Nivel completado!"
 @export_multiline var completion_summary: String = "Reconstruiste los caminos y recuperaste nuevas palabras."
 @export var completion_next_text: String = "Siguiente nivel →"
+@export var vary_board := true
 
 @export_category("Instrucciones")
 @export_multiline var default_instruction: String = "Haz clic en una ficha y arrastra hasta su destino. Conecta las tres para completar el nivel."
@@ -32,6 +33,7 @@ var _naming_pending := false
 var _named_words: Array[int] = []
 var _attempt := LearningAttempt.new()
 var _name_seed := 1
+var _board_variant := ""
 var _saved_name_text := ""
 @onready var recall: RecallPanel = $UI/RecallPanel
 var guide: LearningGuide
@@ -75,6 +77,8 @@ func _ready() -> void:
 	var state := GameManager.get_scene_state(self)
 	_attempt.restore(state.get("attempt"))
 	_name_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
+	if vary_board:
+		_board_variant = GridReplayLayouts.configure(grid_board, level_number, state, _name_seed)
 	_saved_name_text = str(state.get("recall_text", "")) if bool(state.get("naming_pending", false)) else ""
 	_named_words = ExerciseProgress.restore_markers(state.get("named"), grid_board.words.size())
 	recall.submitted.connect(_submit_name)
@@ -297,7 +301,7 @@ func _on_invalid_move(reason: String, cell: Vector2i) -> void:
 		tween.tween_property(tile, "modulate", tint, 0.25)
 
 func get_checkpoint_state() -> Dictionary:
-	return {"board": grid_board.get_path_state(), "complete": _completing, "dialogue_word": _dialogue_word_index, "dialogue_open": _dialogue_open, "named": _named_words, "attempt": _attempt.snapshot(), "recall_text": recall.first.text if _naming_pending else "", "naming_pending": _naming_pending, "layout_seed": _name_seed}
+	return {"board": grid_board.get_path_state(), "board_variant": _board_variant, "complete": _completing, "dialogue_word": _dialogue_word_index, "dialogue_open": _dialogue_open, "named": _named_words, "attempt": _attempt.snapshot(), "recall_text": recall.first.text if _naming_pending else "", "naming_pending": _naming_pending, "layout_seed": _name_seed}
 
 func _restore_destination_texts() -> void:
 	for index: int in range(grid_board.words.size()):
@@ -306,7 +310,7 @@ func _restore_destination_texts() -> void:
 		label.text = word.get_destination_text() if level_number == 1 else word.spanish_word
 		label.tooltip_text = word.spanish_word
 		if level_number > 1:
-			label.add_theme_font_size_override("font_size", 15 if label.text.length() > 10 else (17 if label.text.length() > 6 else 20))
+			label.add_theme_font_size_override("font_size", 15 if label.text.length() > 10 else (17 if label.text.length() > 5 else 20))
 			(grid_board.destination_nodes[index].get_node("House") as TextureRect).visible = label.text.length() <= 10
 
 func _practice_name() -> void:

@@ -8,6 +8,27 @@
 [ext_resource type="Texture2D" path="res://Arte/sprites/animal_kaax.svg" id="actor1"]
 [ext_resource type="Texture2D" path="res://Arte/sprites/animal_peek.svg" id="actor2"]
 
+[sub_resource type="Resource" id="alternate0"]
+script = ExtResource("task")
+requester = "Miis"
+request = "Vamos a comer juntos. Necesito algo donde apoyar los platos."
+item = "mayak"
+success = "¡Una mesa! Ahora podemos compartir la comida."
+
+[sub_resource type="Resource" id="alternate1"]
+script = ExtResource("task")
+requester = "Kaax"
+request = "Ya terminé de cocinar y quiero acostarme a descansar."
+item = "k'áan"
+success = "¡Una hamaca! Descansaré después de cocinar."
+
+[sub_resource type="Resource" id="alternate2"]
+script = ExtResource("task")
+requester = "Peek'"
+request = "La comida está lista, pero no tengo dónde servir mi porción."
+item = "lak"
+success = "¡Un plato! Ahora puedo servirme la comida."
+
 [sub_resource type="Resource" id="task0"]
 script = ExtResource("task")
 requester = "Miis"
@@ -34,6 +55,7 @@ adjective = ""
 [sub_resource type="Resource" id="encounter0"]
 script = ExtResource("encounter")
 task = SubResource("task0")
+alternate_task = SubResource("alternate0")
 choices = Array[ExtResource("entry")]([SubResource("choice0_0"), SubResource("choice0_1"), SubResource("choice0_2")])
 
 [sub_resource type="Resource" id="task1"]
@@ -62,6 +84,7 @@ adjective = ""
 [sub_resource type="Resource" id="encounter1"]
 script = ExtResource("encounter")
 task = SubResource("task1")
+alternate_task = SubResource("alternate1")
 choices = Array[ExtResource("entry")]([SubResource("choice1_0"), SubResource("choice1_1"), SubResource("choice1_2")])
 
 [sub_resource type="Resource" id="task2"]
@@ -90,6 +113,7 @@ adjective = ""
 [sub_resource type="Resource" id="encounter2"]
 script = ExtResource("encounter")
 task = SubResource("task2")
+alternate_task = SubResource("alternate2")
 choices = Array[ExtResource("entry")]([SubResource("choice2_0"), SubResource("choice2_1"), SubResource("choice2_2")])
 
 [node name="PaseoAldea" instance=ExtResource("base")]

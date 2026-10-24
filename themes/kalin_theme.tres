@@ -12,20 +12,6 @@ corner_radius_top_right = 14
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
 
-[sub_resource type="StyleBoxFlat" id="DisabledButton"]
-content_margin_top = 9.0
-content_margin_bottom = 9.0
-bg_color = Color(0.725, 0.671, 0.553, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.544, 0.503, 0.415, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-
 [sub_resource type="StyleBoxFlat" id="KeyboardFocus"]
 bg_color = Color(0, 0, 0, 0)
 border_width_left = 4
@@ -41,6 +27,20 @@ expand_margin_left = 3.0
 expand_margin_top = 3.0
 expand_margin_right = 3.0
 expand_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxFlat" id="DisabledButton"]
+content_margin_top = 9.0
+content_margin_bottom = 9.0
+bg_color = Color(0.725, 0.671, 0.553, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.544, 0.503, 0.415, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="PurpleButtonHover"]
 content_margin_top = 9.0
@@ -310,6 +310,14 @@ expand_margin_bottom = 8.0
 
 [resource]
 AcceptDialog/styles/panel = SubResource("CreamPanel")
+CheckButton/colors/font_color = Color(0.23, 0.14, 0.08, 1)
+CheckButton/colors/font_focus_color = Color(0.23, 0.14, 0.08, 1)
+CheckButton/colors/font_hover_color = Color(0.23, 0.14, 0.08, 1)
+CheckButton/colors/font_hover_pressed_color = Color(0.23, 0.14, 0.08, 1)
+CheckButton/colors/font_pressed_color = Color(0.23, 0.14, 0.08, 1)
+CheckButton/colors/icon_normal_color = Color(0.08, 0.4, 0.37, 1)
+CheckButton/colors/icon_pressed_color = Color(0.08, 0.4, 0.37, 1)
+CheckButton/styles/focus = SubResource("KeyboardFocus")
 KalinAdjectiveButton/base_type = &"Button"
 KalinAdjectiveButton/colors/font_color = Color(1, 1, 1, 1)
 KalinAdjectiveButton/colors/font_hover_color = Color(1, 1, 1, 1)
@@ -393,13 +401,5 @@ KalinStoryActor/styles/pressed = SubResource("StoryActorHover")
 KalinTopBarPanel/base_type = &"Panel"
 KalinTopBarPanel/styles/panel = SubResource("TopBarPanel")
 Window/colors/title_color = Color(1, 0.96, 0.78, 1)
-CheckButton/colors/font_color = Color(0.23, 0.14, 0.08, 1)
-CheckButton/colors/font_focus_color = Color(0.23, 0.14, 0.08, 1)
-CheckButton/colors/font_hover_color = Color(0.23, 0.14, 0.08, 1)
-CheckButton/colors/font_pressed_color = Color(0.23, 0.14, 0.08, 1)
-CheckButton/colors/font_hover_pressed_color = Color(0.23, 0.14, 0.08, 1)
-CheckButton/colors/icon_normal_color = Color(0.08, 0.4, 0.37, 1)
-CheckButton/colors/icon_pressed_color = Color(0.08, 0.4, 0.37, 1)
-CheckButton/styles/focus = SubResource("KeyboardFocus")
 Window/constants/title_height = 32
 Window/styles/embedded_border = SubResource("DialogFrame")

@@ -111,6 +111,8 @@ func _restore_tasks(saved: Dictionary) -> void:
 		var swap := task_indices[index]
 		task_indices[index] = task_indices[other]
 		task_indices[other] = swap
+	if task_indices == ReplayVariation.previous(saved, "task_indices", []) and task_indices.size() > 1:
+		task_indices.append(task_indices.pop_front())
 
 func _recall_score(task: VillageTask) -> int:
 	var score := 0

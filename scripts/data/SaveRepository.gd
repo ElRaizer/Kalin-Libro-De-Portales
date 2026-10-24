@@ -4,7 +4,7 @@ class_name SaveRepository
 ## Único punto de acceso al archivo de progreso. Mantiene los detalles de JSON
 ## y FileAccess fuera de GameManager para que puedan probarse por separado.
 
-const CURRENT_VERSION := 3
+const CURRENT_VERSION := 4
 const DEFAULT_PATH := "user://kalin_save.json"
 
 var save_path: String
@@ -101,10 +101,10 @@ static func sanitize_scene_state(value: Dictionary) -> Dictionary:
 	for key: String in ["noun", "adjective", "food", "modifier", "active", "return_scene"]:
 		if state.has(key) and state[key] is not String:
 			state.erase(key)
-	for key: String in ["known", "met", "examined", "order", "plan", "named", "mission_met", "delivered", "task_indices", "solved"]:
+	for key: String in ["known", "met", "examined", "order", "recall_order", "plan", "named", "mission_met", "delivered", "task_indices", "solved", "encounter_plan"]:
 		if state.has(key) and state[key] is not Array:
 			state.erase(key)
-	for key: String in ["attempt", "carried", "task_support", "drafts"]:
+	for key: String in ["attempt", "carried", "task_support", "drafts", "previous_variation", "guess_targets", "portal_variants"]:
 		if state.has(key) and state[key] is not Dictionary:
 			state.erase(key)
 	if state.has("layout_seed"):

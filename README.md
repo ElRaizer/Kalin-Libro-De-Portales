@@ -163,6 +163,7 @@ No se requieren complementos ni dependencias externas.
 ## Documentación
 
 - [MEJORAS_AVENTURA.md](MEJORAS_AVENTURA.md): paseos, descansos, borradores, comodidad y decisiones pendientes de validación.
+- [REJUGABILIDAD.md](REJUGABILIDAD.md): preguntas variables, planes guardados y 48 variantes de tableros con rutas sin cruces.
 
 - [INSTRUCCIONES.md](INSTRUCCIONES.md): instalación, estructura técnica y mantenimiento.
 - [AUDITORIA_BUENAS_PRACTICAS.md](AUDITORIA_BUENAS_PRACTICAS.md): cumplimiento, correcciones y pendientes de diseño.

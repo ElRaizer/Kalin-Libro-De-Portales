@@ -53,6 +53,7 @@ var _waiting_to_continue: bool = false
 var _navigating: bool = false
 var _attempt := LearningAttempt.new()
 var _layout_seed := 1
+var _guess_targets: Dictionary = {}
 var _last_actor_kind := -1
 var _text_tween: Tween
 var _animator: RefCounted
@@ -127,6 +128,7 @@ func _ready() -> void:
 	var state: Dictionary = GameManager.get_scene_state(self)
 	_attempt.restore(state.get("attempt"))
 	_layout_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
+	_prepare_questions(state)
 	var saved_beat := clampi(int(state.get("beat", 0)), 0, maxi(beats.size() - 1, 0))
 	if int(state.get("revision", 1)) < 2:
 		var legacy_index := int(state.get("beat", 0))
@@ -184,6 +186,38 @@ func _unhandled_input(event: InputEvent) -> void:
 # ─── Momentos ────────────────────────────────────────────────────────────────
 func current_beat() -> StoryBeat:
 	return beats[beat_index]
+
+func _prepare_questions(state: Dictionary) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = _layout_seed
+	var stored: Variant = state.get("guess_targets", {})
+	var previous_targets: Variant = ReplayVariation.previous(state, "guess_targets", {})
+	var asked: Array[String] = []
+	var session: Array[StoryBeat] = []
+	for index: int in range(beats.size()):
+		var beat := beats[index].duplicate() as StoryBeat
+		session.append(beat)
+		if beat.kind != StoryBeat.Kind.ADIVINAR or beat.question_template.is_empty():
+			continue
+		var key := str(index)
+		var candidates: Array[String] = []
+		for word: String in beat.actors:
+			if word != beat.speaker and word not in asked:
+				candidates.append(word)
+		if candidates.is_empty():
+			candidates = beat.actors.duplicate()
+		var chosen := beat.target_word
+		if stored is Dictionary and str(stored.get(key, "")) in beat.actors:
+			chosen = str(stored[key])
+		elif not state.has("beat"):
+			var previous_word := str(previous_targets.get(key, "")) if previous_targets is Dictionary else ""
+			chosen = candidates[ReplayVariation.pick(candidates.size(), rng, candidates.find(previous_word))]
+		# Un capítulo antiguo conserva su pregunta pendiente y su respuesta.
+		beat.target_word = chosen
+		beat.text = beat.question_template.replace("{animal}", chosen)
+		_guess_targets[key] = chosen
+		asked.append(chosen)
+	beats = session
 
 func _next_beat() -> void:
 	beat_index += 1
@@ -653,7 +687,7 @@ func _show_meet_hint() -> void:
 			return
 
 func get_checkpoint_state() -> Dictionary:
-	return {"revision": 2, "beat": maxi(beat_index, 0), "known": _known_words, "met": _met_words, "resolved": _waiting_to_continue, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed}
+	return {"revision": 2, "beat": maxi(beat_index, 0), "known": _known_words, "met": _met_words, "resolved": _waiting_to_continue, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "guess_targets": _guess_targets.duplicate()}
 
 func _on_menu_pressed() -> void:
 	_navigating = true
@@ -680,6 +714,8 @@ func get_configuration_issues() -> PackedStringArray:
 			issues.append("CONOCER necesita animales en actors.")
 		if beat.kind == StoryBeat.Kind.ADIVINAR and beat.target_word not in beat.actors:
 			issues.append("El animal objetivo debe aparecer en actors.")
+		if not beat.question_template.is_empty() and (beat.kind != StoryBeat.Kind.ADIVINAR or not "{animal}" in beat.question_template):
+			issues.append("La plantilla de pregunta necesita ADIVINAR y {animal}.")
 		if beat.kind in [StoryBeat.Kind.CONOCER, StoryBeat.Kind.ADIVINAR] and beat.actors.size() % 2 != 0:
 			issues.append("Las interacciones con animales necesitan una cantidad par de botones.")
 		if beat.kind == StoryBeat.Kind.ELEGIR and (beat.options.size() < 2 or beat.target_word not in beat.options):

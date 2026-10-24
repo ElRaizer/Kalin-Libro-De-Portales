@@ -95,7 +95,10 @@ godot_console.exe --path . --script res://tests/validate_adventure_polish.gd -- 
 `tests/validate_tutorial_gestures.gd` comprueba clics sin desplazamiento, posiciones
 con cámara, trayectorias y caminos parciales de los cuatro tableros, los cuatro
 tipos de tarjeta, personajes y acciones de continuar. Admite el mismo argumento
-`--capture` y forma parte de las 16 suites de `tools/validate.ps1`.
+`--capture` y forma parte de las 17 suites de `tools/validate.ps1`.
+
+La variación desde la primera partida, los bancos de preguntas y los 48 tableros
+con solución comprobada se documentan en [REJUGABILIDAD.md](REJUGABILIDAD.md).
 
 ## Pendiente de validar o decidir
 

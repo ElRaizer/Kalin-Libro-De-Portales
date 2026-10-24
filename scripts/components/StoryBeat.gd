@@ -56,6 +56,9 @@ enum Effect {
 @export_category("Interacción")
 ## Respuesta correcta en ADIVINAR (un animal) o en ELEGIR (una palabra).
 @export var target_word: String = ""
+## Sólo los momentos con plantilla cambian de animal. {animal} se sustituye
+## junto con la respuesta; el resto de la narración conserva su autoría.
+@export_multiline var question_template: String = ""
 ## Palabras mayas que se ofrecen como botones en un momento ELEGIR.
 @export var options: Array[String] = []
 ## Frase y traducción que se muestran al acertar en ELEGIR. Si quedan vacías

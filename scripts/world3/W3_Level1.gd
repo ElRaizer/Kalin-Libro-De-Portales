@@ -77,7 +77,6 @@ func _ready() -> void:
 		push_error("Configuración incompleta: " + "; ".join(issues))
 		return
 	_setup_drop_slots()
-	_build_round_plan()
 	_build_choice_buttons()
 	_configure_keyboard_navigation()
 	cast_button.pressed.connect(_on_cast_pressed)
@@ -100,6 +99,7 @@ func _ready() -> void:
 	_attempt.restore(state.get("attempt"))
 	_practice_fallback = bool(state.get("cards", false))
 	_layout_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
+	_build_round_plan(state)
 	noun_grid.set_meta("layout_seed", _layout_seed)
 	adjective_grid.set_meta("layout_seed", _layout_seed)
 	_blocks_seen = ExerciseProgress.restore_markers(state.get("blocks"), challenges.size() * 2)
@@ -119,8 +119,9 @@ func _ready() -> void:
 		if bool(state.get("waiting", false)) and noun == _current_challenge().noun and adjective == _current_challenge().adjective:
 			_render_success(false)
 
-func _build_round_plan() -> void:
-	for item: Dictionary in PHRASE_BUILDER.build_two_phase_plan(challenges.size()):
+func _build_round_plan(state: Dictionary = {}) -> void:
+	round_plan.clear()
+	for item: Dictionary in ReplayVariation.two_phase(challenges.size(), _layout_seed, true, ReplayVariation.previous(state, "plan", [])):
 		round_plan.append(int(item.challenge))
 
 func _build_choice_buttons() -> void:

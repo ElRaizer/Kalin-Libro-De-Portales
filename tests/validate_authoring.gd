@@ -211,6 +211,7 @@ func _rounds() -> void:
 		var key := "world%d_level1" % world
 		var level: Node = load(manager.SCENE_PATHS[key]).instantiate()
 		if world == 5:
+			level.vary_challenges = false
 			level.content = level.content.duplicate(true)
 			level.content.challenges[0].clue = "Una pista editada sin separadores especiales"
 		var label := level.get_node("UI/FeedbackPanel/FeedbackLbl" if world == 2 else "UI/FeedbackPanel/FeedbackLabel") as Label
@@ -245,7 +246,10 @@ func _rounds() -> void:
 			if world == 3:
 				_check((grid.get_child(0) as Button).get_theme_constant("icon_max_width") == 43, "El taller debe respetar el tamaño de icono del Inspector")
 			else:
-				level.round_index = 1
+				for index: int in range(level.challenges.size()):
+					if not level.challenges[int(level.round_plan[index].challenge)].modifier.is_empty():
+						level.round_index = index
+						break
 				level._show_round()
 				var button := grid.get_child(0) as Button
 				_check(button.custom_minimum_size == Vector2(161, 101) and button.get_theme_constant("icon_max_width") == 43, "Mostrar tamaños debe recuperar las medidas configuradas de las tarjetas")
