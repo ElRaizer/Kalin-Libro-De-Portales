@@ -5,6 +5,10 @@
 extends Node2D
 
 @export var content: ExerciseSet
+@export var vary_combinations := true
+var _session_challenges: Array[ExerciseEntry] = []
+var _combination_plan: Array[String] = []
+var _combination_animals: Array[String] = []
 var nouns: Array[ExerciseEntry]:
 	get:
 		return content.nouns
@@ -13,7 +17,7 @@ var adjectives: Array[ExerciseEntry]:
 		return content.adjectives
 var challenges: Array[ExerciseEntry]:
 	get:
-		return content.challenges
+		return content.challenges if _session_challenges.is_empty() else _session_challenges
 
 const PHRASE_BUILDER = preload("res://scripts/components/PhraseBuilderController.gd")
 
@@ -43,6 +47,7 @@ var _help_stage := 0
 var _blocks_seen: Array[int] = []
 var _attempt := LearningAttempt.new()
 var _layout_seed := 1
+var _saved_scaffold: Dictionary = {}
 var _practice_fallback := false
 @onready var recall: RecallPanel = $UI/ChoicesPanel/RecallPanel
 
@@ -77,11 +82,14 @@ func _ready() -> void:
 		push_error("Configuración incompleta: " + "; ".join(issues))
 		return
 	_setup_drop_slots()
+	recall.set_workspace("taller")
 	_build_choice_buttons()
 	_configure_keyboard_navigation()
 	cast_button.pressed.connect(_on_cast_pressed)
 	recall.submitted.connect(_on_cast_pressed)
 	recall.practice_requested.connect(_practice_with_cards)
+	recall.support_used.connect(mark_learning_help)
+	recall.answer_changed.connect(_on_scaffold_changed)
 	recall.first.text_changed.connect(_on_recall_changed)
 	recall.second.text_changed.connect(_on_recall_changed)
 	GameManager.magic_points_changed.connect(_on_magic_points_changed)
@@ -97,8 +105,17 @@ func _ready() -> void:
 	)
 	var state := GameManager.get_scene_state(self)
 	_attempt.restore(state.get("attempt"))
+	_saved_scaffold = state.get("scaffold", {}) if state.get("scaffold") is Dictionary else {}
 	_practice_fallback = bool(state.get("cards", false))
 	_layout_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
+	if vary_combinations:
+		var session := CombinationVariation.exercises(content, state, _layout_seed, 3)
+		if not session.is_empty():
+			_session_challenges.assign(session.entries)
+			_combination_plan.assign(session.ids)
+			_combination_animals.assign(session.animals)
+			for entry: ExerciseEntry in _session_challenges:
+				entry.sprite = GameManager.get_visual_texture(entry.animal)
 	_build_round_plan(state)
 	noun_grid.set_meta("layout_seed", _layout_seed)
 	adjective_grid.set_meta("layout_seed", _layout_seed)
@@ -106,7 +123,7 @@ func _ready() -> void:
 	round_plan = ExerciseProgress.restore_rounds(state.get("plan"), challenges.size(), round_plan)
 	round_index = clampi(int(state.get("round", 0)), 0, round_plan.size())
 	_show_round()
-	if recall.visible:
+	if recall.visible and state.has("noun"):
 		recall.first.text = str(state.get("noun", ""))
 		recall.second.text = str(state.get("adjective", ""))
 	if not _resolving:
@@ -143,11 +160,12 @@ func _show_round() -> void:
 		return
 	_resolving = false
 	_awaiting_continue = false
-	var continuing := _attempt.context == "world3:%d@%d" % [round_index, _layout_seed]
-	_attempt.begin("world3:%d@%d" % [round_index, _layout_seed])
+	var semantic := ExerciseRecallFlow.context("workshop", _current_challenge().animal, [_current_challenge().noun, _current_challenge().adjective], _is_guided_phase(), _layout_seed)
+	var continuing := ExerciseRecallFlow.begin(_attempt, semantic, "world3:%d@%d" % [round_index, _layout_seed])
 	_mistakes = _attempt.mistakes
 	_practice_fallback = _practice_fallback if continuing else false
 	recall.hide()
+	ExerciseRecallFlow.expand_for_recall(choices_panel, spell_panel, recall, false)
 	$UI/ChoicesPanel/Content.show()
 	_help_stage = 0
 	selected_noun = ""
@@ -182,7 +200,9 @@ func _show_round() -> void:
 	_refresh_step()
 	if not guided and not _practice_fallback:
 		$UI/ChoicesPanel/Content.hide()
-		recall.configure(["Objeto", "Cómo es"])
+		ExerciseRecallFlow.prepare(recall, ["Objeto", "Cómo es"], [challenge.noun, challenge.adjective], _attempt, _saved_scaffold if continuing else {})
+		_saved_scaffold = {}
+		ExerciseRecallFlow.expand_for_recall(choices_panel, spell_panel, recall, true)
 		feedback_label.text = "Recuerda las dos palabras de la petición."
 		cast_button.disabled = false
 	mission_progress.update_progress(round_index, round_plan.size(), _phase_caption())
@@ -196,7 +216,7 @@ func _show_round() -> void:
 	GameManager.checkpoint(self)
 
 func _phase_caption() -> String:
-	return "El taller · %d / %d · %s" % [round_index + 1, round_plan.size(), "Práctica" if _is_guided_phase() or _practice_fallback else "Recuerdo sin pistas"]
+	return "El taller · %d / %d · %s" % [round_index + 1, round_plan.size(), ExerciseRecallFlow.caption(recall, _is_guided_phase(), _practice_fallback)]
 
 func _show_block() -> void:
 	if round_index > 0 and round_index % 3 == 0 and round_index not in _blocks_seen:
@@ -293,6 +313,8 @@ func _on_cast_pressed() -> void:
 		return
 	var challenge := _current_challenge()
 	if recall.visible:
+		if not recall.ready_to_submit():
+			return
 		var answers := recall.values()
 		var noun_match := RecallPanel.match_word(answers[0], challenge.noun)
 		var adjective_match := RecallPanel.match_word(answers[1], challenge.adjective)
@@ -304,7 +326,7 @@ func _on_cast_pressed() -> void:
 		return
 	GameManager.learn_word(challenge.noun)
 	GameManager.learn_word(challenge.adjective)
-	GameManager.record_learning([challenge.noun, challenge.adjective], "practice" if _is_guided_phase() else "recall", _attempt.context, _attempt.supported, _attempt.mistakes)
+	GameManager.record_learning([challenge.noun, challenge.adjective], ExerciseRecallFlow.phase(recall, _is_guided_phase()), _attempt.context, _attempt.supported, _attempt.mistakes)
 	GameManager.mark_tutorial_seen("phrases")
 	_render_success(true)
 
@@ -325,15 +347,13 @@ func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
 	else:
 		feedback_label.text = "Objeto: ✓. Cambia cómo es."
 	feedback_label.add_theme_color_override("font_color", COLOR_ERROR)
-	var original_x := choices_panel.position.x
-	var tween := create_tween()
-	tween.tween_property(choices_panel, "position:x", original_x - 8.0, 0.05)
-	tween.tween_property(choices_panel, "position:x", original_x + 8.0, 0.05)
-	tween.tween_property(choices_panel, "position:x", original_x, 0.06)
+	UIEffects.shake(self, choices_panel, 8.0)
 	_pulse_error_slots(noun_ok, adjective_ok)
 	PHRASE_BUILDER.mark_slot(noun_slot, noun_ok)
 	PHRASE_BUILDER.mark_slot(adjective_slot, adjective_ok)
-	if _mistakes >= 2:
+	if recall.visible:
+		recall.advance_support()
+	elif _mistakes >= 2:
 		_help_stage = mini(_mistakes - 2, 2)
 		_show_help()
 	GameManager.checkpoint(self)
@@ -367,7 +387,7 @@ func _on_menu_pressed() -> void:
 	_safe_navigate("main_menu")
 
 func _on_next_level_pressed() -> void:
-	GameManager.start_walk("world3_explore1", "world3_story1")
+	GameManager.start_walk("world3_explore1", "world3_mission1")
 
 func _on_book_pressed() -> void:
 	libro.show_book($UI/TopBar/Bar/BookButton)
@@ -378,7 +398,10 @@ func _on_replay_pressed() -> void:
 func _render_success(animate: bool) -> void:
 	_resolving = true
 	_awaiting_continue = true
-	recall.hide()
+	var result := _current_challenge()
+	ExerciseRecallFlow.expand_for_recall(choices_panel, spell_panel, recall, true)
+	$UI/ChoicesPanel/Content.hide()
+	recall.show_result(result.noun, result.adjective, result.phrase, result.translation)
 	mission_progress.update_progress(round_index + 1, round_plan.size(), "El taller · %d / %d · ¡Creado!" % [round_index + 1, round_plan.size()])
 	guide.stop()
 	_set_choices_enabled(false)
@@ -415,7 +438,8 @@ func _show_help() -> void:
 		return
 	mark_learning_help()
 	if recall.visible:
-		_practice_with_cards()
+		recall.explain_support()
+		guide.highlight(recall)
 		return
 	var challenge := _current_challenge()
 	var needs_noun := selected_noun != challenge.noun
@@ -434,7 +458,10 @@ func _show_help() -> void:
 	feedback_label.text = "Elige el objeto." if needs_noun else "Elige cómo es."
 
 func get_checkpoint_state() -> Dictionary:
-	return {"plan": round_plan, "round": round_index, "noun": recall.first.text if recall.visible else selected_noun, "adjective": recall.second.text if recall.visible else selected_adjective, "waiting": _awaiting_continue, "blocks": _blocks_seen, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "cards": _practice_fallback}
+	var state := {"plan": round_plan, "round": round_index, "noun": recall.first.text if recall.visible and not recall._showing_result else selected_noun, "adjective": recall.second.text if recall.visible and not recall._showing_result else selected_adjective, "waiting": _awaiting_continue, "blocks": _blocks_seen, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "cards": _practice_fallback, "scaffold": recall.scaffold_state()}
+	if not _combination_plan.is_empty():
+		state.merge({"combination_plan": _combination_plan.duplicate(), "combination_animals": _combination_animals.duplicate()})
+	return state
 
 func mark_learning_help() -> void:
 	if not _resolving:
@@ -444,6 +471,7 @@ func mark_learning_help() -> void:
 func _practice_with_cards() -> void:
 	mark_learning_help()
 	_practice_fallback = true
+	ExerciseRecallFlow.expand_for_recall(choices_panel, spell_panel, recall, false)
 	recall.hide()
 	$UI/ChoicesPanel/Content.show()
 	target_art.show()
@@ -466,3 +494,25 @@ func get_configuration_issues() -> PackedStringArray:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	return get_configuration_issues()
+
+
+func _on_scaffold_changed() -> void:
+	if recall.visible and not recall._setting_up:
+		phase_label.text = ExerciseRecallFlow.caption(recall, false, false)
+		mission_progress.update_progress(round_index, round_plan.size(), _phase_caption())
+		GameManager.schedule_checkpoint(self)
+
+func debug_can_answer() -> bool:
+	return OS.is_debug_build() and not _resolving and not _awaiting_continue and not mission_break.visible
+
+func debug_answer() -> void:
+	if not debug_can_answer():
+		return
+	mark_learning_help()
+	var challenge := _current_challenge()
+	if recall.visible:
+		recall.debug_fill([challenge.noun, challenge.adjective])
+	else:
+		_select_noun(challenge.noun)
+		_select_adjective(challenge.adjective)
+	_on_cast_pressed()

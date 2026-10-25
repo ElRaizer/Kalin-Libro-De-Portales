@@ -42,6 +42,7 @@ var _help_stage := 0
 var _blocks_seen: Array[int] = []
 var _attempt := LearningAttempt.new()
 var _layout_seed := 1
+var _saved_scaffold: Dictionary = {}
 var _practice_fallback := false
 @onready var recall: RecallPanel = $UI/RecallPanel
 
@@ -68,6 +69,7 @@ func _ready() -> void:
 		return
 	var state := GameManager.get_scene_state(self)
 	_attempt.restore(state.get("attempt"))
+	_saved_scaffold = state.get("scaffold", {}) if state.get("scaffold") is Dictionary else {}
 	_practice_fallback = bool(state.get("cards", false))
 	_layout_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
 	round_order = ReplayVariation.order(objects.size(), _layout_seed, ReplayVariation.previous(state, "order", []))
@@ -89,14 +91,16 @@ func _ready() -> void:
 	next_button.pressed.connect(_advance_round)
 	recall.submitted.connect(func(): _on_choice_pressed(recall.first.text))
 	recall.practice_requested.connect(_practice_with_cards)
+	recall.support_used.connect(mark_learning_help)
+	recall.answer_changed.connect(_on_scaffold_changed)
 	mission_break.continued.connect(func(): guide.watch_action(choices_grid))
 	_restore_room()
 	if round_index >= total_rounds:
 		_on_level_complete()
 	else:
 		_show_round()
-		if recall.visible:
-			recall.first.text = str(state.get("recall_text", ""))
+		if recall.visible and state.has("recall_text"):
+			recall.first.text = str(state.recall_text)
 		if bool(state.get("waiting", false)):
 			_render_success(false)
 
@@ -127,8 +131,9 @@ func _show_round() -> void:
 	choice_preview.hide()
 	feedback_lbl.offset_left = _feedback_left
 	_waiting = false
-	var continuing := _attempt.context == "world2:%d@%d" % [round_index, _layout_seed]
-	_attempt.begin("world2:%d@%d" % [round_index, _layout_seed])
+	$UI/FeedbackPanel.show()
+	var semantic := ExerciseRecallFlow.context("house", _current_object().animal, [_current_object().maya], round_index < objects.size(), _layout_seed)
+	var continuing := ExerciseRecallFlow.begin(_attempt, semantic, "world2:%d@%d" % [round_index, _layout_seed])
 	_mistakes = _attempt.mistakes
 	_practice_fallback = _practice_fallback if continuing else false
 	recall.hide()
@@ -142,17 +147,20 @@ func _show_round() -> void:
 	if current_phase == 0:
 		GameManager.learn_word(obj.maya)
 	animal_spr.texture = obj.sprite
-	need_lbl.text = obj.request if current_phase == 0 else "Escribe en maya: %s" % vocab.spanish.to_lower()
+	need_lbl.text = obj.request if current_phase == 0 else "En maya: %s" % vocab.spanish.to_lower()
 	word_lbl.text = "%s · %s" % [obj.maya, vocab.spanish] if current_phase == 0 else ""
 	request_art.show_meaning(obj.maya)
 	request_art.visible = current_phase == 0 or _practice_fallback
 	phase_lbl.text = "%s · %d / %d" % ["Aprende" if current_phase == 0 else "Recuerda", round_index % objects.size() + 1, objects.size()]
 	progress_lbl.text = "%d / %d muebles recuperados" % [mini(round_index, objects.size()), objects.size()]
-	mission_progress.update_progress(round_index, total_rounds, "La casa · %d / %d · %s" % [round_index % objects.size() + 1, objects.size(), "Con ayuda" if current_phase == 0 else ("Una pista" if round_index < objects.size() + 2 else "A tu turno")])
+	mission_progress.update_progress(round_index, total_rounds, "La casa · %d / %d · %s" % [round_index % objects.size() + 1, objects.size(), ExerciseRecallFlow.caption(recall, current_phase == 0, _practice_fallback)])
 	_build_choices()
 	choices_grid.visible = current_phase == 0 or _practice_fallback
 	if current_phase == 1 and not _practice_fallback:
-		recall.configure(["Objeto"])
+		ExerciseRecallFlow.prepare(recall, ["Objeto"], [obj.maya], _attempt, _saved_scaffold if continuing else {})
+		_saved_scaffold = {}
+		$UI/FeedbackPanel.hide()
+	mission_progress.update_progress(round_index, total_rounds, "La casa · %d / %d · %s" % [round_index + 1, total_rounds, ExerciseRecallFlow.caption(recall, current_phase == 0, _practice_fallback)])
 	if round_index == 0 and "objects" not in GameManager.tutorials_seen:
 		call_deferred("_show_help")
 	else:
@@ -201,6 +209,8 @@ func _build_choices() -> void:
 func _on_choice_pressed(word: String) -> void:
 	if _completing or _waiting:
 		return
+	if recall.visible and word == recall.first.text and not recall.ready_to_submit():
+		return
 	guide.stop()
 	if current_phase == 1 and not _practice_fallback:
 		var match_result := RecallPanel.match_word(word, _current_object().maya)
@@ -209,7 +219,7 @@ func _on_choice_pressed(word: String) -> void:
 			_attempt.supported = _attempt.supported or match_result.supported
 	if word == _current_object().maya:
 		GameManager.learn_word(word)
-		GameManager.record_learning([word], "recall" if current_phase == 1 else "practice", _attempt.context, _attempt.supported, _attempt.mistakes)
+		GameManager.record_learning([word], ExerciseRecallFlow.phase(recall, current_phase == 0), _attempt.context, _attempt.supported, _attempt.mistakes)
 		GameManager.mark_tutorial_seen("objects")
 		_render_success(true)
 	else:
@@ -220,17 +230,25 @@ func _on_choice_pressed(word: String) -> void:
 		feedback_lbl.offset_left = maxf(_feedback_left, choice_preview.position.x + choice_preview.size.x + 11)
 		CharacterReaction.play(animal_spr, false)
 		var meaning := GameManager.get_vocabulary_entry(word)
-		feedback_lbl.text = "%s significa %s. Revisa la petición." % [word, meaning.spanish] if not meaning.is_empty() else "Revisa tu palabra. Puedes usar los acentos o volver a practicar."
+		feedback_lbl.text = "%s significa %s. Revisa la petición." % [word, meaning.spanish] if not meaning.is_empty() else "Revisa tu palabra o usa tarjetas."
 		feedback_lbl.add_theme_color_override("font_color", Color("b56a1f"))
-		if _mistakes >= 2:
+		if recall.visible:
+			recall.advance_support()
+			recall.caption.show()
+		if _mistakes >= 2 and not recall.visible:
 			_help_stage = mini(_mistakes - 2, 2)
 			_show_help()
 		GameManager.checkpoint(self)
 
 func _render_success(animate: bool) -> void:
 	_waiting = true
-	recall.hide()
-	mission_progress.update_progress(round_index + 1, total_rounds, "La casa · %d / %d · ¡Creado!" % [round_index % objects.size() + 1, objects.size()])
+	$UI/FeedbackPanel.show()
+	var result_obj := _current_object()
+	var result_vocab := GameManager.get_vocabulary_entry(result_obj.maya)
+	recall.show_result(result_obj.maya, "", result_vocab.estructura, result_vocab.traduccion)
+	choices_grid.hide()
+	mission_progress.update_progress(round_index + 1, total_rounds, "La casa · %d / %d · ¡Creado!" % [round_index + 1, total_rounds])
+	$UI/FeedbackPanel.hide()
 	choice_preview.hide()
 	feedback_lbl.offset_left = _feedback_left
 	guide.stop()
@@ -268,7 +286,8 @@ func _show_help() -> void:
 		return
 	mark_learning_help()
 	if recall.visible:
-		_practice_with_cards()
+		recall.explain_support()
+		guide.highlight(recall)
 		return
 	if not (round_index == 0 and "objects" not in GameManager.tutorials_seen) and _help_stage < 2:
 		guide.highlight(request_art if _help_stage == 0 else choices_grid)
@@ -296,7 +315,7 @@ func _on_menu_pressed() -> void:
 	GameManager.go_to_scene("main_menu")
 
 func _on_next_level_pressed() -> void:
-	GameManager.start_walk("world2_explore1", "world2_story1")
+	GameManager.start_walk("world2_explore1", "world2_mission1")
 
 func _on_book_pressed() -> void:
 	libro.show_book($UI/TopBar/BookBtn)
@@ -305,7 +324,7 @@ func _on_replay_pressed() -> void:
 	GameManager.replay_scene(GameManager.scene_key_for(self))
 
 func get_checkpoint_state() -> Dictionary:
-	return {"order": round_order, "recall_order": recall_order, "round": round_index, "waiting": _waiting, "blocks": _blocks_seen, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "cards": _practice_fallback, "recall_text": recall.first.text}
+	return {"order": round_order, "recall_order": recall_order, "round": round_index, "waiting": _waiting, "blocks": _blocks_seen, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "cards": _practice_fallback, "recall_text": recall.first.text, "scaffold": recall.scaffold_state()}
 
 func mark_learning_help() -> void:
 	if not _waiting and not _completing:
@@ -315,6 +334,7 @@ func mark_learning_help() -> void:
 func _practice_with_cards() -> void:
 	mark_learning_help()
 	_practice_fallback = true
+	$UI/FeedbackPanel.show()
 	recall.hide()
 	choices_grid.show()
 	request_art.show()
@@ -334,3 +354,22 @@ func get_configuration_issues() -> PackedStringArray:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	return get_configuration_issues()
+
+
+func _on_scaffold_changed() -> void:
+	if recall.visible and not recall._setting_up:
+		phase_lbl.text = ExerciseRecallFlow.caption(recall, false, false)
+		mission_progress.update_progress(round_index, total_rounds, "La casa · %d / %d · %s" % [round_index + 1, total_rounds, phase_lbl.text])
+		GameManager.schedule_checkpoint(self)
+
+func debug_can_answer() -> bool:
+	return OS.is_debug_build() and not _completing and not _waiting and not mission_break.visible
+
+func debug_answer() -> void:
+	if not debug_can_answer():
+		return
+	mark_learning_help()
+	var word := _current_object().maya
+	if recall.visible:
+		recall.debug_fill([word])
+	_on_choice_pressed(word)

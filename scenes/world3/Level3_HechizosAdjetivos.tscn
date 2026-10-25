@@ -14,6 +14,10 @@
 [ext_resource type="PackedScene" path="res://scenes/components/HelpButton.tscn" id="editor_17"]
 [ext_resource type="PackedScene" path="res://scenes/components/WordDropSlot.tscn" id="editor_18"]
 [ext_resource type="PackedScene" uid="uid://7qq7tpptcsub" path="res://scenes/components/RecallPanel.tscn" id="recall_panel"]
+[ext_resource type="PackedScene" path="res://scenes/components/ScreenLayout.tscn" id="responsive"]
+[ext_resource type="Resource" path="res://data/layouts/exercise.tres" id="layout_profile"]
+
+
 
 [node name="Level3" type="Node2D" unique_id=1006187822]
 script = ExtResource("1_jgljc")
@@ -441,6 +445,7 @@ word_value = "chich"
 word_kind = "adjective"
 
 [node name="RecallPanel" parent="UI/ChoicesPanel" unique_id=254475335 instance=ExtResource("recall_panel")]
+preferred_size = Vector2(850, 266)
 visible = false
 layout_mode = 0
 offset_left = 8.0
@@ -483,6 +488,7 @@ offset_right = 136.0
 offset_bottom = 70.0
 
 [node name="StatusPanel" type="Panel" parent="UI" unique_id=320159823]
+visible = false
 visible = false
 offset_left = 28.0
 offset_top = 638.0
@@ -553,3 +559,6 @@ visible = false
 
 [connection signal="pressed" from="UI/TopBar/Bar/BackButton" to="." method="_on_menu_pressed"]
 [connection signal="pressed" from="UI/TopBar/Bar/BookButton" to="." method="_on_book_pressed"]
+
+[node name="ScreenLayout" parent="." instance=ExtResource("responsive")]
+profile = ExtResource("layout_profile")

@@ -167,7 +167,7 @@ func _check_resume() -> void:
 	_assert_locked(story, "Presentación restaurada y resuelta")
 	_assert_ignored(story, "Presentación restaurada y resuelta")
 	await _release(story)
-	for key: String in ["world1_story1", "world5_story1"]:
+	for key: String in ["world1_story1", "world4_story1"]:
 		story = _mount(key)
 		var expected_kind := StoryBeat.Kind.ADIVINAR if key == "world1_story1" else StoryBeat.Kind.ELEGIR
 		while story.current_beat().kind != expected_kind:

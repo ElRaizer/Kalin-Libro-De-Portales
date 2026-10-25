@@ -1,6 +1,6 @@
 [gd_scene format=3]
 [ext_resource type="PackedScene" path="res://scenes/world4/Mision_EncargosAldea.tscn" id="base"]
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_encargos.svg" id="village"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_habitada.svg" id="village"]
 [ext_resource type="Texture2D" path="res://Arte/ilustraciones/ui_casa.svg" id="home"]
 
 [node name="PracticaAldea" instance=ExtResource("base")]

@@ -3,6 +3,10 @@
 [ext_resource type="Script" uid="uid://ba8lyy5fekj23" path="res://scripts/components/RecallPanel.gd" id="script"]
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="theme"]
 
+[ext_resource type="Script" path="res://scripts/components/RecallBlockBank.gd" id="bank"]
+[ext_resource type="PackedScene" path="res://scenes/components/MeaningIllustration.tscn" id="art"]
+[ext_resource type="PackedScene" path="res://scenes/components/RecallWorkbench.tscn" id="workspace"]
+
 [sub_resource type="StyleBoxFlat" id="input"]
 content_margin_left = 12.0
 content_margin_right = 12.0
@@ -52,6 +56,38 @@ theme_override_font_sizes/font_size = 17
 text = "Escribe en maya. Puedes volver a practicar."
 autowrap_mode = 3
 
+[node name="Modes" type="HBoxContainer" parent="Margin/Content"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Write" type="Button" parent="Margin/Content/Modes"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+text = "Escribir"
+
+theme_type_variation = &"KalinSecondaryButton"
+
+[node name="Cloze" type="Button" parent="Margin/Content/Modes"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+text = "Completar"
+
+theme_type_variation = &"KalinSecondaryButton"
+
+[node name="Build" type="Button" parent="Margin/Content/Modes"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+text = "Bloques"
+
+theme_type_variation = &"KalinSecondaryButton"
+
 [node name="Fields" type="HBoxContainer" parent="Margin/Content" unique_id=1456796075]
 layout_mode = 2
 theme_override_constants/separation = 16
@@ -74,6 +110,8 @@ theme_override_colors/font_placeholder_color = Color(0.36, 0.45, 0.4, 1)
 theme_override_colors/caret_color = Color(0.08, 0.33, 0.31, 1)
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("input")
+theme_override_styles/read_only = SubResource("input")
+theme_override_colors/font_uneditable_color = Color(0.08, 0.33, 0.31, 1)
 theme_override_styles/focus = SubResource("focus")
 placeholder_text = "Tu palabra en maya"
 max_length = 100
@@ -96,13 +134,39 @@ theme_override_colors/font_placeholder_color = Color(0.36, 0.45, 0.4, 1)
 theme_override_colors/caret_color = Color(0.08, 0.33, 0.31, 1)
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("input")
+theme_override_styles/read_only = SubResource("input")
+theme_override_colors/font_uneditable_color = Color(0.08, 0.33, 0.31, 1)
 theme_override_styles/focus = SubResource("focus")
 placeholder_text = "Tu palabra en maya"
 max_length = 100
 
+[node name="Blocks" type="HBoxContainer" parent="Margin/Content"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Bank" type="HFlowContainer" parent="Margin/Content/Blocks"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+script = ExtResource("bank")
+
+[node name="Undo" type="Button" parent="Margin/Content/Blocks"]
+custom_minimum_size = Vector2(100, 56)
+layout_mode = 2
+text = "Deshacer"
+
+theme_type_variation = &"KalinSecondaryButton"
+
 [node name="Letters" type="HBoxContainer" parent="Margin/Content" unique_id=635282706]
 layout_mode = 2
 theme_override_constants/separation = 8
+
+[node name="Workspace" parent="Margin/Content" instance=ExtResource("workspace")]
+visible = false
+layout_mode = 2
 
 [node name="A" type="Button" parent="Margin/Content/Letters" unique_id=1959819176]
 visible = false
@@ -151,14 +215,52 @@ layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="Practice" type="Button" parent="Margin/Content/Actions" unique_id=561998221]
+visible = false
 custom_minimum_size = Vector2(0, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"KalinSecondaryButton"
-text = "Necesito practicar · ver tarjetas"
+text = "Ver tarjetas"
 
 [node name="Submit" type="Button" parent="Margin/Content/Actions" unique_id=1452799483]
 custom_minimum_size = Vector2(170, 40)
 layout_mode = 2
 theme_type_variation = &"KalinPrimaryButton"
 text = "Confirmar"
+
+[node name="Result" type="HBoxContainer" parent="Margin/Content"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+theme_override_constants/separation = 24
+
+[node name="Art" parent="Margin/Content/Result" instance=ExtResource("art")]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 160)
+size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="Words" type="VBoxContainer" parent="Margin/Content/Result"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Margin/Content/Result/Words"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1, 0.43, 0.4, 1)
+theme_override_font_sizes/font_size = 24
+text = "¡Lo lograste!"
+
+[node name="Phrase" type="Label" parent="Margin/Content/Result/Words"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
+theme_override_font_sizes/font_size = 30
+autowrap_mode = 3
+
+[node name="Translation" type="Label" parent="Margin/Content/Result/Words"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
+theme_override_font_sizes/font_size = 24
+autowrap_mode = 3

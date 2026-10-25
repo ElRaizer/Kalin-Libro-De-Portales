@@ -136,7 +136,7 @@ func _ready() -> void:
 	_update_counter()
 	var active_name := str(state.get("active", ""))
 	for spot: ExplorationSpot in spots:
-		if str(spot.name) == active_name and not spot.examined:
+		if str(spot.name) == active_name and (not spot.examined or spot.has_meta("village_neighbour") or spot.has_meta("village_resident")):
 			open_spot(spot)
 			break
 	if not _dialogue.is_open() and not _intro_done and not intro_lines.is_empty():
@@ -354,6 +354,9 @@ func _on_prompt_pressed() -> void:
 func open_spot(spot: ExplorationSpot) -> void:
 	if not _can_walk():
 		return
+	var village_dialogue := get_node_or_null("VillageDialogue") as VillageDialogue
+	if village_dialogue:
+		village_dialogue.prepare(spot)
 	_active_spot = spot
 	_has_target = false
 	_pending_spot = null
@@ -423,6 +426,9 @@ func _on_dialogue_finished() -> void:
 	var spot: ExplorationSpot = _active_spot
 	_active_spot = null
 	if spot != null:
+		var village_dialogue := get_node_or_null("VillageDialogue") as VillageDialogue
+		if village_dialogue:
+			village_dialogue.finish(spot)
 		_close_spot(spot)
 	else:
 		_intro_done = true
@@ -497,7 +503,11 @@ func get_checkpoint_state() -> Dictionary:
 	for spot: ExplorationSpot in spots:
 		if spot.examined:
 			examined.append(str(spot.name))
-	return {"x": kalin.position.x, "examined": examined, "intro_done": _intro_done, "active": str(_active_spot.name) if _active_spot != null else "", "line": _dialogue.line_index if _dialogue.is_open() else 0}
+	var state := {"x": kalin.position.x, "examined": examined, "intro_done": _intro_done, "active": str(_active_spot.name) if _active_spot != null else "", "line": _dialogue.line_index if _dialogue.is_open() else 0}
+	var village_dialogue := get_node_or_null("VillageDialogue") as VillageDialogue
+	if village_dialogue:
+		state.greeting_visits = village_dialogue.greeting_visits.duplicate()
+	return state
 
 func _on_menu_pressed() -> void:
 	GameManager.go_to_scene("main_menu")

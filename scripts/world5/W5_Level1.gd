@@ -7,6 +7,7 @@ extends Node2D
 @export var vary_challenges := true
 var _session_challenges: Array[ExerciseEntry] = []
 var _portal_variants: Dictionary = {}
+var _portal_pool_keys: Dictionary = {}
 var _challenge_order: Array[int] = []
 var challenges: Array[ExerciseEntry]:
 	get:
@@ -29,6 +30,8 @@ var challenge_art: MeaningIllustration
 var _help_stage := 0
 var _attempt := LearningAttempt.new()
 var _layout_seed := 1
+var _saved_scaffold: Dictionary = {}
+var _practice_fallback := false
 @onready var recall: RecallPanel = $UI/RecallPanel
 @onready var feedback_art: MeaningIllustration = $UI/FeedbackPanel/FeedbackArt
 
@@ -69,13 +72,23 @@ func _ready() -> void:
 	next_button.pressed.connect(_advance_challenge)
 	recall.submitted.connect(func(): _on_option_pressed(recall.first.text))
 	recall.practice_requested.connect(_practice_with_cards)
+	recall.support_used.connect(mark_learning_help)
+	recall.answer_changed.connect(_on_scaffold_changed)
 	var state := GameManager.get_scene_state(self)
 	_attempt.restore(state.get("attempt"))
+	_practice_fallback = state.get("cards", false) == true
+	_saved_scaffold = state.get("scaffold", {}) if state.get("scaffold") is Dictionary else {}
 	_layout_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
 	if vary_challenges:
-		var session := PortalReplay.prepare(content.challenges, state, _layout_seed)
+		var taught := {}
+		for world: int in [3, 4]:
+			var previous: Dictionary = GameManager.scene_states.get("world%d_level1" % world, {})
+			if previous.get("combination_plan") is Array:
+				taught[str(world - 1)] = previous.combination_plan
+		var session := PortalReplay.prepare(content.challenges, state, _layout_seed, taught)
 		_session_challenges.assign(session.challenges)
 		_portal_variants = session.variants
+		_portal_pool_keys = session.pool_keys
 		_challenge_order.assign(session.order)
 	challenge_index = clampi(int(state.get("challenge", 0)), 0, challenges.size())
 	portal_energy.value = challenge_index
@@ -95,10 +108,14 @@ func _show_challenge() -> void:
 		return
 	_resolving = false
 	_awaiting_continue = false
-	_attempt.begin("world5:%d@%d" % [challenge_index, _layout_seed])
+	var semantic := ExerciseRecallFlow.context("portal", challenges[challenge_index].section, [challenges[challenge_index].correct], challenge_index >= 4, _layout_seed)
+	var continuing := ExerciseRecallFlow.begin(_attempt, semantic, "world5:%d@%d" % [challenge_index, _layout_seed])
+	_practice_fallback = _practice_fallback if continuing else false
 	_mistakes = _attempt.mistakes
 	recall.hide()
 	options_box.show()
+	$UI/OptionsPanel.show()
+	$UI/ChallengePanel.size.y = 242
 	_help_stage = 0
 	feedback_art.hide()
 	feedback_label.offset_left = _feedback_left
@@ -126,11 +143,15 @@ func _show_challenge() -> void:
 	progress_label.text = "%d / %d páginas" % [challenge_index, challenges.size()]
 	portal_label.text = "El portal está despertando"
 	_build_options(challenge.options)
-	challenge_art.visible = challenge_index >= 4 or _attempt.supported
-	if challenge_index < 4 and not _attempt.supported:
+	challenge_art.visible = challenge_index >= 4 or _practice_fallback
+	if challenge_index < 4 and not _practice_fallback:
 		options_box.hide()
-		recall.configure(["Hechizo completo"])
-		feedback_label.text = "Recuerda tu hechizo. Puedes volver a practicar."
+		ExerciseRecallFlow.prepare(recall, ["Hechizo completo"], [challenge.correct], _attempt, _saved_scaffold)
+		_saved_scaffold = {}
+		$UI/OptionsPanel.hide()
+		$UI/ChallengePanel.size.y = 160
+		recall.position.y = 266
+		feedback_label.text = "Recuerda tu hechizo. Las pistas aparecen si las necesitas."
 	guide.watch_action(options_box)
 	mission_progress.update_progress(challenge_index, challenges.size(), "El portal · %d / %d" % [challenge_index + 1, challenges.size()])
 	GameManager.checkpoint(self)
@@ -164,6 +185,8 @@ func _on_option_pressed(phrase: String) -> void:
 	var challenge := challenges[challenge_index]
 	guide.stop()
 	if recall.visible:
+		if phrase == recall.first.text and not recall.ready_to_submit():
+			return
 		var match_result := RecallPanel.match_word(phrase, challenge.correct)
 		if match_result.correct:
 			phrase = match_result.word
@@ -200,7 +223,9 @@ func _on_option_pressed(phrase: String) -> void:
 		else:
 			feedback_label.text = "Ese hechizo describe un objeto."
 		feedback_label.add_theme_color_override("font_color", COLOR_ERROR)
-		if _mistakes >= 2:
+		if recall.visible:
+			recall.advance_support()
+		elif _mistakes >= 2:
 			_help_stage = mini(_mistakes - 2, 2)
 			_show_help()
 		GameManager.checkpoint(self)
@@ -214,7 +239,7 @@ func _on_option_pressed(phrase: String) -> void:
 		for word: String in GameManager.get_learnable_vocabulary_keys():
 			if word in challenge.correct.split(" ", false):
 				evidence_words.append(word)
-	GameManager.record_learning(evidence_words, "recall" if challenge_index < 4 else "practice", _attempt.context, _attempt.supported, _attempt.mistakes)
+	GameManager.record_learning(evidence_words, ExerciseRecallFlow.phase(recall, challenge_index >= 4), _attempt.context, _attempt.supported, _attempt.mistakes)
 	_render_success(true)
 
 func _finish_world() -> void:
@@ -224,7 +249,7 @@ func _finish_world() -> void:
 	next_button.hide()
 	GameManager.complete_level(5, 1)
 	portal_glow.color.a = 0.72
-	completion.show_completion("¡El portal está abierto!", "Tus palabras ayudaron a toda la aldea.", "Volver a casa →")
+	completion.show_completion("¡El portal está abierto!", "Tus palabras ayudaron a toda la aldea.", "Preparar mi despedida →")
 	GameManager.checkpoint(self)
 
 func _on_menu_pressed() -> void:
@@ -234,7 +259,7 @@ func _on_menu_pressed() -> void:
 ## "Cerrar la aventura" abre el epílogo con la despedida de los animales.
 func _on_epilogue_pressed() -> void:
 	_resolving = true
-	GameManager.go_to_scene("world5_story1")
+	GameManager.go_to_scene("world5_farewell")
 
 func _on_book_pressed() -> void:
 	libro.show_book($UI/LevelHeader/Bar/BookButton)
@@ -247,7 +272,12 @@ func _render_success(animate: bool) -> void:
 	feedback_label.offset_left = _feedback_left
 	_resolving = true
 	_awaiting_continue = true
-	recall.hide()
+	var challenge := challenges[challenge_index]
+	var meaning := PortalReplay.meaning(challenge.correct)
+	recall.show_result(meaning[0], meaning[1], challenge.correct, challenge.prompt)
+	$UI/OptionsPanel.hide()
+	$UI/ChallengePanel.size.y = 160
+	recall.position.y = 266
 	guide.stop()
 	for button: Button in option_buttons:
 		button.disabled = true
@@ -280,7 +310,8 @@ func _show_help() -> void:
 	elif not _resolving:
 		mark_learning_help()
 		if recall.visible:
-			_practice_with_cards()
+			recall.explain_support()
+			guide.highlight(recall)
 			return
 		if _help_stage < 2:
 			guide.highlight(challenge_art if _help_stage == 0 else options_box)
@@ -292,7 +323,10 @@ func _show_help() -> void:
 				return
 
 func get_checkpoint_state() -> Dictionary:
-	return {"challenge": challenge_index, "waiting": _awaiting_continue, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "recall_text": recall.first.text, "order": _challenge_order.duplicate(), "portal_variants": _portal_variants.duplicate()}
+	var state := {"challenge": challenge_index, "waiting": _awaiting_continue, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "recall_text": recall.first.text, "scaffold": recall.scaffold_state(), "cards": _practice_fallback, "order": _challenge_order.duplicate(), "portal_variants": _portal_variants.duplicate()}
+	if not _portal_pool_keys.is_empty():
+		state.portal_pool_keys = _portal_pool_keys.duplicate(true)
+	return state
 
 func mark_learning_help() -> void:
 	if not _resolving:
@@ -300,6 +334,9 @@ func mark_learning_help() -> void:
 		GameManager.checkpoint(self)
 
 func _practice_with_cards() -> void:
+	_practice_fallback = true
+	$UI/OptionsPanel.show()
+	$UI/ChallengePanel.size.y = 242
 	mark_learning_help()
 	recall.hide()
 	options_box.show()
@@ -319,3 +356,20 @@ func get_configuration_issues() -> PackedStringArray:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	return get_configuration_issues()
+
+
+func _on_scaffold_changed() -> void:
+	if recall.visible and not recall._setting_up:
+		GameManager.schedule_checkpoint(self)
+
+func debug_can_answer() -> bool:
+	return OS.is_debug_build() and not _resolving and not _awaiting_continue and challenge_index < challenges.size()
+
+func debug_answer() -> void:
+	if not debug_can_answer():
+		return
+	mark_learning_help()
+	var answer := challenges[challenge_index].correct
+	if recall.visible:
+		recall.debug_fill([answer])
+	_on_option_pressed(answer)

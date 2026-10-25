@@ -1,5 +1,185 @@
 # Revisión de aventura, interacción y comodidad
 
+## Ampliación del 24 de octubre de 2026
+
+El objetivo es aumentar las decisiones y las consecuencias dentro del mundo,
+conservar el estilo de recortes y los saltitos al caminar, y facilitar la
+interacción en teléfono horizontal. La comprensión y el ritmo con niños quedan
+pendientes hasta que el equipo pueda realizar esas sesiones.
+
+### Recorrido
+
+- Casa → paseo → **Rincones para compartir** → historia 6. Tres entregas entre
+  seis necesidades para preparar lugares de descanso, vigilancia y merienda.
+- Taller → paseo → **Una fiesta a la medida** → historia 7. Tres entregas con
+  combinaciones de objeto y cualidad que ya existen en los ejercicios.
+- Comida → historia 8 → encargos de la aldea → repaso del portal → **Los recuerdos
+  que llevamos** → despedida narrativa → regreso a casa.
+- En la despedida se camina hasta tres amigos, se utilizan expresiones conocidas,
+  se reúnen recuerdos y se colocan tres páginas en el portal. Las páginas aceptan
+  arrastre o selección seguida de toque. El cierre narrativo conserva la emoción
+  de la despedida y deja de repetir los cuestionarios.
+- **Mis encargos** permite consultar las peticiones conocidas y seleccionar cuál
+  preparar. No revela palabras mayas. Las entregas conservan una pose de uso:
+  descansar en la hamaca, sentarse, utilizar una mesa o compartir comida.
+
+Las partidas en curso conservan su punto de continuación. Para revisar los tramos
+nuevos sin reiniciar la partida, se pueden abrir sus escenas directamente con F6
+o repetir el nivel anterior desde el mapa.
+
+### Recordar, reconstruir y escribir
+
+`RecallPanel` comienza por escritura libre en cada ronda de recuerdo y encargo.
+El primer error activa Completar; el segundo activa Bloques. No hay selector ni
+botón de tarjetas durante el recuerdo. Se conservan las partes correctas de una
+frase. Una respuesta vacía o unas casillas incompletas no consumen un intento.
+El libro continúa disponible, y consultarlo mantiene la marca de apoyo.
+Los fallos al escribir un encargo se conservan al cerrar el taller y se incorporan
+a la evidencia de la entrega, junto con los apoyos utilizados.
+
+Los bloques usan piezas y casillas de igual tamaño, sin campos de texto visibles.
+Conservan fondo y borde durante el arrastre y después de colocarse. Se pueden
+intercambiar, mover entre palabras o devolver al banco. Con toques o teclado se
+selecciona una casilla y luego el destino. Las piezas colocadas conservan una referencia
+atenuada en su posición del banco: tocarla o arrastrar la pieza hasta el banco la devuelve.
+La vista previa queda centrada bajo el cursor. Deshacer restaura la última disposición. El guardado conserva
+las casillas vacías, el orden, el apoyo alcanzado y hasta veinte acciones de historial;
+los borradores anteriores con bloques se migran al nuevo tablero.
+
+Completar y Bloques registran reconstrucción apoyada. Las escrituras correctas
+sin ayuda se cuentan aparte; sólo recuperaciones en situaciones semánticas
+diferentes pueden aumentar el número de situaciones del libro. Las cifras de
+reconstrucción y escritura se incluyen en la descripción del estado del libro.
+Los bloques son fragmentos gráficos, no una segmentación lingüística en sílabas.
+Las teclas adicionales de acentos y cierre glotal conservan la decisión del autor.
+
+### Presentación y teléfonos
+
+- Durante la escritura de Taller y Yo quiero, una mesa de composición muestra sólo
+  el texto que el jugador ha escrito. Tocar sus tablillas vuelve al campo respectivo.
+  No consulta las respuestas ni valida palabras antes de confirmar; conserva la
+  dificultad y la evidencia de recuerdo. Con una palabra, la tablilla queda centrada.
+- Se mantiene el diseño 1280 × 720 con escalado proporcional. La ventana de
+  escritorio admite 640 × 360 a 1920 × 1080. La exportación móvil usa horizontal
+  con giro entre sus dos orientaciones horizontales.
+- `ScreenLayout` y los perfiles editables de `data/layouts/` activan una composición
+  compacta hasta 1024 píxeles de ancho y en dispositivos táctiles/móviles. Aumentan
+  texto y controles, reorganizan el mapa y reducen indicaciones duplicadas.
+- Durante la escritura del taller y comida se utiliza un único panel: desaparecen
+  los huecos de construcción que repetían los campos. El contador de comida usa
+  siempre el total de la actividad.
+- Al acertar, ese panel muestra una ilustración amplia, la frase maya y su significado.
+  Se mantiene hasta Continuar y se restaura al reanudar. La casa también utiliza el
+  total completo de peticiones en su celebración.
+- Los paseos conservan la petición en una tarjeta visible durante la elección. Las
+  tres opciones quedan dentro de pantalla incluso en los extremos de la cámara.
+  La ayuda busca la respuesta correcta en el orden barajado. Kalin, los animales y
+  los objetos entregados usan capas coherentes: el personaje pasa delante del conjunto.
+- Paseos y encargos seleccionan sus tres necesidades en conjunto para evitar repetir
+  objetos. Al continuar se conservan las peticiones conocidas o resueltas; si un guardado
+  antiguo repite objetos, sólo se cambian las necesidades que todavía no se han presentado.
+- En teléfono, el libro muestra una entrada amplia por página. Conserva categorías,
+  navegación, ejemplo y significado. En escritorio mantiene las dos páginas.
+- El teclado virtual tiene controles de confirmar y cerrar y se procura mantener
+  visible el campo activo. Este comportamiento debe verificarse en los dispositivos
+  y exportaciones finales; las capturas de escritorio no certifican un teléfono real.
+
+### Correcciones y consolidación
+
+- La aldea utiliza los doce animales ya presentados: tres destinatarios variables
+  y tres vecinos adicionales con conversaciones breves. Cada especie tiene su propia
+  casa SVG. La selección se guarda y se conserva al reanudar; los encargos antiguos
+  mantienen sus dueños. El vocabulario futuro queda fuera del reparto.
+- Los fondos nuevos conservan el paisaje y retiran las casas incrustadas de los
+  destinatarios. Paseos, misiones, visita libre y despedida comparten la instalación
+  de viviendas mediante `VillageResidents`. Los encargos se duplican antes de cambiar
+  de destinatario para respetar los recursos de autor.
+- Los muebles entregados usan una composición física independiente de los ejemplos
+  didácticos. Ya no muestran la copia tenue utilizada para comparar tamaños. La pose
+  se ajusta al rectángulo real de la imagen, incluida la hamaca pequeña; la celebración
+  conserva la escala del mueble y su ocupante.
+- El contexto de aprendizaje utiliza actividad, destinatario y contenido; la semilla
+  identifica sólo el intento. Reordenar una petición deja de simular otra situación.
+- Guardado versión 5: conserva páginas, práctica, encargos y progreso. Los recuerdos
+  antiguos que sólo se identificaban por número de ronda se retiran de la evidencia
+  de situaciones; se conserva la práctica histórica. Los apoyos y errores de los
+  intentos antiguos se mantienen al migrar su identificador.
+- Reducir movimiento retira los rebotes de llegada y de diálogo, las sacudidas y los
+  pulsos de los controles afectados. La caminata habitual mantiene sus saltitos.
+- `ExerciseRecallFlow` comparte identidad, modalidades, presentación y tipo de
+  resultado entre ejercicios. `VillageUseMotion` comparte las acciones de uso.
+- Los borradores se guardan tras 350 ms sin escribir. Cambiar de escena, pausar o
+  salir sigue produciendo un checkpoint inmediato.
+
+### Verificación
+
+`tools/validate.ps1` ejecuta 24 suites, incluidas `validate_game_expansion.gd`,
+`validate_debug_answer.gd`, `validate_block_interactions.gd`, `validate_village_life.gd`,
+`validate_village_dialogue.gd` y `validate_village_composition.gd`.
+La prueba nueva comprueba el contexto semántico, reconstrucción con arrastre,
+restauración desde JSON, encargos, páginas parciales del portal, movimiento y
+controles dentro de pantalla. El recorrido completo incluye las misiones nuevas.
+La suite de vida en la aldea comprueba composición sin respuestas, restauración del
+borrador, ajuste de las hamacas para los doce animales, casas, diversidad del reparto
+y persistencia de habitantes y conversaciones.
+La suite de diálogos recorre las 444 combinaciones de animal y pedido, comprueba
+las dos peticiones y su agradecimiento, los cinco saludos por animal, su rotación
+sin repeticiones y la reanudación de conversaciones con vecinos y amigos ayudados.
+
+### Voces de los habitantes
+
+`data/dialogue/VillageDialogueCatalog.gd` contiene 1.392 textos españoles escritos
+para la aldea: 888 peticiones, 444 agradecimientos y 60 saludos. Cada combinación
+de los doce animales con los 37 tipos de pedido tiene sus propios textos. Se
+personalizan las copias de los encargos después de elegir sus destinatarios; sus
+respuestas mayas y sus cualidades no cambian. El caparazón sólo aparece en la voz
+de Áak. Kay prepara los muebles para sus visitas de la orilla.
+
+La variante de petición permanece estable durante la visita, también en las
+opciones, el diario, la mesa y los avisos de error. Los vecinos y los amigos ya
+ayudados rotan cinco saludos propios sin repetir hasta completar el banco. El
+saludo avanza al terminar la conversación, no al abrirla, y guarda su posición
+en el campo opcional `greeting_visits` del formato 5. Al continuar un diálogo
+abierto se conserva la frase y la línea, incluso tras saludar varias veces.
+
+### Revisión de las 444 composiciones de resultados
+
+Se generó y revisó un atlas de 37 resultados por doce habitantes. Las sillas
+quedan detrás del animal, las mesas y alimentos a su lado y la hamaca utiliza
+postes traseros y tejido frontal independientes. Los tamaños mantienen su
+diferencia; los adornos, refuerzos y aroma identifican las cualidades del pedido.
+Los platos, comida y agua descansan sobre un petate. Kay permanece junto al agua
+y recibe el mobiliario para sus visitas, como indican sus diálogos.
+
+`VillageUseArt` reúne 33 SVG de uso en el escenario, derivados sin modificar las
+ilustraciones originales. Se retiraron las sombras pegadas a los personajes para
+que no giren con ellos dentro de la hamaca. El punto de apoyo de cada animal usa
+los píxeles visibles de su ilustración. Las capas son: casas 0, muebles 1, animales
+2, tejido de hamaca 3, Kalin 4 y opciones 6. El rótulo de transporte sólo aparece
+cuando se lleva un objeto y se sitúa sobre el paisaje, debajo de la cabecera.
+
+`validate_village_composition.gd` comprueba las 444 combinaciones en tres posiciones
+de la animación, profundidad, caras despejadas, cualidades visibles y reanudación
+en los seis paseos/misiones. Con renderer real exporta el atlas y capturas dentro
+de la aldea, incluyendo escritorio y teléfono horizontal:
+
+```powershell
+godot_console.exe --path . --script res://tests/validate_village_composition.gd -- --capture=C:/ruta/a/capturas
+```
+
+Las nueve variantes SVG añadidas al catálogo ampliado se regeneran con `python tools/build_combination_art.py`; los demás SVG permanecen editables en `Arte/aldea/uso/`.
+
+Para generar capturas actuales con un renderizador real:
+
+```powershell
+godot_console.exe --path . --script res://tests/validate_game_expansion.gd -- --capture=C:/ruta/a/capturas
+```
+
+Se revisan composiciones a 1920 × 1080, 1280 × 720, 960 × 540 y 640 × 360.
+Las pruebas de niños, exportación móvil y teclado en hardware real siguen pendientes.
+
+## Registro anterior
+
 Implementación del 22 de octubre de 2026. Las decisiones de ritmo y comprensión
 son hipótesis de diseño: todavía no se han observado sesiones con niños.
 
@@ -95,7 +275,7 @@ godot_console.exe --path . --script res://tests/validate_adventure_polish.gd -- 
 `tests/validate_tutorial_gestures.gd` comprueba clics sin desplazamiento, posiciones
 con cámara, trayectorias y caminos parciales de los cuatro tableros, los cuatro
 tipos de tarjeta, personajes y acciones de continuar. Admite el mismo argumento
-`--capture` y forma parte de las 17 suites de `tools/validate.ps1`.
+`--capture` y forma parte de las 24 suites de `tools/validate.ps1`.
 
 La variación desde la primera partida, los bancos de preguntas y los 48 tableros
 con solución comprobada se documentan en [REJUGABILIDAD.md](REJUGABILIDAD.md).

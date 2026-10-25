@@ -35,6 +35,7 @@ var _attempt := LearningAttempt.new()
 var _name_seed := 1
 var _board_variant := ""
 var _saved_name_text := ""
+var _saved_scaffold: Dictionary = {}
 @onready var recall: RecallPanel = $UI/RecallPanel
 var guide: LearningGuide
 @onready var continue_button: Button = $UI/DialoguePanel/ContinueButton
@@ -76,6 +77,7 @@ func _ready() -> void:
 	grid_board.invalid_move.connect(_on_invalid_move)
 	var state := GameManager.get_scene_state(self)
 	_attempt.restore(state.get("attempt"))
+	_saved_scaffold = state.get("scaffold", {}) if state.get("scaffold") is Dictionary else {}
 	_name_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
 	if vary_board:
 		_board_variant = GridReplayLayouts.configure(grid_board, level_number, state, _name_seed)
@@ -83,6 +85,11 @@ func _ready() -> void:
 	_named_words = ExerciseProgress.restore_markers(state.get("named"), grid_board.words.size())
 	recall.submitted.connect(_submit_name)
 	recall.practice_requested.connect(_practice_name)
+	recall.support_used.connect(mark_learning_help)
+	recall.answer_changed.connect(func():
+		if _naming_pending:
+			GameManager.schedule_checkpoint(self)
+	)
 	if level_number > 1:
 		var authored: Dictionary = {}
 		for index: int in grid_board.destination_nodes:
@@ -198,7 +205,9 @@ func _on_arrival_finished(walker: TextureRect, arrived: Control, current_dialogu
 		var word: GridWordData = grid_board.words[_dialogue_word_index]
 		for destination: Panel in grid_board.destination_nodes.values():
 			(destination.get_node("Label") as Label).text = "?"
-		recall.configure(["¿Cómo se dice %s en maya?" % word.spanish_word.to_lower()])
+		recall.configure(["¿Cómo se dice %s en maya?" % word.spanish_word.to_lower()], [word.maya_word], clampi(int(_saved_scaffold.get("mode", 0)), 0, 2))
+		recall.restore_scaffold(_saved_scaffold)
+		_saved_scaffold = {}
 		recall.first.text = _saved_name_text
 		_saved_name_text = ""
 		if level_number == 1:
@@ -211,7 +220,7 @@ func _on_arrival_finished(walker: TextureRect, arrived: Control, current_dialogu
 
 func _animate_arrival_step(progress: float, walker: TextureRect, start: Vector2, destination: Vector2, tilt_direction: float) -> void:
 	# La misma elevación y balanceo suaves que usa Kalin al explorar.
-	var stride := sin(progress * PI)
+	var stride := 0.0 if get_node("/root/AccessibilityManager").reduced_motion else sin(progress * PI)
 	walker.position = start.lerp(destination, progress) + Vector2(0.0, -stride * ARRIVAL_HOP_HEIGHT)
 	walker.rotation = stride * ARRIVAL_TILT * tilt_direction
 
@@ -301,7 +310,7 @@ func _on_invalid_move(reason: String, cell: Vector2i) -> void:
 		tween.tween_property(tile, "modulate", tint, 0.25)
 
 func get_checkpoint_state() -> Dictionary:
-	return {"board": grid_board.get_path_state(), "board_variant": _board_variant, "complete": _completing, "dialogue_word": _dialogue_word_index, "dialogue_open": _dialogue_open, "named": _named_words, "attempt": _attempt.snapshot(), "recall_text": recall.first.text if _naming_pending else "", "naming_pending": _naming_pending, "layout_seed": _name_seed}
+	return {"board": grid_board.get_path_state(), "board_variant": _board_variant, "complete": _completing, "dialogue_word": _dialogue_word_index, "dialogue_open": _dialogue_open, "named": _named_words, "attempt": _attempt.snapshot(), "recall_text": recall.first.text if _naming_pending else "", "scaffold": recall.scaffold_state(), "naming_pending": _naming_pending, "layout_seed": _name_seed}
 
 func _restore_destination_texts() -> void:
 	for index: int in range(grid_board.words.size()):
@@ -323,15 +332,17 @@ func _practice_name() -> void:
 func _submit_name() -> void:
 	if not _naming_pending:
 		return
+	if not recall.ready_to_submit():
+		return
 	var word: GridWordData = grid_board.words[_dialogue_word_index]
 	var result := RecallPanel.match_word(recall.first.text, word.maya_word)
 	if not result.correct:
 		_attempt.miss()
-		recall.caption.text = "Prueba otra vez. Puedes consultar el libro o volver a practicar."
+		recall.advance_support()
 		GameManager.checkpoint(self)
 		return
 	_attempt.supported = _attempt.supported or result.supported
-	GameManager.record_learning([word.maya_word], "practice" if level_number == 1 else "recall", _attempt.context, _attempt.supported, _attempt.mistakes)
+	GameManager.record_learning([word.maya_word], ExerciseRecallFlow.phase(recall, level_number == 1), _attempt.context, _attempt.supported, _attempt.mistakes)
 	_named_words.append(_dialogue_word_index)
 	_naming_pending = false
 	recall.hide()
@@ -349,3 +360,13 @@ func mark_learning_help() -> void:
 func _speed_up_arrival() -> void:
 	if arrival_tween and arrival_tween.is_valid():
 		arrival_tween.set_speed_scale(3.0)
+
+func debug_can_answer() -> bool:
+	return OS.is_debug_build() and _naming_pending and not _arrival_animating and not _completing
+
+func debug_answer() -> void:
+	if not debug_can_answer():
+		return
+	mark_learning_help()
+	recall.debug_fill([grid_board.words[_dialogue_word_index].maya_word])
+	_submit_name()

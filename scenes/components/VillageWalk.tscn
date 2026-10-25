@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://scenes/components/ExplorationScene.tscn" id="base"]
 [ext_resource type="Script" path="res://scripts/components/VillageWalk.gd" id="script"]
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_encargos.svg" id="background"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_habitada.svg" id="background"]
 [ext_resource type="PackedScene" path="res://scenes/components/ExplorationSpot.tscn" id="spot"]
 [ext_resource type="Texture2D" path="res://Arte/ilustraciones/ui_casa.svg" id="exit"]
 [ext_resource type="PackedScene" path="res://scenes/components/WorldSpellChoice.tscn" id="choice"]
@@ -117,6 +117,7 @@ offset_left = 384.0
 offset_right = 562.0
 
 [node name="Results" type="Node2D" parent="." index="9"]
+z_index = 1
 
 [node name="Item0" parent="Results" instance=ExtResource("art")]
 visible = false
@@ -132,6 +133,24 @@ offset_bottom = 130.0
 visible = false
 offset_right = 180.0
 offset_bottom = 130.0
+
+[node name="ChoiceRequest" type="PanelContainer" parent="UI"]
+theme = ExtResource("theme")
+visible = false
+offset_left = 24.0
+offset_top = 78.0
+offset_right = 1256.0
+offset_bottom = 174.0
+theme_type_variation = &"KalinCreamPanel"
+mouse_filter = 2
+
+[node name="Request" type="Label" parent="UI/ChoiceRequest"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
+theme_override_font_sizes/font_size = 24
+text = "La petición de tu amigo"
+autowrap_mode = 3
+mouse_filter = 2
 
 [node name="LibroHechizos" parent="." index="10" instance=ExtResource("book")]
 visible = false

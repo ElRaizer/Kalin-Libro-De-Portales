@@ -51,8 +51,8 @@ func _validate_display_configuration() -> void:
 		failures.append("El escalado debe conservar la relación de aspecto")
 	if not ProjectSettings.get_setting("display/window/size/resizable"):
 		failures.append("La ventana debe poder redimensionarse")
-	if WindowManagerScript.MIN_WINDOW_SIZE != Vector2i(960, 540):
-		failures.append("El tamaño mínimo de ventana debe ser 960 × 540")
+	if WindowManagerScript.MIN_WINDOW_SIZE != Vector2i(640, 360):
+		failures.append("El tamaño mínimo de ventana debe ser 640 × 360")
 	if WindowManagerScript.MAX_WINDOW_SIZE != Vector2i(1920, 1080):
 		failures.append("El tamaño máximo de ventana debe ser 1920 × 1080")
 
@@ -316,8 +316,8 @@ func _validate_world4() -> void:
 		failures.append("El Mundo 4 debe contener las seis peticiones del GDD")
 	if world4_script.foods.size() != 5:
 		failures.append("El Mundo 4 debe ofrecer los cinco alimentos de sus peticiones")
-	if world4_script.modifiers.size() != 4:
-		failures.append("El Mundo 4 debe ofrecer cuatro cualidades, incluyendo Sin cualidad y el distractor ki'")
+	if world4_script.modifiers.size() != 5:
+		failures.append("El Mundo 4 debe ofrecer Sin cualidad, pequeño, grande, bonito y delicioso")
 	for challenge: ExerciseEntry in world4_script.challenges:
 		for field: String in ["animal", "sprite", "food", "phrase", "translation"]:
 			if str(challenge.get(field)).is_empty():

@@ -6,13 +6,13 @@ class_name LearningProgress
 const RECALL_GAP := 3
 
 static func empty_record() -> Dictionary:
-	return {"practice": 0, "supported": 0, "errors": 0, "recalls": [], "last_recall": -100, "contexts": []}
+	return {"practice": 0, "supported": 0, "errors": 0, "writing": 0, "reconstruction": 0, "recalls": [], "last_recall": -100, "contexts": []}
 
 static func sanitize(value: Variant) -> Dictionary:
 	var record := empty_record()
 	if value is not Dictionary:
 		return record
-	for key: String in ["practice", "supported", "errors", "last_recall"]:
+	for key: String in ["practice", "supported", "errors", "last_recall", "writing", "reconstruction"]:
 		var number: Variant = value.get(key)
 		if (number is int or number is float) and is_finite(float(number)):
 			record[key] = clampi(int(number), -100 if key == "last_recall" else 0, 1000000)
@@ -30,11 +30,19 @@ static func record_result(record: Dictionary, phase: String, context: String, su
 	record.contexts.append(context)
 	record.errors += maxi(mistakes, 0)
 	record.practice += 1
+	if phase == "reconstruction":
+		record.reconstruction += 1
+	elif phase == "recall" and not supported and mistakes == 0:
+		record.writing += 1
 	if supported or phase != "recall" or mistakes > 0:
 		record.supported += 1
 	elif clock - int(record.last_recall) >= RECALL_GAP and context.get_slice("@", 0) not in record.recalls:
 		record.recalls.append(context.get_slice("@", 0))
 		record.last_recall = clock
+
+static func is_legacy_round(context: String) -> bool:
+	var parts := context.split(":")
+	return parts.size() == 2 and parts[0] in ["world2", "world3", "world4", "world5"] and parts[1].is_valid_int()
 
 static func caption(record: Dictionary) -> String:
 	var count: int = record.recalls.size()

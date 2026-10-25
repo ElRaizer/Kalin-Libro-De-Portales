@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/components/ScreenLayout.gd" id="script"]
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="theme"]
+
+[node name="ScreenLayout" type="Node"]
+script = ExtResource("script")
+
+[node name="Keyboard" type="CanvasLayer" parent="."]
+layer = 60
+
+[node name="Dock" type="HBoxContainer" parent="Keyboard"]
+visible = false
+offset_left = 720.0
+offset_right = 1256.0
+offset_bottom = 72.0
+theme = ExtResource("theme")
+theme_override_constants/separation = 12
+
+[node name="Hide" type="Button" parent="Keyboard/Dock"]
+custom_minimum_size = Vector2(240, 68)
+layout_mode = 2
+focus_mode = 0
+text = "Cerrar teclado"
+theme_override_font_sizes/font_size = 26
+
+[node name="Submit" type="Button" parent="Keyboard/Dock"]
+custom_minimum_size = Vector2(280, 68)
+layout_mode = 2
+focus_mode = 0
+text = "Confirmar"
+theme_type_variation = &"KalinPrimaryButton"
+theme_override_font_sizes/font_size = 28

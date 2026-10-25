@@ -24,6 +24,7 @@ static func play(actor: Control, happy: bool = true) -> void:
 	badge.texture = GameManager.get_visual_texture("ui_corazon" if happy else "ui_pensar")
 	badge.position = Vector2(actor.size.x * 0.65, 0)
 	actor.add_child(badge)
+	var reduced: bool = actor.get_node("/root/AccessibilityManager").reduced_motion
 	var tween := actor.create_tween()
 	actor.set_meta("reaction_tween", tween)
 	var texture_property := "texture" if actor is TextureRect else ("icon" if actor is Button else "")
@@ -44,7 +45,9 @@ static func play(actor: Control, happy: bool = true) -> void:
 					if actor.get(texture_property) == expression:
 						actor.set(texture_property, source)
 				)
-	if happy:
+	if reduced:
+		tween.tween_interval(0.1)
+	elif happy:
 		tween.tween_property(actor, "scale", base_scale * Vector2(1.08, 0.94), 0.14)
 		tween.tween_property(actor, "scale", base_scale * Vector2(0.97, 1.06), 0.18)
 	else:
@@ -54,6 +57,6 @@ static func play(actor: Control, happy: bool = true) -> void:
 	tween.parallel().tween_property(actor, "rotation", base_rotation, 0.18)
 	tween.tween_callback(func(): actor.remove_meta("reaction_base_transform"))
 	tween.tween_interval(1.0)
-	tween.tween_property(badge, "position:y", -18.0, 0.3)
+	tween.tween_property(badge, "position:y", 0.0 if reduced else -18.0, 0.3)
 	tween.parallel().tween_property(badge, "modulate:a", 0.0, 0.3)
 	tween.tween_callback(badge.queue_free)

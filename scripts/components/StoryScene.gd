@@ -452,6 +452,36 @@ func choice_for_word(word: String) -> Button:
 			return button
 	return null
 
+func debug_can_answer() -> bool:
+	if not OS.is_debug_build() or _navigating or _waiting_to_continue or beat_index < 0 or beat_index >= beats.size() or _is_revealing_text():
+		return false
+	var beat := current_beat()
+	if beat.kind == StoryBeat.Kind.ELEGIR:
+		var button := choice_for_word(beat.target_word)
+		return button != null and not button.disabled
+	if beat.kind == StoryBeat.Kind.ADIVINAR:
+		return _actor_is_available(beat.target_word, actor_buttons.get(beat.target_word))
+	if beat.kind == StoryBeat.Kind.CONOCER:
+		for word: String in _stage_words:
+			if _actor_is_available(word, actor_buttons.get(word)):
+				return true
+	return false
+
+func debug_answer() -> void:
+	if not debug_can_answer():
+		return
+	_attempt.supported = true
+	var beat := current_beat()
+	if beat.kind == StoryBeat.Kind.ELEGIR:
+		_on_choice_pressed(beat.target_word, choice_for_word(beat.target_word))
+	elif beat.kind == StoryBeat.Kind.ADIVINAR:
+		_on_actor_pressed(beat.target_word)
+	else:
+		for word: String in _stage_words:
+			if _actor_is_available(word, actor_buttons.get(word)):
+				_on_actor_pressed(word)
+				break
+
 func _clear_choices() -> void:
 	for child: Node in choices_box.get_children():
 		(child as Button).hide()
@@ -518,7 +548,7 @@ func _show_bubble(phrase: String, translation: String, color: Color) -> void:
 	word_bubble.pivot_offset = word_bubble.size * 0.5
 	if _bubble_tween:
 		_bubble_tween.kill()
-	word_bubble.scale = _bubble_scale * 0.9
+	word_bubble.scale = _bubble_scale if get_node("/root/AccessibilityManager").reduced_motion else _bubble_scale * 0.9
 	_bubble_tween = create_tween()
 	_bubble_tween.tween_property(word_bubble, "scale", _bubble_scale, 0.18).set_trans(Tween.TRANS_BACK)
 
@@ -540,6 +570,18 @@ func _is_revealing_text() -> bool:
 
 func apply_comfort_settings() -> void:
 	_animator.apply_comfort_settings()
+	if get_node("/root/AccessibilityManager").reduced_motion:
+		for button: Button in _actor_tweens:
+			var tween: Tween = _actor_tweens[button]
+			if tween and tween.is_valid():
+				tween.kill()
+			button.position = button.get_meta("home_position")
+			button.modulate.a = button.get_meta("home_alpha")
+		_entering_actors.clear()
+		if _bubble_tween:
+			_bubble_tween.kill()
+		word_bubble.scale = _bubble_scale
+		_refresh_actor_interaction()
 	if get_node("/root/AccessibilityManager").instant_text:
 		_complete_text()
 
@@ -574,7 +616,7 @@ func _animate_speaker(speaker: String) -> void:
 
 func _animate_entry(button: Button, target: Vector2, delay: float) -> void:
 	_entering_actors[button] = true
-	button.position = target + Vector2(entry_distance, 0)
+	button.position = target if get_node("/root/AccessibilityManager").reduced_motion else target + Vector2(entry_distance, 0)
 	button.modulate.a = 0.0
 	var tween := create_tween().set_parallel(true)
 	_actor_tweens[button] = tween
@@ -595,7 +637,7 @@ func _hop(button: Button) -> void:
 	var base_y: float = (button.get_meta("home_position") as Vector2).y
 	var tween := create_tween()
 	_actor_tweens[button] = tween
-	tween.tween_property(button, "position:y", base_y - hop_height, 0.12).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(button, "position:y", base_y - (0.0 if get_node("/root/AccessibilityManager").reduced_motion else hop_height), 0.12).set_trans(Tween.TRANS_SINE)
 	tween.tween_property(button, "position:y", base_y, 0.16).set_trans(Tween.TRANS_BOUNCE)
 
 func _shake(button: Button) -> void:
@@ -607,8 +649,8 @@ func _shake(button: Button) -> void:
 	var tween := create_tween()
 	if button.has_meta("home_position"):
 		_actor_tweens[button] = tween
-	tween.tween_property(button, "position:x", base_x - 8.0, 0.05)
-	tween.tween_property(button, "position:x", base_x + 8.0, 0.05)
+	tween.tween_property(button, "position:x", base_x - (0.0 if get_node("/root/AccessibilityManager").reduced_motion else 8.0), 0.05)
+	tween.tween_property(button, "position:x", base_x + (0.0 if get_node("/root/AccessibilityManager").reduced_motion else 8.0), 0.05)
 	tween.tween_property(button, "position:x", base_x, 0.05)
 
 func _sparkle(button: Button) -> void:

@@ -116,7 +116,11 @@ func _exploration() -> void:
 		scene.camera.reset_smoothing()
 		await process_frame
 		scene._show_help()
-		_control_click(scene.guide, scene.choices_root.get_child(0), "Hechizo en el paseo %d" % world)
+		var target := scene.guide._point_target as Button
+		var target_index := target.get_index()
+		var spell: ExerciseEntry = scene.encounters[0].choices[scene._choice_order[target_index]]
+		_check(spell.noun == scene.encounters[0].task.item and spell.adjective == scene.encounters[0].task.quality, "La ayuda del paseo sigue la solución después de barajar")
+		_control_click(scene.guide, target, "Hechizo en el paseo %d" % world)
 		await _capture("02_clic_paseo%d" % world)
 		scene._close_choices()
 		_check(not scene.guide.hand.visible, "Salir de las elecciones retira la ayuda")

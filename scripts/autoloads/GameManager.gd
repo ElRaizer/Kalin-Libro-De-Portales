@@ -37,10 +37,17 @@ const SAVE_PATH: String = SAVE_REPOSITORY.DEFAULT_PATH
 const SAVE_VERSION: int = SAVE_REPOSITORY.CURRENT_VERSION
 
 var _save_repository: RefCounted
+var _checkpoint_timer: Timer
+var _pending_checkpoint: WeakRef
 
 func _ready() -> void:
 	_save_repository = SAVE_REPOSITORY.new(SAVE_PATH)
 	_load_save()
+	_checkpoint_timer = Timer.new()
+	_checkpoint_timer.one_shot = true
+	_checkpoint_timer.wait_time = 0.35
+	_checkpoint_timer.timeout.connect(_flush_checkpoint)
+	add_child(_checkpoint_timer)
 	get_tree().auto_accept_quit = false
 	get_tree().root.close_requested.connect(quit_game)
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -88,6 +95,10 @@ func record_learning(words: Array, phase: String, context: String, supported: bo
 
 func learning_caption(word: String) -> String:
 	return LearningProgress.caption(LearningProgress.sanitize(learning_progress.get(_resolve_vocab_key(word))))
+
+func learning_detail(word: String) -> String:
+	var record := LearningProgress.sanitize(learning_progress.get(_resolve_vocab_key(word)))
+	return "Con fragmentos o bloques: %d · Escrituras sin ayuda: %d" % [record.reconstruction, record.writing]
 
 func mark_learning_support() -> void:
 	var scene := get_tree().current_scene
@@ -326,7 +337,12 @@ func _load_save() -> void:
 	if evidence is Dictionary:
 		for word: String in evidence:
 			if word in VOCABULARY and word in words_learned:
-				learning_progress[word] = LearningProgress.sanitize(evidence[word])
+				var record := LearningProgress.sanitize(evidence[word])
+				if int(result.get("version", 0)) < 5:
+					# Las rondas barajadas de v4 no identificaban situaciones distintas.
+					# Conservar la práctica, retirando sólo esa evidencia ambigua.
+					record.recalls = record.recalls.filter(func(context: String): return not LearningProgress.is_legacy_round(context))
+				learning_progress[word] = record
 	# Los logros antiguos son descubrimientos, nunca pruebas de recuerdo. Los
 	# checkpoints con IDs de vocabulario sustituidos deben recrear sus opciones.
 	if int(result.get("version", 0)) < 3:
@@ -355,6 +371,9 @@ func scene_key_for(node: Node) -> String:
 	return str(SCENE_PATHS.find_key(node.scene_file_path)) if node.scene_file_path in SCENE_PATHS.values() else ""
 
 func checkpoint(node: Node) -> void:
+	if is_instance_valid(_checkpoint_timer):
+		_checkpoint_timer.stop()
+	_pending_checkpoint = null
 	var key := scene_key_for(node)
 	if key.is_empty() or not node.has_method("get_checkpoint_state"):
 		return
@@ -362,6 +381,18 @@ func checkpoint(node: Node) -> void:
 	if node == get_tree().current_scene and key != "main_menu":
 		resume_scene_key = key
 	_save()
+
+## La escritura guarda al dejar de teclear; navegar y salir siguen guardando de inmediato.
+func schedule_checkpoint(node: Node) -> void:
+	if not is_instance_valid(node) or node != get_tree().current_scene:
+		return
+	_pending_checkpoint = weakref(node)
+	_checkpoint_timer.start()
+
+func _flush_checkpoint() -> void:
+	var node: Node = _pending_checkpoint.get_ref() if _pending_checkpoint != null else null
+	if is_instance_valid(node) and node == get_tree().current_scene:
+		checkpoint(node)
 
 func checkpoint_current_scene() -> void:
 	if is_instance_valid(get_tree().current_scene):

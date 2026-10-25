@@ -64,7 +64,7 @@ func _refresh_ui() -> void:
 	if is_instance_valid(next_stop):
 		var info := GameManager.get_level_info(next)
 		next_stop.text = "¡Aventura completa!" if info.is_empty() else "Siguiente: " + str(info.get("map_label", ""))
-		var visits := {"world2_explore1": "La casa cobra vida", "world3_explore1": "Una aldea a su medida", "world4_mission1": "Los encargos de la aldea", "village_practice": "Tu visita a la aldea"}
+		var visits := {"world2_explore1": "La casa cobra vida", "world3_explore1": "Una aldea a su medida", "world2_mission1": "Rincones para compartir", "world3_mission1": "Una fiesta a la medida", "world4_mission1": "Los encargos de la aldea", "village_practice": "Tu visita a la aldea"}
 		if GameManager.resume_scene_key in visits:
 			next_stop.text = "Continuar: " + visits[GameManager.resume_scene_key]
 
@@ -173,3 +173,9 @@ func _refresh_world_map() -> void:
 				unlocked = unlocked or level_index == 0 or GameManager.is_level_completed(GameManager.LEVEL_ORDER[level_index - 1].world, GameManager.LEVEL_ORDER[level_index - 1].level)
 		world_buttons[index].disabled = not unlocked
 		world_buttons[index].modulate = Color(world_buttons[index].get_meta("map_base_modulate")) * (Color.WHITE if selected_world == index + 1 else Color(0.85, 0.85, 0.85))
+
+
+func apply_screen_layout(compact: bool) -> void:
+	levels_grid.columns = 2 if compact else 4
+	for button: Button in level_buttons:
+		button.custom_minimum_size.y = 76 if compact else 56

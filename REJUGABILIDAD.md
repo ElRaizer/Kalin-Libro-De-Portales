@@ -15,9 +15,13 @@ corta, el primer hechizo del taller conserva su ejemplo y comida empieza sin tam
   la práctica; sus fases de recuerdo cubren todas las preguntas en otro orden y
   no empiezan repitiendo la última de la práctica.
 - Cada paseo ofrece dos necesidades por personaje, con respuestas entre sus
-  tres tarjetas. Se elige una por personaje y se mezcla el orden de los tres.
+  tres tarjetas. Las tres se eligen conjuntamente para evitar repetir objetos y
+  se mezcla el orden de los personajes. Los encargos aplican el mismo criterio,
+  conservando la prioridad de aprendizaje cuando las opciones no se repiten.
   `alternate_task` permite revisar la alternativa desde el Inspector.
-  Volver a un paseo completado ofrece otro conjunto; uno pendiente se conserva.
+  Volver a un paseo completado ofrece otro conjunto. Al continuar se conservan las
+  peticiones abiertas o resueltas; se pueden ajustar las que aún no se han presentado
+  para retirar repeticiones de una partida anterior.
 - El portal tiene cuatro bancos: cuatro presentaciones de animales, cinco
   objetos, seis combinaciones de objeto y cualidad y seis peticiones. Usa las
   frases ya presentes en el catálogo y los ejercicios. Elige una pregunta de
@@ -67,6 +71,12 @@ o `vary_challenges` para trabajar con el tablero o portal originales.
 
 ## Compatibilidad y comprobaciones
 
+Las visitas a la aldea seleccionan también tres habitantes distintos entre los doce
+animales presentados. Cada uno conserva su casa; otros tres vecinos diferentes pueden
+saludar desde el camino. El reparto queda en `residents`, se mantiene al continuar y
+participa en `previous_variation` al repetir. Las partidas previas conservan los dueños
+de sus peticiones. La despedida mantiene sus destinatarios narrativos.
+
 Los guardados anteriores conservan sus preguntas pendientes, geometría original,
 planes y necesidades. Al repetir se activa la variación nueva. No se atribuye a
 recuerdo independiente una respuesta restaurada o una elección con tarjetas.
@@ -81,3 +91,35 @@ generar capturas con el renderizador real:
 ```powershell
 godot_console.exe --path . --script res://tests/validate_replayability.gd -- --capture=C:/ruta/a/capturas
 ```
+
+## Combinaciones de objeto y cualidad
+
+`CombinationCatalog.gd` declara 28 combinaciones permitidas, además de nueve
+peticiones sin cualidad. No se utiliza el producto cartesiano de todas las palabras.
+
+| Objetos | Cualidades | Combinaciones |
+| --- | --- | ---: |
+| Mesa, silla y hamaca | pequeña, grande, bonita, fuerte | 12 |
+| Plato | pequeño, grande, bonito | 3 |
+| Plátano, fruta y calabaza | pequeño, grande, bonito, delicioso | 12 |
+| Comida | deliciosa | 1 |
+
+Agua conserva su petición simple. Se excluyen cualidades como deliciosa para muebles,
+fuerte para alimentos y las combinaciones que requieren un contexto adicional.
+
+Taller y Yo quiero seleccionan seis peticiones al comenzar un intento, con práctica
+antes del recuerdo y doce rondas en total. El taller mantiene una silla fuerte como
+primer ejemplo y cubre las cinco cualidades; los demás ejemplos varían. Comida cubre
+sus cinco alimentos, incluyendo agua sin cualidad. Los tres encargos de cada visita
+usan objetos distintos. Las semillas y la evidencia de recuerdo distribuyen los
+pedidos; no se exige completar las 28 combinaciones en una partida.
+
+`combination_plan`, `combination_animals` y `combination_tasks` son campos opcionales
+del guardado 5. Una actividad antigua pendiente conserva sus peticiones; al repetir
+se activa el catálogo ampliado. El portal guarda en `portal_pool_keys` su selección
+de combinaciones practicadas, para no exigir un ejemplo nuevo en la recapitulación.
+El reparto se realiza localmente, sin coordinación entre dispositivos.
+
+`validate_combinations.gd` comprueba 128 semillas por capítulo, cobertura de las 28
+combinaciones, 256 selecciones de aldea, opciones correctas, entrega de encargos,
+compatibilidad JSON, recapitulación y presentación móvil. Forma parte de las 24 suites.

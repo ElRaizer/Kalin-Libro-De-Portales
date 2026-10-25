@@ -7,7 +7,7 @@
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "El portal brillaba con fuerza. Todos los animales de la isla vinieron a despedirse de Kalin."
+text = "Las páginas encontraron su lugar. El portal guardaba los caminos, los hogares y los recuerdos que Kalin compartió con sus amigos."
 background = ExtResource("5_bg_portal_isla")
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 effects = 16
@@ -15,25 +15,23 @@ effects = 16
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Mi Libro de Hechizos está completo! Cada página guarda una palabra que aprendí con ustedes."
+text = "Cuando llegué, las páginas estaban en blanco. Ahora cada palabra me recuerda algo que hicimos juntos."
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 celebrate_page = true
 effects = 16
 
 [sub_resource type="Resource" id="Beat_3"]
 script = ExtResource("2_beat")
-kind = 2
 speaker = "Kalin"
-text = "También llegaron los amigos del monte y del agua. Quiero despedirme de cada uno... ¿quién es Ch'íich'?"
+text = "También llegaron los amigos del monte y del agua. Kalin reconoció a cada uno y recordó los caminos que habían recuperado."
 actors = Array[String](["Báalam", "Kay", "Ch'íich'", "Ma'ax"])
 target_word = "Ch'íich'"
 effects = 16
 
 [sub_resource type="Resource" id="Beat_4"]
 script = ExtResource("2_beat")
-kind = 3
 speaker = "Miis"
-text = "Antes de irte, ¿cómo nos dices «muchas gracias»?"
+text = "La próxima vez que descanses, recuerda nuestra aldea. Aquí siempre tendrás un lugar."
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 target_word = "Yuum bo'otik"
 options = Array[String](["Bix a beel", "Yuum bo'otik", "Tak ti' uláak' k'iin", "Ka xi'ik tech jats'uts"])
@@ -48,9 +46,8 @@ effects = 16
 
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
-kind = 3
 speaker = "Peek'"
-text = "Nosotros te deseamos buen viaje. ¿Cómo se dice «que te vaya bien»?"
+text = "Ka xi'ik tech jats'uts. Yo cuidaré los senderos para cuando vuelvas."
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 target_word = "Ka xi'ik tech jats'uts"
 options = Array[String](["Bix a beel", "Ka xi'ik tech jats'uts", "janal", "Yuum bo'otik"])
@@ -58,9 +55,8 @@ effects = 16
 
 [sub_resource type="Resource" id="Beat_7"]
 script = ExtResource("2_beat")
-kind = 3
 speaker = "Kaax"
-text = "Y para despedirnos hasta la próxima vez, decimos..."
+text = "Tak ti' uláak' k'iin. Lleva nuestras palabras contigo... ¡y vuelve para compartir otra merienda!"
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 target_word = "Tak ti' uláak' k'iin"
 options = Array[String](["Yuum bo'otik", "Ka xi'ik tech jats'uts", "Tak ti' uláak' k'iin", "Bix a beel"])

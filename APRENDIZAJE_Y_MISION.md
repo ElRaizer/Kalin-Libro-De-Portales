@@ -17,6 +17,10 @@ Se registran localmente contextos, prácticas, errores, apoyos y un contador de 
 
 Abrir el libro, pedir ayuda, ver las tarjetas, necesitar corrección de acentos o acertar después de un error conserva el progreso narrativo y se registra como práctica apoyada. Las ayudas siguen disponibles; no hay pérdida de páginas, vidas ni bloqueo por equivocarse.
 
+## Actualización del 24 de octubre
+
+Cada ronda de recuerdo empieza por escribir. Un primer fallo activa **Completar** y un segundo activa **Bloques**, sin selector manual. Se conserva cada parte correcta de una frase; los campos vacíos y los tableros incompletos no cuentan como errores. Completar y Bloques se registran como reconstrucción apoyada; la escritura acertada a la primera se contabiliza por separado. Los contextos usan actividad, destinatario y contenido en lugar de posición de ronda. El formato 5 conserva la práctica anterior y retira las evidencias ambiguas basadas en rondas. Ver [MEJORAS_AVENTURA.md](MEJORAS_AVENTURA.md) para el recorrido, el guardado de posiciones y las verificaciones.
+
 ## Cambios por actividad
 
 - **Historias:** conocer a un animal descubre su palabra. Identificarlo entre imágenes es práctica. Los personajes se reordenan al pasar a adivinar y las respuestas escritas cambian de posición. Eso no se confunde con recuerdo libre.
@@ -38,9 +42,9 @@ La historia 8 conduce a `world4_mission1`, antes del portal. También puede abri
 4. La entrega solo se completa cerca del personaje que pidió ese resultado.
 5. Los objetos entregados quedan junto a sus destinatarios y, tras tres encargos, se puede seguir al portal.
 
-Hay seis encargos de autor y se seleccionan tres, uno por personaje. Se da prioridad a vocabulario con menos recuerdos registrados; los empates y las posiciones de los personajes varían con una semilla guardada. No se cambia el encargo a mitad del intento.
+Las plantillas de autor conservan seis huecos; cada visita nueva selecciona tres necesidades del catálogo permitido para su capítulo, con objetos distintos y un destinatario por necesidad. Se da prioridad a vocabulario con menos recuerdos registrados; los empates y las posiciones de los personajes varían con una semilla guardada. No se cambia el encargo a mitad del intento.
 
-Una entrega incorrecta explica de nuevo la necesidad y permite volver al taller. El libro y las tarjetas están disponibles. La evidencia independiente se registra al entregar, no al pulsar Crear: cuenta tanto el lenguaje como su uso con un destinatario. Se guardan encargos, posiciones, entregas, apoyo y el objeto que Kalin lleva.
+El taller comprueba la escritura del encargo y activa los apoyos automáticamente si falla. El libro continúa disponible. Una entrega incorrecta, por ejemplo con un objeto de un guardado anterior, explica de nuevo la necesidad y permite volver al taller. La evidencia independiente se registra al entregar, no al pulsar Crear: cuenta tanto el lenguaje como su uso con un destinatario. Se guardan encargos, posiciones, entregas, errores, apoyo y el objeto que Kalin lleva.
 
 ## Implementación y comprobación
 
@@ -49,9 +53,15 @@ Una entrega incorrecta explica de nuevo la necesidad y permite volver al taller.
 - `RecallPanel.tscn`: entrada escrita y vuelta voluntaria a práctica.
 - `VillageTask.gd`: encargos editables en el Inspector.
 - `VillageMission.gd`: creación, transporte, comprobación y entrega.
-- Guardado formato 3 con archivo temporal y respaldo `.bak`.
+- Guardado formato 5 con archivo temporal y respaldo `.bak`.
 - `tests/validate_learning_evidence.gd`: regresiones de aprendizaje, migración, ayuda, texto parcial, posiciones, entregas y teclado de intro.
 
 Ejecutar `tools/validate.ps1`. Para capturar la misión y la recuperación con renderer real, ejecutar la prueba anterior con `--capture=<carpeta absoluta>` después de `--`. No utilizar `--headless` al capturar.
 
 Las pronunciaciones continúan pendientes. La lectura de palabras escritas no evalúa comprensión oral; esa parte se deberá incorporar cuando existan audios revisados. La comodidad de escribir y el ritmo de los encargos deben probarse con el público objetivo.
+
+La mesa visual de Taller y Yo quiero refleja exclusivamente el texto escrito por el
+jugador, sin dibujos de solución, comparación con la respuesta ni corrección en vivo.
+No marca apoyo por sí sola. Los destinatarios de las visitas varían entre los doce
+animales presentados; su identidad se conserva durante toda la visita y al reanudar.
+Saludar a los vecinos adicionales no acredita recuerdo ni añade encargos obligatorios.

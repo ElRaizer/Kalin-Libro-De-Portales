@@ -33,7 +33,7 @@ static func previous(state: Dictionary, key: String, fallback: Variant = null) -
 
 static func replay_state(state: Dictionary) -> Dictionary:
 	var previous_values := {}
-	for key: String in ["guess_targets", "board_variant", "plan", "order", "encounter_plan", "portal_variants", "task_indices"]:
+	for key: String in ["guess_targets", "board_variant", "plan", "order", "encounter_plan", "portal_variants", "task_indices", "residents", "combination_plan", "combination_tasks", "combination_animals"]:
 		if state.has(key):
 			previous_values[key] = state[key]
 	return {"previous_variation": previous_values}

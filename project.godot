@@ -25,12 +25,14 @@ WindowManager="*res://scripts/autoloads/WindowManager.gd"
 GameManager="*res://scenes/components/GameManager.tscn"
 AccessibilityManager="*res://scenes/components/AccessibilityManager.tscn"
 PauseMenu="*res://scenes/components/PauseMenu.tscn"
+DebugAnswer="*res://scripts/autoloads/DebugAnswer.gd"
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
 window/stretch/mode="canvas_items"
+window/handheld/orientation=4
 
 [input]
 

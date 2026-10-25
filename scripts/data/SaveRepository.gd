@@ -4,7 +4,7 @@ class_name SaveRepository
 ## Único punto de acceso al archivo de progreso. Mantiene los detalles de JSON
 ## y FileAccess fuera de GameManager para que puedan probarse por separado.
 
-const CURRENT_VERSION := 4
+const CURRENT_VERSION := 5
 const DEFAULT_PATH := "user://kalin_save.json"
 
 var save_path: String
@@ -87,24 +87,24 @@ static func sanitize_completed_levels(value: Variant, level_order: Array[Diction
 
 static func sanitize_scene_state(value: Dictionary) -> Dictionary:
 	var state := value.duplicate(true)
-	for key: String in ["panel", "beat", "round", "challenge", "dialogue_word", "line", "x", "active_task", "choosing", "mistakes"]:
+	for key: String in ["panel", "beat", "round", "challenge", "dialogue_word", "line", "x", "active_task", "choosing", "mistakes", "farewell_choice"]:
 		if not state.has(key):
 			continue
 		var number: Variant = state[key]
 		if not (number is float or number is int) or not is_finite(float(number)):
 			state.erase(key)
 		elif key != "x":
-			state[key] = int(clampf(float(number), -1 if key in ["dialogue_word", "active_task", "choosing"] else 0, 10000))
-	for key: String in ["waiting", "complete", "dialogue_open", "resolved", "intro_done", "cards", "naming_pending", "workbench_open"]:
+			state[key] = int(clampf(float(number), -1 if key in ["dialogue_word", "active_task", "choosing", "farewell_choice"] else 0, 10000))
+	for key: String in ["waiting", "complete", "dialogue_open", "resolved", "intro_done", "cards", "naming_pending", "workbench_open", "assembly_open"]:
 		if state.has(key) and state[key] is not bool:
 			state.erase(key)
 	for key: String in ["noun", "adjective", "food", "modifier", "active", "return_scene"]:
 		if state.has(key) and state[key] is not String:
 			state.erase(key)
-	for key: String in ["known", "met", "examined", "order", "recall_order", "plan", "named", "mission_met", "delivered", "task_indices", "solved", "encounter_plan"]:
+	for key: String in ["known", "met", "examined", "order", "recall_order", "plan", "named", "mission_met", "delivered", "task_indices", "solved", "encounter_plan", "gifts", "pages", "residents", "combination_plan", "combination_tasks", "combination_animals"]:
 		if state.has(key) and state[key] is not Array:
 			state.erase(key)
-	for key: String in ["attempt", "carried", "task_support", "drafts", "previous_variation", "guess_targets", "portal_variants"]:
+	for key: String in ["attempt", "carried", "task_support", "task_mistakes", "drafts", "previous_variation", "guess_targets", "portal_variants", "scaffold", "greeting_visits", "portal_pool_keys"]:
 		if state.has(key) and state[key] is not Dictionary:
 			state.erase(key)
 	if state.has("layout_seed"):

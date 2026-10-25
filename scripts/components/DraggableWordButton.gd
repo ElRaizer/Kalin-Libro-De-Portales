@@ -115,11 +115,13 @@ func _clear_active_press_style() -> void:
 
 
 func _animate_scale(target: Vector2, duration: float) -> void:
+	if get_node("/root/AccessibilityManager").reduced_motion:
+		target = Vector2.ONE
 	if _hover_tween and _hover_tween.is_valid():
 		_hover_tween.kill()
 	_hover_tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	_hover_tween.tween_property(self, "scale", _base_scale * target, duration)
 
 func _punch(from_scale: Vector2, target: Vector2) -> void:
-	scale = _base_scale * from_scale
+	scale = _base_scale if get_node("/root/AccessibilityManager").reduced_motion else _base_scale * from_scale
 	_animate_scale(target, 0.18)

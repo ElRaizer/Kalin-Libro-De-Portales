@@ -102,7 +102,7 @@ func _sources() -> void:
 func _recall_inputs() -> void:
 	await _scene("world3_level1")
 	var level := current_scene
-	level.round_index = level.challenges.size()
+	level.round_index = level.challenges.size() + 3
 	level._show_round()
 	level.mission_break.hide()
 	var task: ExerciseEntry = level._current_challenge()
@@ -182,9 +182,14 @@ func _mission() -> void:
 	mission._place_kalin(bench.position.x)
 	mission.open_spot(bench)
 	mission.recall.first.text = "ich" if task.item != "ich" else "mayak"
-	mission.recall.second.text = ""
+	mission.recall.second.text = task.quality
 	mission._forge()
-	_check(not mission.carried.is_empty() and mission.delivered.is_empty(), "Crear un objeto equivocado debe ser posible, sin completar el encargo")
+	_check(mission.carried.is_empty() and mission.delivered.is_empty() and mission.recall.mode == RecallPanel.Mode.CLOZE, "Un encargo escrito incorrectamente ofrece completar antes de crearlo")
+	# Un objeto incorrecto procedente de un guardado anterior también debe
+	# poder corregirse sin acreditar recuerdo ni permitir entregar a distancia.
+	mission.carried = {"item": "ich" if task.item != "ich" else "mayak", "quality": "", "supported": true, "mistakes": 1, "phase": "recall"}
+	mission._close_workbench()
+	mission._update_carried()
 	mission.open_spot(first)
 	_check(mission.delivered.is_empty(), "No se puede entregar a distancia")
 	mission._place_kalin(first.position.x)

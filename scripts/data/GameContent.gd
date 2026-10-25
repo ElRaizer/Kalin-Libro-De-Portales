@@ -58,12 +58,15 @@ const SCENE_PATHS: Dictionary = {
 	"world5_story1": "res://scenes/world5/Historia9_Despedida.tscn",
 	"world5_cine1": "res://scenes/world5/Cine3_RegresoACasa.tscn",
 	"world2_level1": "res://scenes/world2/Level2_ConstruyendoPalabras.tscn",
+	"world2_mission1": "res://scenes/world2/Mision_RinconesDeLaCasa.tscn",
+	"world3_mission1": "res://scenes/world3/Mision_PrepararLaFiesta.tscn",
 	"world2_explore1": "res://scenes/world2/Paseo_LaCasaViva.tscn",
 	"world3_level1": "res://scenes/world3/Level3_HechizosAdjetivos.tscn",
 	"world3_explore1": "res://scenes/world3/Paseo_AldeaALaMedida.tscn",
 	"world4_level1": "res://scenes/world4/Level4_YoQuiero.tscn",
 	"world4_mission1": "res://scenes/world4/Mision_EncargosAldea.tscn",
 	"village_practice": "res://scenes/world4/Practica_EncargosAldea.tscn",
+	"world5_farewell": "res://scenes/world5/Despedida_LosRecuerdos.tscn",
 	"world5_level1": "res://scenes/world5/Level5_PortalDeRegreso.tscn",
 }
 

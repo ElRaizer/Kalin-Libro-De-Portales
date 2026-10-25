@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c410igixn8urf"]
 
 [ext_resource type="PackedScene" path="res://scenes/components/MeaningIllustration.tscn" id="art"]
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_portal.svg" id="background"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_habitada_portal.svg" id="background"]
 [ext_resource type="PackedScene" path="res://scenes/components/ExplorationScene.tscn" id="base"]
 [ext_resource type="Texture2D" uid="uid://bd7cj6ydmp5fh" path="res://Arte/ilustraciones/objeto_mayak.svg" id="bench"]
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="book"]
@@ -146,10 +146,10 @@ theme_type_variation = &"KalinSecondaryButton"
 text = "Libro"
 
 [node name="CarriedLabel" type="Label" parent="UI" index="12" unique_id=542070985]
-offset_left = 630.0
-offset_top = 630.0
+offset_left = 750.0
+offset_top = 78.0
 offset_right = 1250.0
-offset_bottom = 666.0
+offset_bottom = 118.0
 theme_override_colors/font_color = Color(1, 0.92, 0.7, 1)
 theme_override_colors/font_outline_color = Color(0.1, 0.2, 0.15, 1)
 theme_override_constants/outline_size = 6
@@ -158,38 +158,39 @@ horizontal_alignment = 2
 
 [node name="MissionPanel" type="Panel" parent="UI" index="13" unique_id=229177325]
 visible = false
-offset_left = 340.0
-offset_top = 100.0
-offset_right = 1210.0
-offset_bottom = 590.0
+offset_left = 240.0
+offset_top = 80.0
+offset_right = 1240.0
+offset_bottom = 622.0
 theme = ExtResource("theme")
 theme_type_variation = &"KalinCreamPanel"
 
 [node name="Title" type="Label" parent="UI/MissionPanel" index="0" unique_id=413034786]
 layout_mode = 0
 offset_left = 24.0
-offset_top = 14.0
-offset_right = 840.0
+offset_top = 12.0
+offset_right = 976.0
 offset_bottom = 50.0
 theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
 theme_override_font_sizes/font_size = 26
 text = "El taller de la aldea"
 
 [node name="RecallPanel" parent="UI/MissionPanel" index="1" unique_id=298865619 instance=ExtResource("recall")]
+preferred_size = Vector2(964, 312)
 layout_mode = 0
 offset_left = 18.0
-offset_top = 60.0
-offset_right = 852.0
-offset_bottom = 304.0
+offset_top = 110.0
+offset_right = 982.0
+offset_bottom = 422.0
 external_submit = true
 
 [node name="Cards" type="VBoxContainer" parent="UI/MissionPanel" index="2" unique_id=1101262582]
 visible = false
 layout_mode = 0
-offset_left = 28.0
-offset_top = 76.0
-offset_right = 842.0
-offset_bottom = 270.0
+offset_left = 24.0
+offset_top = 112.0
+offset_right = 976.0
+offset_bottom = 302.0
 theme_override_constants/separation = 14
 
 [node name="Nouns" type="HBoxContainer" parent="UI/MissionPanel/Cards" index="0" unique_id=223205707]
@@ -250,20 +251,20 @@ theme_type_variation = &"KalinAdjectiveButton"
 
 [node name="Recipe" type="Label" parent="UI/MissionPanel" index="3" unique_id=1598878512]
 layout_mode = 0
-offset_left = 28.0
-offset_top = 275.0
-offset_right = 842.0
-offset_bottom = 315.0
+offset_left = 24.0
+offset_top = 310.0
+offset_right = 976.0
+offset_bottom = 350.0
 theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
 theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 
 [node name="Feedback" type="Label" parent="UI/MissionPanel" index="4" unique_id=1046917264]
 layout_mode = 0
-offset_left = 28.0
-offset_top = 326.0
-offset_right = 842.0
-offset_bottom = 402.0
+offset_left = 24.0
+offset_top = 426.0
+offset_right = 976.0
+offset_bottom = 458.0
 theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
 theme_override_font_sizes/font_size = 19
 text = "Recuerda tu encargo."
@@ -272,19 +273,19 @@ autowrap_mode = 3
 
 [node name="Close" type="Button" parent="UI/MissionPanel" index="5" unique_id=855907956]
 layout_mode = 0
-offset_left = 28.0
-offset_top = 418.0
-offset_right = 270.0
-offset_bottom = 474.0
+offset_left = 24.0
+offset_top = 468.0
+offset_right = 324.0
+offset_bottom = 528.0
 theme_type_variation = &"KalinSecondaryButton"
 text = "Volver a caminar"
 
 [node name="Forge" type="Button" parent="UI/MissionPanel" index="6" unique_id=1120521627]
 layout_mode = 0
-offset_left = 545.0
-offset_top = 418.0
-offset_right = 842.0
-offset_bottom = 474.0
+offset_left = 642.0
+offset_top = 468.0
+offset_right = 976.0
+offset_bottom = 528.0
 theme_type_variation = &"KalinPrimaryButton"
 text = "Crear y llevar ✦"
 
@@ -292,18 +293,96 @@ text = "Crear y llevar ✦"
 
 [node name="Item0" parent="Delivered" index="0" unique_id=577993654 instance=ExtResource("art")]
 visible = false
-offset_right = 150.0
-offset_bottom = 110.0
+offset_right = 180.0
+offset_bottom = 130.0
 
 [node name="Item1" parent="Delivered" index="1" unique_id=373132263 instance=ExtResource("art")]
 visible = false
-offset_right = 150.0
-offset_bottom = 110.0
+offset_right = 180.0
+offset_bottom = 130.0
 
 [node name="Item2" parent="Delivered" index="2" unique_id=198338938 instance=ExtResource("art")]
 visible = false
-offset_right = 150.0
-offset_bottom = 110.0
+offset_right = 180.0
+offset_bottom = 130.0
 
 [node name="LibroHechizos" parent="." index="9" unique_id=1561099198 instance=ExtResource("book")]
 visible = false
+
+
+[node name="RequestHint" type="Label" parent="UI/MissionPanel"]
+offset_left = 24.0
+offset_top = 52.0
+offset_right = 976.0
+offset_bottom = 104.0
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.08, 0.35, 0.32, 1)
+autowrap_mode = 3
+
+[node name="JournalButton" type="Button" parent="UI"]
+offset_left = 950.0
+offset_top = 622.0
+offset_right = 1256.0
+offset_bottom = 682.0
+theme = ExtResource("theme")
+theme_type_variation = &"KalinSecondaryButton"
+text = "Mis encargos"
+
+[node name="Journal" type="Panel" parent="UI"]
+visible = false
+offset_left = 240.0
+offset_top = 90.0
+offset_right = 1240.0
+offset_bottom = 600.0
+theme = ExtResource("theme")
+theme_type_variation = &"KalinCreamPanel"
+
+[node name="Title" type="Label" parent="UI/Journal"]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 970.0
+offset_bottom = 60.0
+text = "Mis encargos · elige cuál preparar"
+theme_override_font_sizes/font_size = 30
+
+theme_override_colors/font_color = Color(0.23, 0.14, 0.08, 1)
+
+[node name="Tasks" type="VBoxContainer" parent="UI/Journal"]
+offset_left = 24.0
+offset_top = 80.0
+offset_right = 976.0
+offset_bottom = 390.0
+theme_override_constants/separation = 16
+
+[node name="Task0" type="Button" parent="UI/Journal/Tasks"]
+custom_minimum_size = Vector2(0, 90)
+layout_mode = 2
+autowrap_mode = 3
+alignment = 0
+
+theme_type_variation = &"KalinSecondaryButton"
+
+[node name="Task1" type="Button" parent="UI/Journal/Tasks"]
+custom_minimum_size = Vector2(0, 90)
+layout_mode = 2
+autowrap_mode = 3
+alignment = 0
+
+theme_type_variation = &"KalinSecondaryButton"
+
+[node name="Task2" type="Button" parent="UI/Journal/Tasks"]
+custom_minimum_size = Vector2(0, 90)
+layout_mode = 2
+autowrap_mode = 3
+alignment = 0
+
+theme_type_variation = &"KalinSecondaryButton"
+
+[node name="Close" type="Button" parent="UI/Journal"]
+offset_left = 650.0
+offset_top = 420.0
+offset_right = 976.0
+offset_bottom = 488.0
+text = "Volver a la aldea"
+
+theme_type_variation = &"KalinSecondaryButton"

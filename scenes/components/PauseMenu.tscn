@@ -1,8 +1,12 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/autoloads/PauseMenu.gd" id="1_jlfsa"]
-
 [ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="2_cnq3x"]
+[ext_resource type="PackedScene" path="res://scenes/components/ScreenLayout.tscn" id="responsive"]
+[ext_resource type="Resource" path="res://data/layouts/pause.tres" id="layout_profile"]
+
+
+
 
 [node name="PauseMenu" type="CanvasLayer"]
 script = ExtResource("1_jlfsa")
@@ -94,3 +98,6 @@ offset_bottom = 490.0
 theme_override_colors/font_color = Color(0.35, 0.25, 0.13, 1)
 theme_override_font_sizes/font_size = 16
 text = "Puedes cambiar estas opciones cuando quieras."
+
+[node name="ScreenLayout" parent="." instance=ExtResource("responsive")]
+profile = ExtResource("layout_profile")

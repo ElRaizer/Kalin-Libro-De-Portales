@@ -3,7 +3,9 @@
 extends CanvasLayer
 
 const AUDIO_BASE := "res://Arte/audio/"
-const WORDS_PER_SPREAD := 2
+var _words_per_spread := 2
+var _compact := false
+@onready var compact_page: Panel = $BG/Book/CompactPage
 
 @onready var close_button: Button = $BG/Book/CloseButton
 @onready var previous_button: Button = $BG/Book/Footer/PreviousButton
@@ -53,6 +55,9 @@ func _ready() -> void:
 	_build_categories()
 	motion.opened.connect(_on_opened)
 	motion.closed.connect(_on_closed)
+	compact_page.get_node("Content/AudioButton").pressed.connect(_play_visible_audio.bind(0))
+	get_window().size_changed.connect(_update_screen_layout)
+	_update_screen_layout()
 
 func _reset_book() -> void:
 	_known_words.clear()
@@ -99,7 +104,7 @@ func show_book(source: Control = null) -> void:
 		_category = int(GameManager.get_vocabulary_entry(_new_word).get("world", 0))
 	_collect_entries()
 	if _new_word in _entries:
-		_spread_index = floori(float(_entries.find(_new_word)) / WORDS_PER_SPREAD)
+		_spread_index = floori(float(_entries.find(_new_word)) / _words_per_spread)
 		_highlight_word = _new_word
 		_new_word = ""
 	_spread_index = clampi(_spread_index, 0, maxi(_spread_count() - 1, 0))
@@ -124,7 +129,7 @@ func _on_opened() -> void:
 	_set_page_input(true)
 	close_button.grab_focus()
 	if _highlight_word in _visible_words:
-		var page: Panel = left_page if _visible_words[0] == _highlight_word else right_page
+		var page: Panel = compact_page if _compact else (left_page if _visible_words[0] == _highlight_word else right_page)
 		_highlight_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 		_highlight_tween.tween_property(page, "self_modulate", Color(1.08, 1.04, 0.83), 0.18)
 		_highlight_tween.tween_property(page, "self_modulate", Color.WHITE, 0.5)
@@ -147,6 +152,7 @@ func _clear_effects() -> void:
 		_highlight_tween.kill()
 	left_page.self_modulate = Color.WHITE
 	right_page.self_modulate = Color.WHITE
+	compact_page.self_modulate = Color.WHITE
 	_highlight_word = ""
 	if _notice_tween:
 		_notice_tween.kill()
@@ -177,27 +183,32 @@ func _sort_entries(a: String, b: String) -> bool:
 	return a.to_lower() < b.to_lower() if a_stage == b_stage else a_stage < b_stage
 
 func _spread_count() -> int:
-	return ceili(float(_entries.size()) / WORDS_PER_SPREAD)
+	return ceili(float(_entries.size()) / _words_per_spread)
 
 func _render_spread() -> void:
 	var empty := _entries.is_empty()
 	empty_label.visible = empty
-	left_page.visible = not empty
-	right_page.visible = not empty
+	left_page.visible = not empty and not _compact
+	right_page.visible = not empty and not _compact
+	compact_page.visible = not empty and _compact
 	_set_page_input(not _turning and not motion.busy)
 	if empty:
 		_visible_words.assign(["", ""])
 		empty_label.text = "Las palabras que recuperes aparecerán aquí."
 		page_label.text = "Todavía no hay palabras en esta sección"
 		return
-	var first_index := _spread_index * WORDS_PER_SPREAD
-	_render_page(left_page, first_index, 0)
-	_render_page(right_page, first_index + 1, 1)
-	var last_index := mini(first_index + WORDS_PER_SPREAD, _entries.size())
+	var first_index := _spread_index * _words_per_spread
+	if _compact:
+		_render_page(compact_page, first_index, 0)
+		_visible_words[1] = ""
+	else:
+		_render_page(left_page, first_index, 0)
+		_render_page(right_page, first_index + 1, 1)
+	var last_index := mini(first_index + _words_per_spread, _entries.size())
 	page_label.text = "Página %d de %d" % [last_index, _entries.size()] if first_index + 1 == last_index else "Páginas %d–%d de %d" % [first_index + 1, last_index, _entries.size()]
 
 func _render_page(page: Panel, entry_index: int, visible_slot: int) -> void:
-	var content := page.get_node("Content") as VBoxContainer
+	var content := page.get_node("Content") as Control
 	var locked := page.get_node("LockedPage") as Label
 	if entry_index >= _entries.size():
 		content.visible = false
@@ -212,7 +223,7 @@ func _render_page(page: Panel, entry_index: int, visible_slot: int) -> void:
 	_visible_words[visible_slot] = maya_word
 	var stage := content.get_node("StageLabel") as Label
 	stage.text = GameManager.learning_caption(maya_word).get_slice(" · ", 0)
-	stage.tooltip_text = GameManager.learning_caption(maya_word)
+	stage.tooltip_text = GameManager.learning_caption(maya_word) + "\n" + GameManager.learning_detail(maya_word)
 	(content.get_node("StageLabel") as Label).show()
 	(content.get_node("MayaLabel") as Label).text = maya_word
 	(content.get_node("SpanishLabel") as Label).text = str(data.get("spanish", ""))
@@ -309,7 +320,7 @@ func _set_page_input(enabled: bool) -> void:
 		button.disabled = not enabled
 	previous_button.disabled = not enabled or _entries.is_empty() or _spread_index <= 0
 	next_button.disabled = not enabled or _entries.is_empty() or _spread_index >= _spread_count() - 1
-	for page: Panel in [left_page, right_page]:
+	for page: Panel in [left_page, right_page, compact_page]:
 		(page.get_node("Content/AudioButton") as Button).disabled = not enabled
 
 func _play_visible_audio(slot: int) -> void:
@@ -365,3 +376,31 @@ func _input(event: InputEvent) -> void:
 		_:
 			return
 	get_viewport().set_input_as_handled()
+
+
+func _update_screen_layout() -> void:
+	var next_compact := ScreenLayout.is_compact(get_window())
+	var entry_index := _spread_index * _words_per_spread
+	_cancel_turn()
+	_compact = next_compact
+	_words_per_spread = 1 if _compact else 2
+	_spread_index = entry_index / _words_per_spread
+	$BG/Book/Pages.visible = not _compact
+	$BG/Book/Spine.visible = not _compact
+	$BG/Book/FoldShadow.visible = not _compact
+	compact_page.visible = _compact
+	pages = compact_page if _compact else $BG/Book/Pages
+	_pages_position = pages.position
+	for button: Button in category_buttons:
+		button.custom_minimum_size.y = 64 if _compact else 44
+		button.add_theme_font_size_override("font_size", 26 if _compact else 18)
+	previous_button.custom_minimum_size.y = 64 if _compact else 44
+	previous_button.add_theme_font_size_override("font_size", 26 if _compact else 16)
+	next_button.add_theme_font_size_override("font_size", 26 if _compact else 16)
+	page_label.add_theme_font_size_override("font_size", 24 if _compact else 16)
+	close_button.add_theme_font_size_override("font_size", 26 if _compact else 16)
+	$BG/Book/Header/WordCount.add_theme_font_size_override("font_size", 22 if _compact else 15)
+	next_button.custom_minimum_size.y = 60 if _compact else 44
+	close_button.custom_minimum_size.y = 60 if _compact else 42
+	if visible:
+		_render_spread()

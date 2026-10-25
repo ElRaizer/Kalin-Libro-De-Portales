@@ -1,38 +1,42 @@
 [gd_scene format=3 uid="uid://chsav5jc1aq7o"]
 
 [ext_resource type="Script" path="res://scripts/world4/W4_Level1.gd" id="1_fat62"]
-
 [ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_milpa.svg" id="2_hxe78"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/LevelHeader.tscn" id="3_ehfii"]
-
 [ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="4_qb5em"]
-
 [ext_resource type="Script" path="res://scripts/components/LevelHeader.gd" id="5_v1f1c"]
-
 [ext_resource type="Script" path="res://scripts/components/DraggableWordButton.gd" id="8_3urg7"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/CompletionOverlay.tscn" id="9_x3ovs"]
-
 [ext_resource type="Script" path="res://scripts/components/CompletionOverlay.gd" id="10_w0bua"]
-
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="12_0xtb2"]
-
 [ext_resource type="Script" path="res://scripts/ui/LibroHechizos.gd" id="13_pmf7k"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/MeaningIllustration.tscn" id="editor_14"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/MissionProgress.tscn" id="editor_15"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/LearningGuide.tscn" id="editor_16"]
-
 [ext_resource type="Resource" path="res://data/exercises/world4.tres" id="editor_17"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/MissionBreak.tscn" id="editor_18"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/WordDropSlot.tscn" id="editor_19"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/RecallPanel.tscn" id="recall_panel"]
+[ext_resource type="PackedScene" path="res://scenes/components/ScreenLayout.tscn" id="responsive"]
+[ext_resource type="Resource" path="res://data/layouts/exercise.tres" id="layout_profile"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 [node name="Level4" type="Node2D" unique_id=1962404994]
 script = ExtResource("1_fat62")
@@ -366,6 +370,21 @@ script = ExtResource("8_3urg7")
 word_value = "ki'"
 word_kind = "modifier"
 
+[node name="JatsutsButton" type="Button" parent="UI/ChoicesPanel/Content/ModifierGrid"]
+custom_minimum_size = Vector2(150, 94)
+layout_mode = 2
+theme_type_variation = &"KalinAdjectiveButton"
+theme_override_font_sizes/font_size = 19
+toggle_mode = true
+text = "Jats'uts"
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+theme_override_constants/icon_max_width = 56
+script = ExtResource("8_3urg7")
+word_value = "Jats'uts"
+word_kind = "modifier"
+
 [node name="FeedbackPanel" type="Panel" parent="UI" unique_id=2101980638]
 offset_left = 388.0
 offset_top = 558.0
@@ -387,6 +406,7 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="StatusPanel" type="Panel" parent="UI" unique_id=127784847]
+visible = false
 visible = false
 offset_left = 24.0
 offset_top = 624.0
@@ -465,6 +485,7 @@ offset_right = 136
 offset_bottom = 70
 
 [node name="RecallPanel" parent="UI/ChoicesPanel" instance=ExtResource("recall_panel")]
+preferred_size = Vector2(850, 266)
 external_submit = true
 offset_left = 8.0
 offset_top = 8.0
@@ -472,3 +493,6 @@ offset_right = 858.0
 offset_bottom = 274.0
 
 [connection signal="pressed" from="UI/ServeButton" to="." method="_on_serve_pressed"]
+
+[node name="ScreenLayout" parent="." instance=ExtResource("responsive")]
+profile = ExtResource("layout_profile")

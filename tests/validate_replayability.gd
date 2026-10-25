@@ -214,18 +214,44 @@ func _walks() -> void:
 		for seed_value: int in range(1, 9):
 			var walk := await _scene(key, {"layout_seed": seed_value})
 			plans[str(walk._encounter_plan)] = true
+			var items: Array[String] = []
 			for encounter: VillageEncounter in walk.encounters:
 				_check(encounter.get_configuration_issues().is_empty(), "Cada necesidad y alternativa tiene una solución ofrecida")
+				_check(encounter.task.item not in items, "Los tres amigos no repiten el mismo objeto en un paseo")
+				items.append(encounter.task.item)
 			var state: Dictionary = walk.get_checkpoint_state()
 			walk = await _resume(key)
 			_check(walk._encounter_plan == state.encounter_plan, "El paseo conserva personajes, necesidades y orden al continuar")
 		_check(plans.size() >= 4, "Los paseos ofrecen situaciones distintas desde la primera visita")
 		var previous_plan: Array = current_scene._encounter_plan.duplicate()
+		for seed_value: int in range(1, 33):
+			var probe: Node = load(manager.SCENE_PATHS[key]).instantiate()
+			probe._layout_seed = seed_value
+			probe._prepare_encounters({"previous_variation": {"encounter_plan": previous_plan}})
+			_check(probe._encounter_plan != previous_plan, "La reparación de objetos distintos también evita repetir el plan anterior")
+			probe.free()
 		current_scene.solved.assign([0, 1, 2])
 		manager.start_walk(key, "world%d_story1" % world)
 		await scene_changed
 		await process_frame
 		_check(current_scene.solved.is_empty() and current_scene._encounter_plan != previous_plan, "Volver a un paseo completado ofrece nuevas necesidades")
+		# Un paseo antiguo puede contener dos hamacas. Sólo cambia peticiones
+		# que todavía no se han escuchado; la primera conserva su resultado.
+		var old_plan: Array[int] = []
+		old_plan.assign([0, 3, 4] if world == 2 else [1, 3, 4])
+		var resumed := await _scene(key, {"encounter_plan": old_plan, "solved": [1], "choosing": 0, "intro_done": true, "layout_seed": 9})
+		_check(resumed._encounter_plan[0] == old_plan[0] and resumed._encounter_plan[1] == old_plan[1], "Reparar duplicados conserva una petición abierta y otra resuelta")
+		var repaired: Array[String] = []
+		for encounter: VillageEncounter in resumed.encounters:
+			_check(encounter.task.item not in repaired, "La reparación elimina duplicados entre peticiones nuevas")
+			repaired.append(encounter.task.item)
+	for world: int in [2, 3, 4]:
+		for seed_value: int in range(1, 9):
+			var mission := await _scene("world%d_mission1" % world, {"layout_seed": seed_value})
+			var items: Array[String] = []
+			for index: int in mission.task_indices:
+				_check(mission.tasks[index].item not in items, "Los encargos también evitan repetir objetos")
+				items.append(mission.tasks[index].item)
 
 func _portal() -> void:
 	var base: ExerciseSet = load("res://data/exercises/world5.tres")

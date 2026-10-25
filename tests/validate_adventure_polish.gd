@@ -158,13 +158,20 @@ func _walks() -> void:
 	current_scene._on_next_level_pressed()
 	await scene_changed
 	await process_frame
-	_check(current_scene.next_scene_key == "world3_story1", "La salida final reemplaza el regreso del descanso y no vuelve al nivel completado")
+	_check(current_scene.next_scene_key == "world3_mission1", "La salida final pasa a los encargos y no vuelve al nivel completado")
 
 func _drafts() -> void:
-	await _scene("world4_mission1")
+	# Este caso necesita dos campos; otras visitas pueden pedir tres objetos sin cualidad.
+	manager.scene_states["world4_mission1"] = {"layout_seed": 173, "combination_tasks": ["mayak|nojoch", "k'áan|mejen", "janal|ki'"]}
+	await _scene("world4_mission1", false)
 	var mission = current_scene
 	await _close_dialogue(mission)
-	await _approach(mission, mission.get_node("Spots/Recipient0"))
+	var target_index := 0
+	for index: int in range(3):
+		if not mission.tasks[mission.task_indices[index]].quality.is_empty():
+			target_index = index
+			break
+	await _approach(mission, mission.get_node("Spots/Recipient%d" % target_index))
 	await _close_dialogue(mission)
 	await _approach(mission, mission.get_node("Spots/Workbench"))
 	_check(mission.mission_panel.visible, "Acercarse e interactuar abre el taller")
@@ -182,23 +189,36 @@ func _drafts() -> void:
 	mission = current_scene
 	_check(mission.mission_panel.visible and mission.recall.values() == ["may", "no"], "Continuar restaura el taller abierto y su borrador")
 	await _capture("04_borrador_conservado")
-	await _click(mission.recall.get_node("Margin/Content/Actions/Practice"))
-	await _click(mission.noun_choices.get_child(1))
-	await _click(mission.quality_choices.get_child(1))
-	var recipe := [mission._draft_item, mission._draft_quality]
+	_check(not mission.recall.get_node("Margin/Content/Actions/Practice").visible, "El jugador no puede saltar manualmente a las tarjetas")
+	await _click(mission.forge_button)
+	_check(mission.recall.mode == RecallPanel.Mode.CLOZE, "El primer error del borrador ofrece completar")
+	await _click(mission.recall.first)
+	await _type("incorrecto")
+	await _click(mission.forge_button)
+	_check(mission.recall.mode == RecallPanel.Mode.BLOCKS, "El segundo error ofrece las piezas")
+	await _click(mission.recall.get_node("Margin/Content/Blocks/Bank").get_child(0))
+	var recipe: Array = mission.recall._slots.duplicate(true)
 	await _key(KEY_ESCAPE)
 	await _key(KEY_E)
-	_check(mission._cards_mode and [mission._draft_item, mission._draft_quality] == recipe, "Las tarjetas y su selección también sobreviven al cierre")
+	_check(mission.recall.mode == RecallPanel.Mode.BLOCKS and mission.recall._slots == recipe, "El apoyo automático y la disposición de piezas sobreviven al cierre")
 
 func _fallbacks() -> void:
 	for world: int in [3, 4]:
 		await _scene("world%d_level1" % world)
-		current_scene.round_index = 6
+		current_scene.round_index = current_scene.challenges.size()
 		current_scene._show_round()
-		await _click(current_scene.mission_break.continue_button)
-		await _click(current_scene.recall.get_node("Margin/Content/Actions/Practice"))
-		_check(not current_scene.recall.visible and "Práctica" in current_scene.mission_progress.caption, "Volver a tarjetas actualiza el estado de aprendizaje visible")
-		_check("sin pistas" not in current_scene.mission_progress.caption, "Una ronda con tarjetas no se anuncia sin pistas")
+		if current_scene.mission_break.visible:
+			await _click(current_scene.mission_break.continue_button)
+		var submit: Button = current_scene.cast_button if world == 3 else current_scene.serve_button
+		for mode_value: int in [RecallPanel.Mode.CLOZE, RecallPanel.Mode.BLOCKS]:
+			await _click(current_scene.recall.first)
+			await _type("incorrecto")
+			if current_scene.recall.second_box.visible:
+				await _click(current_scene.recall.second)
+				await _type("incorrecto")
+			await _click(submit)
+			_check(current_scene.recall.visible and current_scene.recall.mode == mode_value and current_scene._attempt.supported, "La entrada real activa el siguiente apoyo automático")
+		_check("bloques" in current_scene.mission_progress.caption and "sin pistas" not in current_scene.mission_progress.caption, "El progreso muestra el apoyo que está utilizando el jugador")
 	await _scene("world3_level1")
 	current_scene.round_index = 7
 	current_scene._show_round()
@@ -260,11 +280,11 @@ func _landscape_edges() -> void:
 			var half_width: float = scene.get_viewport_rect().size.x / scene.camera.zoom.x * 0.5
 			_check(center.x - half_width >= bounds.position.x - 1 and center.x + half_width <= bounds.end.x + 1, "El paisaje cubre la ventana en ambos extremos: " + key)
 		if key == "world4_mission1":
-			_check(terrain.texture.resource_path.ends_with("bg_aldea_portal.svg"), "El paseo final utiliza su propio claro del portal")
+			_check(terrain.texture.resource_path.ends_with("bg_aldea_habitada_portal.svg"), "El paseo final utiliza su propio claro del portal")
 			_check(scene.get_node("Spots/Salida").spot_texture.resource_path.ends_with("portal_aldea.svg"), "La salida final es un portal visible, no una casa")
 			await _capture("09_portal_extremo")
 		elif key == "world2_explore1":
 			_check(bounds.size.x >= 5120, "La aldea conserva margen de paisaje más allá del sendero")
 			await _capture("08_aldea_extremo")
 		elif key == "village_practice":
-			_check(terrain.texture.resource_path.ends_with("bg_aldea_encargos.svg") and scene.get_node("Spots/Salida").spot_texture.resource_path.ends_with("ui_casa.svg"), "La visita de práctica conserva la aldea y su salida al mapa")
+			_check(terrain.texture.resource_path.ends_with("bg_aldea_habitada.svg") and scene.get_node("Spots/Salida").spot_texture.resource_path.ends_with("ui_casa.svg"), "La visita de práctica conserva la aldea y su salida al mapa")
