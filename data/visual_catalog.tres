@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="VisualCatalog" format=3 uid="uid://cctn1i82s0qd6"]
 
-[ext_resource type="PackedScene" path="res://scenes/components/ReactionBadge.tscn" id="badge_scene"]
-[ext_resource type="Script" uid="uid://cydhhino66wur" path="res://scripts/data/VisualCatalog.gd" id="catalog"]
-[ext_resource type="Script" uid="uid://umpkq1ul2nps" path="res://scripts/data/VisualEntry.gd" id="entry"]
-[ext_resource type="PackedScene" path="res://scenes/components/Sparkle.tscn" id="sparkle_scene"]
+[ext_resource type="PackedScene" path="res://scenes/ui/shared/reaction_badge.tscn" id="badge_scene"]
+[ext_resource type="Script" uid="uid://cydhhino66wur" path="res://scripts/ui/data/visual_catalog.gd" id="catalog"]
+[ext_resource type="Script" uid="uid://umpkq1ul2nps" path="res://scripts/ui/data/visual_entry.gd" id="entry"]
+[ext_resource type="PackedScene" path="res://scenes/ui/shared/sparkle.tscn" id="sparkle_scene"]
 [ext_resource type="Texture2D" uid="uid://dtdomwloivwbk" path="res://Arte/exploracion/prop_pagina.svg" id="texture_0"]
 [ext_resource type="Texture2D" uid="uid://blkdrohpd1u0d" path="res://Arte/ilustraciones/comida_ja.svg" id="texture_1"]
 [ext_resource type="Texture2D" uid="uid://dq2jxe8mqvyc0" path="res://Arte/ilustraciones/comida_jaas.svg" id="texture_2"]

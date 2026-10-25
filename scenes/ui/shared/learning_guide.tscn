@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://b7ia6v4dsjvv4"]
+
+[ext_resource type="Texture2D" uid="uid://g86e47jvoddi" path="res://Arte/ilustraciones/ui_mano.svg" id="editor_2"]
+[ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="editor_3"]
+[ext_resource type="PackedScene" path="res://scenes/features/story/flying_page.tscn" id="editor_4"]
+[ext_resource type="StyleBox" path="res://themes/hint_ring.tres" id="editor_5"]
+[ext_resource type="Script" uid="uid://dcffg6i7my62w" path="res://scripts/ui/shared/learning_guide.gd" id="script"]
+
+[sub_resource type="StyleBoxFlat" id="ClickPulseStyle"]
+bg_color = Color(0, 0, 0, 0)
+border_color = Color(1, 0.83, 0.31, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_left = 22
+corner_radius_bottom_right = 22
+
+[node name="LearningGuide" type="CanvasLayer" unique_id=1080721864]
+layer = 6
+script = ExtResource("script")
+page_scene = ExtResource("editor_4")
+
+[node name="ClickPulse" type="Panel" parent="."]
+visible = false
+offset_right = 44.0
+offset_bottom = 44.0
+pivot_offset = Vector2(22, 22)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("ClickPulseStyle")
+
+[node name="Hand" type="TextureRect" parent="." unique_id=1029244863]
+visible = false
+offset_right = 49.0
+offset_bottom = 58.0
+mouse_filter = 2
+texture = ExtResource("editor_2")
+expand_mode = 1
+
+[node name="GestureLine" type="Line2D" parent="." unique_id=1311857081]
+visible = false
+width = 5.0
+default_color = Color(1, 0.815686, 0.313725, 0.72)
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="HintRing" type="Panel" parent="." unique_id=1545630811]
+visible = false
+mouse_filter = 2
+theme = ExtResource("editor_3")
+theme_type_variation = &"KalinHintRing"
+theme_override_styles/panel = ExtResource("editor_5")
+
+[node name="Effects" type="Node2D" parent="." unique_id=1927297696]

@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="ExerciseSet" format=3 uid="uid://hkg0l4ew52aq"]
 
-[ext_resource type="Script" uid="uid://c5idu2th63kpg" path="res://scripts/data/ExerciseEntry.gd" id="entry"]
-[ext_resource type="Script" uid="uid://bk5vcps6fqkbt" path="res://scripts/data/ExerciseSet.gd" id="set"]
+[ext_resource type="Script" uid="uid://c5idu2th63kpg" path="res://scripts/features/exercises/exercise_entry.gd" id="entry"]
+[ext_resource type="Script" uid="uid://bk5vcps6fqkbt" path="res://scripts/features/exercises/exercise_set.gd" id="set"]
 [ext_resource type="Texture2D" uid="uid://ci3k8myufu2wx" path="res://Arte/sprites/animal_aak.svg" id="texture_0"]
 [ext_resource type="Texture2D" uid="uid://bt5cevfxvdhq8" path="res://Arte/sprites/animal_kaax.svg" id="texture_1"]
 [ext_resource type="Texture2D" uid="uid://brvdw65fjsm7f" path="res://Arte/sprites/animal_keej.svg" id="texture_2"]
@@ -98,35 +98,33 @@ translation = "Silla bonita."
 script = ExtResource("entry")
 maya = "mayak"
 spanish = "mesa"
-emoji = "🪑"
 
 [sub_resource type="Resource" id="nouns_2"]
 script = ExtResource("entry")
 maya = "lak"
 spanish = "plato"
-emoji = "🍽️"
 
 [sub_resource type="Resource" id="nouns_3"]
 script = ExtResource("entry")
 maya = "k'áan"
 spanish = "hamaca"
-emoji = "🛏️"
 
 [sub_resource type="Resource" id="nouns_4"]
 script = ExtResource("entry")
 maya = "k'áanche'"
 spanish = "silla"
-emoji = "💺"
 
 [sub_resource type="Resource" id="nouns_5"]
 script = ExtResource("entry")
 maya = "janal"
 spanish = "comida"
-emoji = "🍲"
 
 [resource]
 script = ExtResource("set")
 content_world = 3
+variation_policy = 1
+catalog_id = &"world3"
+authored_signature = "2d56ea815eaf8d314bedefe3add48ab30e1da8571966272bf5e7e1495f7b4e7a"
 nouns = Array[ExtResource("entry")]([SubResource("nouns_1"), SubResource("nouns_2"), SubResource("nouns_3"), SubResource("nouns_4"), SubResource("nouns_5")])
 adjectives = Array[ExtResource("entry")]([SubResource("adjectives_1"), SubResource("adjectives_2"), SubResource("adjectives_3"), SubResource("adjectives_4"), SubResource("adjectives_5")])
 challenges = Array[ExtResource("entry")]([SubResource("challenges_1"), SubResource("challenges_2"), SubResource("challenges_3"), SubResource("challenges_4"), SubResource("challenges_5"), SubResource("challenges_6")])

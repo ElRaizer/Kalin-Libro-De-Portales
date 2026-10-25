@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/autoloads/game_manager.gd" id="script"]
+
+[ext_resource type="Resource" path="res://data/visual_catalog.tres" id="editor_2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/shared/save_notice.tscn" id="notice"]
+
+[node name="GameManager" type="Node"]
+script = ExtResource("script")
+visual_catalog = ExtResource("editor_2")
+
+[node name="SaveNotice" parent="." instance=ExtResource("notice")]

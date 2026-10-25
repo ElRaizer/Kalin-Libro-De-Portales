@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/autoloads/accessibility_manager.gd" id="1_script"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mouse"]
+
+[node name="AccessibilityManager" type="Node"]
+script = ExtResource("1_script")
+empty_focus_style = SubResource("StyleBoxEmpty_mouse")

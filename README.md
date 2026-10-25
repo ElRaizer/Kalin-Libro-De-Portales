@@ -2,12 +2,30 @@
 
 Videojuego educativo desarrollado en Godot para practicar vocabulario y estructuras básicas de maya yucateco. El proyecto forma parte del Servicio Social prestado a la UMT.
 
+## Mantenimiento del código
+
+Las reglas para mantener esta base al agregar cambios están en
+[AGENTS.md](AGENTS.md), la guía inicial para trabajar en el repositorio.
+
+La base actual usa un único formato de guardado (6), sin migraciones, alias de
+sistemas retirados ni campos de recursos en desuso. Las partidas anteriores
+requieren reinicio desde el menú.
+
+La estructura y los contratos vigentes se describen en [Arquitectura](docs/architecture.md).
+Para abrir, validar, formatear y regenerar contenido consultar
+[Mantenimiento](docs/maintenance.md) y la [guía de autoría](docs/technical_guide.md).
+El cierre de esta revisión está en [Base única y tipado explícito](docs/reviews/cleanup_2026-10-25.md).
+Las regresiones adicionales y sus correcciones se registran en la
+[revisión final](docs/reviews/final_review_2026-10-25.md).
+La comprobación posterior y su cobertura de restauración se describen en la
+[verificación ampliada de la base única](docs/reviews/exhaustive_review_2026-10-25.md).
+
 ## Estado del proyecto
 
 - Motor oficial: **Godot 4.6.3**.
 - Resolución de diseño: **1280 × 720**.
 - Ventana redimensionable entre **640 × 360** y **1920 × 1080**, con escalado proporcional 16:9.
-- Escena principal: `res://scenes/MainMenu.tscn`, con mapa de cinco lugares.
+- Escena principal: `res://scenes/ui/main_menu/main_menu.tscn`, con mapa de cinco lugares.
 - Progreso local con guardado automático de escena, ronda, selección y caminos parciales.
 - Ocho niveles distribuidos en cinco mundos, tres misiones de encargos y una despedida jugable.
 - Interfaz compacta para teléfono en horizontal, con libro de una entrada por página y alternativas de toque al arrastre.
@@ -21,7 +39,7 @@ Videojuego educativo desarrollado en Godot para practicar vocabulario y estructu
 
 El proyecto es un prototipo funcional en desarrollo. La navegación principal, el libro de hechizos y el guardado están implementados; todavía quedan mecánicas y contenido narrativo por ampliar.
 
-La [revisión visual](APRENDIZAJE_Y_MISION.md) añade una introducción más corta,
+La [revisión visual](docs/learning_and_missions.md) añade una introducción más corta,
 peticiones y tarjetas grandes, pistas graduales, bloques de tres peticiones en
 taller y comida, reacciones visuales a las elecciones y cinco situaciones
 narrativas que se animan solas en ciclos continuos. El libro tiene pestañas ilustradas y `Esc`
@@ -32,9 +50,9 @@ con niños sigue pendiente.
 
 Las páginas cuentan descubrimientos. El libro distingue además práctica, primer recuerdo y recuperaciones sin ayuda en situaciones separadas. Las rondas de recuerdo comienzan por escribir sin dibujos de solución. Un primer error activa completar la palabra y un segundo error activa los bloques, sin selector de modalidad. Las partes correctas de una frase se conservan. Consultar el libro, recibir pistas o corregir errores se registra como práctica apoyada. Los apoyos y las posiciones de las piezas se guardan por intento.
 
-Tras la casa y el taller hay encargos para preparar rincones y una fiesta. Tras la historia del portal, **Los encargos de la aldea** permite caminar, recibir peticiones, crear objetos, transportarlos y entregarlos a sus destinatarios. Cada visita selecciona tres necesidades distintas del catálogo permitido para su capítulo y prioriza palabras con menos evidencia de recuerdo. Las 28 combinaciones válidas de objeto y cualidad varían entre partidas, junto con sus destinatarios; se conservan al continuar. También se puede abrir `scenes/world4/Mision_EncargosAldea.tscn` con F6.
+Tras la casa y el taller hay encargos para preparar rincones y una fiesta. Tras la historia del portal, **Los encargos de la aldea** permite caminar, recibir peticiones, crear objetos, transportarlos y entregarlos a sus destinatarios. Cada visita selecciona tres necesidades distintas del catálogo permitido para su capítulo y prioriza palabras con menos evidencia de recuerdo. Las 28 combinaciones válidas de objeto y cualidad varían entre partidas, junto con sus destinatarios; se conservan al continuar. También se puede abrir `scenes/worlds/world4/mision_encargos_aldea.tscn` con F6.
 
-El vocabulario fue cotejado documentalmente con la UADY; las fuentes por entrada y los cambios se detallan en [VOCABULARIO.md](VOCABULARIO.md). Las frases completas y pronunciaciones siguen pendientes de revisión con personas hablantes. El diseño de aprendizaje, la misión y la migración del guardado se explican en [APRENDIZAJE_Y_MISION.md](APRENDIZAJE_Y_MISION.md).
+El vocabulario fue cotejado documentalmente con la UADY; las fuentes por entrada y los cambios se detallan en [docs/vocabulary.md](docs/vocabulary.md). Las frases completas y pronunciaciones siguen pendientes de revisión con personas hablantes. El diseño de aprendizaje, la misión y la persistencia vigente se explican en [docs/learning_and_missions.md](docs/learning_and_missions.md).
 
 ## Organización jugable
 
@@ -181,22 +199,22 @@ guardado habitual, sin acreditar recuerdo ni escritura independiente.
 
 ## Documentación
 
-- [MEJORAS_AVENTURA.md](MEJORAS_AVENTURA.md): paseos, descansos, borradores, comodidad y decisiones pendientes de validación.
-- [REJUGABILIDAD.md](REJUGABILIDAD.md): preguntas variables, planes guardados y 48 variantes de tableros con rutas sin cruces.
+- [docs/adventure.md](docs/adventure.md): paseos, descansos, borradores, comodidad y decisiones pendientes de validación.
+- [docs/replayability.md](docs/replayability.md): preguntas variables, planes guardados y 48 variantes de tableros con rutas sin cruces.
 
-- [INSTRUCCIONES.md](INSTRUCCIONES.md): instalación, estructura técnica y mantenimiento.
-- [AUDITORIA_BUENAS_PRACTICAS.md](AUDITORIA_BUENAS_PRACTICAS.md): cumplimiento, correcciones y pendientes de diseño.
-- [VOCABULARIO.md](VOCABULARIO.md): inventario completo para revisión con mayahablantes, palabras y frases con su significado en español, variantes, dudas y hoja de correcciones.
-- [APRENDIZAJE_Y_MISION.md](APRENDIZAJE_Y_MISION.md): evidencia por palabra, recuerdo sin ayuda, encargos y pruebas.
+- [docs/technical_guide.md](docs/technical_guide.md): instalación, estructura técnica y mantenimiento.
+- [docs/reviews/previous_practices_review.md](docs/reviews/previous_practices_review.md): cumplimiento, correcciones y pendientes de diseño.
+- [docs/vocabulary.md](docs/vocabulary.md): inventario completo para revisión con mayahablantes, palabras y frases con su significado en español, variantes, dudas y hoja de correcciones.
+- [docs/learning_and_missions.md](docs/learning_and_missions.md): evidencia por palabra, recuerdo sin ayuda, encargos y pruebas.
 - [Arte/audio/README.md](Arte/audio/README.md): preparación y nombres de los audios pendientes.
 
 ## Ampliación de jugabilidad del 24 de octubre
 
-Ver [MEJORAS_AVENTURA.md](MEJORAS_AVENTURA.md) para el recorrido ampliado, los apoyos automáticos, los bloques intercambiables, la mesa de composición, los doce habitantes con casas propias, la interfaz compacta y la migración al formato de guardado 5. `tools/validate.ps1` incluye 24 suites. Las nuevas escenas pueden abrirse con F6:
+Ver [docs/adventure.md](docs/adventure.md) para el recorrido ampliado, los apoyos automáticos, los bloques intercambiables, la mesa de composición, los doce habitantes con casas propias, la interfaz compacta y la migración al formato de guardado 5. `tools/validate.ps1` incluye 25 suites. Las nuevas escenas pueden abrirse con F6:
 
-- `scenes/world2/Mision_RinconesDeLaCasa.tscn`.
-- `scenes/world3/Mision_PrepararLaFiesta.tscn`.
-- `scenes/world5/Despedida_LosRecuerdos.tscn`.
+- `scenes/worlds/world2/mision_rincones_de_la_casa.tscn`.
+- `scenes/worlds/world3/mision_preparar_la_fiesta.tscn`.
+- `scenes/worlds/world5/despedida_los_recuerdos.tscn`.
 
 ## Trabajo pendiente
 

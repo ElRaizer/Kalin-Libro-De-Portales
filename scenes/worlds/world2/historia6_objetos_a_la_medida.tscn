@@ -1,0 +1,79 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/features/story/story_scene.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/features/story/story_beat.gd" id="2_beat"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_casa_maya.svg" id="4_bg_casa"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "¡La casa tiene muebles otra vez!"
+background = ExtResource("4_bg_casa")
+actors = Array[String](["Miis", "Kaax", "Peek'", "Áak"])
+effects = 16
+visual_scene = "casa"
+visual_solved = true
+
+[sub_resource type="Resource" id="Beat_2"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Las palabras están volviendo!"
+actors = Array[String](["Miis", "Kaax", "Peek'", "Áak"])
+celebrate_page = true
+
+
+
+
+[sub_resource type="Resource" id="Beat_6"]
+script = ExtResource("2_beat")
+speaker = "Áak"
+text = "¡Mi mesa es demasiado pequeña!"
+actors = Array[String](["Peek'", "Áak"])
+kind = 4
+visual_scene = "tamano"
+
+[sub_resource type="Resource" id="Beat_7"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Podemos hacerla grande!"
+actors = Array[String](["Peek'", "Áak"])
+
+[sub_resource type="Resource" id="Beat_8"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Áak"
+text = "Grande se dice nojoch. ¿Lo encuentras?"
+actors = Array[String](["Peek'", "Áak"])
+target_word = "nojoch"
+options = Array[String](["mejen", "nojoch", "ki'", "Jats'uts"])
+reveal_phrase = "mayak · nojoch"
+reveal_translation = "Mesa grande."
+
+[sub_resource type="Resource" id="Beat_9"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "¡Ahora sí! mayak · nojoch."
+actors = Array[String](["Áak", "K'éek'en", "Kéej", "Miis"])
+visual_scene = "tamano"
+visual_solved = true
+
+[sub_resource type="Resource" id="Beat_10"]
+script = ExtResource("2_beat")
+speaker = "K'éek'en"
+text = "¡Ayudemos a los demás!"
+actors = Array[String](["Áak", "K'éek'en", "Kéej", "Miis"])
+
+[sub_resource type="Resource" id="Beat_11"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "El taller nos espera."
+actors = Array[String](["Áak", "K'éek'en", "Kéej", "Miis"])
+effects = 16
+title = "Mundo 3"
+subtitle = "Hechizos de Adjetivos"
+auto_advance = 2.0
+
+[node name="Historia6" instance=ExtResource("1_base")]
+chapter_title = "Mundo 2 · Capítulo 6 — Objetos a la medida"
+next_scene_key = "world3_level1"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_6"), SubResource("Beat_7"), SubResource("Beat_8"), SubResource("Beat_9"), SubResource("Beat_10"), SubResource("Beat_11")])

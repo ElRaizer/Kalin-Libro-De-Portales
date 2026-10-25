@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="ExerciseSet" format=3 uid="uid://61tshmlxrytm"]
 
-[ext_resource type="Script" uid="uid://c5idu2th63kpg" path="res://scripts/data/ExerciseEntry.gd" id="entry"]
-[ext_resource type="Script" uid="uid://bk5vcps6fqkbt" path="res://scripts/data/ExerciseSet.gd" id="set"]
+[ext_resource type="Script" uid="uid://c5idu2th63kpg" path="res://scripts/features/exercises/exercise_entry.gd" id="entry"]
+[ext_resource type="Script" uid="uid://bk5vcps6fqkbt" path="res://scripts/features/exercises/exercise_set.gd" id="set"]
 [ext_resource type="Texture2D" uid="uid://ci3k8myufu2wx" path="res://Arte/sprites/animal_aak.svg" id="texture_0"]
 [ext_resource type="Texture2D" uid="uid://bt5cevfxvdhq8" path="res://Arte/sprites/animal_kaax.svg" id="texture_1"]
 [ext_resource type="Texture2D" uid="uid://brvdw65fjsm7f" path="res://Arte/sprites/animal_keej.svg" id="texture_2"]
@@ -14,7 +14,6 @@ maya = "mayak"
 animal = "Miis"
 sprite = ExtResource("texture_3")
 request = "Necesito un lugar para comer."
-color = Color(0.85, 0.42, 0.18, 1)
 
 [sub_resource type="Resource" id="objects_2"]
 script = ExtResource("entry")
@@ -22,7 +21,6 @@ maya = "lak"
 animal = "Kaax"
 sprite = ExtResource("texture_1")
 request = "Necesito algo para servir mi comida."
-color = Color(0.3, 0.55, 0.82, 1)
 
 [sub_resource type="Resource" id="objects_3"]
 script = ExtResource("entry")
@@ -30,7 +28,6 @@ maya = "k'áan"
 animal = "Peek'"
 sprite = ExtResource("texture_4")
 request = "Necesito un lugar para dormir."
-color = Color(0.55, 0.35, 0.75, 1)
 
 [sub_resource type="Resource" id="objects_4"]
 script = ExtResource("entry")
@@ -38,7 +35,6 @@ maya = "k'áanche'"
 animal = "Áak"
 sprite = ExtResource("texture_0")
 request = "Necesito algo para sentarme."
-color = Color(0.22, 0.62, 0.28, 1)
 
 [sub_resource type="Resource" id="objects_5"]
 script = ExtResource("entry")
@@ -46,7 +42,6 @@ maya = "janal"
 animal = "Kéej"
 sprite = ExtResource("texture_2")
 request = "Necesito algo para comer."
-color = Color(0.8, 0.25, 0.2, 1)
 
 [resource]
 script = ExtResource("set")

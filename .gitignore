@@ -4,3 +4,5 @@ builds/
 export/
 *.tmp
 .ui-review/
+__pycache__/
+.venv/

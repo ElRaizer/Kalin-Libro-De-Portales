@@ -1,0 +1,35 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://scripts/ui/shared/save_notice.gd" id="script"]
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="theme"]
+
+[node name="SaveNotice" type="CanvasLayer"]
+layer = 70
+process_mode = 3
+script = ExtResource("script")
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+offset_left = 160.0
+offset_top = 74.0
+offset_right = 1120.0
+offset_bottom = 152.0
+theme = ExtResource("theme")
+theme_type_variation = &"KalinCreamPanel"
+
+[node name="Message" type="Label" parent="Panel"]
+offset_left = 18.0
+offset_top = 8.0
+offset_right = 770.0
+offset_bottom = 70.0
+theme_override_colors/font_color = Color(0.28, 0.14, 0.07, 1)
+theme_override_font_sizes/font_size = 18
+autowrap_mode = 3
+vertical_alignment = 1
+
+[node name="Retry" type="Button" parent="Panel"]
+offset_left = 790.0
+offset_top = 14.0
+offset_right = 944.0
+offset_bottom = 64.0
+theme_type_variation = &"KalinPrimaryButton"
+text = "Reintentar"
