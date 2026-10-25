@@ -2,25 +2,29 @@
 ## godot --path . --script res://tests/capture_ux.gd -- [carpeta absoluta de salida]
 extends SceneTree
 
-var output := "res://.ui-review/ux"
+var output: String = "res://.ui-review/ux"
 var manager: Node
+
 
 func _initialize() -> void:
 	call_deferred("_run")
 
+
 func _scene(key: String, filename: String) -> void:
-	manager.scene_states.erase(key)
-	change_scene_to_file(manager.SCENE_PATHS[key])
+	manager.session.scene_states.erase(key)
+	change_scene_to_file(GameContent.SCENE_PATHS[key])
 	await scene_changed
 	await create_timer(0.7).timeout
 	await _shot(filename)
 
+
 func _shot(filename: String) -> void:
 	await process_frame
 	await RenderingServer.frame_post_draw
-	var error := root.get_texture().get_image().save_png(output.path_join(filename + ".png"))
+	var error: Error = root.get_texture().get_image().save_png(output.path_join(filename + ".png"))
 	if error != OK:
 		push_error("No se pudo guardar " + filename)
+
 
 func _run() -> void:
 	if not OS.get_cmdline_user_args().is_empty():
@@ -28,13 +32,15 @@ func _run() -> void:
 	output = ProjectSettings.globalize_path(output)
 	DirAccess.make_dir_recursive_absolute(output)
 	manager = root.get_node("GameManager")
-	manager._save_repository = load("res://scripts/data/SaveRepository.gd").new(output.path_join("capture_progress.json"))
-	manager.scene_states.clear()
-	manager.tutorials_seen.clear()
-	manager.completed_levels.clear()
-	manager.words_learned.clear()
-	manager.resume_scene_key = ""
-	manager.magic_points = 0
+	manager._save_repository = load("res://scripts/core/persistence/save_repository.gd").new(
+		output.path_join("capture_progress.json")
+	)
+	manager.session.scene_states.clear()
+	manager.session.tutorials_seen.clear()
+	manager.session.completed_levels.clear()
+	manager.session.words_learned.clear()
+	manager.session.resume_scene_key = ""
+	manager.session.magic_points = 0
 	await _scene("main_menu", "menu")
 	current_scene._on_reset_pressed()
 	await create_timer(0.2).timeout
@@ -104,7 +110,7 @@ func _run() -> void:
 	current_scene._show_round()
 	await _shot("peticion_recuerdo")
 	await _scene("world5_level1", "portal")
-	manager.words_learned = manager.VOCABULARY.duplicate(true)
+	manager.session.words_learned = GameContent.VOCABULARY.duplicate(true)
 	current_scene.libro.show_book()
 	await current_scene.libro.motion.opened
 	current_scene.libro._spread_index = 7
@@ -112,7 +118,7 @@ func _run() -> void:
 	await _shot("libro")
 	current_scene.libro.hide_book()
 	await current_scene.libro.motion.closed
-	manager.words_learned.clear()
+	manager.session.words_learned.clear()
 	await _scene("world1_story1", "historia")
 	current_scene._next_beat()
 	current_scene._next_beat()
@@ -124,30 +130,50 @@ func _run() -> void:
 	print("Capturas UX: " + output)
 	quit()
 
+
 func _gallery() -> void:
-	var canvas := CanvasLayer.new()
+	var canvas: CanvasLayer = CanvasLayer.new()
 	canvas.layer = 30
 	current_scene.add_child(canvas)
-	var background := ColorRect.new()
+	var background: ColorRect = ColorRect.new()
 	background.color = Color("f8f2dc")
 	background.size = Vector2(1280, 720)
 	canvas.add_child(background)
-	var title := Label.new()
+	var title: Label = Label.new()
 	title.text = "Kalin · Ilustraciones para aprender jugando"
 	title.position = Vector2(32, 15)
 	title.add_theme_font_size_override("font_size", 28)
 	title.add_theme_color_override("font_color", Color("176b67"))
 	canvas.add_child(title)
-	var words: Array[String] = ["Peek'", "mayak", "lak", "k'áan", "k'áanche'", "janal", "ja'", "ja'as", "ich", "K'úum", "mejen", "nojoch", "Jats'uts", "ki'", "chich", "Bix a beel", "Yuum bo'otik", "Tak ti' uláak' k'iin"]
+	var words: Array[String] = [
+		"Peek'",
+		"mayak",
+		"lak",
+		"k'áan",
+		"k'áanche'",
+		"janal",
+		"ja'",
+		"ja'as",
+		"ich",
+		"K'úum",
+		"mejen",
+		"nojoch",
+		"Jats'uts",
+		"ki'",
+		"chich",
+		"Bix a beel",
+		"Yuum bo'otik",
+		"Tak ti' uláak' k'iin"
+	]
 	for index: int in range(words.size()):
-		var art := TextureRect.new()
+		var art: TextureRect = TextureRect.new()
 		art.texture = load(manager.get_book_illustration(words[index]))
 		art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		art.position = Vector2(25 + (index % 6) * 210, 62 + floori(float(index) / 6.0) * 210)
 		art.size = Vector2(180, 155)
 		canvas.add_child(art)
-		var label := Label.new()
+		var label: Label = Label.new()
 		label.text = words[index]
 		label.position = art.position + Vector2(0, 156)
 		label.size.x = 180

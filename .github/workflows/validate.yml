@@ -1,0 +1,52 @@
+name: Validar proyecto
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Instalar herramientas
+        run: python -m pip install -r requirements-dev.txt
+      - name: Preparar Godot fijado por el proyecto
+        shell: pwsh
+        run: |
+          $version = (Get-Content .godot-version -Raw).Trim()
+          $archive = Join-Path $env:RUNNER_TEMP 'godot.zip'
+          $engineRoot = Join-Path $env:RUNNER_TEMP 'godot'
+          Invoke-WebRequest "https://github.com/godotengine/godot/releases/download/$version-stable/Godot_v$version-stable_win64.exe.zip" -OutFile $archive
+          Expand-Archive -LiteralPath $archive -DestinationPath $engineRoot
+          $engine = Get-ChildItem -LiteralPath $engineRoot -Recurse -Filter '*_console.exe' | Select-Object -First 1
+          if (-not $engine) { throw 'No se encontró el ejecutable de consola.' }
+          "GODOT_BIN=$($engine.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+      - name: Comprobar código, catálogos y formato
+        shell: pwsh
+        run: |
+          python tools/check_structure.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/check_code_policy.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m unittest discover -s tests/tooling -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/build_combination_catalog.py --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/build_grid_variants.py --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/build_combination_dialogue.py --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./tools/format.ps1 -Check
+      - name: Importar y ejecutar todas las suites
+        shell: pwsh
+        run: ./tools/validate.ps1

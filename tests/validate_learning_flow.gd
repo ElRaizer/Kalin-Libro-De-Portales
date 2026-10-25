@@ -2,12 +2,15 @@ extends SceneTree
 
 var failures: Array[String] = []
 
+
 func _initialize() -> void:
 	await process_frame
 	var manager: Node = root.get_node("GameManager")
-	manager.scene_states.clear()
-	manager.resume_scene_key = ""
-	manager._save_repository = load("res://scripts/data/SaveRepository.gd").new("user://learning_validation_progress.json")
+	manager.session.scene_states.clear()
+	manager.session.resume_scene_key = ""
+	manager._save_repository = load("res://scripts/core/persistence/save_repository.gd").new(
+		"user://learning_validation_progress.json"
+	)
 	await _validate_story_runtime()
 	await _validate_story_choice_runtime()
 	await _validate_cinematic_runtime()
@@ -23,20 +26,23 @@ func _initialize() -> void:
 		push_error(failure)
 	quit(1)
 
+
 ## Recorre el primer capítulo: conocer a todos los animales habilita el
 ## avance y en ADIVINAR solo la respuesta correcta lo permite.
 func _validate_story_runtime() -> void:
-	var packed := load("res://scenes/world1/Historia1_IslaAnimales.tscn") as PackedScene
+	var packed: PackedScene = (
+		load("res://scenes/worlds/world1/historia1_isla_animales.tscn") as PackedScene
+	)
 	if packed == null:
 		failures.append("No se pudo cargar el primer capítulo de historia")
 		return
-	var story := packed.instantiate()
+	var story: Node = packed.instantiate()
 	root.add_child(story)
 	await process_frame
 	if story.beat_index != 0:
 		failures.append("La historia no empezó en su primer momento")
-	var checked_meet := false
-	var checked_guess := false
+	var checked_meet: bool = false
+	var checked_guess: bool = false
 	while story.beat_index < story.beats.size() - 1:
 		story._next_beat()
 		var beat: StoryBeat = story.current_beat()
@@ -66,6 +72,7 @@ func _validate_story_runtime() -> void:
 	story.queue_free()
 	await process_frame
 
+
 func _ready_actor_input(story: Node) -> void:
 	story._complete_text()
 	for tween: Tween in story._actor_tweens.values().duplicate():
@@ -73,15 +80,18 @@ func _ready_actor_input(story: Node) -> void:
 			tween.custom_step(2.0)
 	await process_frame
 
+
 ## Recorre la exploración de la orilla: el diálogo de entrada detiene a Kalin,
 ## el tronco le impide pasar hasta examinarlo y llegar a la aldea abre la meta,
 ## que lleva al Capítulo 1.
 func _validate_exploration_runtime() -> void:
-	var packed := load("res://scenes/world1/Exploracion1_OrillaIsla.tscn") as PackedScene
+	var packed: PackedScene = (
+		load("res://scenes/worlds/world1/exploracion1_orilla_isla.tscn") as PackedScene
+	)
 	if packed == null:
 		failures.append("No se pudo cargar la exploración de la orilla")
 		return
-	var exploration := packed.instantiate()
+	var exploration: Node = packed.instantiate()
 	root.add_child(exploration)
 	await process_frame
 	if not exploration.is_dialogue_open():
@@ -134,6 +144,7 @@ func _validate_exploration_runtime() -> void:
 	exploration.queue_free()
 	await process_frame
 
+
 func _close_exploration_dialogue(exploration: Node) -> void:
 	var guard: int = 0
 	while exploration.is_dialogue_open() and guard < 50:
@@ -141,14 +152,17 @@ func _close_exploration_dialogue(exploration: Node) -> void:
 		exploration.advance_dialogue()
 		guard += 1
 
+
 ## En ELEGIR, un error revela el significado de la palabra elegida y solo la
 ## respuesta correcta muestra la frase y permite continuar.
 func _validate_story_choice_runtime() -> void:
-	var packed := load("res://scenes/world2/Historia6_ObjetosALaMedida.tscn") as PackedScene
+	var packed: PackedScene = (
+		load("res://scenes/worlds/world2/historia6_objetos_a_la_medida.tscn") as PackedScene
+	)
 	if packed == null:
 		failures.append("No se pudo cargar el capítulo 6")
 		return
-	var story := packed.instantiate()
+	var story: Node = packed.instantiate()
 	root.add_child(story)
 	await process_frame
 	while story.current_beat().kind != StoryBeat.Kind.ELEGIR:
@@ -170,22 +184,27 @@ func _validate_story_choice_runtime() -> void:
 			failures.append("Un error en ELEGIR debe revelar el significado sin avanzar")
 		right_button.pressed.emit()
 		if not story._waiting_to_continue or story.choices_box.visible:
-			failures.append("La respuesta correcta en ELEGIR no muestra la frase ni permite avanzar")
+			failures.append(
+				"La respuesta correcta en ELEGIR no muestra la frase ni permite avanzar"
+			)
 	story.queue_free()
 	await process_frame
+
 
 ## La primera cinemática activa lluvia y páginas, muestra su cartel, avanza sola,
 ## acuesta a Kalin en la orilla y lo levanta al despertar.
 func _validate_cinematic_runtime() -> void:
-	var packed := load("res://scenes/world1/Cine1_NocheHuracan.tscn") as PackedScene
+	var packed: PackedScene = (
+		load("res://scenes/worlds/world1/cine1_noche_huracan.tscn") as PackedScene
+	)
 	if packed == null:
 		failures.append("No se pudo cargar la cinemática del huracán")
 		return
-	var cine := packed.instantiate()
+	var cine: Node = packed.instantiate()
 	root.add_child(cine)
 	await process_frame
-	var rain := cine.get_node("Effects/Lluvia") as CPUParticles2D
-	var pages := cine.get_node("Effects/Paginas") as CPUParticles2D
+	var rain: CPUParticles2D = cine.get_node("Effects/Lluvia") as CPUParticles2D
+	var pages: CPUParticles2D = cine.get_node("Effects/Paginas") as CPUParticles2D
 	if not rain.emitting or pages.emitting:
 		failures.append("El primer momento del huracán debe tener lluvia y no páginas")
 	if cine.kalin.visible:
@@ -202,33 +221,36 @@ func _validate_cinematic_runtime() -> void:
 		failures.append("El segundo momento del huracán debe activar las páginas")
 	while cine.beat_index < 3:
 		cine._next_beat()
-	if not cine._kalin_sleeping or absf(cine.kalin.rotation + cine.SLEEP_ANGLE) > 0.01:
+	if not cine._animator.sleeping or absf(cine.kalin.rotation + StoryAnimator.SLEEP_ANGLE) > 0.01:
 		failures.append("Kalin debe estar acostado al amanecer")
 	if rain.emitting:
 		failures.append("La lluvia debe detenerse al amanecer")
 	cine._next_beat()
-	await create_timer(cine.STAND_UP_SECONDS + 0.2).timeout
-	if cine._kalin_sleeping or absf(cine.kalin.rotation) > 0.01:
+	await create_timer(StoryAnimator.STAND_UP_SECONDS + 0.2).timeout
+	if cine._animator.sleeping or absf(cine.kalin.rotation) > 0.01:
 		failures.append("Kalin no se levantó al despertar")
 	cine.queue_free()
 	await process_frame
 
 	# Cinemática final: Kalin cruza el portal y desaparece.
-	packed = load("res://scenes/world5/Cine3_RegresoACasa.tscn") as PackedScene
-	var ending := packed.instantiate()
+	packed = load("res://scenes/worlds/world5/cine3_regreso_a_casa.tscn") as PackedScene
+	var ending: Node = packed.instantiate()
 	root.add_child(ending)
 	await process_frame
 	ending._next_beat()
 	if ending.kalin.z_index != 1:
 		failures.append("Kalin debe pasar por delante de los animales al cruzar el portal")
-	await create_timer(ending.CROSS_SECONDS + 0.2).timeout
-	if ending.kalin.modulate.a > 0.05 or ending.kalin.scale.x > ending.CROSS_SCALE + 0.05:
+	await create_timer(StoryAnimator.CROSS_SECONDS + 0.2).timeout
+	if ending.kalin.modulate.a > 0.05 or ending.kalin.scale.x > StoryAnimator.CROSS_SCALE + 0.05:
 		failures.append("Kalin no se hizo pequeño ni desapareció dentro del portal")
 	ending.queue_free()
 	await process_frame
 
 	# Un momento con página recuperada hace saltar a Kalin sin configuración extra.
-	var chapter := (load("res://scenes/world1/Historia2_VocesBosque.tscn") as PackedScene).instantiate()
+	var chapter: Node = (
+		(load("res://scenes/worlds/world1/historia2_voces_bosque.tscn") as PackedScene)
+		. instantiate()
+	)
 	root.add_child(chapter)
 	await process_frame
 	var celebrating: StoryBeat = null
@@ -240,17 +262,23 @@ func _validate_cinematic_runtime() -> void:
 	chapter.queue_free()
 	await process_frame
 
+
 func _validate_world4_runtime() -> void:
-	var packed := load("res://scenes/world4/Level4_YoQuiero.tscn") as PackedScene
+	var packed: PackedScene = (
+		load("res://scenes/worlds/world4/level4_yo_quiero.tscn") as PackedScene
+	)
 	if packed == null:
 		failures.append("No se pudo cargar el Mundo 4")
 		return
-	var level := packed.instantiate()
+	var level: Node = packed.instantiate()
 	root.add_child(level)
 	await process_frame
 	if level.round_plan.size() != level.challenges.size() * 2:
 		failures.append("Mundo 4 no creó sus fases guiada y de recuerdo")
-	if level.food_buttons.size() != level.foods.size() or level.modifier_buttons.size() != level.modifiers.size():
+	if (
+		level.food_buttons.size() != level.foods.size()
+		or level.modifier_buttons.size() != level.modifiers.size()
+	):
 		failures.append("Mundo 4 no creó todas las opciones de alimento y cualidad")
 	var challenge: ExerciseEntry = level._current_challenge()
 	level._select_food(challenge.food)
@@ -262,12 +290,15 @@ func _validate_world4_runtime() -> void:
 	level.queue_free()
 	await process_frame
 
+
 func _validate_world5_runtime() -> void:
-	var packed := load("res://scenes/world5/Level5_PortalDeRegreso.tscn") as PackedScene
+	var packed: PackedScene = (
+		load("res://scenes/worlds/world5/level5_portal_de_regreso.tscn") as PackedScene
+	)
 	if packed == null:
 		failures.append("No se pudo cargar el Mundo 5")
 		return
-	var level := packed.instantiate()
+	var level: Node = packed.instantiate()
 	root.add_child(level)
 	await process_frame
 	if level.option_buttons.size() != 4:
@@ -282,20 +313,23 @@ func _validate_world5_runtime() -> void:
 	level.queue_free()
 	await process_frame
 
+
 func _validate_book_runtime() -> void:
 	var manager: Node = root.get_node("GameManager")
-	var original_words: Dictionary = manager.words_learned.duplicate(true)
-	manager.words_learned = {
-		"Peek'": manager.VOCABULARY["Peek'"].duplicate(),
-		"mayak": manager.VOCABULARY["mayak"].duplicate(),
-		"ja'": manager.VOCABULARY["ja'"].duplicate(),
+	var original_words: Dictionary = manager.session.words_learned.duplicate(true)
+	manager.session.words_learned = {
+		"Peek'": GameContent.VOCABULARY["Peek'"].duplicate(),
+		"mayak": GameContent.VOCABULARY["mayak"].duplicate(),
+		"ja'": GameContent.VOCABULARY["ja'"].duplicate(),
 	}
-	var packed := load("res://scenes/ui/LibroHechizos.tscn") as PackedScene
+	var packed: PackedScene = (
+		load("res://scenes/features/spellbook/libro_hechizos.tscn") as PackedScene
+	)
 	if packed == null:
 		failures.append("No se pudo cargar el Libro de Hechizos")
-		manager.words_learned = original_words
+		manager.session.words_learned = original_words
 		return
-	var book := packed.instantiate()
+	var book: Node = packed.instantiate()
 	root.add_child(book)
 	await process_frame
 	book.show_book()
@@ -304,7 +338,10 @@ func _validate_book_runtime() -> void:
 		failures.append("El Libro no distribuye dos entradas por pliego")
 	if not book.left_page.get_node("Content/Illustration/ContextSprite").visible:
 		failures.append("El Libro no muestra la ilustración contextual disponible")
-	if not book.right_page.get_node("Content/Illustration/ContextSprite").visible or book.right_page.get_node("Content/Illustration/Placeholder").visible:
+	if (
+		not book.right_page.get_node("Content/Illustration/ContextSprite").visible
+		or book.right_page.get_node("Content/Illustration/Placeholder").visible
+	):
 		failures.append("El Libro debe mostrar la nueva ilustración del objeto")
 	book._next_spread()
 	while book._turning:
@@ -312,5 +349,5 @@ func _validate_book_runtime() -> void:
 	if book._spread_index != 1 or not book.next_button.disabled:
 		failures.append("La navegación entre páginas del Libro no respeta sus límites")
 	book.queue_free()
-	manager.words_learned = original_words
+	manager.session.words_learned = original_words
 	await process_frame

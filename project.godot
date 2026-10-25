@@ -16,16 +16,16 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="Kalin y el Libro de los Portales"
 config/description="Juego educativo de lengua maya yucateca para niños"
-run/main_scene="res://scenes/MainMenu.tscn"
+run/main_scene="res://scenes/ui/main_menu/main_menu.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 
 [autoload]
 
-WindowManager="*res://scripts/autoloads/WindowManager.gd"
-GameManager="*res://scenes/components/GameManager.tscn"
-AccessibilityManager="*res://scenes/components/AccessibilityManager.tscn"
-PauseMenu="*res://scenes/components/PauseMenu.tscn"
-DebugAnswer="*res://scripts/autoloads/DebugAnswer.gd"
+WindowManager="*res://scripts/autoloads/window_manager.gd"
+GameManager="*res://scenes/autoloads/game_manager.tscn"
+AccessibilityManager="*res://scenes/autoloads/accessibility_manager.tscn"
+PauseMenu="*res://scenes/autoloads/pause_menu.tscn"
+DebugAnswer="*res://scripts/autoloads/debug_answer.gd"
 
 [display]
 

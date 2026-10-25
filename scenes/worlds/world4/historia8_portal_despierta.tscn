@@ -1,0 +1,132 @@
+[gd_scene format=3 uid="uid://bs15jfx8hh6q7"]
+
+[ext_resource type="PackedScene" path="res://scenes/features/story/story_scene.tscn" id="1_base"]
+[ext_resource type="Script" uid="uid://bmw6321e7uwe6" path="res://scripts/features/story/story_beat.gd" id="2_beat"]
+[ext_resource type="Texture2D" uid="uid://4vovwcutaqlv" path="res://Arte/backgrounds/bg_milpa.svg" id="5_bg_milpa"]
+[ext_resource type="Texture2D" uid="uid://bw2btkwclfkdf" path="res://Arte/backgrounds/bg_portal_isla.svg" id="6_bg_portal_isla"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Todos han comido!"
+background = ExtResource("5_bg_milpa")
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
+celebrate_page = true
+visual_scene = "hambre"
+visual_solved = true
+effects = 16
+
+[sub_resource type="Resource" id="Beat_5"]
+script = ExtResource("2_beat")
+kind = 4
+text = "¡El portal está despertando!"
+background = ExtResource("6_bg_portal_isla")
+kalin_pose = 1
+actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
+visual_scene = "portal"
+effects = 24
+screen_shake = true
+flash = true
+
+[sub_resource type="Resource" id="Beat_6"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Faltan las palabras amables!"
+kalin_pose = 1
+actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
+effects = 24
+
+[sub_resource type="Resource" id="Beat_7"]
+script = ExtResource("2_beat")
+speaker = "Peek'"
+text = "Bix a beel: así saludamos."
+actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
+effects = 24
+
+[sub_resource type="Resource" id="Beat_8"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Kaax"
+text = "Yuum bo'otik: muchas gracias. ¿Lo encuentras?"
+actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
+target_word = "Yuum bo'otik"
+options = Array[String](["Tak ti' uláak' k'iin", "Yuum bo'otik", "Bix a beel", "Ka xi'ik tech jats'uts"])
+effects = 24
+
+[sub_resource type="Resource" id="Beat_9"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Yuum bo'otik, amigos!"
+actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
+effects = 24
+
+[sub_resource type="Resource" id="Beat_10"]
+script = ExtResource("2_beat")
+text = "¡Abramos el camino a casa!"
+actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
+effects = 24
+title = "Mundo 5"
+subtitle = "El Portal de Regreso"
+auto_advance = 2.0
+
+[node name="Historia8" unique_id=1313455233 instance=ExtResource("1_base")]
+chapter_title = "Mundo 4 · Capítulo 8 — El portal despierta"
+next_scene_key = "world4_mission1"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_5"), SubResource("Beat_6"), SubResource("Beat_7"), SubResource("Beat_8"), SubResource("Beat_9"), SubResource("Beat_10")])
+
+[node name="Button" parent="Stage/Actors/Actor1" index="0"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 180.0
+offset_bottom = 210.0
+theme_type_variation = &"KalinStoryActor"
+
+[node name="Button" parent="Stage/Actors/Actor2" index="0"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 180.0
+offset_bottom = 210.0
+theme_type_variation = &"KalinStoryActor"
+
+[node name="Button" parent="Stage/Actors/Actor3" index="0"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 180.0
+offset_bottom = 210.0
+theme_type_variation = &"KalinStoryActor"
+
+[node name="Button" parent="Stage/Actors/Actor4" index="0"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 180.0
+offset_bottom = 210.0
+theme_type_variation = &"KalinStoryActor"
+
+[node name="Vignette" parent="Stage" index="2"]
+portal_sprite_visible = false
+portal_center = Vector2(400, 100)
+layout_mode = 3
+anchors_preset = 0
+offset_left = 400.0
+offset_top = 150.0
+offset_right = 1200.0
+offset_bottom = 500.0
+
+[node name="Choice1" parent="UI/Choices" index="0"]
+theme_type_variation = &"KalinNounButton"
+
+[node name="Choice2" parent="UI/Choices" index="1"]
+theme_type_variation = &"KalinNounButton"
+
+[node name="Choice3" parent="UI/Choices" index="2"]
+theme_type_variation = &"KalinNounButton"
+
+[node name="MenuButton" parent="UI" index="8"]
+offset_left = 884.0
+offset_top = 12.0
+offset_right = 1042.0
+offset_bottom = 58.0

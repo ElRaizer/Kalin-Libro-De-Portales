@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/shared/portal_visual.gd" id="script"]
+
+[ext_resource type="StyleBox" path="res://themes/portal_page_active.tres" id="editor_2"]
+
+[ext_resource type="StyleBox" path="res://themes/portal_page_inactive.tres" id="editor_3"]
+
+[node name="PortalVisual" type="Control"]
+script = ExtResource("script")
+mouse_filter = 2
+active_page_style = ExtResource("editor_2")
+inactive_page_style = ExtResource("editor_3")

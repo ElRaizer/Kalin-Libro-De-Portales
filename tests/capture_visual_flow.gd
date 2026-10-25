@@ -1,25 +1,28 @@
 ## Capturas del flujo final. Acepta una carpeta de salida después de --.
 extends "res://tests/capture_ux.gd"
 
+
 func _run() -> void:
 	if not OS.get_cmdline_user_args().is_empty():
 		output = OS.get_cmdline_user_args()[0]
 	output = ProjectSettings.globalize_path(output)
 	DirAccess.make_dir_recursive_absolute(output)
 	manager = root.get_node("GameManager")
-	manager._save_repository = load("res://scripts/data/SaveRepository.gd").new(output.path_join("capture_progress.json"))
-	manager.scene_states.clear()
-	manager.completed_levels.clear()
-	manager.words_learned.clear()
-	manager.tutorials_seen.assign(["paths", "objects", "phrases", "requests"])
-	manager.resume_scene_key = ""
+	manager._save_repository = load("res://scripts/core/persistence/save_repository.gd").new(
+		output.path_join("capture_progress.json")
+	)
+	manager.session.scene_states.clear()
+	manager.session.completed_levels.clear()
+	manager.session.words_learned.clear()
+	manager.session.tutorials_seen.assign(["paths", "objects", "phrases", "requests"])
+	manager.session.resume_scene_key = ""
 	await _scene("main_menu", "01_mapa")
 	await _scene("intro", "02_intro")
 	current_scene._finish_typewriter()
 	await _shot("02_intro")
 	if OS.get_cmdline_user_args().has("--quick"):
 		await _scene("world3_level1", "06_taller")
-		manager.words_learned = manager.VOCABULARY.duplicate(true)
+		manager.session.words_learned = GameContent.VOCABULARY.duplicate(true)
 		current_scene.libro._new_word = ""
 		current_scene.libro.show_book()
 		await current_scene.libro.motion.opened
@@ -70,7 +73,12 @@ func _run() -> void:
 		current_scene._advance_challenge()
 	await create_timer(0.7).timeout
 	await _shot("16_portal_energia")
-	for entry: Array in [["world1_story1", "17_camino_roto"], ["world2_story1", "18_mesa_pequena"], ["world3_story1", "19_hambre"], ["world4_story1", "20_portal_historia"]]:
+	for entry: Array in [
+		["world1_story1", "17_camino_roto"],
+		["world2_story1", "18_mesa_pequena"],
+		["world3_story1", "19_hambre"],
+		["world4_story1", "20_portal_historia"]
+	]:
 		await _scene(entry[0], "temporal")
 		while current_scene.current_beat().kind != StoryBeat.Kind.EXPLORAR:
 			current_scene._next_beat()
@@ -78,7 +86,7 @@ func _run() -> void:
 		await create_timer(0.9).timeout
 		await _shot(entry[1])
 	await _scene("main_menu", "temporal")
-	manager.words_learned = manager.VOCABULARY.duplicate(true)
+	manager.session.words_learned = GameContent.VOCABULARY.duplicate(true)
 	current_scene.libro._new_word = ""
 	current_scene.libro.show_book()
 	await current_scene.libro.motion.opened

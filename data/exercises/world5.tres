@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="ExerciseSet" format=3 uid="uid://dua5e8m1gc6l2"]
 
-[ext_resource type="Script" uid="uid://c5idu2th63kpg" path="res://scripts/data/ExerciseEntry.gd" id="entry"]
-[ext_resource type="Script" uid="uid://bk5vcps6fqkbt" path="res://scripts/data/ExerciseSet.gd" id="set"]
+[ext_resource type="Script" uid="uid://c5idu2th63kpg" path="res://scripts/features/exercises/exercise_entry.gd" id="entry"]
+[ext_resource type="Script" uid="uid://bk5vcps6fqkbt" path="res://scripts/features/exercises/exercise_set.gd" id="set"]
 
 [sub_resource type="Resource" id="challenges_1"]
 script = ExtResource("entry")

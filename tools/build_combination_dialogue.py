@@ -4,7 +4,8 @@ Existing authored lines are preserved. New lines combine a reviewed animal/objec
 scene with the exact request label; no anatomy or Maya morphology is generated.
 """
 import json
-import re
+import argparse
+from catalog_io import read_manifest, write_generated
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -151,38 +152,41 @@ PLACES = {
 }
 
 
-def literal(text):
-    return json.loads(re.sub(r",\s*([}\]])", r"\1", text))
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true")
+    args = parser.parse_args()
+    catalog = read_manifest("data/combinations/catalog.json")
+    rows, basics = catalog["rows"], catalog["basics"]
+    banks = read_manifest("data/dialogue/village_dialogue.json")
+    targets = {word + "|": (word, "", need[0].upper() + need[1:], need) for word, need in basics.items()}
+    targets.update({word + "|" + quality: (word, quality, label, need) for word, quality, label, need in rows})
+    for animal, data in banks.items():
+        place = PLACES[animal]
+        for key, (word, quality, label, need) in targets.items():
+            if key in data["tasks"]:
+                continue
+            context = SCENES[animal][WORDS.index(word)]
+            if word == "mayak":
+                outcome = f"Nos reuniremos a comer junto a {place}."
+            elif word == "k'áanche'":
+                outcome = f"Ya podemos sentarnos a conversar junto a {place}."
+            elif word == "k'áan":
+                outcome = f"El descanso está listo junto a {place}."
+            elif word == "lak":
+                outcome = f"Serviremos la merienda junto a {place}."
+            elif word == "ja'":
+                outcome = f"Ya podemos beber y descansar junto a {place}."
+            else:
+                outcome = f"La compartiremos con mis amigos junto a {place}." if word != "ja'as" else f"Lo compartiremos con mis amigos junto a {place}."
+            data["tasks"][key] = [f"{context} Necesito {need}.", f"¿Me traes {need}? {context}", f"¡{label}! {outcome}"]
+            assert all(len(line) <= 160 for line in data["tasks"][key]), (animal, key)
+    header = "extends RefCounted\n\n## Banco explícito de peticiones y saludos. Nuevas combinaciones: tools/build_combination_dialogue.py.\n"
+    payload = json.dumps(banks, ensure_ascii=False, indent="\t") + "\n"
+    write_generated("data/dialogue/village_dialogue.json", payload, args.check)
+    write_generated("scripts/features/village/data/village_dialogue_catalog.gd", header + "const ANIMALS := " + payload, args.check)
+    print(f"{len(banks)} animales × {len(targets)} pedidos × 3 frases + 60 saludos = {len(banks) * len(targets) * 3 + 60} textos.")
 
 
-catalog = ROOT / "scripts/data/CombinationCatalog.gd"
-source = catalog.read_text(encoding="utf-8")
-rows = literal(source.split("const ROWS := ", 1)[1].split("\nconst BASICS", 1)[0].strip())
-basics = literal(source.split("const BASICS := ", 1)[1].split("\nconst FURNITURE", 1)[0].strip())
-path = ROOT / "data/dialogue/VillageDialogueCatalog.gd"
-banks = literal(path.read_text(encoding="utf-8").split("const ANIMALS := ", 1)[1].strip())
-targets = {word + "|": (word, "", need[0].upper() + need[1:], need) for word, need in basics.items()}
-targets.update({word + "|" + quality: (word, quality, label, need) for word, quality, label, need in rows})
-for animal, data in banks.items():
-    place = PLACES[animal]
-    for key, (word, quality, label, need) in targets.items():
-        if key in data["tasks"]:
-            continue
-        context = SCENES[animal][WORDS.index(word)]
-        if word == "mayak":
-            outcome = f"Nos reuniremos a comer junto a {place}."
-        elif word == "k'áanche'":
-            outcome = f"Ya podemos sentarnos a conversar junto a {place}."
-        elif word == "k'áan":
-            outcome = f"El descanso está listo junto a {place}."
-        elif word == "lak":
-            outcome = f"Serviremos la merienda junto a {place}."
-        elif word == "ja'":
-            outcome = f"Ya podemos beber y descansar junto a {place}."
-        else:
-            outcome = f"La compartiremos con mis amigos junto a {place}." if word != "ja'as" else f"Lo compartiremos con mis amigos junto a {place}."
-        data["tasks"][key] = [f"{context} Necesito {need}.", f"¿Me traes {need}? {context}", f"¡{label}! {outcome}"]
-        assert all(len(line) <= 160 for line in data["tasks"][key]), (animal, key)
-header = "extends RefCounted\n\n## Banco explícito de peticiones y saludos. Nuevas combinaciones: tools/build_combination_dialogue.py.\n"
-path.write_text(header + "const ANIMALS := " + json.dumps(banks, ensure_ascii=False, indent="\t") + "\n", encoding="utf-8", newline="\n")
-print(f"{len(banks)} animales × {len(targets)} pedidos × 3 frases + 60 saludos = {len(banks) * len(targets) * 3 + 60} textos.")
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,91 @@
+[gd_scene format=3 uid="uid://c06vu0knnx8t5"]
+
+[ext_resource type="PackedScene" path="res://scenes/features/exploration/exploration_scene.tscn" id="1_base"]
+[ext_resource type="PackedScene" path="res://scenes/features/exploration/exploration_spot.tscn" id="2_spot"]
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_concha.svg" id="3_concha"]
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_pagina.svg" id="4_pagina"]
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_tronco.svg" id="5_tronco"]
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_piedra_sakbeh.svg" id="6_piedra"]
+[ext_resource type="Texture2D" path="res://Arte/exploracion/prop_huellas.svg" id="7_huellas"]
+[ext_resource type="Texture2D" uid="uid://bt5cevfxvdhq8" path="res://Arte/sprites/animal_kaax.svg" id="8_kaax"]
+[ext_resource type="Texture2D" uid="uid://c82xhit3gbmdq" path="res://Arte/sprites/animal_peek.svg" id="9_peek"]
+[ext_resource type="Texture2D" uid="uid://bjtthugdl1hx" path="res://Arte/sprites/animal_miis.svg" id="10_miis"]
+
+[node name="Exploracion1" unique_id=1597525449 instance=ExtResource("1_base")]
+chapter_title = "Mundo 1 · Exploración — La orilla de la isla"
+next_scene_key = "world1_story1"
+objective_text = "Sigue el sendero hasta las casas →"
+intro_lines = Array[String](["¿Dónde estoy? ¡Voy a seguir esas huellas!"])
+intro_surprised = true
+
+[node name="Kaax" type="Sprite2D" parent="Animales" index="0" unique_id=539945058]
+position = Vector2(3320, 592)
+scale = Vector2(1.3, 1.3)
+texture = ExtResource("8_kaax")
+offset = Vector2(0, -58)
+
+[node name="Peek" type="Sprite2D" parent="Animales" index="1" unique_id=1009259523]
+position = Vector2(3460, 598)
+scale = Vector2(1.4, 1.4)
+texture = ExtResource("9_peek")
+offset = Vector2(0, -58)
+
+[node name="Miis" type="Sprite2D" parent="Animales" index="2" unique_id=596832243]
+position = Vector2(3580, 590)
+scale = Vector2(1.3, 1.3)
+texture = ExtResource("10_miis")
+offset = Vector2(0, -58)
+
+[node name="Concha" parent="Spots" index="0" unique_id=810067002 instance=ExtResource("2_spot")]
+position = Vector2(560, 626)
+lines = Array[String](["¡Una concha! Todavía guarda el sonido del mar."])
+spot_texture = ExtResource("3_concha")
+
+[node name="Pagina" parent="Spots" index="1" unique_id=318250681 instance=ExtResource("2_spot")]
+position = Vector2(900, 618)
+prompt = "Recoger"
+lines = Array[String](["¡Una página de mi libro! La guardaré."])
+surprised = true
+reaction = 2
+spot_texture = ExtResource("4_pagina")
+sprite_offset = Vector2(0, -50)
+
+[node name="Tronco" parent="Spots" index="2" unique_id=247531688 instance=ExtResource("2_spot")]
+position = Vector2(1500, 636)
+prompt = "Mover con magia"
+lines = Array[String](["¡La palmera tapa el camino! La moveré con magia."])
+reach_radius = 190.0
+blocks_path = true
+reaction = 1
+spot_texture = ExtResource("5_tronco")
+sprite_offset = Vector2(0, -120)
+sprite_scale = Vector2(1.25, 1.25)
+glow_position = Vector2(0, -140)
+glow_extents = Vector2(150, 70)
+
+[node name="Piedra" parent="Spots" index="3" unique_id=1167249300 instance=ExtResource("2_spot")]
+position = Vector2(2250, 562)
+lines = Array[String](["El huracán rompió el Sak Beh: el Camino Blanco."])
+spot_texture = ExtResource("6_piedra")
+sprite_offset = Vector2(0, -100)
+sprite_scale = Vector2(1.15, 1.15)
+glow_position = Vector2(0, -130)
+
+[node name="Huellas" parent="Spots" index="4" unique_id=561837767 instance=ExtResource("2_spot")]
+position = Vector2(2700, 618)
+lines = Array[String](["¡Huellas de animales! Van hacia las casas."])
+spot_texture = ExtResource("7_huellas")
+sprite_offset = Vector2(0, -40)
+glow_position = Vector2(0, -30)
+glow_extents = Vector2(110, 20)
+
+[node name="Aldea" parent="Spots" index="5" unique_id=329002914 instance=ExtResource("2_spot")]
+position = Vector2(3360, 579)
+prompt = "Saludar"
+lines = Array[String](["¡Hola! ¿Me ayudan a recuperar mis palabras?"])
+surprised = true
+reach_radius = 170.0
+is_goal = true
+auto_trigger = true
+glow_position = Vector2(110, -150)
+glow_extents = Vector2(160, 50)

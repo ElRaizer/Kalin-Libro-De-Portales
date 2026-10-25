@@ -1,0 +1,3 @@
+scripts/core/content/combination_data.gd
+scripts/features/grid_paths/data/grid_variant_catalog.gd
+scripts/features/village/data/village_dialogue_catalog.gd

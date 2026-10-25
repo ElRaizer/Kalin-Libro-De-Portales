@@ -1,0 +1,1065 @@
+[gd_scene load_steps=8 format=3 uid="uid://bodvu0ariclhy"]
+
+[ext_resource type="PackedScene" path="res://scenes/worlds/world1/grid_path_level_base.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/worlds/world1/forest_paths.gd" id="2_script"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level_monte.svg" id="3_bg"]
+[ext_resource type="Script" path="res://scripts/features/grid_paths/grid_word_data.gd" id="4_word"]
+[ext_resource type="Texture2D" path="res://Arte/sprites/animal_keej.svg" id="5_keej"]
+[ext_resource type="Texture2D" path="res://Arte/sprites/animal_keek_en.svg" id="6_keeken"]
+[ext_resource type="Texture2D" path="res://Arte/sprites/animal_maax.svg" id="7_maax"]
+[ext_resource type="Texture2D" path="res://Arte/tiles/tile_empty.svg" id="saved_1_aijs4"]
+[ext_resource type="Texture2D" path="res://Arte/tiles/tile_obstacle.svg" id="saved_2_4yjbf"]
+[ext_resource type="Texture2D" path="res://Arte/ilustraciones/ui_casa.svg" id="saved_3_11cjn"]
+[ext_resource type="Texture2D" path="res://Arte/sprites/animal_keej.svg" id="saved_4_2kjks"]
+[ext_resource type="Texture2D" path="res://Arte/sprites/animal_keek_en.svg" id="saved_5_arifa"]
+[ext_resource type="Texture2D" path="res://Arte/sprites/animal_maax.svg" id="saved_6_4eiv4"]
+[ext_resource type="StyleBox" path="res://themes/grid_cursor.tres" id="saved_7_p8jnd"]
+
+[sub_resource type="Resource" id="Word_keej"]
+script = ExtResource("4_word")
+maya_word = "Kéej"
+spanish_word = "Venado"
+phrase = "In k'aaba'e' Kéej"
+explanation = "Me llamo Venado — en maya: Kéej"
+sprite = ExtResource("5_keej")
+destination_text = "Kéej"
+color = Color(0.7, 0.45, 0.2, 1)
+start_cell = Vector2i(0, 1)
+destination_cell = Vector2i(11, 1)
+
+[sub_resource type="Resource" id="Word_keeken"]
+script = ExtResource("4_word")
+maya_word = "K'éek'en"
+spanish_word = "Cerdo"
+phrase = "In k'aaba'e' K'éek'en"
+explanation = "Me llamo Cerdo — en maya: K'éek'en"
+sprite = ExtResource("6_keeken")
+destination_text = "K'éek'en"
+color = Color(0.85, 0.45, 0.55, 1)
+start_cell = Vector2i(0, 3)
+destination_cell = Vector2i(11, 3)
+
+[sub_resource type="Resource" id="Word_maax"]
+script = ExtResource("4_word")
+maya_word = "Ma'ax"
+spanish_word = "Mono"
+phrase = "In k'aaba'e' Ma'ax"
+explanation = "Me llamo Mono — en maya: Ma'ax"
+sprite = ExtResource("7_maax")
+destination_text = "Ma'ax"
+color = Color(0.45, 0.32, 0.2, 1)
+start_cell = Vector2i(0, 5)
+destination_cell = Vector2i(11, 5)
+
+[sub_resource type="StyleBoxFlat" id="saved_StyleBoxFlat_clbls"]
+bg_color = Color(0.865, 0.7525, 0.64000005, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.595, 0.3825, 0.17, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="saved_StyleBoxFlat_imh4i"]
+bg_color = Color(0.7, 0.45, 0.2, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.595, 0.3825, 0.17, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="saved_StyleBoxFlat_nxm4f"]
+bg_color = Color(0.9325, 0.7525, 0.7975, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7225, 0.3825, 0.46750003, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="saved_StyleBoxFlat_ud3mx"]
+bg_color = Color(0.85, 0.45, 0.55, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.7225, 0.3825, 0.46750003, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="saved_StyleBoxFlat_l8l5s"]
+bg_color = Color(0.7525, 0.694, 0.64000005, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3825, 0.272, 0.17, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="saved_StyleBoxFlat_4refr"]
+bg_color = Color(0.45, 0.32, 0.2, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.3825, 0.272, 0.17, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="Level2" instance=ExtResource("1_base")]
+script = ExtResource("2_script")
+level_number = 2
+next_scene_key = "world1_story3"
+level_title = "Mundo 1 · Nivel 2 — Los Animales del Bosque"
+completion_title = "¡Mundo 1 · Nivel 2 completado!"
+completion_summary = "Planeaste tres rutas sin cruzarlas."
+default_instruction = "Planea rutas sin cruces. Toca un animal conectado para rehacer sólo su camino."
+selection_instruction = "Arrastra desde \"%s\" hasta su casa \"%s\"."
+
+[node name="Background" parent="." index="0"]
+texture = ExtResource("3_bg")
+
+[node name="GridBoard" parent="." index="1"]
+obstacles = Array[Vector2i]([Vector2i(3, 1), Vector2i(7, 1), Vector2i(5, 3), Vector2i(9, 3), Vector2i(2, 5), Vector2i(6, 5), Vector2i(3, 4), Vector2i(4, 6), Vector2i(5, 0), Vector2i(9, 6), Vector2i(10, 2), Vector2i(5, 2)])
+words = Array[ExtResource("4_word")]([SubResource("Word_keej"), SubResource("Word_keeken"), SubResource("Word_maax")])
+
+[node name="Tile_0_0" type="TextureRect" parent="GridBoard/Preview" unique_id=500300848]
+offset_left = 209.0
+offset_top = 89.0
+offset_right = 279.0
+offset_bottom = 159.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_1_0" type="TextureRect" parent="GridBoard/Preview" unique_id=1500294571]
+offset_left = 281.0
+offset_top = 89.0
+offset_right = 351.0
+offset_bottom = 159.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_2_0" type="TextureRect" parent="GridBoard/Preview" unique_id=1764570740]
+offset_left = 353.0
+offset_top = 89.0
+offset_right = 423.0
+offset_bottom = 159.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_3_0" type="TextureRect" parent="GridBoard/Preview" unique_id=199134759]
+offset_left = 425.0
+offset_top = 89.0
+offset_right = 495.0
+offset_bottom = 159.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_4_0" type="TextureRect" parent="GridBoard/Preview" unique_id=646085232]
+offset_left = 497.0
+offset_top = 89.0
+offset_right = 567.0
+offset_bottom = 159.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_5_0" type="TextureRect" parent="GridBoard/Preview" unique_id=736272391]
+offset_left = 569.0
+offset_top = 89.0
+offset_right = 639.0
+offset_bottom = 159.0
+mouse_filter = 2
+texture = ExtResource("saved_2_4yjbf")
+
+[node name="Tile_6_0" type="TextureRect" parent="GridBoard/Preview" unique_id=1352350740]
+offset_left = 641.0
+offset_top = 89.0
+offset_right = 711.0
+offset_bottom = 159.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_7_0" type="TextureRect" parent="GridBoard/Preview" unique_id=1249654521]
+offset_left = 713.0
+offset_top = 89.0
+offset_right = 783.0
+offset_bottom = 159.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_8_0" type="TextureRect" parent="GridBoard/Preview" unique_id=1022507435]
+offset_left = 785.0
+offset_top = 89.0
+offset_right = 855.0
+offset_bottom = 159.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_9_0" type="TextureRect" parent="GridBoard/Preview" unique_id=2085246477]
+offset_left = 857.0
+offset_top = 89.0
+offset_right = 927.0
+offset_bottom = 159.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_10_0" type="TextureRect" parent="GridBoard/Preview" unique_id=1108355029]
+offset_left = 929.0
+offset_top = 89.0
+offset_right = 999.0
+offset_bottom = 159.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_11_0" type="TextureRect" parent="GridBoard/Preview" unique_id=471357345]
+offset_left = 1001.0
+offset_top = 89.0
+offset_right = 1071.0
+offset_bottom = 159.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_0_1" type="TextureRect" parent="GridBoard/Preview" unique_id=712189142]
+offset_left = 209.0
+offset_top = 161.0
+offset_right = 279.0
+offset_bottom = 231.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_1_1" type="TextureRect" parent="GridBoard/Preview" unique_id=33026309]
+offset_left = 281.0
+offset_top = 161.0
+offset_right = 351.0
+offset_bottom = 231.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_2_1" type="TextureRect" parent="GridBoard/Preview" unique_id=77483452]
+offset_left = 353.0
+offset_top = 161.0
+offset_right = 423.0
+offset_bottom = 231.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_3_1" type="TextureRect" parent="GridBoard/Preview" unique_id=1795534176]
+offset_left = 425.0
+offset_top = 161.0
+offset_right = 495.0
+offset_bottom = 231.0
+mouse_filter = 2
+texture = ExtResource("saved_2_4yjbf")
+
+[node name="Tile_4_1" type="TextureRect" parent="GridBoard/Preview" unique_id=1015311251]
+offset_left = 497.0
+offset_top = 161.0
+offset_right = 567.0
+offset_bottom = 231.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_5_1" type="TextureRect" parent="GridBoard/Preview" unique_id=1232776099]
+offset_left = 569.0
+offset_top = 161.0
+offset_right = 639.0
+offset_bottom = 231.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_6_1" type="TextureRect" parent="GridBoard/Preview" unique_id=1604474023]
+offset_left = 641.0
+offset_top = 161.0
+offset_right = 711.0
+offset_bottom = 231.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_7_1" type="TextureRect" parent="GridBoard/Preview" unique_id=1131068358]
+offset_left = 713.0
+offset_top = 161.0
+offset_right = 783.0
+offset_bottom = 231.0
+mouse_filter = 2
+texture = ExtResource("saved_2_4yjbf")
+
+[node name="Tile_8_1" type="TextureRect" parent="GridBoard/Preview" unique_id=974678314]
+offset_left = 785.0
+offset_top = 161.0
+offset_right = 855.0
+offset_bottom = 231.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_9_1" type="TextureRect" parent="GridBoard/Preview" unique_id=479388627]
+offset_left = 857.0
+offset_top = 161.0
+offset_right = 927.0
+offset_bottom = 231.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_10_1" type="TextureRect" parent="GridBoard/Preview" unique_id=1694322936]
+offset_left = 929.0
+offset_top = 161.0
+offset_right = 999.0
+offset_bottom = 231.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_11_1" type="TextureRect" parent="GridBoard/Preview" unique_id=1346064804]
+offset_left = 1001.0
+offset_top = 161.0
+offset_right = 1071.0
+offset_bottom = 231.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_0_2" type="TextureRect" parent="GridBoard/Preview" unique_id=151421969]
+offset_left = 209.0
+offset_top = 233.0
+offset_right = 279.0
+offset_bottom = 303.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_1_2" type="TextureRect" parent="GridBoard/Preview" unique_id=1807088584]
+offset_left = 281.0
+offset_top = 233.0
+offset_right = 351.0
+offset_bottom = 303.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_2_2" type="TextureRect" parent="GridBoard/Preview" unique_id=1085522316]
+offset_left = 353.0
+offset_top = 233.0
+offset_right = 423.0
+offset_bottom = 303.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_3_2" type="TextureRect" parent="GridBoard/Preview" unique_id=1790937980]
+offset_left = 425.0
+offset_top = 233.0
+offset_right = 495.0
+offset_bottom = 303.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_4_2" type="TextureRect" parent="GridBoard/Preview" unique_id=309902505]
+offset_left = 497.0
+offset_top = 233.0
+offset_right = 567.0
+offset_bottom = 303.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_5_2" type="TextureRect" parent="GridBoard/Preview" unique_id=779297584]
+offset_left = 569.0
+offset_top = 233.0
+offset_right = 639.0
+offset_bottom = 303.0
+mouse_filter = 2
+texture = ExtResource("saved_2_4yjbf")
+
+[node name="Tile_6_2" type="TextureRect" parent="GridBoard/Preview" unique_id=1044805034]
+offset_left = 641.0
+offset_top = 233.0
+offset_right = 711.0
+offset_bottom = 303.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_7_2" type="TextureRect" parent="GridBoard/Preview" unique_id=41612599]
+offset_left = 713.0
+offset_top = 233.0
+offset_right = 783.0
+offset_bottom = 303.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_8_2" type="TextureRect" parent="GridBoard/Preview" unique_id=2090214669]
+offset_left = 785.0
+offset_top = 233.0
+offset_right = 855.0
+offset_bottom = 303.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_9_2" type="TextureRect" parent="GridBoard/Preview" unique_id=827928683]
+offset_left = 857.0
+offset_top = 233.0
+offset_right = 927.0
+offset_bottom = 303.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_10_2" type="TextureRect" parent="GridBoard/Preview" unique_id=924044057]
+offset_left = 929.0
+offset_top = 233.0
+offset_right = 999.0
+offset_bottom = 303.0
+mouse_filter = 2
+texture = ExtResource("saved_2_4yjbf")
+
+[node name="Tile_11_2" type="TextureRect" parent="GridBoard/Preview" unique_id=903136834]
+offset_left = 1001.0
+offset_top = 233.0
+offset_right = 1071.0
+offset_bottom = 303.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_0_3" type="TextureRect" parent="GridBoard/Preview" unique_id=540967534]
+offset_left = 209.0
+offset_top = 305.0
+offset_right = 279.0
+offset_bottom = 375.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_1_3" type="TextureRect" parent="GridBoard/Preview" unique_id=1254450206]
+offset_left = 281.0
+offset_top = 305.0
+offset_right = 351.0
+offset_bottom = 375.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_2_3" type="TextureRect" parent="GridBoard/Preview" unique_id=177193169]
+offset_left = 353.0
+offset_top = 305.0
+offset_right = 423.0
+offset_bottom = 375.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_3_3" type="TextureRect" parent="GridBoard/Preview" unique_id=1508633222]
+offset_left = 425.0
+offset_top = 305.0
+offset_right = 495.0
+offset_bottom = 375.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_4_3" type="TextureRect" parent="GridBoard/Preview" unique_id=2043189851]
+offset_left = 497.0
+offset_top = 305.0
+offset_right = 567.0
+offset_bottom = 375.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_5_3" type="TextureRect" parent="GridBoard/Preview" unique_id=2016940120]
+offset_left = 569.0
+offset_top = 305.0
+offset_right = 639.0
+offset_bottom = 375.0
+mouse_filter = 2
+texture = ExtResource("saved_2_4yjbf")
+
+[node name="Tile_6_3" type="TextureRect" parent="GridBoard/Preview" unique_id=1276987324]
+offset_left = 641.0
+offset_top = 305.0
+offset_right = 711.0
+offset_bottom = 375.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_7_3" type="TextureRect" parent="GridBoard/Preview" unique_id=1543900661]
+offset_left = 713.0
+offset_top = 305.0
+offset_right = 783.0
+offset_bottom = 375.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_8_3" type="TextureRect" parent="GridBoard/Preview" unique_id=1085524902]
+offset_left = 785.0
+offset_top = 305.0
+offset_right = 855.0
+offset_bottom = 375.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_9_3" type="TextureRect" parent="GridBoard/Preview" unique_id=1597273339]
+offset_left = 857.0
+offset_top = 305.0
+offset_right = 927.0
+offset_bottom = 375.0
+mouse_filter = 2
+texture = ExtResource("saved_2_4yjbf")
+
+[node name="Tile_10_3" type="TextureRect" parent="GridBoard/Preview" unique_id=219393673]
+offset_left = 929.0
+offset_top = 305.0
+offset_right = 999.0
+offset_bottom = 375.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_11_3" type="TextureRect" parent="GridBoard/Preview" unique_id=1457360267]
+offset_left = 1001.0
+offset_top = 305.0
+offset_right = 1071.0
+offset_bottom = 375.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_0_4" type="TextureRect" parent="GridBoard/Preview" unique_id=486206150]
+offset_left = 209.0
+offset_top = 377.0
+offset_right = 279.0
+offset_bottom = 447.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_1_4" type="TextureRect" parent="GridBoard/Preview" unique_id=1066658335]
+offset_left = 281.0
+offset_top = 377.0
+offset_right = 351.0
+offset_bottom = 447.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_2_4" type="TextureRect" parent="GridBoard/Preview" unique_id=1903192935]
+offset_left = 353.0
+offset_top = 377.0
+offset_right = 423.0
+offset_bottom = 447.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_3_4" type="TextureRect" parent="GridBoard/Preview" unique_id=1175610008]
+offset_left = 425.0
+offset_top = 377.0
+offset_right = 495.0
+offset_bottom = 447.0
+mouse_filter = 2
+texture = ExtResource("saved_2_4yjbf")
+
+[node name="Tile_4_4" type="TextureRect" parent="GridBoard/Preview" unique_id=532146416]
+offset_left = 497.0
+offset_top = 377.0
+offset_right = 567.0
+offset_bottom = 447.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_5_4" type="TextureRect" parent="GridBoard/Preview" unique_id=151305409]
+offset_left = 569.0
+offset_top = 377.0
+offset_right = 639.0
+offset_bottom = 447.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_6_4" type="TextureRect" parent="GridBoard/Preview" unique_id=506063160]
+offset_left = 641.0
+offset_top = 377.0
+offset_right = 711.0
+offset_bottom = 447.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_7_4" type="TextureRect" parent="GridBoard/Preview" unique_id=254983486]
+offset_left = 713.0
+offset_top = 377.0
+offset_right = 783.0
+offset_bottom = 447.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_8_4" type="TextureRect" parent="GridBoard/Preview" unique_id=385612487]
+offset_left = 785.0
+offset_top = 377.0
+offset_right = 855.0
+offset_bottom = 447.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_9_4" type="TextureRect" parent="GridBoard/Preview" unique_id=511849244]
+offset_left = 857.0
+offset_top = 377.0
+offset_right = 927.0
+offset_bottom = 447.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_10_4" type="TextureRect" parent="GridBoard/Preview" unique_id=209412640]
+offset_left = 929.0
+offset_top = 377.0
+offset_right = 999.0
+offset_bottom = 447.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_11_4" type="TextureRect" parent="GridBoard/Preview" unique_id=2005888091]
+offset_left = 1001.0
+offset_top = 377.0
+offset_right = 1071.0
+offset_bottom = 447.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_0_5" type="TextureRect" parent="GridBoard/Preview" unique_id=369469217]
+offset_left = 209.0
+offset_top = 449.0
+offset_right = 279.0
+offset_bottom = 519.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_1_5" type="TextureRect" parent="GridBoard/Preview" unique_id=603517775]
+offset_left = 281.0
+offset_top = 449.0
+offset_right = 351.0
+offset_bottom = 519.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_2_5" type="TextureRect" parent="GridBoard/Preview" unique_id=1656253860]
+offset_left = 353.0
+offset_top = 449.0
+offset_right = 423.0
+offset_bottom = 519.0
+mouse_filter = 2
+texture = ExtResource("saved_2_4yjbf")
+
+[node name="Tile_3_5" type="TextureRect" parent="GridBoard/Preview" unique_id=771361255]
+offset_left = 425.0
+offset_top = 449.0
+offset_right = 495.0
+offset_bottom = 519.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_4_5" type="TextureRect" parent="GridBoard/Preview" unique_id=599310603]
+offset_left = 497.0
+offset_top = 449.0
+offset_right = 567.0
+offset_bottom = 519.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_5_5" type="TextureRect" parent="GridBoard/Preview" unique_id=1303633206]
+offset_left = 569.0
+offset_top = 449.0
+offset_right = 639.0
+offset_bottom = 519.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_6_5" type="TextureRect" parent="GridBoard/Preview" unique_id=1360644386]
+offset_left = 641.0
+offset_top = 449.0
+offset_right = 711.0
+offset_bottom = 519.0
+mouse_filter = 2
+texture = ExtResource("saved_2_4yjbf")
+
+[node name="Tile_7_5" type="TextureRect" parent="GridBoard/Preview" unique_id=1506226322]
+offset_left = 713.0
+offset_top = 449.0
+offset_right = 783.0
+offset_bottom = 519.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_8_5" type="TextureRect" parent="GridBoard/Preview" unique_id=1664275553]
+offset_left = 785.0
+offset_top = 449.0
+offset_right = 855.0
+offset_bottom = 519.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_9_5" type="TextureRect" parent="GridBoard/Preview" unique_id=1471028217]
+offset_left = 857.0
+offset_top = 449.0
+offset_right = 927.0
+offset_bottom = 519.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_10_5" type="TextureRect" parent="GridBoard/Preview" unique_id=536577209]
+offset_left = 929.0
+offset_top = 449.0
+offset_right = 999.0
+offset_bottom = 519.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_11_5" type="TextureRect" parent="GridBoard/Preview" unique_id=1239165584]
+offset_left = 1001.0
+offset_top = 449.0
+offset_right = 1071.0
+offset_bottom = 519.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_0_6" type="TextureRect" parent="GridBoard/Preview" unique_id=1035651712]
+offset_left = 209.0
+offset_top = 521.0
+offset_right = 279.0
+offset_bottom = 591.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_1_6" type="TextureRect" parent="GridBoard/Preview" unique_id=674087611]
+offset_left = 281.0
+offset_top = 521.0
+offset_right = 351.0
+offset_bottom = 591.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_2_6" type="TextureRect" parent="GridBoard/Preview" unique_id=1947085605]
+offset_left = 353.0
+offset_top = 521.0
+offset_right = 423.0
+offset_bottom = 591.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_3_6" type="TextureRect" parent="GridBoard/Preview" unique_id=5032839]
+offset_left = 425.0
+offset_top = 521.0
+offset_right = 495.0
+offset_bottom = 591.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_4_6" type="TextureRect" parent="GridBoard/Preview" unique_id=1233781562]
+offset_left = 497.0
+offset_top = 521.0
+offset_right = 567.0
+offset_bottom = 591.0
+mouse_filter = 2
+texture = ExtResource("saved_2_4yjbf")
+
+[node name="Tile_5_6" type="TextureRect" parent="GridBoard/Preview" unique_id=81683370]
+offset_left = 569.0
+offset_top = 521.0
+offset_right = 639.0
+offset_bottom = 591.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_6_6" type="TextureRect" parent="GridBoard/Preview" unique_id=1861681660]
+offset_left = 641.0
+offset_top = 521.0
+offset_right = 711.0
+offset_bottom = 591.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_7_6" type="TextureRect" parent="GridBoard/Preview" unique_id=1181624137]
+offset_left = 713.0
+offset_top = 521.0
+offset_right = 783.0
+offset_bottom = 591.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_8_6" type="TextureRect" parent="GridBoard/Preview" unique_id=1811183843]
+offset_left = 785.0
+offset_top = 521.0
+offset_right = 855.0
+offset_bottom = 591.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_9_6" type="TextureRect" parent="GridBoard/Preview" unique_id=587398383]
+offset_left = 857.0
+offset_top = 521.0
+offset_right = 927.0
+offset_bottom = 591.0
+mouse_filter = 2
+texture = ExtResource("saved_2_4yjbf")
+
+[node name="Tile_10_6" type="TextureRect" parent="GridBoard/Preview" unique_id=441994861]
+offset_left = 929.0
+offset_top = 521.0
+offset_right = 999.0
+offset_bottom = 591.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Tile_11_6" type="TextureRect" parent="GridBoard/Preview" unique_id=1982721627]
+offset_left = 1001.0
+offset_top = 521.0
+offset_right = 1071.0
+offset_bottom = 591.0
+mouse_filter = 2
+texture = ExtResource("saved_1_aijs4")
+
+[node name="Destination_0" type="Panel" parent="GridBoard/Preview" unique_id=45557079]
+z_index = 1
+offset_left = 1002.0
+offset_top = 162.0
+offset_right = 1070.0
+offset_bottom = 230.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("saved_StyleBoxFlat_clbls")
+
+[node name="House" type="TextureRect" parent="GridBoard/Preview/Destination_0" unique_id=805969847]
+layout_mode = 0
+anchor_right = 1.0
+offset_left = 12.0
+offset_right = -16.0
+offset_bottom = 37.0
+mouse_filter = 2
+texture = ExtResource("saved_3_11cjn")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ArrivedAnimal" type="TextureRect" parent="GridBoard/Preview/Destination_0" unique_id=207014456]
+visible = false
+layout_mode = 0
+offset_left = 27.0
+offset_top = 14.0
+offset_right = 49.0
+offset_bottom = 38.0
+mouse_filter = 2
+texture = ExtResource("saved_4_2kjks")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="GridBoard/Preview/Destination_0" unique_id=197383273]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.231373, 0.141176, 0.082353, 1)
+text = "Kéej"
+horizontal_alignment = 1
+vertical_alignment = 2
+autowrap_mode = 3
+
+[node name="Word_0" type="Panel" parent="GridBoard/Preview" unique_id=1937114311]
+z_index = 2
+offset_left = 210.0
+offset_top = 162.0
+offset_right = 278.0
+offset_bottom = 230.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("saved_StyleBoxFlat_imh4i")
+
+[node name="Icon" type="TextureRect" parent="GridBoard/Preview/Word_0" unique_id=430977362]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("saved_4_2kjks")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="GridBoard/Preview/Word_0" unique_id=212535277]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 2
+autowrap_mode = 3
+
+[node name="PathLine_0" type="Line2D" parent="GridBoard/Preview" unique_id=1354381405]
+visible = false
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="PathTip_0" type="Polygon2D" parent="GridBoard/Preview" unique_id=678189110]
+visible = false
+
+[node name="Destination_1" type="Panel" parent="GridBoard/Preview" unique_id=1559596677]
+z_index = 1
+offset_left = 1002.0
+offset_top = 306.0
+offset_right = 1070.0
+offset_bottom = 374.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("saved_StyleBoxFlat_nxm4f")
+
+[node name="House" type="TextureRect" parent="GridBoard/Preview/Destination_1" unique_id=1820853340]
+layout_mode = 0
+anchor_right = 1.0
+offset_left = 12.0
+offset_right = -16.0
+offset_bottom = 37.0
+mouse_filter = 2
+texture = ExtResource("saved_3_11cjn")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ArrivedAnimal" type="TextureRect" parent="GridBoard/Preview/Destination_1" unique_id=135220735]
+visible = false
+layout_mode = 0
+offset_left = 27.0
+offset_top = 14.0
+offset_right = 49.0
+offset_bottom = 38.0
+mouse_filter = 2
+texture = ExtResource("saved_5_arifa")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="GridBoard/Preview/Destination_1" unique_id=520173424]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.231373, 0.141176, 0.082353, 1)
+text = "K'éek'en"
+horizontal_alignment = 1
+vertical_alignment = 2
+autowrap_mode = 3
+
+[node name="Word_1" type="Panel" parent="GridBoard/Preview" unique_id=906453252]
+z_index = 2
+offset_left = 210.0
+offset_top = 306.0
+offset_right = 278.0
+offset_bottom = 374.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("saved_StyleBoxFlat_ud3mx")
+
+[node name="Icon" type="TextureRect" parent="GridBoard/Preview/Word_1" unique_id=1529995667]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("saved_5_arifa")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="GridBoard/Preview/Word_1" unique_id=682381516]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 2
+autowrap_mode = 3
+
+[node name="PathLine_1" type="Line2D" parent="GridBoard/Preview" unique_id=1116961533]
+visible = false
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="PathTip_1" type="Polygon2D" parent="GridBoard/Preview" unique_id=1604961742]
+visible = false
+
+[node name="Destination_2" type="Panel" parent="GridBoard/Preview" unique_id=2022556300]
+z_index = 1
+offset_left = 1002.0
+offset_top = 450.0
+offset_right = 1070.0
+offset_bottom = 518.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("saved_StyleBoxFlat_l8l5s")
+
+[node name="House" type="TextureRect" parent="GridBoard/Preview/Destination_2" unique_id=2019498919]
+layout_mode = 0
+anchor_right = 1.0
+offset_left = 12.0
+offset_right = -16.0
+offset_bottom = 37.0
+mouse_filter = 2
+texture = ExtResource("saved_3_11cjn")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ArrivedAnimal" type="TextureRect" parent="GridBoard/Preview/Destination_2" unique_id=724391753]
+visible = false
+layout_mode = 0
+offset_left = 27.0
+offset_top = 14.0
+offset_right = 49.0
+offset_bottom = 38.0
+mouse_filter = 2
+texture = ExtResource("saved_6_4eiv4")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="GridBoard/Preview/Destination_2" unique_id=1634277290]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.231373, 0.141176, 0.082353, 1)
+text = "Ma'ax"
+horizontal_alignment = 1
+vertical_alignment = 2
+autowrap_mode = 3
+
+[node name="Word_2" type="Panel" parent="GridBoard/Preview" unique_id=1940195643]
+z_index = 2
+offset_left = 210.0
+offset_top = 450.0
+offset_right = 278.0
+offset_bottom = 518.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("saved_StyleBoxFlat_4refr")
+
+[node name="Icon" type="TextureRect" parent="GridBoard/Preview/Word_2" unique_id=30735738]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("saved_6_4eiv4")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="GridBoard/Preview/Word_2" unique_id=82317303]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+vertical_alignment = 2
+autowrap_mode = 3
+
+[node name="PathLine_2" type="Line2D" parent="GridBoard/Preview" unique_id=208943189]
+visible = false
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="PathTip_2" type="Polygon2D" parent="GridBoard/Preview" unique_id=987607074]
+visible = false
+
+[node name="KeyboardCursor" type="Panel" parent="GridBoard/Preview" unique_id=949785686]
+visible = false
+z_index = 20
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("saved_7_p8jnd")
