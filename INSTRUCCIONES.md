@@ -32,7 +32,7 @@ PauseMenu="*res://scenes/components/PauseMenu.tscn"
 `GameManager` conserva el catálogo canónico de vocabulario, el orden de los niveles, las palabras aprendidas, los puntos mágicos y el guardado local.
 
 La configuración de contenido, arte, controles y plantillas se explica en
-[Configuración desde el editor](GUIA_INSPECTOR.md). Los ejercicios de los mundos
+[Configuración desde el editor](INSTRUCCIONES.md#configuración-esencial). Los ejercicios de los mundos
 2–5 usan recursos `ExerciseSet` en `data/exercises/`; las ilustraciones y
 expresiones se asignan en `data/visual_catalog.tres`.
 
@@ -130,7 +130,7 @@ nombres semánticos, entre ellas:
 - `KalinCreamPanel`, `KalinDialoguePanel` y `KalinCompletionPanel` para paneles.
 - `KalinPrimaryButton`, `KalinNounButton` y `KalinAdjectiveButton` para botones.
 - `KalinNounSlot` y `KalinAdjectiveSlot` para los espacios de construcción de frases.
-- `KalinBookCard` y `KalinAudioButton` para el Libro de Hechizos.
+- `KalinBookCard` para las páginas y `KalinSecondaryButton` para su pronunciación.
 
 Al crear una interfaz nueva, asigna `kalin_theme.tres` al `Control` superior y
 elige la variante adecuada en **Theme Type Variation**. Conserva en los scripts
@@ -175,7 +175,7 @@ la escena representa el problema automáticamente en un bucle continuo; Continua
 está disponible sin tocar la animación. Los
 checkpoints narrativos guardan `revision = 2` y migran las posiciones de los
 capítulos abreviados. `PauseMenu` es el autoload que gestiona `Esc` sin saltar
-capítulos. Ver [REVISION_UX_VISUAL.md](REVISION_UX_VISUAL.md) para los componentes
+capítulos. Ver [REVISION_UX_VISUAL.md](APRENDIZAJE_Y_MISION.md) para los componentes
 compartidos de presentación y ayuda.
 
 | Propiedad | Uso |
@@ -294,9 +294,14 @@ Para agregar una exploración:
 4. Regístrala en `GameManager.SCENE_PATHS` con una clave `worldN_exploreM`.
 5. Cambia el `next_scene_key` de la escena anterior para que apunte a ella.
 
-Arte de las exploraciones: el cielo (`bg_isla_cielo.svg`, 1700 × 720) debe ser
+Arte de las exploraciones: el cielo (`bg_isla_cielo.svg`, 2560 × 720) debe ser
 más ancho que la pantalla para el parallax; el terreno deja transparente la
 parte alta para que se vea el cielo; los objetos viven en `Arte/exploracion/`.
+Los fondos de aldea (`bg_aldea_encargos.svg` y `bg_aldea_portal.svg`) tienen
+5120 × 720, con margen después del sendero. La cámara obtiene sus límites
+horizontales del terreno, salvo que se hayan configurado explícitamente en el
+Inspector. El fondo del portal se usa en la misión final; la visita de práctica
+conserva la aldea habitual. Kalin se desplaza con saltitos usando su dibujo original.
 Se mantiene el estilo de formas planas y degradados suaves. Para sombras y
 transparencias usa `fill-opacity` en lugar de colores `rgba(...)`: el
 importador SVG de Godot dibuja `rgba(...)` como negro sólido.
@@ -315,7 +320,7 @@ El progreso se guarda automáticamente como `user://kalin_save.json`. Incluye:
 - puntos mágicos;
 - palabras aprendidas;
 - identificadores `w<numero>_l<numero>` de los niveles completados;
-- escena pendiente, estado de cada escena y tutoriales ya practicados (formato 2).
+- escena pendiente, estado de cada escena y tutoriales ya practicados (formato 3).
 
 **Volver a empezar** pide confirmación antes de eliminar la partida. Los datos inválidos se descartan y un JSON dañado genera una advertencia sin impedir que el juego inicie. `SaveRepository.CURRENT_VERSION` es la versión canónica. El formato 1 conserva palabras, puntos y niveles; sólo el formato 0 infiere niveles desde vocabulario antiguo.
 
@@ -323,7 +328,20 @@ Para una escena nueva, implementar `get_checkpoint_state() -> Dictionary` y rest
 
 ## Audio pendiente
 
+La presentación del libro se controla desde `scripts/ui/BookMotion.gd`:
+apertura de 0.49 s y cierre de 0.44 s. `LibroHechizos.gd` anima páginas
+y pestañas en 0.25 s, administra el foco y conserva la pausa hasta terminar
+el cierre. Al abrirlo desde una interfaz nueva, pasar el botón real con
+`libro.show_book(boton)` para que el viaje de ida y vuelta use su posición.
+Los efectos visuales no se guardan como progreso.
+
 Los audios todavía no están grabados. Cuando estén disponibles, colócalos en `Arte/audio/` como archivos OGG. Los nombres técnicos eliminan acentos, apóstrofes y espacios para que sean portables entre sistemas. La tabla completa está en [Arte/audio/README.md](Arte/audio/README.md).
+
+El botón permanece disponible: sin archivo muestra un aviso silencioso; con
+archivo reproduce la grabación. Cambiar de página o cerrar detiene la voz.
+La prueba `tests/validate_book.gd` comprueba pausa, foco, interrupciones,
+botones de origen, numeración y audio pendiente. Acepta
+`-- --capture=<carpeta absoluta>` con renderer real para guardar capturas.
 
 ## Comprobación antes de integrar cambios
 
@@ -356,3 +374,145 @@ aldea lleva al Capítulo 1.
 7. Repetir el Mundo 4 con las palabras ya aprendidas.
 8. Completar el Mundo 5 y confirmar que el portal llegue al 100 %.
 9. Abrir el libro y comprobar ilustraciones, pausa del ejercicio y navegación por páginas.
+
+
+## Interfaz compacta y ampliación de la aventura
+
+Los perfiles de `data/layouts/` ajustan rectángulos y tipografía al modo compacto
+sin sustituir los nodos guardados en las escenas. El componente `ScreenLayout`
+permite activar `preview_compact` al ejecutar para comprobar esta composición.
+`RecallPanel` usa una plantilla `RecallFragment.tscn` para los bloques variables.
+
+Los encargos tempranos heredan `Mision_EncargosAldea.tscn`: se editan seis recursos
+`VillageTask`, agrupados en tres parejas por destinatario. Los encargos comienzan
+por escritura y activan completar y bloques después de los errores. Se reutilizan las combinaciones ya
+registradas en el vocabulario. La despedida se configura con tres `ExerciseEntry`
+en `Despedida_LosRecuerdos.tscn`.
+
+Ejecutar `tools/validate.ps1` antes de integrar cambios. El detalle del recorrido,
+los contextos semánticos y la migración al guardado 5 están en
+[MEJORAS_AVENTURA.md](MEJORAS_AVENTURA.md).
+
+## Ayuda de depuración para contestar
+
+`DebugAnswer` es un autoload con un botón flotante y el atajo F4. Consulta los
+métodos `debug_can_answer()` y `debug_answer()` de la escena actual. Cada escena
+usa sus respuestas de contenido (incluidas las variantes barajadas), marca el
+intento como apoyado y llama al mismo envío que utiliza el jugador. No cambia
+de nivel ni adelanta el resultado. `RecallPanel.debug_fill()` conserva el modo
+de escritura, completar o bloques.
+
+Para añadir ejercicios, implementar ambos métodos y bloquearlos con
+`OS.is_debug_build()`. El autoload vuelve a comprobar disponibilidad al pulsar;
+rechaza escenas en transición y la pausa, que también usa el libro. En Release
+se elimina antes de crear interfaz; en exportaciones Debug permanece activo.
+`tests/validate_debug_answer.gd` comprueba F4, botón, todas las familias de
+actividad y que estas respuestas no generen evidencia de recuerdo sin ayuda.
+
+## Casillas y apoyos automáticos
+
+`RecallPanel.advance_support()` conserva las partes correctas y avanza escritura →
+completar → bloques. `ready_to_submit()` evita evaluar campos vacíos o piezas pendientes.
+Los controladores llaman estos métodos en su validación habitual; no hay cambio de
+modalidad accesible al jugador. Las tarjetas de presentación inicial se mantienen.
+
+`RecallFragment` representa piezas y casillas. Cada fragmento tiene un identificador
+estable, incluso si dos textos son iguales. `move_fragment()` intercambia posiciones,
+`return_fragment()` devuelve al banco y `RecallBlockBank` admite arrastres de retorno.
+El estado guarda matrices de identificadores y huecos (-1), validadas para impedir
+duplicaciones o índices inválidos. `show_result()` reutiliza el panel para el acierto.
+Los bloques utilizados quedan atenuados en el banco, conservando su sitio; pulsarlos
+los devuelve. La vista previa de arrastre usa un contenedor con la pieza centrada.
+`validate_block_interactions.gd` comprueba las transiciones, entrada nativa de arrastre,
+intercambio, devolución, guardado, evidencia independiente, peticiones y profundidad.
+
+`VillageTaskVariation.distinct()` compara las combinaciones de las tres parejas de
+necesidades. Prioriza objetos distintos y después conserva las preferencias de azar
+o aprendizaje. Las peticiones abiertas, conocidas y resueltas no se modifican al cargar.
+Si el contenido futuro no ofrece tres objetos distintos, selecciona la combinación
+con menos repeticiones, sin bucles de reintento.
+
+Las misiones tempranas sobrescriben `Spots/Salida` para representar el siguiente
+destino de la historia: entrada al taller tras Rincones para compartir y la casa
+del escenario tras la fiesta. El portal de la misión base sólo corresponde al
+tramo posterior a la comida. `completion_objective` configura el aviso al terminar
+los tres encargos, independientemente del diálogo y la ruta de salida.
+
+## Mesa de composición y habitantes
+
+`RecallPanel.set_workspace("taller")` y `set_workspace("comida")` activan
+`RecallWorkbench`. Sólo refleja lo escrito; no debe recibir las soluciones ni
+interpretar aciertos. Las tablillas permiten volver al campo con toque o teclado.
+El modo de bloques conserva su tablero independiente.
+
+`VillageResidents` selecciona tres destinatarios entre los doce animales presentados
+y añade tres vecinos para saludar. Instalarlo antes de `ExplorationScene._ready()`
+permite restaurar también las conversaciones de esos vecinos. `residents` es un campo
+opcional del guardado 5; una partida antigua conserva los dueños de sus encargos.
+La despedida mantiene sus tres amigos narrativos y añade vecinos del mismo catálogo.
+
+Las viviendas de `Arte/aldea/` y los fondos sin casas incrustadas son SVG editables
+y no dependen de servicios externos. Añadir un animal requiere su ilustración, saludo y casa en `VillageResidents`;
+el vocabulario marcado como futuro queda excluido.
+
+`MeaningIllustration.world_object` separa el mobiliario del mundo de los ejemplos de
+comparación. `picture_rect()` devuelve el área real de la textura ajustada; las poses
+de `VillageUseMotion` utilizan esa área para centrar y escalar al ocupante. No se debe
+volver a animar la escala del mueble durante la celebración, pues separaría su pose.
+`validate_village_life.gd` verifica estos contratos y genera capturas con
+`-- --capture=<carpeta absoluta>` sin `--headless`.
+
+## Editar las frases de la aldea
+
+El banco de `data/dialogue/VillageDialogueCatalog.gd` organiza los textos por nombre
+del animal. `greetings` contiene sus cinco saludos. `tasks` usa la clave
+`objeto|cualidad` (por ejemplo, `mayak|nojoch`); cada entrada contiene dos peticiones
+alternativas y el agradecimiento al completar el encargo. Mantener las dos variantes
+igualmente claras sobre el objeto y la cualidad, sin añadir palabras mayas nuevas.
+
+`VillageDialogue.personalize()` aplica el texto a las copias del recurso en paseos
+y misiones. La semilla, escena, animal y pedido fijan la variante durante la visita.
+No modificar el texto desde el diálogo o el diario: ambos leen el mismo `VillageTask`.
+Para añadir un pedido, cubrirlo para todos los habitantes y ejecutar
+`validate_village_dialogue.gd`; la prueba detecta combinaciones sin personalizar.
+
+El nodo `VillageDialogue`, instalado por `VillageResidents`, rota los saludos al
+cerrar la conversación. `ExplorationScene` guarda sus contadores por animal en
+`greeting_visits`. Los amigos que ya recibieron su encargo también cambian de saludo,
+manteniendo después el agradecimiento por el mismo resultado. Los amigos de la
+despedida conservan sus peticiones narrativas; sus vecinos sí utilizan este banco.
+
+## Poses y capas de los resultados
+
+`VillageUseArt` referencia los SVG editables de `Arte/aldea/uso/`. Las nueve variantes
+del catálogo ampliado se regeneran con `python tools/build_combination_art.py`. El arte original del catálogo se conserva
+para los ejercicios. En el escenario, `MeaningIllustration` representa la hamaca
+con fondo y frente separados; utiliza adornos propios para bonita/fuerte y aroma
+para deliciosa. `VillageUseMotion` coloca al ocupante entre esas capas o al lado
+del objeto y calcula su apoyo a partir del área visible de la textura.
+
+Capas efectivas: casas 0, mueble 1, animal 2, tejido frontal 3, Kalin 4, opciones 6.
+Mantener esta relación en paseos y misiones, cuyos contenedores antes tenían
+profundidades diferentes. Kay usa la orilla con el mueble al lado. `WorldMat` apoya
+platos, alimentos y agua; `WorldFront` sólo aparece con la hamaca.
+
+`validate_village_composition.gd` revisa todas las combinaciones y el regreso desde
+JSON. Ejecutarla con `-- --capture=<carpeta absoluta>` y renderer real para revisar
+las 37 láminas del atlas y las capturas en contexto después de cambiar un SVG.
+
+## Ampliar las combinaciones permitidas
+
+Editar la lista cerrada de `scripts/data/CombinationCatalog.gd`, no formar parejas
+arbitrarias. Actualmente incluye 28 combinaciones y nueve peticiones simples.
+`CombinationVariation` selecciona seis retos de taller/comida y tres necesidades
+por visita, conservadas como claves semánticas en el checkpoint. El Inspector de
+Taller y Yo quiero permite desactivar `vary_combinations`; los recursos alternativos
+de ejercicios conservan sus retos de autor.
+
+Para una combinación nueva, añadir o revisar sus textos para los doce animales en
+`data/dialogue/VillageDialogueCatalog.gd` y su representación en `VillageUseArt`.
+`python tools/build_combination_dialogue.py` conserva las frases existentes y añade
+las ausentes a partir de los contextos propios de cada animal y objeto; revisar el
+resultado editorialmente. El catálogo contiene 888 peticiones, 444 agradecimientos
+y 60 saludos. Ejecutar `tools/validate.ps1` y revisar el atlas renderizado después de
+cambiar textos, cualidades o SVG. Los guardados pendientes anteriores no se sustituyen.

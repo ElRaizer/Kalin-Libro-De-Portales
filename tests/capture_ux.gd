@@ -56,6 +56,9 @@ func _run() -> void:
 	await _shot("camino_saltito")
 	while current_scene._arrival_animating:
 		await process_frame
+	if current_scene._naming_pending:
+		current_scene.recall.first.text = board.words[0].maya_word
+		current_scene._submit_name()
 	await _shot("camino_recuperado")
 	current_scene._close_dialogue()
 	await _shot("caminos")
@@ -91,7 +94,7 @@ func _run() -> void:
 	await _shot("peticion_continuar")
 	current_scene.round_index = 2
 	current_scene._show_round()
-	current_scene._select_food("pak'al")
+	current_scene._select_food("ich")
 	await _shot("fruta_sin_tamano")
 	current_scene._select_modifier("nojoch")
 	await _shot("fruta_con_tamano")
@@ -103,10 +106,12 @@ func _run() -> void:
 	await _scene("world5_level1", "portal")
 	manager.words_learned = manager.VOCABULARY.duplicate(true)
 	current_scene.libro.show_book()
+	await current_scene.libro.motion.opened
 	current_scene.libro._spread_index = 7
 	current_scene.libro._render_spread()
 	await _shot("libro")
 	current_scene.libro.hide_book()
+	await current_scene.libro.motion.closed
 	manager.words_learned.clear()
 	await _scene("world1_story1", "historia")
 	current_scene._next_beat()
@@ -133,7 +138,7 @@ func _gallery() -> void:
 	title.add_theme_font_size_override("font_size", 28)
 	title.add_theme_color_override("font_color", Color("176b67"))
 	canvas.add_child(title)
-	var words: Array[String] = ["Peek'", "mayak", "lak", "ch'áak", "chan", "janal", "ja'", "ja'as", "pak'al", "K'úum", "mejen", "nojoch", "Jats'uts", "ki'", "jach'", "Bix a beel", "Yuum bo'otik", "Tak ti' uláak' k'iin"]
+	var words: Array[String] = ["Peek'", "mayak", "lak", "k'áan", "k'áanche'", "janal", "ja'", "ja'as", "ich", "K'úum", "mejen", "nojoch", "Jats'uts", "ki'", "chich", "Bix a beel", "Yuum bo'otik", "Tak ti' uláak' k'iin"]
 	for index: int in range(words.size()):
 		var art := TextureRect.new()
 		art.texture = load(manager.get_book_illustration(words[index]))

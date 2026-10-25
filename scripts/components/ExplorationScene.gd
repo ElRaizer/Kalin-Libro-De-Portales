@@ -114,13 +114,14 @@ func _ready() -> void:
 			_animal_bases[animal] = (animal as Sprite2D).position
 	_place_kalin(_min_x)
 	guide = $LearningGuide
+	add_to_group("comfort_visuals")
 	_kalin_base_scale = kalin_sprite.scale
 	_kalin_base_position = kalin_sprite.position
 	_kalin_base_rotation = kalin_sprite.rotation
 	continue_button.pressed.connect(advance_dialogue)
 	$UI/HelpButton.pressed.connect(_show_help)
 	$UI/MenuButton.pressed.connect(_on_menu_pressed)
-	var state := GameManager.get_scene_state(self)
+	var state: Dictionary = GameManager.get_scene_state(self)
 	var examined: Variant = state.get("examined", [])
 	for spot: ExplorationSpot in spots:
 		if examined is Array and str(spot.name) in examined:
@@ -135,7 +136,7 @@ func _ready() -> void:
 	_update_counter()
 	var active_name := str(state.get("active", ""))
 	for spot: ExplorationSpot in spots:
-		if str(spot.name) == active_name and not spot.examined:
+		if str(spot.name) == active_name and (not spot.examined or spot.has_meta("village_neighbour") or spot.has_meta("village_resident")):
 			open_spot(spot)
 			break
 	if not _dialogue.is_open() and not _intro_done and not intro_lines.is_empty():
@@ -209,15 +210,17 @@ func ground_y(x: float) -> float:
 
 func _configure_camera() -> void:
 	var viewport_size: Vector2 = get_viewport_rect().size
+	var terrain := $Terreno as Sprite2D
+	var terrain_bounds: Rect2 = terrain.get_global_transform() * terrain.get_rect()
 	# Sólo completar los límites sin configurar; los del Inspector tienen prioridad.
 	if camera.limit_left == -10000000:
-		camera.limit_left = 0
+		camera.limit_left = ceili(terrain_bounds.position.x)
 	if camera.limit_top == -10000000:
 		camera.limit_top = 0
 	if camera.limit_bottom == 10000000:
 		camera.limit_bottom = int(viewport_size.y)
 	if camera.limit_right == 10000000:
-		camera.limit_right = int(maxf(_max_x + viewport_size.x * 0.1, viewport_size.x))
+		camera.limit_right = floori(terrain_bounds.end.x)
 
 ## Límite derecho actual: el primer obstáculo sin resolver o el final.
 func walk_limit() -> float:
@@ -266,7 +269,8 @@ func walk(direction: float, delta: float) -> void:
 	guide.stop()
 	_place_kalin(new_x)
 	_walk_phase += moved / STEP_LENGTH * PI
-	var stride: float = sin(_walk_phase)
+	var stride: float = 0.0 if get_node("/root/AccessibilityManager").reduced_motion else sin(_walk_phase)
+	# La ilustración se desplaza entera: saltitos y balanceo de recorte.
 	kalin_sprite.position.y = _kalin_base_position.y - absf(stride) * WALK_BOUNCE
 	kalin_sprite.rotation = _kalin_base_rotation + stride * WALK_TILT
 	kalin_sprite.scale = _kalin_base_scale
@@ -278,15 +282,24 @@ func _place_kalin(x: float) -> void:
 func _idle() -> void:
 	kalin_sprite.position.y = lerpf(kalin_sprite.position.y, _kalin_base_position.y, 0.3)
 	kalin_sprite.rotation = lerpf(kalin_sprite.rotation, _kalin_base_rotation, 0.3)
-	var breath: float = 1.0 + sin(_time * BREATH_SPEED) * BREATH_SCALE
+	var breath: float = 1.0 if get_node("/root/AccessibilityManager").reduced_motion else 1.0 + sin(_time * BREATH_SPEED) * BREATH_SCALE
 	kalin_sprite.scale = _kalin_base_scale * Vector2(1.0, breath)
+
+func apply_comfort_settings() -> void:
+	var preferences := get_node("/root/AccessibilityManager")
+	if preferences.reduced_motion:
+		_idle()
+	if preferences.instant_text and _dialogue.is_open():
+		if _dialogue.text_tween and _dialogue.text_tween.is_valid():
+			_dialogue.text_tween.kill()
+		dialogue_text.visible_ratio = 1.0
 
 func _walk_to_point(world_point: Vector2) -> void:
 	_pending_spot = null
 	for spot: ExplorationSpot in spots:
 		if spot.can_interact() and spot.contains_point(world_point):
 			_pending_spot = spot
-			world_point.x = spot.global_position.x - signf(spot.global_position.x - kalin.position.x) * spot.reach_radius * 0.5
+			world_point.x = spot.global_position.x - signf(spot.global_position.x - kalin.position.x) * spot.reach_radius * 0.8
 			break
 	_target_x = clampf(world_point.x, _min_x, _max_x)
 	_has_target = true
@@ -341,6 +354,9 @@ func _on_prompt_pressed() -> void:
 func open_spot(spot: ExplorationSpot) -> void:
 	if not _can_walk():
 		return
+	var village_dialogue := get_node_or_null("VillageDialogue") as VillageDialogue
+	if village_dialogue:
+		village_dialogue.prepare(spot)
 	_active_spot = spot
 	_has_target = false
 	_pending_spot = null
@@ -410,6 +426,9 @@ func _on_dialogue_finished() -> void:
 	var spot: ExplorationSpot = _active_spot
 	_active_spot = null
 	if spot != null:
+		var village_dialogue := get_node_or_null("VillageDialogue") as VillageDialogue
+		if village_dialogue:
+			village_dialogue.finish(spot)
 		_close_spot(spot)
 	else:
 		_intro_done = true
@@ -433,13 +452,13 @@ func _update_arrow() -> void:
 		if spot.is_goal and spot.global_position.x > kalin.position.x + get_viewport_rect().size.x * 0.4:
 			goal_ahead = true
 	arrow.visible = goal_ahead and _can_walk() and _nearby_spot == null
-	arrow.position.x = _arrow_base_x + sin(_time * ARROW_SPEED) * ARROW_BOB
+	arrow.position.x = _arrow_base_x + (0.0 if get_node("/root/AccessibilityManager").reduced_motion else sin(_time * ARROW_SPEED) * ARROW_BOB)
 
 func _animate_animals() -> void:
 	var index: int = 0
 	for animal: Sprite2D in _animal_bases:
 		var base: Vector2 = _animal_bases[animal]
-		var hop: float = absf(sin(_time * ANIMAL_HOP_SPEED + index * 1.3))
+		var hop: float = 0.0 if get_node("/root/AccessibilityManager").reduced_motion else absf(sin(_time * ANIMAL_HOP_SPEED + index * 1.3))
 		animal.position = base + Vector2(0.0, -hop * ANIMAL_HOP)
 		index += 1
 
@@ -461,21 +480,34 @@ func _go_to_next_scene() -> void:
 func _show_help() -> void:
 	if _dialogue.is_open() or _navigating:
 		return
+	var closest: ExplorationSpot
+	var distance := INF
 	for spot: ExplorationSpot in spots:
-		if not spot.examined and not spot.is_goal and spot.position.x > kalin.position.x:
-			var transform := get_viewport().get_canvas_transform()
-			var point := transform * spot.global_position
-			if point.x < 1200:
-				guide.demonstrate([point + Vector2(0, -70), point + Vector2(0, -45)])
-				return
-	guide.demonstrate([Vector2(720, 540), Vector2(900, 540)])
+		if spot.examined or not spot.can_interact() or not spot.sprite.is_visible_in_tree():
+			continue
+		var point := spot.sprite.get_global_transform_with_canvas() * spot.sprite.get_rect().get_center()
+		if get_viewport_rect().grow(-50).has_point(point) and absf(spot.position.x - kalin.position.x) < distance:
+			closest = spot
+			distance = absf(spot.position.x - kalin.position.x)
+	if closest:
+		guide.click_world(closest.sprite, closest.sprite.get_rect().get_center())
+		return
+	# El movimiento por el mundo también se inicia con un clic, no arrastrando.
+	var ahead := clampf(kalin.position.x + 260, _min_x, walk_limit())
+	if absf(ahead - kalin.position.x) < ARRIVE_DISTANCE:
+		ahead = clampf(kalin.position.x - 200, _min_x, _max_x)
+	guide.click_world(self, to_local(Vector2(ahead, ground_y(ahead))))
 
 func get_checkpoint_state() -> Dictionary:
 	var examined: Array[String] = []
 	for spot: ExplorationSpot in spots:
 		if spot.examined:
 			examined.append(str(spot.name))
-	return {"x": kalin.position.x, "examined": examined, "intro_done": _intro_done, "active": str(_active_spot.name) if _active_spot != null else "", "line": _dialogue.line_index if _dialogue.is_open() else 0}
+	var state := {"x": kalin.position.x, "examined": examined, "intro_done": _intro_done, "active": str(_active_spot.name) if _active_spot != null else "", "line": _dialogue.line_index if _dialogue.is_open() else 0}
+	var village_dialogue := get_node_or_null("VillageDialogue") as VillageDialogue
+	if village_dialogue:
+		state.greeting_visits = village_dialogue.greeting_visits.duplicate()
+	return state
 
 func _on_menu_pressed() -> void:
 	GameManager.go_to_scene("main_menu")

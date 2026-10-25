@@ -1,0 +1,70 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/world4/Mision_EncargosAldea.tscn" id="base"]
+[ext_resource type="Script" path="res://scripts/data/VillageTask.gd" id="task"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_habitada.svg" id="background"]
+[ext_resource type="Texture2D" path="res://Arte/exploracion/entrada_taller.svg" id="workshop_exit"]
+
+[sub_resource type="Resource" id="task_0"]
+script = ExtResource("task")
+requester = "Miis"
+request = "Quiero reunir a mis amigos para comer. Tráeme una mesa."
+item = "mayak"
+quality = ""
+success = "¡Aquí nos sentaremos juntos! Guardaré un sitio para ti."
+
+[sub_resource type="Resource" id="task_1"]
+script = ExtResource("task")
+requester = "Miis"
+request = "Después de explorar me gusta descansar. Necesito una hamaca."
+item = "k'áan"
+quality = ""
+success = "Ahora tengo mi rincón para descansar."
+
+[sub_resource type="Resource" id="task_2"]
+script = ExtResource("task")
+requester = "Peek'"
+request = "Vigilaré el sendero desde mi casa. Necesito una silla."
+item = "k'áanche'"
+quality = ""
+success = "Desde aquí cuidaré el camino de nuestros amigos."
+
+[sub_resource type="Resource" id="task_3"]
+script = ExtResource("task")
+requester = "Peek'"
+request = "Hoy recorrí todos los caminos. Tráeme una hamaca para descansar."
+item = "k'áan"
+quality = ""
+success = "¡Un descanso bien ganado! Luego volveré al sendero."
+
+[sub_resource type="Resource" id="task_4"]
+script = ExtResource("task")
+requester = "Kaax"
+request = "Voy a servir la merienda. Necesito un plato."
+item = "lak"
+quality = ""
+success = "¡Ya puedo servir la merienda a mis amigos!"
+
+[sub_resource type="Resource" id="task_5"]
+script = ExtResource("task")
+requester = "Kaax"
+request = "Ya están todos reunidos. Necesito comida para compartir."
+item = "janal"
+quality = ""
+success = "¡La merienda está lista! Tú también eres parte de la aldea."
+
+[node name="Mision_RinconesDeLaCasa" instance=ExtResource("base")]
+chapter_title = "Rincones para compartir"
+completion_objective = "¡Listo! El taller nos espera →"
+next_scene_key = "world2_story1"
+tasks = Array[ExtResource("task")]([SubResource("task_0"), SubResource("task_1"), SubResource("task_2"), SubResource("task_3"), SubResource("task_4"), SubResource("task_5")])
+intro_lines = Array[String](["Mis palabras ya crean objetos. Ahora los llevaré hasta mis amigos para preparar sus rincones."])
+
+[node name="Terreno" parent="."]
+texture = ExtResource("background")
+
+[node name="Salida" parent="Spots"]
+prompt = "Ir al taller"
+lines = Array[String](["¡Todos recibieron sus encargos! Sigamos con nuestros amigos: el taller nos espera."])
+spot_texture = ExtResource("workshop_exit")
+sprite_offset = Vector2(0, -180)

@@ -26,7 +26,7 @@ color = Color(0.3, 0.55, 0.82, 1)
 
 [sub_resource type="Resource" id="objects_3"]
 script = ExtResource("entry")
-maya = "ch'áak"
+maya = "k'áan"
 animal = "Peek'"
 sprite = ExtResource("texture_4")
 request = "Necesito un lugar para dormir."
@@ -34,7 +34,7 @@ color = Color(0.55, 0.35, 0.75, 1)
 
 [sub_resource type="Resource" id="objects_4"]
 script = ExtResource("entry")
-maya = "chan"
+maya = "k'áanche'"
 animal = "Áak"
 sprite = ExtResource("texture_0")
 request = "Necesito algo para sentarme."

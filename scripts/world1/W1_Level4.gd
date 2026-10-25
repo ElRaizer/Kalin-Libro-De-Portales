@@ -19,7 +19,7 @@ func _toggle_preview() -> void:
 	for index: int in range(grid_board.words.size()):
 		var destination: Panel = grid_board.destination_nodes[index]
 		var label := destination.get_child(destination.get_child_count() - 1) as Label
-		label.text = grid_board.words[index].get_destination_text() if previewing else "?"
+		label.text = grid_board.words[index].spanish_word if previewing else "?"
 	grid_board.set_interaction_enabled(not previewing)
 	preview_button.text = "Listo →" if previewing else "Ver casas"
 	_set_instr("Observa las casas. Tú decides cuándo continuar." if previewing else "Recuerda las casas. Puedes volver a mirarlas.")

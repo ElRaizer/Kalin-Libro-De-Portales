@@ -6,6 +6,10 @@
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="3_theme"]
 [ext_resource type="PackedScene" path="res://scenes/components/WorldMap.tscn" id="editor_5"]
 [ext_resource type="PackedScene" path="res://scenes/components/ResetConfirmation.tscn" id="editor_6"]
+[ext_resource type="PackedScene" path="res://scenes/components/ScreenLayout.tscn" id="responsive"]
+[ext_resource type="Resource" path="res://data/layouts/menu.tres" id="layout_profile"]
+
+
 
 [node name="MainMenu" type="Node2D" unique_id=2139944658]
 script = ExtResource("1")
@@ -43,6 +47,9 @@ theme_override_colors/font_color = Color(1, 0.91, 0.55, 1)
 theme_override_font_sizes/font_size = 46
 text = "Kalin y el Libro de los Portales"
 horizontal_alignment = 1
+
+theme_override_constants/outline_size = 4
+theme_override_colors/font_outline_color = Color(0.08, 0.04, 0.14, 1)
 
 [node name="SubLabel" type="Label" parent="UI" unique_id=1097430836]
 offset_left = 120.0
@@ -174,6 +181,36 @@ horizontal_alignment = 1
 layout_mode = 3
 anchors_preset = 0
 
+[node name="ComfortButton" type="Button" parent="UI"]
+offset_left = 20.0
+offset_top = 10.0
+offset_right = 210.0
+offset_bottom = 52.0
+theme = ExtResource("3_theme")
+theme_type_variation = &"KalinSecondaryButton"
+text = "A tu ritmo"
+
+[node name="VisitButton" type="Button" parent="UI"]
+visible = false
+offset_left = 36.0
+offset_top = 555.0
+offset_right = 330.0
+offset_bottom = 615.0
+theme = ExtResource("3_theme")
+theme_type_variation = &"KalinSecondaryButton"
+text = "Visitar la aldea →"
+
+[node name="VisitHint" type="Label" parent="UI"]
+visible = false
+offset_left = 36.0
+offset_top = 624.0
+offset_right = 330.0
+offset_bottom = 676.0
+theme_override_colors/font_color = Color(0.9, 1, 0.9, 1)
+theme_override_font_sizes/font_size = 17
+text = "Tres encargos para practicar\na tu ritmo"
+horizontal_alignment = 1
+
 [node name="LibroHechizos" parent="." unique_id=1731784252 instance=ExtResource("2")]
 visible = false
 
@@ -181,3 +218,6 @@ visible = false
 [connection signal="pressed" from="UI/Center/VBox/BookBtn" to="." method="_on_book_pressed"]
 [connection signal="pressed" from="UI/Center/VBox/ResetBtn" to="." method="_on_reset_pressed"]
 [connection signal="pressed" from="UI/Center/VBox/QuitBtn" to="." method="_on_quit_pressed"]
+
+[node name="ScreenLayout" parent="." instance=ExtResource("responsive")]
+profile = ExtResource("layout_profile")

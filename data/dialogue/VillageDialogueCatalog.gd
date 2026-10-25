@@ -1,0 +1,2357 @@
+extends RefCounted
+
+## Banco explícito de peticiones y saludos. Nuevas combinaciones: tools/build_combination_dialogue.py.
+const ANIMALS := {
+	"Peek'": {
+		"greetings": [
+			"¡Kalin! Reconocí tus pasos desde mi porche. Ven a saludar.",
+			"Hoy recorrí el sendero. ¡Ya no hay ramas atravesadas!",
+			"Mis orejas escucharon que venías. ¿Cómo va tu aventura?",
+			"Estoy cuidando el camino para que todos lleguen a la aldea.",
+			"¡Qué gusto verte! Te guardé un lugar a la sombra del porche."
+		],
+		"tasks": {
+			"mayak|": [
+				"Quiero recibir a mis amigos en el porche. Necesito una mesa.",
+				"Traeré los platos al porche. ¿Me consigues una mesa?",
+				"¡La mesa está lista! Comeremos después de recorrer el sendero."
+			],
+			"k'áan|": [
+				"Mis patas necesitan descansar del paseo. Quiero una hamaca.",
+				"Ya terminé de cuidar el camino. ¿Me traes una hamaca?",
+				"¡Una hamaca para descansar mis patas! Gracias, Kalin."
+			],
+			"lak|": [
+				"Ya regresé del paseo y voy a comer. Necesito un plato.",
+				"Guardé mi porción junto al porche, pero me falta un plato.",
+				"¡Con mi plato podré comer antes del siguiente paseo!"
+			],
+			"k'áanche'|": [
+				"Quiero cuidar el sendero sentado en el porche. Necesito una silla.",
+				"Mis amigos pasarán por aquí. ¿Me traes una silla para esperarlos?",
+				"¡Desde esta silla veré llegar a nuestros amigos!"
+			],
+			"janal|": [
+				"Recorrí toda la aldea y tengo hambre. ¿Me traes comida?",
+				"Mis amigos y yo volvimos del paseo. Necesitamos comida para compartir.",
+				"¡La comida llegó! Después de caminar, compartir sabe mejor."
+			],
+			"mayak|nojoch": [
+				"Vendrá todo el grupo del paseo. Necesito una mesa grande.",
+				"Invité a muchos amigos al porche. ¿Me consigues una mesa grande?",
+				"¡En esta mesa grande cabe todo el grupo del paseo!"
+			],
+			"k'áanche'|chich": [
+				"Quiero sentarme sin que la silla se mueva. Necesito una silla fuerte para mi porche.",
+				"Cuidaré el sendero desde mi porche. Tráeme una silla fuerte.",
+				"¡Esta silla fuerte no se mueve! Podré cuidar el camino cómodo."
+			],
+			"k'áan|mejen": [
+				"En el rincón de mi porche sólo cabe una hamaca pequeña.",
+				"Quiero descansar junto a la entrada. Necesito una hamaca pequeña que quepa allí.",
+				"¡La hamaca pequeña cabe en mi porche! Descansaré un rato."
+			],
+			"k'áanche'|Jats'uts": [
+				"Quiero recibir a mis visitas con una silla bonita en el porche.",
+				"Estoy arreglando la entrada para mis amigos. Necesito una silla bonita.",
+				"¡Qué silla bonita! Mi porche está listo para recibir visitas."
+			],
+			"lak|Jats'uts": [
+				"Compartiremos la merienda después del paseo. Quiero un plato bonito.",
+				"Hoy comeremos juntos en mi porche. ¿Me traes un plato bonito?",
+				"¡Mi plato bonito está listo para la merienda del paseo!"
+			],
+			"janal|ki'": [
+				"Preparé una reunión en el porche. Necesito comida deliciosa para mis amigos.",
+				"El grupo del paseo llegará con hambre. ¿Traes comida deliciosa para compartir?",
+				"¡Qué comida deliciosa! Voy a llamar a nuestros compañeros de paseo."
+			],
+			"ja'|": [
+				"Tengo sed después de recorrer el sendero. ¿Me traes agua?",
+				"Acabo de volver de mi paseo por la aldea. Quiero agua para beber.",
+				"¡Gracias por el agua! Ya puedo descansar fresco en mi porche."
+			],
+			"ja'as|": [
+				"Quiero llevar un plátano para la merienda del paseo. Necesito un plátano.",
+				"¿Me traes un plátano? Quiero llevar un plátano para la merienda del paseo.",
+				"¡Un plátano! Lo compartiremos con mis amigos junto a mi porche."
+			],
+			"ich|": [
+				"Compartiremos fruta al volver del sendero. Necesito fruta.",
+				"¿Me traes fruta? Compartiremos fruta al volver del sendero.",
+				"¡Fruta! La compartiremos con mis amigos junto a mi porche."
+			],
+			"K'úum|": [
+				"Prepararé calabaza para mis compañeros del paseo. Necesito una calabaza.",
+				"¿Me traes una calabaza? Prepararé calabaza para mis compañeros del paseo.",
+				"¡Una calabaza! La compartiremos con mis amigos junto a mi porche."
+			],
+			"mayak|mejen": [
+				"Recibiremos al grupo del paseo en mi porche. Necesito una mesa pequeña.",
+				"¿Me traes una mesa pequeña? Recibiremos al grupo del paseo en mi porche.",
+				"¡Mesa pequeña! Nos reuniremos a comer junto a mi porche."
+			],
+			"mayak|Jats'uts": [
+				"Recibiremos al grupo del paseo en mi porche. Necesito una mesa bonita.",
+				"¿Me traes una mesa bonita? Recibiremos al grupo del paseo en mi porche.",
+				"¡Mesa bonita! Nos reuniremos a comer junto a mi porche."
+			],
+			"mayak|chich": [
+				"Recibiremos al grupo del paseo en mi porche. Necesito una mesa fuerte.",
+				"¿Me traes una mesa fuerte? Recibiremos al grupo del paseo en mi porche.",
+				"¡Mesa fuerte! Nos reuniremos a comer junto a mi porche."
+			],
+			"k'áanche'|mejen": [
+				"Quiero sentarme en mi porche a cuidar el camino. Necesito una silla pequeña.",
+				"¿Me traes una silla pequeña? Quiero sentarme en mi porche a cuidar el camino.",
+				"¡Silla pequeña! Ya podemos sentarnos a conversar junto a mi porche."
+			],
+			"k'áanche'|nojoch": [
+				"Quiero sentarme en mi porche a cuidar el camino. Necesito una silla grande.",
+				"¿Me traes una silla grande? Quiero sentarme en mi porche a cuidar el camino.",
+				"¡Silla grande! Ya podemos sentarnos a conversar junto a mi porche."
+			],
+			"k'áan|nojoch": [
+				"Descansaré mis patas después de recorrer el sendero. Necesito una hamaca grande.",
+				"¿Me traes una hamaca grande? Descansaré mis patas después de recorrer el sendero.",
+				"¡Hamaca grande! El descanso está listo junto a mi porche."
+			],
+			"k'áan|Jats'uts": [
+				"Descansaré mis patas después de recorrer el sendero. Necesito una hamaca bonita.",
+				"¿Me traes una hamaca bonita? Descansaré mis patas después de recorrer el sendero.",
+				"¡Hamaca bonita! El descanso está listo junto a mi porche."
+			],
+			"k'áan|chich": [
+				"Descansaré mis patas después de recorrer el sendero. Necesito una hamaca fuerte.",
+				"¿Me traes una hamaca fuerte? Descansaré mis patas después de recorrer el sendero.",
+				"¡Hamaca fuerte! El descanso está listo junto a mi porche."
+			],
+			"lak|mejen": [
+				"Voy a servir la merienda del grupo del paseo. Necesito un plato pequeño.",
+				"¿Me traes un plato pequeño? Voy a servir la merienda del grupo del paseo.",
+				"¡Plato pequeño! Serviremos la merienda junto a mi porche."
+			],
+			"lak|nojoch": [
+				"Voy a servir la merienda del grupo del paseo. Necesito un plato grande.",
+				"¿Me traes un plato grande? Voy a servir la merienda del grupo del paseo.",
+				"¡Plato grande! Serviremos la merienda junto a mi porche."
+			],
+			"ja'as|mejen": [
+				"Quiero llevar un plátano para la merienda del paseo. Necesito un plátano pequeño.",
+				"¿Me traes un plátano pequeño? Quiero llevar un plátano para la merienda del paseo.",
+				"¡Plátano pequeño! Lo compartiremos con mis amigos junto a mi porche."
+			],
+			"ja'as|nojoch": [
+				"Quiero llevar un plátano para la merienda del paseo. Necesito un plátano grande.",
+				"¿Me traes un plátano grande? Quiero llevar un plátano para la merienda del paseo.",
+				"¡Plátano grande! Lo compartiremos con mis amigos junto a mi porche."
+			],
+			"ja'as|Jats'uts": [
+				"Quiero llevar un plátano para la merienda del paseo. Necesito un plátano bonito.",
+				"¿Me traes un plátano bonito? Quiero llevar un plátano para la merienda del paseo.",
+				"¡Plátano bonito! Lo compartiremos con mis amigos junto a mi porche."
+			],
+			"ja'as|ki'": [
+				"Quiero llevar un plátano para la merienda del paseo. Necesito un plátano delicioso.",
+				"¿Me traes un plátano delicioso? Quiero llevar un plátano para la merienda del paseo.",
+				"¡Plátano delicioso! Lo compartiremos con mis amigos junto a mi porche."
+			],
+			"ich|mejen": [
+				"Compartiremos fruta al volver del sendero. Necesito una fruta pequeña.",
+				"¿Me traes una fruta pequeña? Compartiremos fruta al volver del sendero.",
+				"¡Fruta pequeña! La compartiremos con mis amigos junto a mi porche."
+			],
+			"ich|nojoch": [
+				"Compartiremos fruta al volver del sendero. Necesito una fruta grande.",
+				"¿Me traes una fruta grande? Compartiremos fruta al volver del sendero.",
+				"¡Fruta grande! La compartiremos con mis amigos junto a mi porche."
+			],
+			"ich|Jats'uts": [
+				"Compartiremos fruta al volver del sendero. Necesito una fruta bonita.",
+				"¿Me traes una fruta bonita? Compartiremos fruta al volver del sendero.",
+				"¡Fruta bonita! La compartiremos con mis amigos junto a mi porche."
+			],
+			"ich|ki'": [
+				"Compartiremos fruta al volver del sendero. Necesito una fruta deliciosa.",
+				"¿Me traes una fruta deliciosa? Compartiremos fruta al volver del sendero.",
+				"¡Fruta deliciosa! La compartiremos con mis amigos junto a mi porche."
+			],
+			"K'úum|mejen": [
+				"Prepararé calabaza para mis compañeros del paseo. Necesito una calabaza pequeña.",
+				"¿Me traes una calabaza pequeña? Prepararé calabaza para mis compañeros del paseo.",
+				"¡Calabaza pequeña! La compartiremos con mis amigos junto a mi porche."
+			],
+			"K'úum|nojoch": [
+				"Prepararé calabaza para mis compañeros del paseo. Necesito una calabaza grande.",
+				"¿Me traes una calabaza grande? Prepararé calabaza para mis compañeros del paseo.",
+				"¡Calabaza grande! La compartiremos con mis amigos junto a mi porche."
+			],
+			"K'úum|Jats'uts": [
+				"Prepararé calabaza para mis compañeros del paseo. Necesito una calabaza bonita.",
+				"¿Me traes una calabaza bonita? Prepararé calabaza para mis compañeros del paseo.",
+				"¡Calabaza bonita! La compartiremos con mis amigos junto a mi porche."
+			],
+			"K'úum|ki'": [
+				"Prepararé calabaza para mis compañeros del paseo. Necesito una calabaza deliciosa.",
+				"¿Me traes una calabaza deliciosa? Prepararé calabaza para mis compañeros del paseo.",
+				"¡Calabaza deliciosa! La compartiremos con mis amigos junto a mi porche."
+			]
+		}
+	},
+	"Miis": {
+		"greetings": [
+			"¡Kalin! Te vi llegar desde mi balcón. Baja la voz: estaba tomando una siesta.",
+			"Seguí una mariposa hasta el jardín. ¡Qué vueltas da!",
+			"Desde mi balcón se ven los techos de nuestros amigos.",
+			"Busqué un rayito de sol para estirarme. Aquí se está muy a gusto.",
+			"¡Ven a visitarme! Hoy dejé la escalera del balcón bien acomodada."
+		],
+		"tasks": {
+			"mayak|": [
+				"Invité a mis amigos a merendar bajo el balcón. Necesito una mesa.",
+				"Quiero apoyar los platos junto a mi escalera. ¿Me traes una mesa?",
+				"¡Una mesa bajo mi balcón! Aquí recibiremos a las visitas."
+			],
+			"k'áan|": [
+				"Después de perseguir mariposas quiero dormir. Necesito una hamaca.",
+				"Busqué un rincón para mi siesta bajo el balcón. ¿Me traes una hamaca?",
+				"¡Mi hamaca! Me acurrucaré aquí después de explorar."
+			],
+			"lak|": [
+				"Ya bajé del balcón para comer, pero me falta un plato.",
+				"La merienda espera junto a mi escalera. Necesito un plato para servirla.",
+				"¡Con mi plato listo podré merendar bajo el balcón!"
+			],
+			"k'áanche'|": [
+				"Quiero sentarme a mirar el jardín junto a mi escalera. Necesito una silla.",
+				"Después de jugar quiero descansar sentado. ¿Me traes una silla?",
+				"¡Desde esta silla podré mirar las mariposas del jardín!"
+			],
+			"janal|": [
+				"Jugué por toda la aldea y ahora tengo hambre. Quiero comida.",
+				"Mis visitas ya bajaron del balcón. Necesito comida para compartir.",
+				"¡Llegó la comida! Llamaré a mis visitas para merendar."
+			],
+			"mayak|nojoch": [
+				"Invité a todos a merendar bajo mi balcón. Necesito una mesa grande.",
+				"Mi mesa pequeña no alcanza para las visitas. Quiero una mesa grande junto al jardín.",
+				"¡Esta mesa grande tiene sitio para todas mis visitas!"
+			],
+			"k'áanche'|chich": [
+				"La silla se tambalea cuando me acomodo. Quiero una silla fuerte para descansar.",
+				"Quiero sentarme seguro junto al balcón. ¿Me traes una silla fuerte?",
+				"¡Esta silla fuerte me sostiene mientras me acomodo!"
+			],
+			"k'áan|mejen": [
+				"Mi rincón bajo la escalera es estrecho. Necesito una hamaca pequeña.",
+				"Quiero una siesta junto al balcón. Sólo cabe una hamaca pequeña en ese rincón.",
+				"¡La hamaca pequeña cabe justo bajo mi escalera!"
+			],
+			"k'áanche'|Jats'uts": [
+				"Estoy decorando la entrada bajo mi balcón. Necesito una silla bonita.",
+				"Mis visitas verán el jardín desde aquí. Quiero recibirlas con una silla bonita.",
+				"¡La silla bonita combina con mi balcón!"
+			],
+			"lak|Jats'uts": [
+				"Hoy recibo visitas bajo el balcón. Necesito un plato bonito para la merienda.",
+				"Acomodé flores junto a mi escalera. ¿Me traes un plato bonito para acompañarlas?",
+				"¡Qué plato bonito! Mi rincón de visitas está listo."
+			],
+			"janal|ki'": [
+				"Mis amigos vendrán a merendar al jardín. Quiero comida deliciosa.",
+				"Ya preparé el rincón bajo mi balcón. Falta comida deliciosa para mis visitas.",
+				"¡Qué comida deliciosa! Hoy dejaremos la siesta para después."
+			],
+			"ja'|": [
+				"Perseguí mariposas y ahora tengo sed. ¿Me traes agua?",
+				"Me estiré al sol junto al balcón y quiero agua para beber.",
+				"¡Gracias por el agua! Volveré a descansar bajo el balcón."
+			],
+			"ja'as|": [
+				"Merendaré un plátano después de explorar el jardín. Necesito un plátano.",
+				"¿Me traes un plátano? Merendaré un plátano después de explorar el jardín.",
+				"¡Un plátano! Lo compartiremos con mis amigos junto a mi balcón."
+			],
+			"ich|": [
+				"Invité a mis amigos a comer fruta bajo el balcón. Necesito fruta.",
+				"¿Me traes fruta? Invité a mis amigos a comer fruta bajo el balcón.",
+				"¡Fruta! La compartiremos con mis amigos junto a mi balcón."
+			],
+			"K'úum|": [
+				"Quiero compartir calabaza con las visitas de mi balcón. Necesito una calabaza.",
+				"¿Me traes una calabaza? Quiero compartir calabaza con las visitas de mi balcón.",
+				"¡Una calabaza! La compartiremos con mis amigos junto a mi balcón."
+			],
+			"mayak|mejen": [
+				"La reunión de mis amigos será bajo mi balcón. Necesito una mesa pequeña.",
+				"¿Me traes una mesa pequeña? La reunión de mis amigos será bajo mi balcón.",
+				"¡Mesa pequeña! Nos reuniremos a comer junto a mi balcón."
+			],
+			"mayak|Jats'uts": [
+				"La reunión de mis amigos será bajo mi balcón. Necesito una mesa bonita.",
+				"¿Me traes una mesa bonita? La reunión de mis amigos será bajo mi balcón.",
+				"¡Mesa bonita! Nos reuniremos a comer junto a mi balcón."
+			],
+			"mayak|chich": [
+				"La reunión de mis amigos será bajo mi balcón. Necesito una mesa fuerte.",
+				"¿Me traes una mesa fuerte? La reunión de mis amigos será bajo mi balcón.",
+				"¡Mesa fuerte! Nos reuniremos a comer junto a mi balcón."
+			],
+			"k'áanche'|mejen": [
+				"Quiero sentarme a mirar el jardín desde mi entrada. Necesito una silla pequeña.",
+				"¿Me traes una silla pequeña? Quiero sentarme a mirar el jardín desde mi entrada.",
+				"¡Silla pequeña! Ya podemos sentarnos a conversar junto a mi balcón."
+			],
+			"k'áanche'|nojoch": [
+				"Quiero sentarme a mirar el jardín desde mi entrada. Necesito una silla grande.",
+				"¿Me traes una silla grande? Quiero sentarme a mirar el jardín desde mi entrada.",
+				"¡Silla grande! Ya podemos sentarnos a conversar junto a mi balcón."
+			],
+			"k'áan|nojoch": [
+				"Hoy tomaré mi siesta a la sombra del balcón. Necesito una hamaca grande.",
+				"¿Me traes una hamaca grande? Hoy tomaré mi siesta a la sombra del balcón.",
+				"¡Hamaca grande! El descanso está listo junto a mi balcón."
+			],
+			"k'áan|Jats'uts": [
+				"Hoy tomaré mi siesta a la sombra del balcón. Necesito una hamaca bonita.",
+				"¿Me traes una hamaca bonita? Hoy tomaré mi siesta a la sombra del balcón.",
+				"¡Hamaca bonita! El descanso está listo junto a mi balcón."
+			],
+			"k'áan|chich": [
+				"Hoy tomaré mi siesta a la sombra del balcón. Necesito una hamaca fuerte.",
+				"¿Me traes una hamaca fuerte? Hoy tomaré mi siesta a la sombra del balcón.",
+				"¡Hamaca fuerte! El descanso está listo junto a mi balcón."
+			],
+			"lak|mejen": [
+				"Voy a servir la merienda junto a la escalera del balcón. Necesito un plato pequeño.",
+				"¿Me traes un plato pequeño? Voy a servir la merienda junto a la escalera del balcón.",
+				"¡Plato pequeño! Serviremos la merienda junto a mi balcón."
+			],
+			"lak|nojoch": [
+				"Voy a servir la merienda junto a la escalera del balcón. Necesito un plato grande.",
+				"¿Me traes un plato grande? Voy a servir la merienda junto a la escalera del balcón.",
+				"¡Plato grande! Serviremos la merienda junto a mi balcón."
+			],
+			"ja'as|mejen": [
+				"Merendaré un plátano después de explorar el jardín. Necesito un plátano pequeño.",
+				"¿Me traes un plátano pequeño? Merendaré un plátano después de explorar el jardín.",
+				"¡Plátano pequeño! Lo compartiremos con mis amigos junto a mi balcón."
+			],
+			"ja'as|nojoch": [
+				"Merendaré un plátano después de explorar el jardín. Necesito un plátano grande.",
+				"¿Me traes un plátano grande? Merendaré un plátano después de explorar el jardín.",
+				"¡Plátano grande! Lo compartiremos con mis amigos junto a mi balcón."
+			],
+			"ja'as|Jats'uts": [
+				"Merendaré un plátano después de explorar el jardín. Necesito un plátano bonito.",
+				"¿Me traes un plátano bonito? Merendaré un plátano después de explorar el jardín.",
+				"¡Plátano bonito! Lo compartiremos con mis amigos junto a mi balcón."
+			],
+			"ja'as|ki'": [
+				"Merendaré un plátano después de explorar el jardín. Necesito un plátano delicioso.",
+				"¿Me traes un plátano delicioso? Merendaré un plátano después de explorar el jardín.",
+				"¡Plátano delicioso! Lo compartiremos con mis amigos junto a mi balcón."
+			],
+			"ich|mejen": [
+				"Invité a mis amigos a comer fruta bajo el balcón. Necesito una fruta pequeña.",
+				"¿Me traes una fruta pequeña? Invité a mis amigos a comer fruta bajo el balcón.",
+				"¡Fruta pequeña! La compartiremos con mis amigos junto a mi balcón."
+			],
+			"ich|nojoch": [
+				"Invité a mis amigos a comer fruta bajo el balcón. Necesito una fruta grande.",
+				"¿Me traes una fruta grande? Invité a mis amigos a comer fruta bajo el balcón.",
+				"¡Fruta grande! La compartiremos con mis amigos junto a mi balcón."
+			],
+			"ich|Jats'uts": [
+				"Invité a mis amigos a comer fruta bajo el balcón. Necesito una fruta bonita.",
+				"¿Me traes una fruta bonita? Invité a mis amigos a comer fruta bajo el balcón.",
+				"¡Fruta bonita! La compartiremos con mis amigos junto a mi balcón."
+			],
+			"ich|ki'": [
+				"Invité a mis amigos a comer fruta bajo el balcón. Necesito una fruta deliciosa.",
+				"¿Me traes una fruta deliciosa? Invité a mis amigos a comer fruta bajo el balcón.",
+				"¡Fruta deliciosa! La compartiremos con mis amigos junto a mi balcón."
+			],
+			"K'úum|mejen": [
+				"Quiero compartir calabaza con las visitas de mi balcón. Necesito una calabaza pequeña.",
+				"¿Me traes una calabaza pequeña? Quiero compartir calabaza con las visitas de mi balcón.",
+				"¡Calabaza pequeña! La compartiremos con mis amigos junto a mi balcón."
+			],
+			"K'úum|nojoch": [
+				"Quiero compartir calabaza con las visitas de mi balcón. Necesito una calabaza grande.",
+				"¿Me traes una calabaza grande? Quiero compartir calabaza con las visitas de mi balcón.",
+				"¡Calabaza grande! La compartiremos con mis amigos junto a mi balcón."
+			],
+			"K'úum|Jats'uts": [
+				"Quiero compartir calabaza con las visitas de mi balcón. Necesito una calabaza bonita.",
+				"¿Me traes una calabaza bonita? Quiero compartir calabaza con las visitas de mi balcón.",
+				"¡Calabaza bonita! La compartiremos con mis amigos junto a mi balcón."
+			],
+			"K'úum|ki'": [
+				"Quiero compartir calabaza con las visitas de mi balcón. Necesito una calabaza deliciosa.",
+				"¿Me traes una calabaza deliciosa? Quiero compartir calabaza con las visitas de mi balcón.",
+				"¡Calabaza deliciosa! La compartiremos con mis amigos junto a mi balcón."
+			]
+		}
+	},
+	"Kaax": {
+		"greetings": [
+			"¡Kalin! Dejé mi nido de paja listo para descansar después de cocinar.",
+			"Hoy encontré semillas junto al camino. ¡Qué mañana tan entretenida!",
+			"Acomodé la paja de mi casa. Ahora está blandita y ordenada.",
+			"Estoy esperando a mis amigos para la merienda. ¡Tú también puedes venir!",
+			"¡Buen paseo, Kalin! Yo me quedé cuidando mi nido a la sombra."
+		],
+		"tasks": {
+			"mayak|": [
+				"Quiero servir la merienda cerca de mi nido. Necesito una mesa.",
+				"Ya cociné para mis amigos. ¿Me traes una mesa donde poner los platos?",
+				"¡Con esta mesa podré servir la merienda junto a mi casa!"
+			],
+			"k'áan|": [
+				"Terminé de ordenar la paja y quiero descansar. Necesito una hamaca.",
+				"Después de cocinar quiero acostarme a la sombra. ¿Me consigues una hamaca?",
+				"¡Mi hamaca! Descansaré después de cuidar el nido."
+			],
+			"lak|": [
+				"Preparé la merienda junto a mi nido, pero me falta un plato.",
+				"Quiero servir mi porción antes de llamar a mis amigos. Necesito un plato.",
+				"¡El plato está listo! Ya puedo servir la merienda."
+			],
+			"k'áanche'|": [
+				"Quiero sentarme junto al nido mientras llegan mis amigos. Necesito una silla.",
+				"Ya acomodé toda la paja. ¿Me traes una silla para descansar sentada?",
+				"¡Desde esta silla podré cuidar mi nido y conversar!"
+			],
+			"janal|": [
+				"Mis amigos vienen a comer cerca de mi nido. Necesito comida para compartir.",
+				"Preparé un rincón para la merienda. ¿Me traes comida para mis visitas?",
+				"¡La comida llegó! Voy a llamar a mis amigos del camino."
+			],
+			"mayak|nojoch": [
+				"Hoy vendrán muchos amigos a la merienda. Necesito una mesa grande junto a mi casa.",
+				"Mis visitas no caben en una mesa pequeña. ¿Me traes una mesa grande para la merienda?",
+				"¡Nuestra mesa grande está lista para todas las visitas!"
+			],
+			"k'áanche'|chich": [
+				"Quiero sentarme junto al nido sin tambalearme. Necesito una silla fuerte.",
+				"La silla que tenía se movía al sentarme. Tráeme una silla fuerte para mi casa.",
+				"¡Esta silla fuerte se queda firme junto a mi nido!"
+			],
+			"k'áan|mejen": [
+				"Dejé un rincón libre junto al nido. Sólo cabe una hamaca pequeña.",
+				"Quiero descansar sin ocupar toda la entrada. Necesito una hamaca pequeña.",
+				"¡La hamaca pequeña deja espacio para pasar junto al nido!"
+			],
+			"k'áanche'|Jats'uts": [
+				"Quiero decorar la entrada de mi casa con una silla bonita.",
+				"Mis amigos vienen a ver mi nido. ¿Me traes una silla bonita para recibirlos?",
+				"¡Qué silla bonita para recibir a mis visitas junto al nido!"
+			],
+			"lak|Jats'uts": [
+				"La merienda de hoy es especial. Quiero servirla en un plato bonito junto al nido.",
+				"Invité a mis amigos a mi casa. Necesito un plato bonito para la fiesta.",
+				"¡Mi plato bonito hará más alegre nuestra merienda!"
+			],
+			"janal|ki'": [
+				"Mis visitas llegarán a la hora de comer. Necesito comida deliciosa junto a mi casa.",
+				"Hoy compartiremos la merienda cerca del nido. ¿Me traes comida deliciosa?",
+				"¡Qué comida deliciosa! Todos querrán quedarse a la merienda."
+			],
+			"ja'|": [
+				"Ordené la paja de mi nido y me dio sed. Necesito agua.",
+				"Después de preparar la merienda quiero beber. ¿Me traes agua?",
+				"¡Gracias por el agua! Ahora descansaré junto a mi nido."
+			],
+			"ja'as|": [
+				"Quiero un plátano para la merienda junto al nido. Necesito un plátano.",
+				"¿Me traes un plátano? Quiero un plátano para la merienda junto al nido.",
+				"¡Un plátano! Lo compartiremos con mis amigos junto a mi nido."
+			],
+			"ich|": [
+				"Compartiremos fruta con mis visitas junto a la casa. Necesito fruta.",
+				"¿Me traes fruta? Compartiremos fruta con mis visitas junto a la casa.",
+				"¡Fruta! La compartiremos con mis amigos junto a mi nido."
+			],
+			"K'úum|": [
+				"Hoy serviré calabaza a mis amigos cerca del nido. Necesito una calabaza.",
+				"¿Me traes una calabaza? Hoy serviré calabaza a mis amigos cerca del nido.",
+				"¡Una calabaza! La compartiremos con mis amigos junto a mi nido."
+			],
+			"mayak|mejen": [
+				"Preparé un lugar para reunir a mis amigos junto al nido. Necesito una mesa pequeña.",
+				"¿Me traes una mesa pequeña? Preparé un lugar para reunir a mis amigos junto al nido.",
+				"¡Mesa pequeña! Nos reuniremos a comer junto a mi nido."
+			],
+			"mayak|Jats'uts": [
+				"Preparé un lugar para reunir a mis amigos junto al nido. Necesito una mesa bonita.",
+				"¿Me traes una mesa bonita? Preparé un lugar para reunir a mis amigos junto al nido.",
+				"¡Mesa bonita! Nos reuniremos a comer junto a mi nido."
+			],
+			"mayak|chich": [
+				"Preparé un lugar para reunir a mis amigos junto al nido. Necesito una mesa fuerte.",
+				"¿Me traes una mesa fuerte? Preparé un lugar para reunir a mis amigos junto al nido.",
+				"¡Mesa fuerte! Nos reuniremos a comer junto a mi nido."
+			],
+			"k'áanche'|mejen": [
+				"Esperaré sentada junto al nido mientras llegan las visitas. Necesito una silla pequeña.",
+				"¿Me traes una silla pequeña? Esperaré sentada junto al nido mientras llegan las visitas.",
+				"¡Silla pequeña! Ya podemos sentarnos a conversar junto a mi nido."
+			],
+			"k'áanche'|nojoch": [
+				"Esperaré sentada junto al nido mientras llegan las visitas. Necesito una silla grande.",
+				"¿Me traes una silla grande? Esperaré sentada junto al nido mientras llegan las visitas.",
+				"¡Silla grande! Ya podemos sentarnos a conversar junto a mi nido."
+			],
+			"k'áan|nojoch": [
+				"Descansaré después de acomodar toda la paja de mi casa. Necesito una hamaca grande.",
+				"¿Me traes una hamaca grande? Descansaré después de acomodar toda la paja de mi casa.",
+				"¡Hamaca grande! El descanso está listo junto a mi nido."
+			],
+			"k'áan|Jats'uts": [
+				"Descansaré después de acomodar toda la paja de mi casa. Necesito una hamaca bonita.",
+				"¿Me traes una hamaca bonita? Descansaré después de acomodar toda la paja de mi casa.",
+				"¡Hamaca bonita! El descanso está listo junto a mi nido."
+			],
+			"k'áan|chich": [
+				"Descansaré después de acomodar toda la paja de mi casa. Necesito una hamaca fuerte.",
+				"¿Me traes una hamaca fuerte? Descansaré después de acomodar toda la paja de mi casa.",
+				"¡Hamaca fuerte! El descanso está listo junto a mi nido."
+			],
+			"lak|mejen": [
+				"La merienda de hoy se servirá junto a mi nido. Necesito un plato pequeño.",
+				"¿Me traes un plato pequeño? La merienda de hoy se servirá junto a mi nido.",
+				"¡Plato pequeño! Serviremos la merienda junto a mi nido."
+			],
+			"lak|nojoch": [
+				"La merienda de hoy se servirá junto a mi nido. Necesito un plato grande.",
+				"¿Me traes un plato grande? La merienda de hoy se servirá junto a mi nido.",
+				"¡Plato grande! Serviremos la merienda junto a mi nido."
+			],
+			"ja'as|mejen": [
+				"Quiero un plátano para la merienda junto al nido. Necesito un plátano pequeño.",
+				"¿Me traes un plátano pequeño? Quiero un plátano para la merienda junto al nido.",
+				"¡Plátano pequeño! Lo compartiremos con mis amigos junto a mi nido."
+			],
+			"ja'as|nojoch": [
+				"Quiero un plátano para la merienda junto al nido. Necesito un plátano grande.",
+				"¿Me traes un plátano grande? Quiero un plátano para la merienda junto al nido.",
+				"¡Plátano grande! Lo compartiremos con mis amigos junto a mi nido."
+			],
+			"ja'as|Jats'uts": [
+				"Quiero un plátano para la merienda junto al nido. Necesito un plátano bonito.",
+				"¿Me traes un plátano bonito? Quiero un plátano para la merienda junto al nido.",
+				"¡Plátano bonito! Lo compartiremos con mis amigos junto a mi nido."
+			],
+			"ja'as|ki'": [
+				"Quiero un plátano para la merienda junto al nido. Necesito un plátano delicioso.",
+				"¿Me traes un plátano delicioso? Quiero un plátano para la merienda junto al nido.",
+				"¡Plátano delicioso! Lo compartiremos con mis amigos junto a mi nido."
+			],
+			"ich|mejen": [
+				"Compartiremos fruta con mis visitas junto a la casa. Necesito una fruta pequeña.",
+				"¿Me traes una fruta pequeña? Compartiremos fruta con mis visitas junto a la casa.",
+				"¡Fruta pequeña! La compartiremos con mis amigos junto a mi nido."
+			],
+			"ich|nojoch": [
+				"Compartiremos fruta con mis visitas junto a la casa. Necesito una fruta grande.",
+				"¿Me traes una fruta grande? Compartiremos fruta con mis visitas junto a la casa.",
+				"¡Fruta grande! La compartiremos con mis amigos junto a mi nido."
+			],
+			"ich|Jats'uts": [
+				"Compartiremos fruta con mis visitas junto a la casa. Necesito una fruta bonita.",
+				"¿Me traes una fruta bonita? Compartiremos fruta con mis visitas junto a la casa.",
+				"¡Fruta bonita! La compartiremos con mis amigos junto a mi nido."
+			],
+			"ich|ki'": [
+				"Compartiremos fruta con mis visitas junto a la casa. Necesito una fruta deliciosa.",
+				"¿Me traes una fruta deliciosa? Compartiremos fruta con mis visitas junto a la casa.",
+				"¡Fruta deliciosa! La compartiremos con mis amigos junto a mi nido."
+			],
+			"K'úum|mejen": [
+				"Hoy serviré calabaza a mis amigos cerca del nido. Necesito una calabaza pequeña.",
+				"¿Me traes una calabaza pequeña? Hoy serviré calabaza a mis amigos cerca del nido.",
+				"¡Calabaza pequeña! La compartiremos con mis amigos junto a mi nido."
+			],
+			"K'úum|nojoch": [
+				"Hoy serviré calabaza a mis amigos cerca del nido. Necesito una calabaza grande.",
+				"¿Me traes una calabaza grande? Hoy serviré calabaza a mis amigos cerca del nido.",
+				"¡Calabaza grande! La compartiremos con mis amigos junto a mi nido."
+			],
+			"K'úum|Jats'uts": [
+				"Hoy serviré calabaza a mis amigos cerca del nido. Necesito una calabaza bonita.",
+				"¿Me traes una calabaza bonita? Hoy serviré calabaza a mis amigos cerca del nido.",
+				"¡Calabaza bonita! La compartiremos con mis amigos junto a mi nido."
+			],
+			"K'úum|ki'": [
+				"Hoy serviré calabaza a mis amigos cerca del nido. Necesito una calabaza deliciosa.",
+				"¿Me traes una calabaza deliciosa? Hoy serviré calabaza a mis amigos cerca del nido.",
+				"¡Calabaza deliciosa! La compartiremos con mis amigos junto a mi nido."
+			]
+		}
+	},
+	"Áak": {
+		"greetings": [
+			"¡Kalin! Ven despacio por mi rampa y nos sentamos a conversar.",
+			"Hoy limpié mi caparazón. ¡Mira cómo brilla con el sol!",
+			"Voy a dar un paseo corto. A mi paso también se descubren muchas cosas.",
+			"Desde mi casa bajita se escucha muy bien el viento entre las hojas.",
+			"¡Llegaste! Me gusta esperar a mis amigos junto a la rampa."
+		],
+		"tasks": {
+			"mayak|": [
+				"Quiero compartir la merienda junto a mi rampa. Necesito una mesa.",
+				"Mis amigos vendrán a mi casa bajita. ¿Me traes una mesa para los platos?",
+				"¡Con esta mesa podremos merendar junto a la rampa!"
+			],
+			"k'áan|": [
+				"Di un paseo y quiero descansar con mi caparazón. Necesito una hamaca.",
+				"Preparé un rincón tranquilo junto a mi casa. ¿Me traes una hamaca para acostarme?",
+				"¡Mi hamaca! Ahora podré descansar después del paseo."
+			],
+			"lak|": [
+				"Ya llegué a casa para comer, pero no tengo plato. ¿Me traes uno?",
+				"Quiero servir mi porción junto a la rampa. Necesito un plato.",
+				"¡Mi plato llegó! Comeré con calma junto a mi casa."
+			],
+			"k'áanche'|": [
+				"Quiero sentarme a conversar al pie de mi rampa. Necesito una silla.",
+				"Mis amigos vendrán a contar sus paseos. ¿Me consigues una silla para escucharlos?",
+				"¡En esta silla escucharé las aventuras de mis amigos!"
+			],
+			"janal|": [
+				"Volví despacito de mi paseo y tengo hambre. Necesito comida.",
+				"Quiero merendar con mis visitas junto a la rampa. ¿Me traes comida?",
+				"¡Gracias por la comida! Nos quedaremos a compartir sin prisa."
+			],
+			"mayak|nojoch": [
+				"Mi caparazón ocupa espacio y vendrán mis amigos. Necesito una mesa grande.",
+				"Quiero que todos quepamos alrededor de la merienda. Tráeme una mesa grande junto a mi rampa.",
+				"¡Ahora mi caparazón y mis amigos tienen sitio en esta mesa grande!"
+			],
+			"k'áanche'|chich": [
+				"Mi caparazón pesa. Necesito una silla fuerte que me sostenga.",
+				"Quiero sentarme seguro con mi caparazón. ¿Me traes una silla fuerte?",
+				"¡Esta silla fuerte sostiene mi caparazón sin moverse!"
+			],
+			"k'áan|mejen": [
+				"Junto a mi rampa hay un rincón estrecho. Necesito una hamaca pequeña.",
+				"Quiero descansar sin tapar la entrada de mi casa bajita. Tráeme una hamaca pequeña.",
+				"¡La hamaca pequeña deja libre mi rampa!"
+			],
+			"k'áanche'|Jats'uts": [
+				"Estoy arreglando la entrada de mi casa bajita. Quiero una silla bonita.",
+				"Mis visitas llegarán por la rampa. ¿Me traes una silla bonita para recibirlas?",
+				"¡Una silla bonita para conversar al pie de mi rampa!"
+			],
+			"lak|Jats'uts": [
+				"Hoy tengo visitas en mi casa bajita. Necesito un plato bonito para servirles.",
+				"Preparé la merienda junto a mi rampa. ¿Me traes un plato bonito?",
+				"¡El plato bonito está listo para recibir a mis amigos!"
+			],
+			"janal|ki'": [
+				"Quiero compartir comida deliciosa con mis visitas junto a la rampa.",
+				"Mis amigos vendrán a mi casa bajita. Necesito comida deliciosa para nuestra merienda.",
+				"¡Qué comida deliciosa! La disfrutaremos sin ninguna prisa."
+			],
+			"ja'|": [
+				"Caminé hasta mi casa y ahora tengo sed. ¿Me traes agua?",
+				"Descansaré a la sombra junto a la rampa. Necesito agua para beber.",
+				"¡Gracias por el agua! Me quedaré un ratito a la sombra."
+			],
+			"ja'as|": [
+				"Quiero merendar un plátano a la sombra de mi casa. Necesito un plátano.",
+				"¿Me traes un plátano? Quiero merendar un plátano a la sombra de mi casa.",
+				"¡Un plátano! Lo compartiremos con mis amigos junto a mi rampa."
+			],
+			"ich|": [
+				"Mis visitas y yo comeremos fruta junto a la rampa. Necesito fruta.",
+				"¿Me traes fruta? Mis visitas y yo comeremos fruta junto a la rampa.",
+				"¡Fruta! La compartiremos con mis amigos junto a mi rampa."
+			],
+			"K'úum|": [
+				"Compartiré calabaza con mis amigos de la casa bajita. Necesito una calabaza.",
+				"¿Me traes una calabaza? Compartiré calabaza con mis amigos de la casa bajita.",
+				"¡Una calabaza! La compartiremos con mis amigos junto a mi rampa."
+			],
+			"mayak|mejen": [
+				"Mis amigos y yo comeremos al pie de mi rampa. Necesito una mesa pequeña.",
+				"¿Me traes una mesa pequeña? Mis amigos y yo comeremos al pie de mi rampa.",
+				"¡Mesa pequeña! Nos reuniremos a comer junto a mi rampa."
+			],
+			"mayak|Jats'uts": [
+				"Mis amigos y yo comeremos al pie de mi rampa. Necesito una mesa bonita.",
+				"¿Me traes una mesa bonita? Mis amigos y yo comeremos al pie de mi rampa.",
+				"¡Mesa bonita! Nos reuniremos a comer junto a mi rampa."
+			],
+			"mayak|chich": [
+				"Mis amigos y yo comeremos al pie de mi rampa. Necesito una mesa fuerte.",
+				"¿Me traes una mesa fuerte? Mis amigos y yo comeremos al pie de mi rampa.",
+				"¡Mesa fuerte! Nos reuniremos a comer junto a mi rampa."
+			],
+			"k'áanche'|mejen": [
+				"Quiero sentarme con calma al pie de la rampa. Necesito una silla pequeña.",
+				"¿Me traes una silla pequeña? Quiero sentarme con calma al pie de la rampa.",
+				"¡Silla pequeña! Ya podemos sentarnos a conversar junto a mi rampa."
+			],
+			"k'áanche'|nojoch": [
+				"Quiero sentarme con calma al pie de la rampa. Necesito una silla grande.",
+				"¿Me traes una silla grande? Quiero sentarme con calma al pie de la rampa.",
+				"¡Silla grande! Ya podemos sentarnos a conversar junto a mi rampa."
+			],
+			"k'áan|nojoch": [
+				"Me acostaré a descansar después de mi paseo tranquilo. Necesito una hamaca grande.",
+				"¿Me traes una hamaca grande? Me acostaré a descansar después de mi paseo tranquilo.",
+				"¡Hamaca grande! El descanso está listo junto a mi rampa."
+			],
+			"k'áan|Jats'uts": [
+				"Me acostaré a descansar después de mi paseo tranquilo. Necesito una hamaca bonita.",
+				"¿Me traes una hamaca bonita? Me acostaré a descansar después de mi paseo tranquilo.",
+				"¡Hamaca bonita! El descanso está listo junto a mi rampa."
+			],
+			"k'áan|chich": [
+				"Me acostaré a descansar después de mi paseo tranquilo. Necesito una hamaca fuerte.",
+				"¿Me traes una hamaca fuerte? Me acostaré a descansar después de mi paseo tranquilo.",
+				"¡Hamaca fuerte! El descanso está listo junto a mi rampa."
+			],
+			"lak|mejen": [
+				"Voy a servir mi porción junto a mi casa bajita. Necesito un plato pequeño.",
+				"¿Me traes un plato pequeño? Voy a servir mi porción junto a mi casa bajita.",
+				"¡Plato pequeño! Serviremos la merienda junto a mi rampa."
+			],
+			"lak|nojoch": [
+				"Voy a servir mi porción junto a mi casa bajita. Necesito un plato grande.",
+				"¿Me traes un plato grande? Voy a servir mi porción junto a mi casa bajita.",
+				"¡Plato grande! Serviremos la merienda junto a mi rampa."
+			],
+			"ja'as|mejen": [
+				"Quiero merendar un plátano a la sombra de mi casa. Necesito un plátano pequeño.",
+				"¿Me traes un plátano pequeño? Quiero merendar un plátano a la sombra de mi casa.",
+				"¡Plátano pequeño! Lo compartiremos con mis amigos junto a mi rampa."
+			],
+			"ja'as|nojoch": [
+				"Quiero merendar un plátano a la sombra de mi casa. Necesito un plátano grande.",
+				"¿Me traes un plátano grande? Quiero merendar un plátano a la sombra de mi casa.",
+				"¡Plátano grande! Lo compartiremos con mis amigos junto a mi rampa."
+			],
+			"ja'as|Jats'uts": [
+				"Quiero merendar un plátano a la sombra de mi casa. Necesito un plátano bonito.",
+				"¿Me traes un plátano bonito? Quiero merendar un plátano a la sombra de mi casa.",
+				"¡Plátano bonito! Lo compartiremos con mis amigos junto a mi rampa."
+			],
+			"ja'as|ki'": [
+				"Quiero merendar un plátano a la sombra de mi casa. Necesito un plátano delicioso.",
+				"¿Me traes un plátano delicioso? Quiero merendar un plátano a la sombra de mi casa.",
+				"¡Plátano delicioso! Lo compartiremos con mis amigos junto a mi rampa."
+			],
+			"ich|mejen": [
+				"Mis visitas y yo comeremos fruta junto a la rampa. Necesito una fruta pequeña.",
+				"¿Me traes una fruta pequeña? Mis visitas y yo comeremos fruta junto a la rampa.",
+				"¡Fruta pequeña! La compartiremos con mis amigos junto a mi rampa."
+			],
+			"ich|nojoch": [
+				"Mis visitas y yo comeremos fruta junto a la rampa. Necesito una fruta grande.",
+				"¿Me traes una fruta grande? Mis visitas y yo comeremos fruta junto a la rampa.",
+				"¡Fruta grande! La compartiremos con mis amigos junto a mi rampa."
+			],
+			"ich|Jats'uts": [
+				"Mis visitas y yo comeremos fruta junto a la rampa. Necesito una fruta bonita.",
+				"¿Me traes una fruta bonita? Mis visitas y yo comeremos fruta junto a la rampa.",
+				"¡Fruta bonita! La compartiremos con mis amigos junto a mi rampa."
+			],
+			"ich|ki'": [
+				"Mis visitas y yo comeremos fruta junto a la rampa. Necesito una fruta deliciosa.",
+				"¿Me traes una fruta deliciosa? Mis visitas y yo comeremos fruta junto a la rampa.",
+				"¡Fruta deliciosa! La compartiremos con mis amigos junto a mi rampa."
+			],
+			"K'úum|mejen": [
+				"Compartiré calabaza con mis amigos de la casa bajita. Necesito una calabaza pequeña.",
+				"¿Me traes una calabaza pequeña? Compartiré calabaza con mis amigos de la casa bajita.",
+				"¡Calabaza pequeña! La compartiremos con mis amigos junto a mi rampa."
+			],
+			"K'úum|nojoch": [
+				"Compartiré calabaza con mis amigos de la casa bajita. Necesito una calabaza grande.",
+				"¿Me traes una calabaza grande? Compartiré calabaza con mis amigos de la casa bajita.",
+				"¡Calabaza grande! La compartiremos con mis amigos junto a mi rampa."
+			],
+			"K'úum|Jats'uts": [
+				"Compartiré calabaza con mis amigos de la casa bajita. Necesito una calabaza bonita.",
+				"¿Me traes una calabaza bonita? Compartiré calabaza con mis amigos de la casa bajita.",
+				"¡Calabaza bonita! La compartiremos con mis amigos junto a mi rampa."
+			],
+			"K'úum|ki'": [
+				"Compartiré calabaza con mis amigos de la casa bajita. Necesito una calabaza deliciosa.",
+				"¿Me traes una calabaza deliciosa? Compartiré calabaza con mis amigos de la casa bajita.",
+				"¡Calabaza deliciosa! La compartiremos con mis amigos junto a mi rampa."
+			]
+		}
+	},
+	"Kéej": {
+		"greetings": [
+			"¡Kalin! Estoy cuidando las plantas junto a mi casa. Mira cuántas hojas nuevas.",
+			"Pasé entre las ramas con cuidado para no enredar mis astas.",
+			"Hoy vi huellas junto al monte. Quizá pasó alguno de nuestros amigos.",
+			"El jardín está fresco a esta hora. ¡Ven a verlo conmigo!",
+			"¡Qué buen día para caminar! Yo acabo de volver del monte."
+		],
+		"tasks": {
+			"mayak|": [
+				"Mis amigos visitarán mi jardín. Necesito una mesa para recibirlos.",
+				"Quiero servir la merienda entre mis plantas. ¿Me traes una mesa?",
+				"¡La mesa queda bien junto a mis plantas!"
+			],
+			"k'áan|": [
+				"Regresé del monte y quiero acostarme a la sombra. Necesito una hamaca.",
+				"Terminé de cuidar el jardín. ¿Me consigues una hamaca para descansar?",
+				"¡Una hamaca a la sombra de mi jardín!"
+			],
+			"lak|": [
+				"La merienda ya está en el jardín, pero me falta un plato.",
+				"Volví del monte con hambre. ¿Me traes un plato para servir mi comida?",
+				"¡Mi plato está listo para merendar entre las plantas!"
+			],
+			"k'áanche'|": [
+				"Quiero sentarme a mirar mis plantas. Necesito una silla para el jardín.",
+				"Mis patas descansarán un rato junto al jardín. ¿Me traes una silla?",
+				"¡Desde esta silla veré crecer mis plantas!"
+			],
+			"janal|": [
+				"Mis patas recorrieron mucho monte y ahora tengo hambre. Necesito comida.",
+				"Invité a mis amigos al jardín. ¿Me traes comida para compartir?",
+				"¡Gracias por la comida! La compartiremos en mi jardín."
+			],
+			"mayak|nojoch": [
+				"Vendrán muchos amigos a mi jardín. Necesito una mesa grande.",
+				"Quiero reunir al grupo del monte para comer. ¿Me consigues una mesa grande?",
+				"¡La mesa grande tiene espacio para todo el grupo del monte!"
+			],
+			"k'áanche'|chich": [
+				"Quiero sentarme firme al volver del monte. Necesito una silla fuerte.",
+				"La silla del jardín se tambalea. ¿Me traes una silla fuerte para descansar?",
+				"¡Esta silla fuerte se mantiene firme junto al jardín!"
+			],
+			"k'áan|mejen": [
+				"Entre las plantas dejé un rincón libre. Allí cabe una hamaca pequeña.",
+				"No quiero tapar el paso del jardín. Necesito una hamaca pequeña para descansar.",
+				"¡La hamaca pequeña cabe sin tapar mis plantas!"
+			],
+			"k'áanche'|Jats'uts": [
+				"Quiero decorar mi jardín con una silla bonita para las visitas.",
+				"Acomodé las plantas de la entrada. ¿Me traes una silla bonita para acompañarlas?",
+				"¡La silla bonita alegra la entrada de mi jardín!"
+			],
+			"lak|Jats'uts": [
+				"Preparé una reunión junto a mis plantas. Necesito un plato bonito.",
+				"Hoy recibo a los amigos del monte. ¿Me traes un plato bonito para servirles?",
+				"¡Qué plato bonito para nuestra reunión del jardín!"
+			],
+			"janal|ki'": [
+				"Mis amigos vendrán del monte con hambre. Quiero comida deliciosa.",
+				"Organicé una merienda en el jardín. Necesito comida deliciosa para compartir.",
+				"¡Qué comida deliciosa! El grupo del monte estará contento."
+			],
+			"ja'|": [
+				"Acabo de volver del monte y tengo sed. Necesito agua.",
+				"Cuidé las plantas de mi jardín toda la mañana. ¿Me traes agua para beber?",
+				"¡Gracias por el agua! Descansaré entre mis plantas."
+			],
+			"ja'as|": [
+				"Quiero llevar un plátano para merendar después del monte. Necesito un plátano.",
+				"¿Me traes un plátano? Quiero llevar un plátano para merendar después del monte.",
+				"¡Un plátano! Lo compartiremos con mis amigos junto a mis plantas."
+			],
+			"ich|": [
+				"Compartiremos fruta en el rincón de mis plantas. Necesito fruta.",
+				"¿Me traes fruta? Compartiremos fruta en el rincón de mis plantas.",
+				"¡Fruta! La compartiremos con mis amigos junto a mis plantas."
+			],
+			"K'úum|": [
+				"Mis amigos del monte vendrán a comer calabaza al jardín. Necesito una calabaza.",
+				"¿Me traes una calabaza? Mis amigos del monte vendrán a comer calabaza al jardín.",
+				"¡Una calabaza! La compartiremos con mis amigos junto a mis plantas."
+			],
+			"mayak|mejen": [
+				"Mis amigos se reunirán a comer entre mis plantas. Necesito una mesa pequeña.",
+				"¿Me traes una mesa pequeña? Mis amigos se reunirán a comer entre mis plantas.",
+				"¡Mesa pequeña! Nos reuniremos a comer junto a mis plantas."
+			],
+			"mayak|Jats'uts": [
+				"Mis amigos se reunirán a comer entre mis plantas. Necesito una mesa bonita.",
+				"¿Me traes una mesa bonita? Mis amigos se reunirán a comer entre mis plantas.",
+				"¡Mesa bonita! Nos reuniremos a comer junto a mis plantas."
+			],
+			"mayak|chich": [
+				"Mis amigos se reunirán a comer entre mis plantas. Necesito una mesa fuerte.",
+				"¿Me traes una mesa fuerte? Mis amigos se reunirán a comer entre mis plantas.",
+				"¡Mesa fuerte! Nos reuniremos a comer junto a mis plantas."
+			],
+			"k'áanche'|mejen": [
+				"Quiero sentarme a mirar las hojas nuevas de mi jardín. Necesito una silla pequeña.",
+				"¿Me traes una silla pequeña? Quiero sentarme a mirar las hojas nuevas de mi jardín.",
+				"¡Silla pequeña! Ya podemos sentarnos a conversar junto a mis plantas."
+			],
+			"k'áanche'|nojoch": [
+				"Quiero sentarme a mirar las hojas nuevas de mi jardín. Necesito una silla grande.",
+				"¿Me traes una silla grande? Quiero sentarme a mirar las hojas nuevas de mi jardín.",
+				"¡Silla grande! Ya podemos sentarnos a conversar junto a mis plantas."
+			],
+			"k'áan|nojoch": [
+				"Descansaré a la sombra después de recorrer el monte. Necesito una hamaca grande.",
+				"¿Me traes una hamaca grande? Descansaré a la sombra después de recorrer el monte.",
+				"¡Hamaca grande! El descanso está listo junto a mis plantas."
+			],
+			"k'áan|Jats'uts": [
+				"Descansaré a la sombra después de recorrer el monte. Necesito una hamaca bonita.",
+				"¿Me traes una hamaca bonita? Descansaré a la sombra después de recorrer el monte.",
+				"¡Hamaca bonita! El descanso está listo junto a mis plantas."
+			],
+			"k'áan|chich": [
+				"Descansaré a la sombra después de recorrer el monte. Necesito una hamaca fuerte.",
+				"¿Me traes una hamaca fuerte? Descansaré a la sombra después de recorrer el monte.",
+				"¡Hamaca fuerte! El descanso está listo junto a mis plantas."
+			],
+			"lak|mejen": [
+				"Serviré la merienda junto a las plantas de mi entrada. Necesito un plato pequeño.",
+				"¿Me traes un plato pequeño? Serviré la merienda junto a las plantas de mi entrada.",
+				"¡Plato pequeño! Serviremos la merienda junto a mis plantas."
+			],
+			"lak|nojoch": [
+				"Serviré la merienda junto a las plantas de mi entrada. Necesito un plato grande.",
+				"¿Me traes un plato grande? Serviré la merienda junto a las plantas de mi entrada.",
+				"¡Plato grande! Serviremos la merienda junto a mis plantas."
+			],
+			"ja'as|mejen": [
+				"Quiero llevar un plátano para merendar después del monte. Necesito un plátano pequeño.",
+				"¿Me traes un plátano pequeño? Quiero llevar un plátano para merendar después del monte.",
+				"¡Plátano pequeño! Lo compartiremos con mis amigos junto a mis plantas."
+			],
+			"ja'as|nojoch": [
+				"Quiero llevar un plátano para merendar después del monte. Necesito un plátano grande.",
+				"¿Me traes un plátano grande? Quiero llevar un plátano para merendar después del monte.",
+				"¡Plátano grande! Lo compartiremos con mis amigos junto a mis plantas."
+			],
+			"ja'as|Jats'uts": [
+				"Quiero llevar un plátano para merendar después del monte. Necesito un plátano bonito.",
+				"¿Me traes un plátano bonito? Quiero llevar un plátano para merendar después del monte.",
+				"¡Plátano bonito! Lo compartiremos con mis amigos junto a mis plantas."
+			],
+			"ja'as|ki'": [
+				"Quiero llevar un plátano para merendar después del monte. Necesito un plátano delicioso.",
+				"¿Me traes un plátano delicioso? Quiero llevar un plátano para merendar después del monte.",
+				"¡Plátano delicioso! Lo compartiremos con mis amigos junto a mis plantas."
+			],
+			"ich|mejen": [
+				"Compartiremos fruta en el rincón de mis plantas. Necesito una fruta pequeña.",
+				"¿Me traes una fruta pequeña? Compartiremos fruta en el rincón de mis plantas.",
+				"¡Fruta pequeña! La compartiremos con mis amigos junto a mis plantas."
+			],
+			"ich|nojoch": [
+				"Compartiremos fruta en el rincón de mis plantas. Necesito una fruta grande.",
+				"¿Me traes una fruta grande? Compartiremos fruta en el rincón de mis plantas.",
+				"¡Fruta grande! La compartiremos con mis amigos junto a mis plantas."
+			],
+			"ich|Jats'uts": [
+				"Compartiremos fruta en el rincón de mis plantas. Necesito una fruta bonita.",
+				"¿Me traes una fruta bonita? Compartiremos fruta en el rincón de mis plantas.",
+				"¡Fruta bonita! La compartiremos con mis amigos junto a mis plantas."
+			],
+			"ich|ki'": [
+				"Compartiremos fruta en el rincón de mis plantas. Necesito una fruta deliciosa.",
+				"¿Me traes una fruta deliciosa? Compartiremos fruta en el rincón de mis plantas.",
+				"¡Fruta deliciosa! La compartiremos con mis amigos junto a mis plantas."
+			],
+			"K'úum|mejen": [
+				"Mis amigos del monte vendrán a comer calabaza al jardín. Necesito una calabaza pequeña.",
+				"¿Me traes una calabaza pequeña? Mis amigos del monte vendrán a comer calabaza al jardín.",
+				"¡Calabaza pequeña! La compartiremos con mis amigos junto a mis plantas."
+			],
+			"K'úum|nojoch": [
+				"Mis amigos del monte vendrán a comer calabaza al jardín. Necesito una calabaza grande.",
+				"¿Me traes una calabaza grande? Mis amigos del monte vendrán a comer calabaza al jardín.",
+				"¡Calabaza grande! La compartiremos con mis amigos junto a mis plantas."
+			],
+			"K'úum|Jats'uts": [
+				"Mis amigos del monte vendrán a comer calabaza al jardín. Necesito una calabaza bonita.",
+				"¿Me traes una calabaza bonita? Mis amigos del monte vendrán a comer calabaza al jardín.",
+				"¡Calabaza bonita! La compartiremos con mis amigos junto a mis plantas."
+			],
+			"K'úum|ki'": [
+				"Mis amigos del monte vendrán a comer calabaza al jardín. Necesito una calabaza deliciosa.",
+				"¿Me traes una calabaza deliciosa? Mis amigos del monte vendrán a comer calabaza al jardín.",
+				"¡Calabaza deliciosa! La compartiremos con mis amigos junto a mis plantas."
+			]
+		}
+	},
+	"K'éek'en": {
+		"greetings": [
+			"¡Kalin! Planté flores junto a mi casa redonda. ¿Cuál te gusta más?",
+			"Mi hocico encontró el aroma de la merienda. ¡Debe de estar cerca!",
+			"Hoy acomodé el jardín para que mis amigos puedan entrar sin pisar las flores.",
+			"¡Ven a descansar! Hay una sombra muy agradable junto a mi casa.",
+			"Me gusta recibir visitas entre mis flores. ¡Llegaste en buen momento!"
+		],
+		"tasks": {
+			"mayak|": [
+				"Quiero compartir la merienda junto a mis flores. Necesito una mesa.",
+				"Mis amigos vienen a mi casa redonda. ¿Me traes una mesa para servirles?",
+				"¡Con esta mesa merendaremos junto a mis flores!"
+			],
+			"k'áan|": [
+				"Ya terminé de plantar flores y quiero descansar. Necesito una hamaca.",
+				"Busqué sombra junto a mi casa redonda. ¿Me traes una hamaca para acostarme?",
+				"¡Mi hamaca está lista para una siesta entre las flores!"
+			],
+			"lak|": [
+				"Mi hocico ya encontró la merienda, pero todavía me falta un plato.",
+				"Voy a servir comida junto al jardín de flores. Necesito un plato.",
+				"¡Con mi plato ya puedo disfrutar la merienda!"
+			],
+			"k'áanche'|": [
+				"Quiero sentarme a mirar las flores de mi jardín. Necesito una silla.",
+				"Mis visitas vendrán a mi casa redonda. ¿Me traes una silla para esperarlas?",
+				"¡Desde esta silla veré mis flores y a mis visitas!"
+			],
+			"janal|": [
+				"Trabajé en el jardín y ahora tengo hambre. ¿Me traes comida?",
+				"Mis amigos vendrán a merendar junto a mis flores. Necesito comida para compartir.",
+				"¡La comida llegó a mi jardín! Llamaré a mis amigos."
+			],
+			"mayak|nojoch": [
+				"Invité a todo el grupo a mi casa redonda. Necesito una mesa grande.",
+				"Quiero merendar con muchos amigos junto a las flores. ¿Me traes una mesa grande?",
+				"¡En esta mesa grande todos tenemos sitio junto a las flores!"
+			],
+			"k'áanche'|chich": [
+				"La silla se mueve cuando me acomodo. Necesito una silla fuerte para mi jardín.",
+				"Quiero sentarme seguro junto a mis flores. ¿Me traes una silla fuerte?",
+				"¡Esta silla fuerte me sostiene mientras miro el jardín!"
+			],
+			"k'áan|mejen": [
+				"Quedó un rincón entre la casa y las flores. Necesito una hamaca pequeña que quepa allí.",
+				"Quiero descansar sin ocupar mi jardín. ¿Me traes una hamaca pequeña?",
+				"¡La hamaca pequeña cabe sin aplastar mis flores!"
+			],
+			"k'áanche'|Jats'uts": [
+				"Estoy adornando la entrada de mi casa redonda. Quiero una silla bonita.",
+				"Mis flores ya están listas para las visitas. Falta una silla bonita junto a ellas.",
+				"¡La silla bonita combina con mis flores!"
+			],
+			"lak|Jats'uts": [
+				"Hoy recibo visitas entre mis flores. Necesito un plato bonito para la merienda.",
+				"Quiero que la mesa de mi jardín se vea alegre. ¿Me traes un plato bonito?",
+				"¡Qué plato bonito para compartir junto a mis flores!"
+			],
+			"janal|ki'": [
+				"Mi hocico busca un buen aroma para la fiesta. Necesito comida deliciosa.",
+				"Invité a mis amigos al jardín de flores. ¿Me traes comida deliciosa para compartir?",
+				"¡Qué comida deliciosa! Su aroma llegó hasta mi jardín."
+			],
+			"ja'|": [
+				"Terminé de cuidar mis flores y tengo sed. ¿Me traes agua?",
+				"Descansaré a la sombra de mi casa redonda. Necesito agua para beber.",
+				"¡Gracias por el agua! Ahora descansaré junto a mis flores."
+			],
+			"ja'as|": [
+				"Merendaré un plátano junto a mi casa redonda. Necesito un plátano.",
+				"¿Me traes un plátano? Merendaré un plátano junto a mi casa redonda.",
+				"¡Un plátano! Lo compartiremos con mis amigos junto a mis flores."
+			],
+			"ich|": [
+				"Quiero recibir a mis visitas con fruta en el jardín. Necesito fruta.",
+				"¿Me traes fruta? Quiero recibir a mis visitas con fruta en el jardín.",
+				"¡Fruta! La compartiremos con mis amigos junto a mis flores."
+			],
+			"K'úum|": [
+				"Prepararé calabaza para compartir entre mis flores. Necesito una calabaza.",
+				"¿Me traes una calabaza? Prepararé calabaza para compartir entre mis flores.",
+				"¡Una calabaza! La compartiremos con mis amigos junto a mis flores."
+			],
+			"mayak|mejen": [
+				"Invité a mis amigos a merendar junto a mis flores. Necesito una mesa pequeña.",
+				"¿Me traes una mesa pequeña? Invité a mis amigos a merendar junto a mis flores.",
+				"¡Mesa pequeña! Nos reuniremos a comer junto a mis flores."
+			],
+			"mayak|Jats'uts": [
+				"Invité a mis amigos a merendar junto a mis flores. Necesito una mesa bonita.",
+				"¿Me traes una mesa bonita? Invité a mis amigos a merendar junto a mis flores.",
+				"¡Mesa bonita! Nos reuniremos a comer junto a mis flores."
+			],
+			"mayak|chich": [
+				"Invité a mis amigos a merendar junto a mis flores. Necesito una mesa fuerte.",
+				"¿Me traes una mesa fuerte? Invité a mis amigos a merendar junto a mis flores.",
+				"¡Mesa fuerte! Nos reuniremos a comer junto a mis flores."
+			],
+			"k'áanche'|mejen": [
+				"Quiero sentarme frente a las flores de mi casa redonda. Necesito una silla pequeña.",
+				"¿Me traes una silla pequeña? Quiero sentarme frente a las flores de mi casa redonda.",
+				"¡Silla pequeña! Ya podemos sentarnos a conversar junto a mis flores."
+			],
+			"k'áanche'|nojoch": [
+				"Quiero sentarme frente a las flores de mi casa redonda. Necesito una silla grande.",
+				"¿Me traes una silla grande? Quiero sentarme frente a las flores de mi casa redonda.",
+				"¡Silla grande! Ya podemos sentarnos a conversar junto a mis flores."
+			],
+			"k'áan|nojoch": [
+				"Descansaré después de trabajar en mi jardín de flores. Necesito una hamaca grande.",
+				"¿Me traes una hamaca grande? Descansaré después de trabajar en mi jardín de flores.",
+				"¡Hamaca grande! El descanso está listo junto a mis flores."
+			],
+			"k'áan|Jats'uts": [
+				"Descansaré después de trabajar en mi jardín de flores. Necesito una hamaca bonita.",
+				"¿Me traes una hamaca bonita? Descansaré después de trabajar en mi jardín de flores.",
+				"¡Hamaca bonita! El descanso está listo junto a mis flores."
+			],
+			"k'áan|chich": [
+				"Descansaré después de trabajar en mi jardín de flores. Necesito una hamaca fuerte.",
+				"¿Me traes una hamaca fuerte? Descansaré después de trabajar en mi jardín de flores.",
+				"¡Hamaca fuerte! El descanso está listo junto a mis flores."
+			],
+			"lak|mejen": [
+				"Serviré la merienda en la entrada de mi casa redonda. Necesito un plato pequeño.",
+				"¿Me traes un plato pequeño? Serviré la merienda en la entrada de mi casa redonda.",
+				"¡Plato pequeño! Serviremos la merienda junto a mis flores."
+			],
+			"lak|nojoch": [
+				"Serviré la merienda en la entrada de mi casa redonda. Necesito un plato grande.",
+				"¿Me traes un plato grande? Serviré la merienda en la entrada de mi casa redonda.",
+				"¡Plato grande! Serviremos la merienda junto a mis flores."
+			],
+			"ja'as|mejen": [
+				"Merendaré un plátano junto a mi casa redonda. Necesito un plátano pequeño.",
+				"¿Me traes un plátano pequeño? Merendaré un plátano junto a mi casa redonda.",
+				"¡Plátano pequeño! Lo compartiremos con mis amigos junto a mis flores."
+			],
+			"ja'as|nojoch": [
+				"Merendaré un plátano junto a mi casa redonda. Necesito un plátano grande.",
+				"¿Me traes un plátano grande? Merendaré un plátano junto a mi casa redonda.",
+				"¡Plátano grande! Lo compartiremos con mis amigos junto a mis flores."
+			],
+			"ja'as|Jats'uts": [
+				"Merendaré un plátano junto a mi casa redonda. Necesito un plátano bonito.",
+				"¿Me traes un plátano bonito? Merendaré un plátano junto a mi casa redonda.",
+				"¡Plátano bonito! Lo compartiremos con mis amigos junto a mis flores."
+			],
+			"ja'as|ki'": [
+				"Merendaré un plátano junto a mi casa redonda. Necesito un plátano delicioso.",
+				"¿Me traes un plátano delicioso? Merendaré un plátano junto a mi casa redonda.",
+				"¡Plátano delicioso! Lo compartiremos con mis amigos junto a mis flores."
+			],
+			"ich|mejen": [
+				"Quiero recibir a mis visitas con fruta en el jardín. Necesito una fruta pequeña.",
+				"¿Me traes una fruta pequeña? Quiero recibir a mis visitas con fruta en el jardín.",
+				"¡Fruta pequeña! La compartiremos con mis amigos junto a mis flores."
+			],
+			"ich|nojoch": [
+				"Quiero recibir a mis visitas con fruta en el jardín. Necesito una fruta grande.",
+				"¿Me traes una fruta grande? Quiero recibir a mis visitas con fruta en el jardín.",
+				"¡Fruta grande! La compartiremos con mis amigos junto a mis flores."
+			],
+			"ich|Jats'uts": [
+				"Quiero recibir a mis visitas con fruta en el jardín. Necesito una fruta bonita.",
+				"¿Me traes una fruta bonita? Quiero recibir a mis visitas con fruta en el jardín.",
+				"¡Fruta bonita! La compartiremos con mis amigos junto a mis flores."
+			],
+			"ich|ki'": [
+				"Quiero recibir a mis visitas con fruta en el jardín. Necesito una fruta deliciosa.",
+				"¿Me traes una fruta deliciosa? Quiero recibir a mis visitas con fruta en el jardín.",
+				"¡Fruta deliciosa! La compartiremos con mis amigos junto a mis flores."
+			],
+			"K'úum|mejen": [
+				"Prepararé calabaza para compartir entre mis flores. Necesito una calabaza pequeña.",
+				"¿Me traes una calabaza pequeña? Prepararé calabaza para compartir entre mis flores.",
+				"¡Calabaza pequeña! La compartiremos con mis amigos junto a mis flores."
+			],
+			"K'úum|nojoch": [
+				"Prepararé calabaza para compartir entre mis flores. Necesito una calabaza grande.",
+				"¿Me traes una calabaza grande? Prepararé calabaza para compartir entre mis flores.",
+				"¡Calabaza grande! La compartiremos con mis amigos junto a mis flores."
+			],
+			"K'úum|Jats'uts": [
+				"Prepararé calabaza para compartir entre mis flores. Necesito una calabaza bonita.",
+				"¿Me traes una calabaza bonita? Prepararé calabaza para compartir entre mis flores.",
+				"¡Calabaza bonita! La compartiremos con mis amigos junto a mis flores."
+			],
+			"K'úum|ki'": [
+				"Prepararé calabaza para compartir entre mis flores. Necesito una calabaza deliciosa.",
+				"¿Me traes una calabaza deliciosa? Prepararé calabaza para compartir entre mis flores.",
+				"¡Calabaza deliciosa! La compartiremos con mis amigos junto a mis flores."
+			]
+		}
+	},
+	"Ma'ax": {
+		"greetings": [
+			"¡Kalin! Desde mi casa en el árbol te vi venir por el camino.",
+			"Probé mi escalera de cuerda. ¡Ya está lista para las visitas!",
+			"Hoy me balanceé entre las ramas y encontré una sombra estupenda.",
+			"Bajé del árbol para conversar contigo. ¿Qué descubriste hoy?",
+			"Las hojas de mi casa hacen música cuando sopla el viento. ¡Escucha!"
+		],
+		"tasks": {
+			"mayak|": [
+				"Bajaremos del árbol para merendar. Necesito una mesa al pie de mi escalera.",
+				"Mis amigos comerán bajo mi casa del árbol. ¿Me traes una mesa?",
+				"¡La mesa está lista al pie de mi árbol!"
+			],
+			"k'áan|": [
+				"Ya me balanceé mucho entre las ramas. Quiero una hamaca para descansar.",
+				"Preparé un rincón a la sombra del árbol. ¿Me traes una hamaca para acostarme?",
+				"¡Mi hamaca! Hoy me balancearé para descansar."
+			],
+			"lak|": [
+				"Bajé de las ramas para merendar, pero me falta un plato.",
+				"La comida espera al pie de mi escalera. ¿Me traes un plato?",
+				"¡Ya tengo plato para merendar bajo el árbol!"
+			],
+			"k'áanche'|": [
+				"Quiero sentarme al pie del árbol para recibir visitas. Necesito una silla.",
+				"Hoy descansaré fuera de las ramas. ¿Me traes una silla junto a mi escalera?",
+				"¡En esta silla esperaré a mis amigos bajo el árbol!"
+			],
+			"janal|": [
+				"Subí y bajé por mi escalera y ahora tengo hambre. Necesito comida.",
+				"Mis amigos vendrán a merendar bajo el árbol. ¿Me traes comida para compartir?",
+				"¡La comida llegó! Bajaré del árbol para compartirla."
+			],
+			"mayak|nojoch": [
+				"Invité a muchos amigos a bajar del árbol para comer. Necesito una mesa grande.",
+				"La reunión será al pie de mi escalera. ¿Me traes una mesa grande para todo el grupo?",
+				"¡La mesa grande está lista para la reunión bajo el árbol!"
+			],
+			"k'áanche'|chich": [
+				"Quiero una silla fuerte que no se tambalee al sentarme bajo el árbol.",
+				"Descansaré al pie de mi escalera. Necesito una silla fuerte que se quede firme.",
+				"¡Esta silla fuerte se queda firme al pie de mi árbol!"
+			],
+			"k'áan|mejen": [
+				"El rincón junto a mi escalera es estrecho. Necesito una hamaca pequeña.",
+				"No quiero tapar el paso hacia mi árbol. ¿Me traes una hamaca pequeña?",
+				"¡La hamaca pequeña deja libre la escalera de mi árbol!"
+			],
+			"k'áanche'|Jats'uts": [
+				"Quiero una silla bonita para recibir a mis amigos bajo el árbol.",
+				"Estoy adornando el pie de mi escalera. ¿Me traes una silla bonita?",
+				"¡La silla bonita alegra la entrada de mi casa del árbol!"
+			],
+			"lak|Jats'uts": [
+				"Hoy tendremos una merienda bajo las ramas. Necesito un plato bonito.",
+				"Mis amigos bajarán del árbol para la fiesta. ¿Me traes un plato bonito?",
+				"¡Mi plato bonito está listo para la fiesta bajo las ramas!"
+			],
+			"janal|ki'": [
+				"Quiero invitar al grupo a bajar de las ramas. Necesito comida deliciosa.",
+				"Preparé una reunión al pie del árbol. ¿Me traes comida deliciosa para compartir?",
+				"¡Qué comida deliciosa! Hasta mis amigos de las ramas bajarán."
+			],
+			"ja'|": [
+				"Después de trepar por las ramas tengo sed. ¿Me traes agua?",
+				"Subí varias veces por mi escalera y quiero beber. Necesito agua.",
+				"¡Gracias por el agua! Descansaré bajo mi árbol."
+			],
+			"ja'as|": [
+				"Quiero merendar un plátano a la sombra del árbol. Necesito un plátano.",
+				"¿Me traes un plátano? Quiero merendar un plátano a la sombra del árbol.",
+				"¡Un plátano! Lo compartiremos con mis amigos junto a mi árbol."
+			],
+			"ich|": [
+				"Compartiré fruta con las visitas de mi casa del árbol. Necesito fruta.",
+				"¿Me traes fruta? Compartiré fruta con las visitas de mi casa del árbol.",
+				"¡Fruta! La compartiremos con mis amigos junto a mi árbol."
+			],
+			"K'úum|": [
+				"Hoy comeremos calabaza al pie de mi escalera. Necesito una calabaza.",
+				"¿Me traes una calabaza? Hoy comeremos calabaza al pie de mi escalera.",
+				"¡Una calabaza! La compartiremos con mis amigos junto a mi árbol."
+			],
+			"mayak|mejen": [
+				"Bajaremos del árbol para comer al pie de mi escalera. Necesito una mesa pequeña.",
+				"¿Me traes una mesa pequeña? Bajaremos del árbol para comer al pie de mi escalera.",
+				"¡Mesa pequeña! Nos reuniremos a comer junto a mi árbol."
+			],
+			"mayak|Jats'uts": [
+				"Bajaremos del árbol para comer al pie de mi escalera. Necesito una mesa bonita.",
+				"¿Me traes una mesa bonita? Bajaremos del árbol para comer al pie de mi escalera.",
+				"¡Mesa bonita! Nos reuniremos a comer junto a mi árbol."
+			],
+			"mayak|chich": [
+				"Bajaremos del árbol para comer al pie de mi escalera. Necesito una mesa fuerte.",
+				"¿Me traes una mesa fuerte? Bajaremos del árbol para comer al pie de mi escalera.",
+				"¡Mesa fuerte! Nos reuniremos a comer junto a mi árbol."
+			],
+			"k'áanche'|mejen": [
+				"Quiero sentarme bajo el árbol a recibir a mis visitas. Necesito una silla pequeña.",
+				"¿Me traes una silla pequeña? Quiero sentarme bajo el árbol a recibir a mis visitas.",
+				"¡Silla pequeña! Ya podemos sentarnos a conversar junto a mi árbol."
+			],
+			"k'áanche'|nojoch": [
+				"Quiero sentarme bajo el árbol a recibir a mis visitas. Necesito una silla grande.",
+				"¿Me traes una silla grande? Quiero sentarme bajo el árbol a recibir a mis visitas.",
+				"¡Silla grande! Ya podemos sentarnos a conversar junto a mi árbol."
+			],
+			"k'áan|nojoch": [
+				"Ya trepé mucho; descansaré junto a mi escalera de cuerda. Necesito una hamaca grande.",
+				"¿Me traes una hamaca grande? Ya trepé mucho; descansaré junto a mi escalera de cuerda.",
+				"¡Hamaca grande! El descanso está listo junto a mi árbol."
+			],
+			"k'áan|Jats'uts": [
+				"Ya trepé mucho; descansaré junto a mi escalera de cuerda. Necesito una hamaca bonita.",
+				"¿Me traes una hamaca bonita? Ya trepé mucho; descansaré junto a mi escalera de cuerda.",
+				"¡Hamaca bonita! El descanso está listo junto a mi árbol."
+			],
+			"k'áan|chich": [
+				"Ya trepé mucho; descansaré junto a mi escalera de cuerda. Necesito una hamaca fuerte.",
+				"¿Me traes una hamaca fuerte? Ya trepé mucho; descansaré junto a mi escalera de cuerda.",
+				"¡Hamaca fuerte! El descanso está listo junto a mi árbol."
+			],
+			"lak|mejen": [
+				"La comida se servirá bajo las ramas de mi casa. Necesito un plato pequeño.",
+				"¿Me traes un plato pequeño? La comida se servirá bajo las ramas de mi casa.",
+				"¡Plato pequeño! Serviremos la merienda junto a mi árbol."
+			],
+			"lak|nojoch": [
+				"La comida se servirá bajo las ramas de mi casa. Necesito un plato grande.",
+				"¿Me traes un plato grande? La comida se servirá bajo las ramas de mi casa.",
+				"¡Plato grande! Serviremos la merienda junto a mi árbol."
+			],
+			"ja'as|mejen": [
+				"Quiero merendar un plátano a la sombra del árbol. Necesito un plátano pequeño.",
+				"¿Me traes un plátano pequeño? Quiero merendar un plátano a la sombra del árbol.",
+				"¡Plátano pequeño! Lo compartiremos con mis amigos junto a mi árbol."
+			],
+			"ja'as|nojoch": [
+				"Quiero merendar un plátano a la sombra del árbol. Necesito un plátano grande.",
+				"¿Me traes un plátano grande? Quiero merendar un plátano a la sombra del árbol.",
+				"¡Plátano grande! Lo compartiremos con mis amigos junto a mi árbol."
+			],
+			"ja'as|Jats'uts": [
+				"Quiero merendar un plátano a la sombra del árbol. Necesito un plátano bonito.",
+				"¿Me traes un plátano bonito? Quiero merendar un plátano a la sombra del árbol.",
+				"¡Plátano bonito! Lo compartiremos con mis amigos junto a mi árbol."
+			],
+			"ja'as|ki'": [
+				"Quiero merendar un plátano a la sombra del árbol. Necesito un plátano delicioso.",
+				"¿Me traes un plátano delicioso? Quiero merendar un plátano a la sombra del árbol.",
+				"¡Plátano delicioso! Lo compartiremos con mis amigos junto a mi árbol."
+			],
+			"ich|mejen": [
+				"Compartiré fruta con las visitas de mi casa del árbol. Necesito una fruta pequeña.",
+				"¿Me traes una fruta pequeña? Compartiré fruta con las visitas de mi casa del árbol.",
+				"¡Fruta pequeña! La compartiremos con mis amigos junto a mi árbol."
+			],
+			"ich|nojoch": [
+				"Compartiré fruta con las visitas de mi casa del árbol. Necesito una fruta grande.",
+				"¿Me traes una fruta grande? Compartiré fruta con las visitas de mi casa del árbol.",
+				"¡Fruta grande! La compartiremos con mis amigos junto a mi árbol."
+			],
+			"ich|Jats'uts": [
+				"Compartiré fruta con las visitas de mi casa del árbol. Necesito una fruta bonita.",
+				"¿Me traes una fruta bonita? Compartiré fruta con las visitas de mi casa del árbol.",
+				"¡Fruta bonita! La compartiremos con mis amigos junto a mi árbol."
+			],
+			"ich|ki'": [
+				"Compartiré fruta con las visitas de mi casa del árbol. Necesito una fruta deliciosa.",
+				"¿Me traes una fruta deliciosa? Compartiré fruta con las visitas de mi casa del árbol.",
+				"¡Fruta deliciosa! La compartiremos con mis amigos junto a mi árbol."
+			],
+			"K'úum|mejen": [
+				"Hoy comeremos calabaza al pie de mi escalera. Necesito una calabaza pequeña.",
+				"¿Me traes una calabaza pequeña? Hoy comeremos calabaza al pie de mi escalera.",
+				"¡Calabaza pequeña! La compartiremos con mis amigos junto a mi árbol."
+			],
+			"K'úum|nojoch": [
+				"Hoy comeremos calabaza al pie de mi escalera. Necesito una calabaza grande.",
+				"¿Me traes una calabaza grande? Hoy comeremos calabaza al pie de mi escalera.",
+				"¡Calabaza grande! La compartiremos con mis amigos junto a mi árbol."
+			],
+			"K'úum|Jats'uts": [
+				"Hoy comeremos calabaza al pie de mi escalera. Necesito una calabaza bonita.",
+				"¿Me traes una calabaza bonita? Hoy comeremos calabaza al pie de mi escalera.",
+				"¡Calabaza bonita! La compartiremos con mis amigos junto a mi árbol."
+			],
+			"K'úum|ki'": [
+				"Hoy comeremos calabaza al pie de mi escalera. Necesito una calabaza deliciosa.",
+				"¿Me traes una calabaza deliciosa? Hoy comeremos calabaza al pie de mi escalera.",
+				"¡Calabaza deliciosa! La compartiremos con mis amigos junto a mi árbol."
+			]
+		}
+	},
+	"Kuuts": {
+		"greetings": [
+			"¡Kalin! Las hojas del monte rodean mi casa. Ven a conocer mi rincón.",
+			"Hoy abrí las plumas de mi cola al sol. ¡Qué bien se sienten!",
+			"Busqué semillas junto a los arbustos y luego volví por el sendero.",
+			"Me gusta escuchar las hojas cuando llegan mis amigos del monte.",
+			"¡Llegaste de visita! Hay un lugar fresco junto a mi casa entre las hojas."
+		],
+		"tasks": {
+			"mayak|": [
+				"Mis amigos del monte vendrán a comer. Necesito una mesa junto a las hojas.",
+				"Quiero apoyar los platos frente a mi casa del monte. ¿Me traes una mesa?",
+				"¡Con esta mesa recibiremos al grupo del monte!"
+			],
+			"k'áan|": [
+				"Recorrí los arbustos y quiero descansar. Necesito una hamaca entre las sombras.",
+				"Ya terminé de buscar semillas. ¿Me traes una hamaca junto a mi casa del monte?",
+				"¡Mi hamaca está lista a la sombra de las hojas!"
+			],
+			"lak|": [
+				"Volví del monte a la hora de comer. Necesito un plato para mi porción.",
+				"La merienda espera junto a los arbustos. ¿Me traes un plato?",
+				"¡Mi plato está listo para la merienda del monte!"
+			],
+			"k'áanche'|": [
+				"Quiero sentarme a escuchar las hojas del monte. Necesito una silla.",
+				"Esperaré a mis amigos junto a los arbustos. ¿Me traes una silla para sentarme?",
+				"¡Desde esta silla escucharé llegar a mis amigos del monte!"
+			],
+			"janal|": [
+				"Mis amigos vienen del monte con hambre. Necesito comida para compartir.",
+				"Ya preparé un rincón entre las hojas. ¿Me traes comida para la merienda?",
+				"¡Llegó la comida para compartir junto al monte!"
+			],
+			"mayak|nojoch": [
+				"Vendrá todo el grupo del monte. Necesito una mesa grande.",
+				"Mis visitas no caben en una mesa pequeña junto a las hojas. Quiero una mesa grande.",
+				"¡En la mesa grande hay espacio para todo el grupo del monte!"
+			],
+			"k'áanche'|chich": [
+				"Quiero sentarme firme después de caminar por el monte. Necesito una silla fuerte.",
+				"La silla junto a los arbustos se tambalea. ¿Me traes una silla fuerte?",
+				"¡Esta silla fuerte se queda firme junto a mis arbustos!"
+			],
+			"k'áan|mejen": [
+				"Entre mi casa y los arbustos queda poco espacio. Necesito una hamaca pequeña.",
+				"Quiero descansar sin tapar el sendero del monte. ¿Me traes una hamaca pequeña?",
+				"¡La hamaca pequeña cabe entre mi casa y los arbustos!"
+			],
+			"k'áanche'|Jats'uts": [
+				"Estoy preparando mi casa del monte para recibir visitas. Quiero una silla bonita.",
+				"Acomodé hojas en la entrada. ¿Me traes una silla bonita para completar el rincón?",
+				"¡La silla bonita acompaña las hojas de mi entrada!"
+			],
+			"lak|Jats'uts": [
+				"Hoy compartiremos la merienda junto al monte. Necesito un plato bonito.",
+				"Invité a mis amigos a mi rincón entre las hojas. ¿Me traes un plato bonito?",
+				"¡Qué plato bonito para la reunión entre las hojas!"
+			],
+			"janal|ki'": [
+				"Mis amigos regresarán del monte. Necesito comida deliciosa para recibirlos.",
+				"Hoy la merienda será junto a los arbustos. ¿Me traes comida deliciosa?",
+				"¡Qué comida deliciosa para nuestros amigos del monte!"
+			],
+			"ja'|": [
+				"Caminé entre los arbustos y tengo sed. ¿Me traes agua?",
+				"Volví del monte para descansar. Necesito agua para beber a la sombra.",
+				"¡Gracias por el agua! Descansaré a la sombra de las hojas."
+			],
+			"ja'as|": [
+				"Quiero merendar un plátano junto a las hojas del monte. Necesito un plátano.",
+				"¿Me traes un plátano? Quiero merendar un plátano junto a las hojas del monte.",
+				"¡Un plátano! Lo compartiremos con mis amigos junto a los arbustos."
+			],
+			"ich|": [
+				"Mis compañeros del monte vendrán a compartir fruta. Necesito fruta.",
+				"¿Me traes fruta? Mis compañeros del monte vendrán a compartir fruta.",
+				"¡Fruta! La compartiremos con mis amigos junto a los arbustos."
+			],
+			"K'úum|": [
+				"Compartiremos calabaza en mi rincón entre las hojas. Necesito una calabaza.",
+				"¿Me traes una calabaza? Compartiremos calabaza en mi rincón entre las hojas.",
+				"¡Una calabaza! La compartiremos con mis amigos junto a los arbustos."
+			],
+			"mayak|mejen": [
+				"Los amigos del monte se reunirán junto a mis arbustos. Necesito una mesa pequeña.",
+				"¿Me traes una mesa pequeña? Los amigos del monte se reunirán junto a mis arbustos.",
+				"¡Mesa pequeña! Nos reuniremos a comer junto a los arbustos."
+			],
+			"mayak|Jats'uts": [
+				"Los amigos del monte se reunirán junto a mis arbustos. Necesito una mesa bonita.",
+				"¿Me traes una mesa bonita? Los amigos del monte se reunirán junto a mis arbustos.",
+				"¡Mesa bonita! Nos reuniremos a comer junto a los arbustos."
+			],
+			"mayak|chich": [
+				"Los amigos del monte se reunirán junto a mis arbustos. Necesito una mesa fuerte.",
+				"¿Me traes una mesa fuerte? Los amigos del monte se reunirán junto a mis arbustos.",
+				"¡Mesa fuerte! Nos reuniremos a comer junto a los arbustos."
+			],
+			"k'áanche'|mejen": [
+				"Quiero sentarme a escuchar las hojas junto a mi casa. Necesito una silla pequeña.",
+				"¿Me traes una silla pequeña? Quiero sentarme a escuchar las hojas junto a mi casa.",
+				"¡Silla pequeña! Ya podemos sentarnos a conversar junto a los arbustos."
+			],
+			"k'áanche'|nojoch": [
+				"Quiero sentarme a escuchar las hojas junto a mi casa. Necesito una silla grande.",
+				"¿Me traes una silla grande? Quiero sentarme a escuchar las hojas junto a mi casa.",
+				"¡Silla grande! Ya podemos sentarnos a conversar junto a los arbustos."
+			],
+			"k'áan|nojoch": [
+				"Descansaré después de buscar semillas entre los arbustos. Necesito una hamaca grande.",
+				"¿Me traes una hamaca grande? Descansaré después de buscar semillas entre los arbustos.",
+				"¡Hamaca grande! El descanso está listo junto a los arbustos."
+			],
+			"k'áan|Jats'uts": [
+				"Descansaré después de buscar semillas entre los arbustos. Necesito una hamaca bonita.",
+				"¿Me traes una hamaca bonita? Descansaré después de buscar semillas entre los arbustos.",
+				"¡Hamaca bonita! El descanso está listo junto a los arbustos."
+			],
+			"k'áan|chich": [
+				"Descansaré después de buscar semillas entre los arbustos. Necesito una hamaca fuerte.",
+				"¿Me traes una hamaca fuerte? Descansaré después de buscar semillas entre los arbustos.",
+				"¡Hamaca fuerte! El descanso está listo junto a los arbustos."
+			],
+			"lak|mejen": [
+				"Serviré la merienda junto a las hojas de mi entrada. Necesito un plato pequeño.",
+				"¿Me traes un plato pequeño? Serviré la merienda junto a las hojas de mi entrada.",
+				"¡Plato pequeño! Serviremos la merienda junto a los arbustos."
+			],
+			"lak|nojoch": [
+				"Serviré la merienda junto a las hojas de mi entrada. Necesito un plato grande.",
+				"¿Me traes un plato grande? Serviré la merienda junto a las hojas de mi entrada.",
+				"¡Plato grande! Serviremos la merienda junto a los arbustos."
+			],
+			"ja'as|mejen": [
+				"Quiero merendar un plátano junto a las hojas del monte. Necesito un plátano pequeño.",
+				"¿Me traes un plátano pequeño? Quiero merendar un plátano junto a las hojas del monte.",
+				"¡Plátano pequeño! Lo compartiremos con mis amigos junto a los arbustos."
+			],
+			"ja'as|nojoch": [
+				"Quiero merendar un plátano junto a las hojas del monte. Necesito un plátano grande.",
+				"¿Me traes un plátano grande? Quiero merendar un plátano junto a las hojas del monte.",
+				"¡Plátano grande! Lo compartiremos con mis amigos junto a los arbustos."
+			],
+			"ja'as|Jats'uts": [
+				"Quiero merendar un plátano junto a las hojas del monte. Necesito un plátano bonito.",
+				"¿Me traes un plátano bonito? Quiero merendar un plátano junto a las hojas del monte.",
+				"¡Plátano bonito! Lo compartiremos con mis amigos junto a los arbustos."
+			],
+			"ja'as|ki'": [
+				"Quiero merendar un plátano junto a las hojas del monte. Necesito un plátano delicioso.",
+				"¿Me traes un plátano delicioso? Quiero merendar un plátano junto a las hojas del monte.",
+				"¡Plátano delicioso! Lo compartiremos con mis amigos junto a los arbustos."
+			],
+			"ich|mejen": [
+				"Mis compañeros del monte vendrán a compartir fruta. Necesito una fruta pequeña.",
+				"¿Me traes una fruta pequeña? Mis compañeros del monte vendrán a compartir fruta.",
+				"¡Fruta pequeña! La compartiremos con mis amigos junto a los arbustos."
+			],
+			"ich|nojoch": [
+				"Mis compañeros del monte vendrán a compartir fruta. Necesito una fruta grande.",
+				"¿Me traes una fruta grande? Mis compañeros del monte vendrán a compartir fruta.",
+				"¡Fruta grande! La compartiremos con mis amigos junto a los arbustos."
+			],
+			"ich|Jats'uts": [
+				"Mis compañeros del monte vendrán a compartir fruta. Necesito una fruta bonita.",
+				"¿Me traes una fruta bonita? Mis compañeros del monte vendrán a compartir fruta.",
+				"¡Fruta bonita! La compartiremos con mis amigos junto a los arbustos."
+			],
+			"ich|ki'": [
+				"Mis compañeros del monte vendrán a compartir fruta. Necesito una fruta deliciosa.",
+				"¿Me traes una fruta deliciosa? Mis compañeros del monte vendrán a compartir fruta.",
+				"¡Fruta deliciosa! La compartiremos con mis amigos junto a los arbustos."
+			],
+			"K'úum|mejen": [
+				"Compartiremos calabaza en mi rincón entre las hojas. Necesito una calabaza pequeña.",
+				"¿Me traes una calabaza pequeña? Compartiremos calabaza en mi rincón entre las hojas.",
+				"¡Calabaza pequeña! La compartiremos con mis amigos junto a los arbustos."
+			],
+			"K'úum|nojoch": [
+				"Compartiremos calabaza en mi rincón entre las hojas. Necesito una calabaza grande.",
+				"¿Me traes una calabaza grande? Compartiremos calabaza en mi rincón entre las hojas.",
+				"¡Calabaza grande! La compartiremos con mis amigos junto a los arbustos."
+			],
+			"K'úum|Jats'uts": [
+				"Compartiremos calabaza en mi rincón entre las hojas. Necesito una calabaza bonita.",
+				"¿Me traes una calabaza bonita? Compartiremos calabaza en mi rincón entre las hojas.",
+				"¡Calabaza bonita! La compartiremos con mis amigos junto a los arbustos."
+			],
+			"K'úum|ki'": [
+				"Compartiremos calabaza en mi rincón entre las hojas. Necesito una calabaza deliciosa.",
+				"¿Me traes una calabaza deliciosa? Compartiremos calabaza en mi rincón entre las hojas.",
+				"¡Calabaza deliciosa! La compartiremos con mis amigos junto a los arbustos."
+			]
+		}
+	},
+	"Báalam": {
+		"greetings": [
+			"¡Kalin! Te esperaba a la sombra de mi casa de piedra.",
+			"Hoy seguí unas huellas por el monte y regresé antes del calor.",
+			"Mis manchas se confunden con las sombras de las hojas. ¡Aquí estoy!",
+			"Estoy cuidando que el camino del monte quede libre para todos.",
+			"¡Ven a descansar! Las piedras de mi casa guardan una sombra fresca."
+		],
+		"tasks": {
+			"mayak|": [
+				"Mis amigos vendrán a comer a la sombra de mi casa de piedra. Necesito una mesa.",
+				"Quiero apoyar los platos junto a las piedras de mi casa. ¿Me traes una mesa?",
+				"¡La mesa está lista a la sombra de mi casa de piedra!"
+			],
+			"k'áan|": [
+				"Volví del monte y quiero acostarme en la sombra. Necesito una hamaca.",
+				"Busqué un rincón fresco junto a mi casa de piedra. ¿Me traes una hamaca?",
+				"¡Mi hamaca! Descansaré en la sombra después de recorrer el monte."
+			],
+			"lak|": [
+				"Ya regresé del monte para comer, pero me falta un plato.",
+				"Quiero servir mi porción a la sombra de mi casa de piedra. Necesito un plato.",
+				"¡Con mi plato listo podré merendar a la sombra!"
+			],
+			"k'áanche'|": [
+				"Quiero sentarme a cuidar la entrada del monte. Necesito una silla.",
+				"Mis visitas llegarán a mi casa de piedra. ¿Me traes una silla para esperarlas?",
+				"¡Desde esta silla veré llegar a mis amigos del monte!"
+			],
+			"janal|": [
+				"Recorrí el monte y ahora tengo hambre. ¿Me traes comida?",
+				"Mis amigos compartirán la sombra de mi casa de piedra. Necesito comida para ellos.",
+				"¡La comida llegó a mi rincón de sombra! La compartiremos."
+			],
+			"mayak|nojoch": [
+				"Invité a todo el grupo a mi casa de piedra. Necesito una mesa grande.",
+				"Quiero que todos comamos a la sombra sin apretarnos. ¿Me traes una mesa grande?",
+				"¡Esta mesa grande nos reúne a todos junto a mi casa de piedra!"
+			],
+			"k'áanche'|chich": [
+				"Necesito una silla fuerte que sostenga mi cuerpo cuando me siente.",
+				"La silla de mi rincón se tambalea al acomodarme. Quiero una silla fuerte.",
+				"¡Esta silla fuerte me sostiene mientras cuido el camino!"
+			],
+			"k'áan|mejen": [
+				"Mi rincón de sombra es estrecho. Necesito una hamaca pequeña que quepa allí.",
+				"Quiero descansar sin ocupar toda la entrada de piedra. ¿Me traes una hamaca pequeña?",
+				"¡La hamaca pequeña cabe en mi rincón de sombra!"
+			],
+			"k'áanche'|Jats'uts": [
+				"Quiero recibir a mis amigos con una silla bonita junto a mi casa de piedra.",
+				"Estoy arreglando mi rincón de sombra para las visitas. Necesito una silla bonita.",
+				"¡La silla bonita alegra la entrada de mi casa de piedra!"
+			],
+			"lak|Jats'uts": [
+				"La reunión de hoy será junto a mi casa de piedra. Necesito un plato bonito.",
+				"Mis amigos del monte vendrán a merendar. ¿Me traes un plato bonito para recibirlos?",
+				"¡Qué plato bonito para nuestra merienda a la sombra!"
+			],
+			"janal|ki'": [
+				"Mis amigos llegarán del monte con hambre. Necesito comida deliciosa.",
+				"Quiero compartir comida deliciosa con las visitas de mi casa de piedra.",
+				"¡Qué comida deliciosa! Invitaré a mis amigos a la sombra."
+			],
+			"ja'|": [
+				"Volví del monte y tengo sed. Necesito agua para beber.",
+				"El paseo fue largo. ¿Me traes agua a la sombra de mi casa de piedra?",
+				"¡Gracias por el agua! Ahora descansaré en mi rincón de sombra."
+			],
+			"ja'as|": [
+				"Quiero merendar un plátano en mi rincón de sombra. Necesito un plátano.",
+				"¿Me traes un plátano? Quiero merendar un plátano en mi rincón de sombra.",
+				"¡Un plátano! Lo compartiremos con mis amigos junto a mi casa de piedra."
+			],
+			"ich|": [
+				"Mis amigos y yo compartiremos fruta junto a las piedras. Necesito fruta.",
+				"¿Me traes fruta? Mis amigos y yo compartiremos fruta junto a las piedras.",
+				"¡Fruta! La compartiremos con mis amigos junto a mi casa de piedra."
+			],
+			"K'úum|": [
+				"Prepararé calabaza para las visitas de mi casa de piedra. Necesito una calabaza.",
+				"¿Me traes una calabaza? Prepararé calabaza para las visitas de mi casa de piedra.",
+				"¡Una calabaza! La compartiremos con mis amigos junto a mi casa de piedra."
+			],
+			"mayak|mejen": [
+				"Recibiré a mis amigos a la sombra de mi casa de piedra. Necesito una mesa pequeña.",
+				"¿Me traes una mesa pequeña? Recibiré a mis amigos a la sombra de mi casa de piedra.",
+				"¡Mesa pequeña! Nos reuniremos a comer junto a mi casa de piedra."
+			],
+			"mayak|Jats'uts": [
+				"Recibiré a mis amigos a la sombra de mi casa de piedra. Necesito una mesa bonita.",
+				"¿Me traes una mesa bonita? Recibiré a mis amigos a la sombra de mi casa de piedra.",
+				"¡Mesa bonita! Nos reuniremos a comer junto a mi casa de piedra."
+			],
+			"mayak|chich": [
+				"Recibiré a mis amigos a la sombra de mi casa de piedra. Necesito una mesa fuerte.",
+				"¿Me traes una mesa fuerte? Recibiré a mis amigos a la sombra de mi casa de piedra.",
+				"¡Mesa fuerte! Nos reuniremos a comer junto a mi casa de piedra."
+			],
+			"k'áanche'|mejen": [
+				"Quiero sentarme a cuidar la entrada del monte. Necesito una silla pequeña.",
+				"¿Me traes una silla pequeña? Quiero sentarme a cuidar la entrada del monte.",
+				"¡Silla pequeña! Ya podemos sentarnos a conversar junto a mi casa de piedra."
+			],
+			"k'áanche'|nojoch": [
+				"Quiero sentarme a cuidar la entrada del monte. Necesito una silla grande.",
+				"¿Me traes una silla grande? Quiero sentarme a cuidar la entrada del monte.",
+				"¡Silla grande! Ya podemos sentarnos a conversar junto a mi casa de piedra."
+			],
+			"k'áan|nojoch": [
+				"Me acostaré en la sombra al regresar del monte. Necesito una hamaca grande.",
+				"¿Me traes una hamaca grande? Me acostaré en la sombra al regresar del monte.",
+				"¡Hamaca grande! El descanso está listo junto a mi casa de piedra."
+			],
+			"k'áan|Jats'uts": [
+				"Me acostaré en la sombra al regresar del monte. Necesito una hamaca bonita.",
+				"¿Me traes una hamaca bonita? Me acostaré en la sombra al regresar del monte.",
+				"¡Hamaca bonita! El descanso está listo junto a mi casa de piedra."
+			],
+			"k'áan|chich": [
+				"Me acostaré en la sombra al regresar del monte. Necesito una hamaca fuerte.",
+				"¿Me traes una hamaca fuerte? Me acostaré en la sombra al regresar del monte.",
+				"¡Hamaca fuerte! El descanso está listo junto a mi casa de piedra."
+			],
+			"lak|mejen": [
+				"Serviré la merienda en mi rincón junto a las piedras. Necesito un plato pequeño.",
+				"¿Me traes un plato pequeño? Serviré la merienda en mi rincón junto a las piedras.",
+				"¡Plato pequeño! Serviremos la merienda junto a mi casa de piedra."
+			],
+			"lak|nojoch": [
+				"Serviré la merienda en mi rincón junto a las piedras. Necesito un plato grande.",
+				"¿Me traes un plato grande? Serviré la merienda en mi rincón junto a las piedras.",
+				"¡Plato grande! Serviremos la merienda junto a mi casa de piedra."
+			],
+			"ja'as|mejen": [
+				"Quiero merendar un plátano en mi rincón de sombra. Necesito un plátano pequeño.",
+				"¿Me traes un plátano pequeño? Quiero merendar un plátano en mi rincón de sombra.",
+				"¡Plátano pequeño! Lo compartiremos con mis amigos junto a mi casa de piedra."
+			],
+			"ja'as|nojoch": [
+				"Quiero merendar un plátano en mi rincón de sombra. Necesito un plátano grande.",
+				"¿Me traes un plátano grande? Quiero merendar un plátano en mi rincón de sombra.",
+				"¡Plátano grande! Lo compartiremos con mis amigos junto a mi casa de piedra."
+			],
+			"ja'as|Jats'uts": [
+				"Quiero merendar un plátano en mi rincón de sombra. Necesito un plátano bonito.",
+				"¿Me traes un plátano bonito? Quiero merendar un plátano en mi rincón de sombra.",
+				"¡Plátano bonito! Lo compartiremos con mis amigos junto a mi casa de piedra."
+			],
+			"ja'as|ki'": [
+				"Quiero merendar un plátano en mi rincón de sombra. Necesito un plátano delicioso.",
+				"¿Me traes un plátano delicioso? Quiero merendar un plátano en mi rincón de sombra.",
+				"¡Plátano delicioso! Lo compartiremos con mis amigos junto a mi casa de piedra."
+			],
+			"ich|mejen": [
+				"Mis amigos y yo compartiremos fruta junto a las piedras. Necesito una fruta pequeña.",
+				"¿Me traes una fruta pequeña? Mis amigos y yo compartiremos fruta junto a las piedras.",
+				"¡Fruta pequeña! La compartiremos con mis amigos junto a mi casa de piedra."
+			],
+			"ich|nojoch": [
+				"Mis amigos y yo compartiremos fruta junto a las piedras. Necesito una fruta grande.",
+				"¿Me traes una fruta grande? Mis amigos y yo compartiremos fruta junto a las piedras.",
+				"¡Fruta grande! La compartiremos con mis amigos junto a mi casa de piedra."
+			],
+			"ich|Jats'uts": [
+				"Mis amigos y yo compartiremos fruta junto a las piedras. Necesito una fruta bonita.",
+				"¿Me traes una fruta bonita? Mis amigos y yo compartiremos fruta junto a las piedras.",
+				"¡Fruta bonita! La compartiremos con mis amigos junto a mi casa de piedra."
+			],
+			"ich|ki'": [
+				"Mis amigos y yo compartiremos fruta junto a las piedras. Necesito una fruta deliciosa.",
+				"¿Me traes una fruta deliciosa? Mis amigos y yo compartiremos fruta junto a las piedras.",
+				"¡Fruta deliciosa! La compartiremos con mis amigos junto a mi casa de piedra."
+			],
+			"K'úum|mejen": [
+				"Prepararé calabaza para las visitas de mi casa de piedra. Necesito una calabaza pequeña.",
+				"¿Me traes una calabaza pequeña? Prepararé calabaza para las visitas de mi casa de piedra.",
+				"¡Calabaza pequeña! La compartiremos con mis amigos junto a mi casa de piedra."
+			],
+			"K'úum|nojoch": [
+				"Prepararé calabaza para las visitas de mi casa de piedra. Necesito una calabaza grande.",
+				"¿Me traes una calabaza grande? Prepararé calabaza para las visitas de mi casa de piedra.",
+				"¡Calabaza grande! La compartiremos con mis amigos junto a mi casa de piedra."
+			],
+			"K'úum|Jats'uts": [
+				"Prepararé calabaza para las visitas de mi casa de piedra. Necesito una calabaza bonita.",
+				"¿Me traes una calabaza bonita? Prepararé calabaza para las visitas de mi casa de piedra.",
+				"¡Calabaza bonita! La compartiremos con mis amigos junto a mi casa de piedra."
+			],
+			"K'úum|ki'": [
+				"Prepararé calabaza para las visitas de mi casa de piedra. Necesito una calabaza deliciosa.",
+				"¿Me traes una calabaza deliciosa? Prepararé calabaza para las visitas de mi casa de piedra.",
+				"¡Calabaza deliciosa! La compartiremos con mis amigos junto a mi casa de piedra."
+			]
+		}
+	},
+	"T'u'ul": {
+		"greetings": [
+			"¡Kalin! Mis orejas escucharon tus pasos desde la entrada del jardín.",
+			"Hoy di un paseo entre las plantas. Mi casita se ve preciosa desde el camino.",
+			"Dejé libre la entrada de mi madriguera para recibir a mis visitas.",
+			"¡Ven a mirar! Las plantas junto a mi madriguera tienen hojas nuevas.",
+			"Acabo de volver del jardín. Me quedaré un ratito a conversar contigo."
+		],
+		"tasks": {
+			"mayak|": [
+				"Quiero merendar con mis amigos junto a la madriguera. Necesito una mesa.",
+				"Preparé un rincón entre las plantas. ¿Me traes una mesa para los platos?",
+				"¡La mesa está lista para merendar junto a mi madriguera!"
+			],
+			"k'áan|": [
+				"Di muchos saltos por el jardín y quiero acostarme. Necesito una hamaca.",
+				"Ya dejé libre la entrada de mi madriguera. ¿Me traes una hamaca para descansar?",
+				"¡Mi hamaca está lista para descansar después de tantos saltos!"
+			],
+			"lak|": [
+				"Ya volví a mi madriguera para merendar, pero me falta un plato.",
+				"Quiero servir mi comida junto a las plantas del jardín. Necesito un plato.",
+				"¡Ya tengo plato para comer junto a mi madriguera!"
+			],
+			"k'áanche'|": [
+				"Quiero sentarme frente a mi madriguera. ¿Me traes una silla?",
+				"Mis patas necesitan descansar después de saltar. Necesito una silla en el jardín.",
+				"¡En esta silla descansarán mis patas después del paseo!"
+			],
+			"janal|": [
+				"Salté por todo el jardín y ahora tengo hambre. Quiero comida.",
+				"Mis amigos vendrán a mi madriguera para merendar. Necesito comida para compartir.",
+				"¡Gracias por la comida! Comeremos junto al jardín."
+			],
+			"mayak|nojoch": [
+				"Invité a muchos amigos a mi madriguera. Necesito una mesa grande afuera.",
+				"La reunión será en el jardín y quiero que todos quepan. ¿Me traes una mesa grande?",
+				"¡En la mesa grande cabemos todos junto a mi madriguera!"
+			],
+			"k'áanche'|chich": [
+				"Quiero sentarme sin que la silla se tambalee. Necesito una silla fuerte para mi jardín.",
+				"Descansaré frente a mi madriguera. ¿Me traes una silla fuerte que se quede firme?",
+				"¡Esta silla fuerte se queda firme frente a mi madriguera!"
+			],
+			"k'áan|mejen": [
+				"La entrada de mi madriguera tiene poco espacio. Necesito una hamaca pequeña.",
+				"Quiero descansar entre las plantas sin tapar el paso. ¿Me traes una hamaca pequeña?",
+				"¡La hamaca pequeña cabe junto a mi madriguera sin taparla!"
+			],
+			"k'áanche'|Jats'uts": [
+				"Estoy adornando la entrada de mi madriguera. Quiero una silla bonita.",
+				"Mis amigos vienen a ver el jardín. ¿Me traes una silla bonita para recibirlos?",
+				"¡La silla bonita alegra la entrada de mi madriguera!"
+			],
+			"lak|Jats'uts": [
+				"Hoy recibo visitas junto a mi madriguera. Necesito un plato bonito para la merienda.",
+				"Las plantas del jardín ya están acomodadas. ¿Me traes un plato bonito para la reunión?",
+				"¡Qué plato bonito para compartir en mi jardín!"
+			],
+			"janal|ki'": [
+				"Mis amigos vendrán al jardín con hambre. Necesito comida deliciosa.",
+				"Preparé una merienda frente a mi madriguera. ¿Me traes comida deliciosa para compartir?",
+				"¡Qué comida deliciosa! La disfrutaremos junto a mi madriguera."
+			],
+			"ja'|": [
+				"Salté por el jardín y tengo sed. ¿Me traes agua?",
+				"Volví a mi madriguera después del paseo. Necesito agua para beber.",
+				"¡Gracias por el agua! Descansaré con las orejas a la sombra."
+			],
+			"ja'as|": [
+				"Quiero merendar un plátano después de pasear por el jardín. Necesito un plátano.",
+				"¿Me traes un plátano? Quiero merendar un plátano después de pasear por el jardín.",
+				"¡Un plátano! Lo compartiremos con mis amigos junto a mi madriguera."
+			],
+			"ich|": [
+				"Compartiremos fruta en la entrada de mi madriguera. Necesito fruta.",
+				"¿Me traes fruta? Compartiremos fruta en la entrada de mi madriguera.",
+				"¡Fruta! La compartiremos con mis amigos junto a mi madriguera."
+			],
+			"K'úum|": [
+				"Mis amigos vendrán a comer calabaza junto a mis plantas. Necesito una calabaza.",
+				"¿Me traes una calabaza? Mis amigos vendrán a comer calabaza junto a mis plantas.",
+				"¡Una calabaza! La compartiremos con mis amigos junto a mi madriguera."
+			],
+			"mayak|mejen": [
+				"Mis amigos comerán en el jardín frente a mi madriguera. Necesito una mesa pequeña.",
+				"¿Me traes una mesa pequeña? Mis amigos comerán en el jardín frente a mi madriguera.",
+				"¡Mesa pequeña! Nos reuniremos a comer junto a mi madriguera."
+			],
+			"mayak|Jats'uts": [
+				"Mis amigos comerán en el jardín frente a mi madriguera. Necesito una mesa bonita.",
+				"¿Me traes una mesa bonita? Mis amigos comerán en el jardín frente a mi madriguera.",
+				"¡Mesa bonita! Nos reuniremos a comer junto a mi madriguera."
+			],
+			"mayak|chich": [
+				"Mis amigos comerán en el jardín frente a mi madriguera. Necesito una mesa fuerte.",
+				"¿Me traes una mesa fuerte? Mis amigos comerán en el jardín frente a mi madriguera.",
+				"¡Mesa fuerte! Nos reuniremos a comer junto a mi madriguera."
+			],
+			"k'áanche'|mejen": [
+				"Quiero sentarme a descansar mis patas después de saltar. Necesito una silla pequeña.",
+				"¿Me traes una silla pequeña? Quiero sentarme a descansar mis patas después de saltar.",
+				"¡Silla pequeña! Ya podemos sentarnos a conversar junto a mi madriguera."
+			],
+			"k'áanche'|nojoch": [
+				"Quiero sentarme a descansar mis patas después de saltar. Necesito una silla grande.",
+				"¿Me traes una silla grande? Quiero sentarme a descansar mis patas después de saltar.",
+				"¡Silla grande! Ya podemos sentarnos a conversar junto a mi madriguera."
+			],
+			"k'áan|nojoch": [
+				"Me acostaré junto a mi madriguera después del paseo. Necesito una hamaca grande.",
+				"¿Me traes una hamaca grande? Me acostaré junto a mi madriguera después del paseo.",
+				"¡Hamaca grande! El descanso está listo junto a mi madriguera."
+			],
+			"k'áan|Jats'uts": [
+				"Me acostaré junto a mi madriguera después del paseo. Necesito una hamaca bonita.",
+				"¿Me traes una hamaca bonita? Me acostaré junto a mi madriguera después del paseo.",
+				"¡Hamaca bonita! El descanso está listo junto a mi madriguera."
+			],
+			"k'áan|chich": [
+				"Me acostaré junto a mi madriguera después del paseo. Necesito una hamaca fuerte.",
+				"¿Me traes una hamaca fuerte? Me acostaré junto a mi madriguera después del paseo.",
+				"¡Hamaca fuerte! El descanso está listo junto a mi madriguera."
+			],
+			"lak|mejen": [
+				"La merienda se servirá entre las plantas del jardín. Necesito un plato pequeño.",
+				"¿Me traes un plato pequeño? La merienda se servirá entre las plantas del jardín.",
+				"¡Plato pequeño! Serviremos la merienda junto a mi madriguera."
+			],
+			"lak|nojoch": [
+				"La merienda se servirá entre las plantas del jardín. Necesito un plato grande.",
+				"¿Me traes un plato grande? La merienda se servirá entre las plantas del jardín.",
+				"¡Plato grande! Serviremos la merienda junto a mi madriguera."
+			],
+			"ja'as|mejen": [
+				"Quiero merendar un plátano después de pasear por el jardín. Necesito un plátano pequeño.",
+				"¿Me traes un plátano pequeño? Quiero merendar un plátano después de pasear por el jardín.",
+				"¡Plátano pequeño! Lo compartiremos con mis amigos junto a mi madriguera."
+			],
+			"ja'as|nojoch": [
+				"Quiero merendar un plátano después de pasear por el jardín. Necesito un plátano grande.",
+				"¿Me traes un plátano grande? Quiero merendar un plátano después de pasear por el jardín.",
+				"¡Plátano grande! Lo compartiremos con mis amigos junto a mi madriguera."
+			],
+			"ja'as|Jats'uts": [
+				"Quiero merendar un plátano después de pasear por el jardín. Necesito un plátano bonito.",
+				"¿Me traes un plátano bonito? Quiero merendar un plátano después de pasear por el jardín.",
+				"¡Plátano bonito! Lo compartiremos con mis amigos junto a mi madriguera."
+			],
+			"ja'as|ki'": [
+				"Quiero merendar un plátano después de pasear por el jardín. Necesito un plátano delicioso.",
+				"¿Me traes un plátano delicioso? Quiero merendar un plátano después de pasear por el jardín.",
+				"¡Plátano delicioso! Lo compartiremos con mis amigos junto a mi madriguera."
+			],
+			"ich|mejen": [
+				"Compartiremos fruta en la entrada de mi madriguera. Necesito una fruta pequeña.",
+				"¿Me traes una fruta pequeña? Compartiremos fruta en la entrada de mi madriguera.",
+				"¡Fruta pequeña! La compartiremos con mis amigos junto a mi madriguera."
+			],
+			"ich|nojoch": [
+				"Compartiremos fruta en la entrada de mi madriguera. Necesito una fruta grande.",
+				"¿Me traes una fruta grande? Compartiremos fruta en la entrada de mi madriguera.",
+				"¡Fruta grande! La compartiremos con mis amigos junto a mi madriguera."
+			],
+			"ich|Jats'uts": [
+				"Compartiremos fruta en la entrada de mi madriguera. Necesito una fruta bonita.",
+				"¿Me traes una fruta bonita? Compartiremos fruta en la entrada de mi madriguera.",
+				"¡Fruta bonita! La compartiremos con mis amigos junto a mi madriguera."
+			],
+			"ich|ki'": [
+				"Compartiremos fruta en la entrada de mi madriguera. Necesito una fruta deliciosa.",
+				"¿Me traes una fruta deliciosa? Compartiremos fruta en la entrada de mi madriguera.",
+				"¡Fruta deliciosa! La compartiremos con mis amigos junto a mi madriguera."
+			],
+			"K'úum|mejen": [
+				"Mis amigos vendrán a comer calabaza junto a mis plantas. Necesito una calabaza pequeña.",
+				"¿Me traes una calabaza pequeña? Mis amigos vendrán a comer calabaza junto a mis plantas.",
+				"¡Calabaza pequeña! La compartiremos con mis amigos junto a mi madriguera."
+			],
+			"K'úum|nojoch": [
+				"Mis amigos vendrán a comer calabaza junto a mis plantas. Necesito una calabaza grande.",
+				"¿Me traes una calabaza grande? Mis amigos vendrán a comer calabaza junto a mis plantas.",
+				"¡Calabaza grande! La compartiremos con mis amigos junto a mi madriguera."
+			],
+			"K'úum|Jats'uts": [
+				"Mis amigos vendrán a comer calabaza junto a mis plantas. Necesito una calabaza bonita.",
+				"¿Me traes una calabaza bonita? Mis amigos vendrán a comer calabaza junto a mis plantas.",
+				"¡Calabaza bonita! La compartiremos con mis amigos junto a mi madriguera."
+			],
+			"K'úum|ki'": [
+				"Mis amigos vendrán a comer calabaza junto a mis plantas. Necesito una calabaza deliciosa.",
+				"¿Me traes una calabaza deliciosa? Mis amigos vendrán a comer calabaza junto a mis plantas.",
+				"¡Calabaza deliciosa! La compartiremos con mis amigos junto a mi madriguera."
+			]
+		}
+	},
+	"Kay": {
+		"greetings": [
+			"¡Kalin! Desde el agua vi que venías hacia mi casa.",
+			"Hoy nadé junto a la orilla. ¡El agua estaba muy tranquila!",
+			"Las sombras de mi casa se mueven sobre el agua. Me gusta seguirlas.",
+			"¡Ven a conversar desde la orilla! Yo me quedaré aquí en el agua.",
+			"Moví mis aletas para saludarte. ¡Qué gusto tenerte de visita!"
+		],
+		"tasks": {
+			"mayak|": [
+				"Mis amigos comerán en la orilla junto a mi casa. Necesito una mesa para ellos.",
+				"Quiero organizar una merienda junto al agua. ¿Me traes una mesa para mis visitas?",
+				"¡La mesa está lista en la orilla! Mis visitas podrán merendar."
+			],
+			"k'áan|": [
+				"Quiero que mis visitas descansen junto al agua. Necesito una hamaca para ellas.",
+				"Mis amigos de tierra se quedarán en la orilla. ¿Me traes una hamaca para recibirlos?",
+				"¡La hamaca está lista para mis amigos de la orilla!"
+			],
+			"lak|": [
+				"Mis visitas comerán junto al agua y les falta un plato. ¿Me traes uno?",
+				"Estoy preparando la merienda de la orilla. Necesito un plato para servir a mis amigos.",
+				"¡El plato de mis visitas ya está listo junto al agua!"
+			],
+			"k'áanche'|": [
+				"Quiero que mis amigos se sienten a conversar desde la orilla. Necesito una silla.",
+				"Mis visitas de tierra vendrán a verme. ¿Me traes una silla para esperarme junto al agua?",
+				"¡En esta silla mis amigos podrán conversar conmigo desde la orilla!"
+			],
+			"janal|": [
+				"Mis amigos vendrán a verme desde la orilla. Necesito comida para compartir con ellos.",
+				"Organicé una merienda junto al agua. ¿Me traes comida para mis visitas?",
+				"¡La comida llegó! Hoy compartiremos junto al agua."
+			],
+			"mayak|nojoch": [
+				"Vendrán muchos amigos a mi orilla. Necesito una mesa grande para recibirlos.",
+				"Quiero reunir a todo el grupo junto al agua. ¿Me traes una mesa grande para la merienda?",
+				"¡La mesa grande está lista para todo el grupo de la orilla!"
+			],
+			"k'áanche'|chich": [
+				"Mis visitas quieren sentarse seguras en la orilla. Necesito una silla fuerte.",
+				"La silla de la orilla se tambalea. ¿Me traes una silla fuerte para mis amigos?",
+				"¡Mis visitas tendrán una silla fuerte para conversar junto al agua!"
+			],
+			"k'áan|mejen": [
+				"La orilla junto a mi casa es estrecha. Necesito una hamaca pequeña para mis visitas.",
+				"Mis amigos quieren descansar junto al agua sin tapar el paso. ¿Me traes una hamaca pequeña?",
+				"¡La hamaca pequeña cabe en la orilla para mis visitas!"
+			],
+			"k'áanche'|Jats'uts": [
+				"Quiero recibir a mis amigos con una silla bonita en la orilla.",
+				"Estoy adornando el rincón de visitas junto al agua. ¿Me traes una silla bonita?",
+				"¡La silla bonita alegra nuestro rincón de la orilla!"
+			],
+			"lak|Jats'uts": [
+				"Mis amigos vendrán a merendar junto al agua. Necesito un plato bonito para recibirlos.",
+				"Quiero que la reunión de la orilla sea especial. ¿Me traes un plato bonito?",
+				"¡Qué plato bonito para la merienda de la orilla!"
+			],
+			"janal|ki'": [
+				"Organicé una reunión junto al agua. Necesito comida deliciosa para mis amigos.",
+				"Quiero recibir a mis visitas de la orilla con comida deliciosa. ¿Me ayudas?",
+				"¡Qué comida deliciosa para nuestra reunión junto al agua!"
+			],
+			"ja'|": [
+				"Mis amigos de tierra vendrán a la orilla con sed. Necesito agua para que beban.",
+				"Mis visitas querrán beber durante la merienda de la orilla. ¿Me traes agua para ellas?",
+				"¡Gracias! Mis amigos de la orilla ya tienen agua para beber."
+			],
+			"ja'as|": [
+				"Mis visitas compartirán un plátano junto al agua. Necesito un plátano.",
+				"¿Me traes un plátano? Mis visitas compartirán un plátano junto al agua.",
+				"¡Un plátano! Lo compartiremos con mis amigos junto a la orilla."
+			],
+			"ich|": [
+				"Recibiré a mis amigos con fruta en la orilla. Necesito fruta.",
+				"¿Me traes fruta? Recibiré a mis amigos con fruta en la orilla.",
+				"¡Fruta! La compartiremos con mis amigos junto a la orilla."
+			],
+			"K'úum|": [
+				"Prepararemos calabaza para mis visitas junto al agua. Necesito una calabaza.",
+				"¿Me traes una calabaza? Prepararemos calabaza para mis visitas junto al agua.",
+				"¡Una calabaza! La compartiremos con mis amigos junto a la orilla."
+			],
+			"mayak|mejen": [
+				"Mis visitas de tierra comerán en la orilla de mi casa. Necesito una mesa pequeña.",
+				"¿Me traes una mesa pequeña? Mis visitas de tierra comerán en la orilla de mi casa.",
+				"¡Mesa pequeña! Nos reuniremos a comer junto a la orilla."
+			],
+			"mayak|Jats'uts": [
+				"Mis visitas de tierra comerán en la orilla de mi casa. Necesito una mesa bonita.",
+				"¿Me traes una mesa bonita? Mis visitas de tierra comerán en la orilla de mi casa.",
+				"¡Mesa bonita! Nos reuniremos a comer junto a la orilla."
+			],
+			"mayak|chich": [
+				"Mis visitas de tierra comerán en la orilla de mi casa. Necesito una mesa fuerte.",
+				"¿Me traes una mesa fuerte? Mis visitas de tierra comerán en la orilla de mi casa.",
+				"¡Mesa fuerte! Nos reuniremos a comer junto a la orilla."
+			],
+			"k'áanche'|mejen": [
+				"Mis amigos se sentarán a conversar conmigo desde la orilla. Necesito una silla pequeña.",
+				"¿Me traes una silla pequeña? Mis amigos se sentarán a conversar conmigo desde la orilla.",
+				"¡Silla pequeña! Ya podemos sentarnos a conversar junto a la orilla."
+			],
+			"k'áanche'|nojoch": [
+				"Mis amigos se sentarán a conversar conmigo desde la orilla. Necesito una silla grande.",
+				"¿Me traes una silla grande? Mis amigos se sentarán a conversar conmigo desde la orilla.",
+				"¡Silla grande! Ya podemos sentarnos a conversar junto a la orilla."
+			],
+			"k'áan|nojoch": [
+				"Mis amigos de tierra descansarán junto a mi casa del agua. Necesito una hamaca grande.",
+				"¿Me traes una hamaca grande? Mis amigos de tierra descansarán junto a mi casa del agua.",
+				"¡Hamaca grande! El descanso está listo junto a la orilla."
+			],
+			"k'áan|Jats'uts": [
+				"Mis amigos de tierra descansarán junto a mi casa del agua. Necesito una hamaca bonita.",
+				"¿Me traes una hamaca bonita? Mis amigos de tierra descansarán junto a mi casa del agua.",
+				"¡Hamaca bonita! El descanso está listo junto a la orilla."
+			],
+			"k'áan|chich": [
+				"Mis amigos de tierra descansarán junto a mi casa del agua. Necesito una hamaca fuerte.",
+				"¿Me traes una hamaca fuerte? Mis amigos de tierra descansarán junto a mi casa del agua.",
+				"¡Hamaca fuerte! El descanso está listo junto a la orilla."
+			],
+			"lak|mejen": [
+				"Serviremos la merienda a las visitas de la orilla. Necesito un plato pequeño.",
+				"¿Me traes un plato pequeño? Serviremos la merienda a las visitas de la orilla.",
+				"¡Plato pequeño! Serviremos la merienda junto a la orilla."
+			],
+			"lak|nojoch": [
+				"Serviremos la merienda a las visitas de la orilla. Necesito un plato grande.",
+				"¿Me traes un plato grande? Serviremos la merienda a las visitas de la orilla.",
+				"¡Plato grande! Serviremos la merienda junto a la orilla."
+			],
+			"ja'as|mejen": [
+				"Mis visitas compartirán un plátano junto al agua. Necesito un plátano pequeño.",
+				"¿Me traes un plátano pequeño? Mis visitas compartirán un plátano junto al agua.",
+				"¡Plátano pequeño! Lo compartiremos con mis amigos junto a la orilla."
+			],
+			"ja'as|nojoch": [
+				"Mis visitas compartirán un plátano junto al agua. Necesito un plátano grande.",
+				"¿Me traes un plátano grande? Mis visitas compartirán un plátano junto al agua.",
+				"¡Plátano grande! Lo compartiremos con mis amigos junto a la orilla."
+			],
+			"ja'as|Jats'uts": [
+				"Mis visitas compartirán un plátano junto al agua. Necesito un plátano bonito.",
+				"¿Me traes un plátano bonito? Mis visitas compartirán un plátano junto al agua.",
+				"¡Plátano bonito! Lo compartiremos con mis amigos junto a la orilla."
+			],
+			"ja'as|ki'": [
+				"Mis visitas compartirán un plátano junto al agua. Necesito un plátano delicioso.",
+				"¿Me traes un plátano delicioso? Mis visitas compartirán un plátano junto al agua.",
+				"¡Plátano delicioso! Lo compartiremos con mis amigos junto a la orilla."
+			],
+			"ich|mejen": [
+				"Recibiré a mis amigos con fruta en la orilla. Necesito una fruta pequeña.",
+				"¿Me traes una fruta pequeña? Recibiré a mis amigos con fruta en la orilla.",
+				"¡Fruta pequeña! La compartiremos con mis amigos junto a la orilla."
+			],
+			"ich|nojoch": [
+				"Recibiré a mis amigos con fruta en la orilla. Necesito una fruta grande.",
+				"¿Me traes una fruta grande? Recibiré a mis amigos con fruta en la orilla.",
+				"¡Fruta grande! La compartiremos con mis amigos junto a la orilla."
+			],
+			"ich|Jats'uts": [
+				"Recibiré a mis amigos con fruta en la orilla. Necesito una fruta bonita.",
+				"¿Me traes una fruta bonita? Recibiré a mis amigos con fruta en la orilla.",
+				"¡Fruta bonita! La compartiremos con mis amigos junto a la orilla."
+			],
+			"ich|ki'": [
+				"Recibiré a mis amigos con fruta en la orilla. Necesito una fruta deliciosa.",
+				"¿Me traes una fruta deliciosa? Recibiré a mis amigos con fruta en la orilla.",
+				"¡Fruta deliciosa! La compartiremos con mis amigos junto a la orilla."
+			],
+			"K'úum|mejen": [
+				"Prepararemos calabaza para mis visitas junto al agua. Necesito una calabaza pequeña.",
+				"¿Me traes una calabaza pequeña? Prepararemos calabaza para mis visitas junto al agua.",
+				"¡Calabaza pequeña! La compartiremos con mis amigos junto a la orilla."
+			],
+			"K'úum|nojoch": [
+				"Prepararemos calabaza para mis visitas junto al agua. Necesito una calabaza grande.",
+				"¿Me traes una calabaza grande? Prepararemos calabaza para mis visitas junto al agua.",
+				"¡Calabaza grande! La compartiremos con mis amigos junto a la orilla."
+			],
+			"K'úum|Jats'uts": [
+				"Prepararemos calabaza para mis visitas junto al agua. Necesito una calabaza bonita.",
+				"¿Me traes una calabaza bonita? Prepararemos calabaza para mis visitas junto al agua.",
+				"¡Calabaza bonita! La compartiremos con mis amigos junto a la orilla."
+			],
+			"K'úum|ki'": [
+				"Prepararemos calabaza para mis visitas junto al agua. Necesito una calabaza deliciosa.",
+				"¿Me traes una calabaza deliciosa? Prepararemos calabaza para mis visitas junto al agua.",
+				"¡Calabaza deliciosa! La compartiremos con mis amigos junto a la orilla."
+			]
+		}
+	},
+	"Ch'íich'": {
+		"greetings": [
+			"¡Kalin! Te vi llegar mientras volaba sobre los techos de la aldea.",
+			"Hoy acomodé ramitas en mi casa. El nido quedó muy cómodo.",
+			"Bajé a mi percha para conversar contigo. ¿Cómo estuvo el camino?",
+			"Desde mi nido se ve un pedacito del mar entre las hojas.",
+			"¡Qué gusto verte! Estaba practicando un canto para recibir a mis amigos."
+		],
+		"tasks": {
+			"mayak|": [
+				"Mis amigos merendarán bajo mi nido. Necesito una mesa para recibirlos.",
+				"Bajaré de mi percha para comer con las visitas. ¿Me traes una mesa?",
+				"¡La mesa está lista para merendar bajo mi nido!"
+			],
+			"k'áan|": [
+				"Volé por toda la aldea y quiero descansar. Necesito una hamaca bajo mi nido.",
+				"Hoy descansaré cerca de mis visitas. ¿Me traes una hamaca junto a mi percha?",
+				"¡Mi hamaca! Descansaré bajo el nido después de volar."
+			],
+			"lak|": [
+				"Bajé de mi percha para merendar, pero me falta un plato.",
+				"Mis visitas comerán bajo el nido. Necesito un plato para servir la merienda.",
+				"¡Ya tengo plato para compartir bajo mi nido!"
+			],
+			"k'áanche'|": [
+				"Quiero sentarme bajo el nido a escuchar a mis amigos. Necesito una silla.",
+				"Bajaré de mi percha para conversar con las visitas. ¿Me traes una silla?",
+				"¡En esta silla conversaré con mis visitas bajo el nido!"
+			],
+			"janal|": [
+				"Volé mucho esta mañana y ahora tengo hambre. Necesito comida.",
+				"Mis amigos vienen a merendar bajo mi nido. ¿Me traes comida para compartir?",
+				"¡La comida llegó! Bajaré de mi percha para merendar."
+			],
+			"mayak|nojoch": [
+				"Invité a muchos amigos a comer bajo mi nido. Necesito una mesa grande.",
+				"Quiero que todo el grupo meriende junto a mi percha. ¿Me traes una mesa grande?",
+				"¡La mesa grande está lista para todas las visitas de mi nido!"
+			],
+			"k'áanche'|chich": [
+				"Quiero sentarme sin que la silla se mueva bajo mi nido. Necesito una silla fuerte.",
+				"Mis amigos se sentarán junto a mi percha. ¿Me traes una silla fuerte?",
+				"¡Esta silla fuerte se queda firme bajo mi nido!"
+			],
+			"k'áan|mejen": [
+				"Junto al poste de mi nido queda poco espacio. Necesito una hamaca pequeña.",
+				"Quiero descansar bajo mi percha sin tapar el camino. ¿Me traes una hamaca pequeña?",
+				"¡La hamaca pequeña cabe junto al poste de mi nido!"
+			],
+			"k'áanche'|Jats'uts": [
+				"Quiero decorar el rincón bajo mi nido con una silla bonita.",
+				"Mis visitas llegarán junto a mi percha. ¿Me traes una silla bonita para recibirlas?",
+				"¡La silla bonita alegra el rincón bajo mi nido!"
+			],
+			"lak|Jats'uts": [
+				"Hoy tendremos una merienda bajo mi nido. Necesito un plato bonito.",
+				"Estoy preparando una reunión junto a mi percha. ¿Me traes un plato bonito para las visitas?",
+				"¡Qué plato bonito para nuestra merienda bajo el nido!"
+			],
+			"janal|ki'": [
+				"Mis amigos vendrán a escuchar mis cantos. Necesito comida deliciosa para compartir.",
+				"Organicé una merienda bajo mi nido. ¿Me traes comida deliciosa para las visitas?",
+				"¡Qué comida deliciosa! Después de merendar cantaré para mis amigos."
+			],
+			"ja'|": [
+				"Volé sobre los techos y ahora tengo sed. ¿Me traes agua?",
+				"Después de cantar desde mi percha quiero beber. Necesito agua.",
+				"¡Gracias por el agua! Ya puedo descansar junto a mi nido."
+			],
+			"ja'as|": [
+				"Quiero merendar un plátano después de mi vuelo por la aldea. Necesito un plátano.",
+				"¿Me traes un plátano? Quiero merendar un plátano después de mi vuelo por la aldea.",
+				"¡Un plátano! Lo compartiremos con mis amigos junto a mi percha."
+			],
+			"ich|": [
+				"Compartiremos fruta bajo las ramas de mi nido. Necesito fruta.",
+				"¿Me traes fruta? Compartiremos fruta bajo las ramas de mi nido.",
+				"¡Fruta! La compartiremos con mis amigos junto a mi percha."
+			],
+			"K'úum|": [
+				"Mis amigos vendrán a comer calabaza junto a mi percha. Necesito una calabaza.",
+				"¿Me traes una calabaza? Mis amigos vendrán a comer calabaza junto a mi percha.",
+				"¡Una calabaza! La compartiremos con mis amigos junto a mi percha."
+			],
+			"mayak|mejen": [
+				"Mis amigos bajarán a comer junto a la percha de mi nido. Necesito una mesa pequeña.",
+				"¿Me traes una mesa pequeña? Mis amigos bajarán a comer junto a la percha de mi nido.",
+				"¡Mesa pequeña! Nos reuniremos a comer junto a mi percha."
+			],
+			"mayak|Jats'uts": [
+				"Mis amigos bajarán a comer junto a la percha de mi nido. Necesito una mesa bonita.",
+				"¿Me traes una mesa bonita? Mis amigos bajarán a comer junto a la percha de mi nido.",
+				"¡Mesa bonita! Nos reuniremos a comer junto a mi percha."
+			],
+			"mayak|chich": [
+				"Mis amigos bajarán a comer junto a la percha de mi nido. Necesito una mesa fuerte.",
+				"¿Me traes una mesa fuerte? Mis amigos bajarán a comer junto a la percha de mi nido.",
+				"¡Mesa fuerte! Nos reuniremos a comer junto a mi percha."
+			],
+			"k'áanche'|mejen": [
+				"Quiero sentarme bajo el nido a conversar con mis visitas. Necesito una silla pequeña.",
+				"¿Me traes una silla pequeña? Quiero sentarme bajo el nido a conversar con mis visitas.",
+				"¡Silla pequeña! Ya podemos sentarnos a conversar junto a mi percha."
+			],
+			"k'áanche'|nojoch": [
+				"Quiero sentarme bajo el nido a conversar con mis visitas. Necesito una silla grande.",
+				"¿Me traes una silla grande? Quiero sentarme bajo el nido a conversar con mis visitas.",
+				"¡Silla grande! Ya podemos sentarnos a conversar junto a mi percha."
+			],
+			"k'áan|nojoch": [
+				"Descansaré bajo mi nido después de volar sobre la aldea. Necesito una hamaca grande.",
+				"¿Me traes una hamaca grande? Descansaré bajo mi nido después de volar sobre la aldea.",
+				"¡Hamaca grande! El descanso está listo junto a mi percha."
+			],
+			"k'áan|Jats'uts": [
+				"Descansaré bajo mi nido después de volar sobre la aldea. Necesito una hamaca bonita.",
+				"¿Me traes una hamaca bonita? Descansaré bajo mi nido después de volar sobre la aldea.",
+				"¡Hamaca bonita! El descanso está listo junto a mi percha."
+			],
+			"k'áan|chich": [
+				"Descansaré bajo mi nido después de volar sobre la aldea. Necesito una hamaca fuerte.",
+				"¿Me traes una hamaca fuerte? Descansaré bajo mi nido después de volar sobre la aldea.",
+				"¡Hamaca fuerte! El descanso está listo junto a mi percha."
+			],
+			"lak|mejen": [
+				"Serviré la merienda junto al poste de mi nido. Necesito un plato pequeño.",
+				"¿Me traes un plato pequeño? Serviré la merienda junto al poste de mi nido.",
+				"¡Plato pequeño! Serviremos la merienda junto a mi percha."
+			],
+			"lak|nojoch": [
+				"Serviré la merienda junto al poste de mi nido. Necesito un plato grande.",
+				"¿Me traes un plato grande? Serviré la merienda junto al poste de mi nido.",
+				"¡Plato grande! Serviremos la merienda junto a mi percha."
+			],
+			"ja'as|mejen": [
+				"Quiero merendar un plátano después de mi vuelo por la aldea. Necesito un plátano pequeño.",
+				"¿Me traes un plátano pequeño? Quiero merendar un plátano después de mi vuelo por la aldea.",
+				"¡Plátano pequeño! Lo compartiremos con mis amigos junto a mi percha."
+			],
+			"ja'as|nojoch": [
+				"Quiero merendar un plátano después de mi vuelo por la aldea. Necesito un plátano grande.",
+				"¿Me traes un plátano grande? Quiero merendar un plátano después de mi vuelo por la aldea.",
+				"¡Plátano grande! Lo compartiremos con mis amigos junto a mi percha."
+			],
+			"ja'as|Jats'uts": [
+				"Quiero merendar un plátano después de mi vuelo por la aldea. Necesito un plátano bonito.",
+				"¿Me traes un plátano bonito? Quiero merendar un plátano después de mi vuelo por la aldea.",
+				"¡Plátano bonito! Lo compartiremos con mis amigos junto a mi percha."
+			],
+			"ja'as|ki'": [
+				"Quiero merendar un plátano después de mi vuelo por la aldea. Necesito un plátano delicioso.",
+				"¿Me traes un plátano delicioso? Quiero merendar un plátano después de mi vuelo por la aldea.",
+				"¡Plátano delicioso! Lo compartiremos con mis amigos junto a mi percha."
+			],
+			"ich|mejen": [
+				"Compartiremos fruta bajo las ramas de mi nido. Necesito una fruta pequeña.",
+				"¿Me traes una fruta pequeña? Compartiremos fruta bajo las ramas de mi nido.",
+				"¡Fruta pequeña! La compartiremos con mis amigos junto a mi percha."
+			],
+			"ich|nojoch": [
+				"Compartiremos fruta bajo las ramas de mi nido. Necesito una fruta grande.",
+				"¿Me traes una fruta grande? Compartiremos fruta bajo las ramas de mi nido.",
+				"¡Fruta grande! La compartiremos con mis amigos junto a mi percha."
+			],
+			"ich|Jats'uts": [
+				"Compartiremos fruta bajo las ramas de mi nido. Necesito una fruta bonita.",
+				"¿Me traes una fruta bonita? Compartiremos fruta bajo las ramas de mi nido.",
+				"¡Fruta bonita! La compartiremos con mis amigos junto a mi percha."
+			],
+			"ich|ki'": [
+				"Compartiremos fruta bajo las ramas de mi nido. Necesito una fruta deliciosa.",
+				"¿Me traes una fruta deliciosa? Compartiremos fruta bajo las ramas de mi nido.",
+				"¡Fruta deliciosa! La compartiremos con mis amigos junto a mi percha."
+			],
+			"K'úum|mejen": [
+				"Mis amigos vendrán a comer calabaza junto a mi percha. Necesito una calabaza pequeña.",
+				"¿Me traes una calabaza pequeña? Mis amigos vendrán a comer calabaza junto a mi percha.",
+				"¡Calabaza pequeña! La compartiremos con mis amigos junto a mi percha."
+			],
+			"K'úum|nojoch": [
+				"Mis amigos vendrán a comer calabaza junto a mi percha. Necesito una calabaza grande.",
+				"¿Me traes una calabaza grande? Mis amigos vendrán a comer calabaza junto a mi percha.",
+				"¡Calabaza grande! La compartiremos con mis amigos junto a mi percha."
+			],
+			"K'úum|Jats'uts": [
+				"Mis amigos vendrán a comer calabaza junto a mi percha. Necesito una calabaza bonita.",
+				"¿Me traes una calabaza bonita? Mis amigos vendrán a comer calabaza junto a mi percha.",
+				"¡Calabaza bonita! La compartiremos con mis amigos junto a mi percha."
+			],
+			"K'úum|ki'": [
+				"Mis amigos vendrán a comer calabaza junto a mi percha. Necesito una calabaza deliciosa.",
+				"¿Me traes una calabaza deliciosa? Mis amigos vendrán a comer calabaza junto a mi percha.",
+				"¡Calabaza deliciosa! La compartiremos con mis amigos junto a mi percha."
+			]
+		}
+	}
+}

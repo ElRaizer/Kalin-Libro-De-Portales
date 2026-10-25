@@ -6,22 +6,35 @@ Videojuego educativo desarrollado en Godot para practicar vocabulario y estructu
 
 - Motor oficial: **Godot 4.6.3**.
 - Resolución de diseño: **1280 × 720**.
-- Ventana redimensionable entre **960 × 540** y **1920 × 1080**, con escalado proporcional 16:9.
+- Ventana redimensionable entre **640 × 360** y **1920 × 1080**, con escalado proporcional 16:9.
 - Escena principal: `res://scenes/MainMenu.tscn`, con mapa de cinco lugares.
 - Progreso local con guardado automático de escena, ronda, selección y caminos parciales.
-- Ocho escenas jugables distribuidas en cinco mundos.
+- Ocho niveles distribuidos en cinco mundos, tres misiones de encargos y una despedida jugable.
+- Interfaz compacta para teléfono en horizontal, con libro de una entrada por página y alternativas de toque al arrastre.
+- Transición entre tarjetas, completar palabras, construir con bloques y escribir libremente; cada modalidad conserva su tipo de evidencia.
 - Nueve capítulos de historia animados y tres cinemáticas que acompañan toda la aventura, desde la noche del huracán hasta el regreso de Kalin.
 - Una exploración libre de la isla antes del primer capítulo: el jugador camina con Kalin por la orilla, examina objetos y llega a la aldea de los animales.
+- Dos paseos por la aldea después de casa y taller, con seis necesidades que se resuelven eligiendo hechizos sobre el escenario y cambios que permanecen guardados.
+- Descansos con salida a caminar y regreso a la petición pendiente; visitas independientes a la aldea después del Mundo 4.
+- Opciones de lectura y movimiento desde **A tu ritmo** en el mapa o la pausa.
 - Los audios de pronunciación están planeados, pero todavía no han sido grabados.
 
 El proyecto es un prototipo funcional en desarrollo. La navegación principal, el libro de hechizos y el guardado están implementados; todavía quedan mecánicas y contenido narrativo por ampliar.
 
-La [revisión visual](REVISION_UX_VISUAL.md) añade una introducción más corta,
+La [revisión visual](APRENDIZAJE_Y_MISION.md) añade una introducción más corta,
 peticiones y tarjetas grandes, pistas graduales, bloques de tres peticiones en
 taller y comida, reacciones visuales a las elecciones y cinco situaciones
 narrativas que se animan solas en ciclos continuos. El libro tiene pestañas ilustradas y `Esc`
 abre la pausa. Las pruebas y capturas verifican la implementación; la prueba
-con niños está preparada y sigue pendiente.
+con niños sigue pendiente.
+
+## Aprendizaje y misión de encargos
+
+Las páginas cuentan descubrimientos. El libro distingue además práctica, primer recuerdo y recuperaciones sin ayuda en situaciones separadas. Las rondas de recuerdo comienzan por escribir sin dibujos de solución. Un primer error activa completar la palabra y un segundo error activa los bloques, sin selector de modalidad. Las partes correctas de una frase se conservan. Consultar el libro, recibir pistas o corregir errores se registra como práctica apoyada. Los apoyos y las posiciones de las piezas se guardan por intento.
+
+Tras la casa y el taller hay encargos para preparar rincones y una fiesta. Tras la historia del portal, **Los encargos de la aldea** permite caminar, recibir peticiones, crear objetos, transportarlos y entregarlos a sus destinatarios. Cada visita selecciona tres necesidades distintas del catálogo permitido para su capítulo y prioriza palabras con menos evidencia de recuerdo. Las 28 combinaciones válidas de objeto y cualidad varían entre partidas, junto con sus destinatarios; se conservan al continuar. También se puede abrir `scenes/world4/Mision_EncargosAldea.tscn` con F6.
+
+El vocabulario fue cotejado documentalmente con la UADY; las fuentes por entrada y los cambios se detallan en [VOCABULARIO.md](VOCABULARIO.md). Las frases completas y pronunciaciones siguen pendientes de revisión con personas hablantes. El diseño de aprendizaje, la misión y la migración del guardado se explican en [APRENDIZAJE_Y_MISION.md](APRENDIZAJE_Y_MISION.md).
 
 ## Organización jugable
 
@@ -55,6 +68,12 @@ alimentos se entregan. Las frases recuperadas esperan a **Continuar**; tras
 cuatro segundos sin interacción, la mano señala el botón. El
 Libro de Hechizos pausa el ejercicio y usa las mismas ilustraciones SVG que
 las peticiones; en el repaso se retiran los dibujos de las respuestas.
+
+El libro viaja desde su botón hasta el centro, se abre y regresa al cerrarse.
+Las páginas y las categorías cambian con una transición breve; las flechas
+del teclado permiten hojearlo y `Esc` lo cierra. Cada entrada muestra su
+estado de aprendizaje y el botón de pronunciación. Mientras falta la grabación,
+el botón muestra un aviso y permanece en silencio.
 
 ## Historia
 
@@ -133,6 +152,23 @@ páginas y chispas.
 
 No se requieren complementos ni dependencias externas.
 
+### Respuestas automáticas para depuración
+
+Al ejecutar con **F5** o **F6**, aparece **DEBUG · Responder (F4)** cuando hay
+una respuesta pendiente. Pulsa el botón o **F4** para contestar correctamente;
+después usa el botón normal de continuar para revisar el resultado. Puedes mover
+la herramienta arrastrando su asa de la izquierda.
+
+Funciona con nombres de animales, preguntas de historia, tarjetas, escritura,
+frases incompletas, bloques, creación de encargos y páginas de la despedida.
+Conserva el trazado de caminos, los paseos y las entregas para poder probarlos.
+Se oculta en la pausa, el libro, los diálogos y las celebraciones.
+
+Usa `OS.is_debug_build()`: también está disponible en exportaciones **Debug**;
+en una exportación **Release**, el autoload se elimina sin crear controles ni
+activar el atajo. Las respuestas automáticas cuentan como ayuda y mantienen el
+guardado habitual, sin acreditar recuerdo ni escritura independiente.
+
 ## Controles
 
 - En todos los menús: `Tab` / `Shift+Tab` o flechas para mover el foco; `Enter` o `Espacio` para activar la opción resaltada.
@@ -145,14 +181,22 @@ No se requieren complementos ni dependencias externas.
 
 ## Documentación
 
+- [MEJORAS_AVENTURA.md](MEJORAS_AVENTURA.md): paseos, descansos, borradores, comodidad y decisiones pendientes de validación.
+- [REJUGABILIDAD.md](REJUGABILIDAD.md): preguntas variables, planes guardados y 48 variantes de tableros con rutas sin cruces.
+
 - [INSTRUCCIONES.md](INSTRUCCIONES.md): instalación, estructura técnica y mantenimiento.
 - [AUDITORIA_BUENAS_PRACTICAS.md](AUDITORIA_BUENAS_PRACTICAS.md): cumplimiento, correcciones y pendientes de diseño.
-- [VOCABULARIO.md](VOCABULARIO.md): grafías adoptadas, normalizaciones y decisiones del GDD.
-- [MEJORAS_UX.md](MEJORAS_UX.md): interacción visual, arte, continuación y pruebas de esta iteración.
-- [REVISION_UX_VISUAL.md](REVISION_UX_VISUAL.md): presentación por pasos, pistas graduales, narrativa visual, bloques, libro y pausa.
-- [ANIMACIONES.md](ANIMACIONES.md): escenas en bucle, expresiones SVG y pruebas de continuidad.
-- [PRUEBA_CON_NINOS.md](PRUEBA_CON_NINOS.md): protocolo de observación y criterios propuestos para la prueba con niños.
+- [VOCABULARIO.md](VOCABULARIO.md): inventario completo para revisión con mayahablantes, palabras y frases con su significado en español, variantes, dudas y hoja de correcciones.
+- [APRENDIZAJE_Y_MISION.md](APRENDIZAJE_Y_MISION.md): evidencia por palabra, recuerdo sin ayuda, encargos y pruebas.
 - [Arte/audio/README.md](Arte/audio/README.md): preparación y nombres de los audios pendientes.
+
+## Ampliación de jugabilidad del 24 de octubre
+
+Ver [MEJORAS_AVENTURA.md](MEJORAS_AVENTURA.md) para el recorrido ampliado, los apoyos automáticos, los bloques intercambiables, la mesa de composición, los doce habitantes con casas propias, la interfaz compacta y la migración al formato de guardado 5. `tools/validate.ps1` incluye 24 suites. Las nuevas escenas pueden abrirse con F6:
+
+- `scenes/world2/Mision_RinconesDeLaCasa.tscn`.
+- `scenes/world3/Mision_PrepararLaFiesta.tscn`.
+- `scenes/world5/Despedida_LosRecuerdos.tscn`.
 
 ## Trabajo pendiente
 

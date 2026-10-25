@@ -55,9 +55,29 @@ func _run() -> void:
 		var expected := "world%d_story1" % int(info.world)
 		if int(info.world) == 1:
 			expected = "world1_story%d" % (int(info.level) + 1)
+		elif int(info.world) in [2, 3]:
+			expected = "world%d_explore1" % int(info.world)
+		elif int(info.world) == 5:
+			expected = "world5_farewell"
 		if current_scene.scene_file_path != manager.SCENE_PATHS[expected]:
 			failures.append("La salida de %s no abrió %s" % [info.scene_key, expected])
+		if int(info.world) in [2, 3]:
+			current_scene._go_to_next_scene()
+			await scene_changed
+			await process_frame
+			if current_scene.scene_file_path != manager.SCENE_PATHS["world%d_mission1" % int(info.world)]:
+				failures.append("El paseo debe abrir los encargos del mundo")
+			await _complete_delivery()
+			current_scene._go_to_next_scene()
+			await scene_changed
+			await process_frame
+			if current_scene.scene_file_path != manager.SCENE_PATHS["world%d_story1" % int(info.world)]:
+				failures.append("Los encargos no volvieron a la historia correspondiente")
 		if int(info.world) == 5:
+			await _complete_farewell()
+			current_scene._go_to_next_scene()
+			await scene_changed
+			await process_frame
 			current_scene._finish_story()
 			await scene_changed
 			await process_frame
@@ -98,9 +118,12 @@ func _complete_paths() -> void:
 		if level._arrival_animating:
 			failures.append("La llegada del animal no terminó")
 			return
+		if level._naming_pending:
+			level.recall.first.text = board.words[index].maya_word
+			level._submit_name()
 		level._close_dialogue()
 	if not level.completion_overlay.visible:
-		failures.append("Los caminos deben terminar directamente, sin otra prueba de animales")
+		failures.append("Los caminos y la recuperación de nombres deben completar el nivel")
 	# Una partida detenida en el antiguo repaso debe poder continuar.
 	var key: String = manager.scene_key_for(level)
 	var legacy_state: Dictionary = level.get_checkpoint_state()
@@ -160,3 +183,49 @@ func _bfs(board: GridBoard, start: Vector2i, target: Vector2i, blocked: Dictiona
 				parents[next] = cell
 				queue.append(next)
 	return []
+
+
+func _close_lines(scene: Node) -> void:
+	for index: int in range(10):
+		if not scene.is_dialogue_open():
+			break
+		scene.advance_dialogue()
+
+func _complete_delivery() -> void:
+	var mission: Node = current_scene
+	_close_lines(mission)
+	for index: int in range(3):
+		var friend: ExplorationSpot = mission.get_node("Spots/Recipient%d" % index)
+		mission._place_kalin(friend.position.x)
+		mission.open_spot(friend)
+		_close_lines(mission)
+		var bench: ExplorationSpot = mission.get_node("Spots/Workbench")
+		mission._place_kalin(bench.position.x)
+		mission.open_spot(bench)
+		var task: VillageTask = mission.tasks[mission.task_indices[index]]
+		mission.recall.first.text = task.item
+		mission.recall.second.text = task.quality
+		mission._forge()
+		mission._place_kalin(friend.position.x)
+		mission.open_spot(friend)
+		_close_lines(mission)
+	if mission.delivered.size() != 3:
+		failures.append("Los tres encargos deben poder crearse y entregarse")
+
+func _complete_farewell() -> void:
+	var farewell: Node = current_scene
+	_close_lines(farewell)
+	for index: int in range(3):
+		var friend: ExplorationSpot = farewell.get_node("Spots/Friend%d" % index)
+		farewell._place_kalin(friend.position.x)
+		farewell.open_spot(friend)
+		_close_lines(farewell)
+		farewell._choose(farewell._choices.find(farewell.gifts[index].correct))
+		_close_lines(farewell)
+	var portal: ExplorationSpot = farewell.get_node("Spots/Salida")
+	farewell._place_kalin(portal.position.x)
+	farewell.open_spot(portal)
+	for index: int in range(3):
+		farewell._place_page(farewell.PAGE_KEYS[index], index)
+	if farewell.placed.size() != 3:
+		failures.append("El cierre exige reunir y colocar los tres recuerdos")

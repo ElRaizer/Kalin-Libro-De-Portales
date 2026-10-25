@@ -114,6 +114,9 @@ func _init(
 func start_idle() -> void:
 	if _kalin_idle_tween:
 		_kalin_idle_tween.kill()
+	if _host.get_node("/root/AccessibilityManager").reduced_motion:
+		_kalin.position.y = _kalin_home.y
+		return
 	_kalin_idle_tween = _host.create_tween().set_loops()
 	_kalin_idle_tween.tween_property(_kalin, "position:y", _kalin_home.y - KALIN_BOB, 1.2).set_trans(Tween.TRANS_SINE)
 	_kalin_idle_tween.tween_property(_kalin, "position:y", _kalin_home.y, 1.2).set_trans(Tween.TRANS_SINE)
@@ -125,7 +128,7 @@ func celebrate_page() -> void:
 	(_effects_root.get_node("ConfetiPaginas") as CPUParticles2D).restart()
 	(_effects_root.get_node("ConfetiChispas") as CPUParticles2D).restart()
 	_celebration.pivot_offset = _celebration.size * 0.5
-	_celebration.scale = _celebration_scale * 0.6
+	_celebration.scale = _celebration_scale if _host.get_node("/root/AccessibilityManager").reduced_motion else _celebration_scale * 0.6
 	_celebration.modulate.a = _celebration_alpha
 	_celebration_tween = _host.create_tween()
 	_celebration_tween.tween_property(_celebration, "scale", _celebration_scale, 0.35).set_trans(Tween.TRANS_BACK)
@@ -181,6 +184,8 @@ func shake_screen() -> void:
 	if _shake_tween:
 		_shake_tween.kill()
 	_host.position = _host_home
+	if _host.get_node("/root/AccessibilityManager").reduced_motion:
+		return
 	_shake_tween = _host.create_tween()
 	var step_time: float = SHAKE_SECONDS / SHAKE_STEPS
 	for step: int in range(SHAKE_STEPS):
@@ -192,9 +197,31 @@ func shake_screen() -> void:
 func flash_screen() -> void:
 	if _flash_tween:
 		_flash_tween.kill()
+	if _host.get_node("/root/AccessibilityManager").reduced_flashes:
+		_flash_rect.modulate.a = 0.0
+		return
 	_flash_rect.modulate.a = FLASH_PEAK
 	_flash_tween = _host.create_tween()
 	_flash_tween.tween_property(_flash_rect, "modulate:a", 0.0, FLASH_SECONDS)
+
+func apply_comfort_settings() -> void:
+	var preferences := _host.get_node("/root/AccessibilityManager")
+	if preferences.reduced_motion:
+		if _shake_tween:
+			_shake_tween.kill()
+		_host.position = _host_home
+		for tween: Tween in [_speaker_tween, _kalin_motion_tween]:
+			if tween:
+				tween.kill()
+		if not sleeping:
+			_kalin.position = _kalin_home
+			_kalin.rotation = _kalin_rotation
+		_kalin.scale = kalin_base_scale
+		start_idle()
+	if preferences.reduced_flashes:
+		if _flash_tween:
+			_flash_tween.kill()
+		_flash_rect.modulate.a = 0.0
 
 func show_title(title: String, subtitle: String) -> void:
 	if _title_tween:
@@ -250,7 +277,7 @@ func animate_speaker() -> void:
 	if _speaker_tween:
 		_speaker_tween.kill()
 	_speaker_tween = _host.create_tween()
-	_speaker_tween.tween_property(_kalin, "scale", kalin_base_scale * 1.04, 0.12)
+	_speaker_tween.tween_property(_kalin, "scale", kalin_base_scale if _host.get_node("/root/AccessibilityManager").reduced_motion else kalin_base_scale * 1.04, 0.12)
 	_speaker_tween.tween_property(_kalin, "scale", kalin_base_scale, 0.18)
 
 func _kalin_walk_in() -> void:
@@ -260,7 +287,7 @@ func _kalin_walk_in() -> void:
 	_kalin_motion_tween.tween_callback(start_idle)
 
 func _walk_step(progress: float) -> void:
-	var stride: float = sin(progress * TAU * WALK_STEPS)
+	var stride: float = 0.0 if _host.get_node("/root/AccessibilityManager").reduced_motion else sin(progress * TAU * WALK_STEPS)
 	_kalin.position.x = lerpf(_kalin_home.x - WALK_DISTANCE, _kalin_home.x, sin(progress * PI * 0.5))
 	_kalin.position.y = _kalin_home.y - absf(stride) * WALK_BOUNCE
 	_kalin.rotation = _kalin_rotation + stride * WALK_TILT
@@ -268,7 +295,7 @@ func _walk_step(progress: float) -> void:
 func _kalin_jump() -> void:
 	_kalin_motion_tween = _host.create_tween()
 	for _jump: int in range(JUMP_COUNT):
-		_kalin_motion_tween.tween_property(_kalin, "position:y", _kalin_home.y - JUMP_HEIGHT, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		_kalin_motion_tween.tween_property(_kalin, "position:y", _kalin_home.y - (0.0 if _host.get_node("/root/AccessibilityManager").reduced_motion else JUMP_HEIGHT), 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		_kalin_motion_tween.tween_property(_kalin, "position:y", _kalin_home.y, 0.22).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
 	_kalin_motion_tween.tween_callback(start_idle)
 
@@ -276,7 +303,7 @@ func _kalin_shiver() -> void:
 	_kalin_motion_tween = _host.create_tween()
 	for repeat: int in range(SHIVER_REPEATS):
 		var direction: float = 1.0 if repeat % 2 == 0 else -1.0
-		_kalin_motion_tween.tween_property(_kalin, "position:x", _kalin_home.x + direction * SHIVER_DISTANCE, 0.04)
+		_kalin_motion_tween.tween_property(_kalin, "position:x", _kalin_home.x + direction * (0.0 if _host.get_node("/root/AccessibilityManager").reduced_motion else SHIVER_DISTANCE), 0.04)
 	_kalin_motion_tween.tween_property(_kalin, "position:x", _kalin_home.x, 0.04)
 	_kalin_motion_tween.tween_callback(start_idle)
 
@@ -285,7 +312,7 @@ func _kalin_sleep() -> void:
 	_kalin.rotation = _kalin_rotation - SLEEP_ANGLE
 	_kalin.position = SLEEP_POSITION
 	_kalin_motion_tween = _host.create_tween().set_loops()
-	_kalin_motion_tween.tween_property(_kalin, "scale", kalin_base_scale * BREATH_SCALE, 1.6).set_trans(Tween.TRANS_SINE)
+	_kalin_motion_tween.tween_property(_kalin, "scale", kalin_base_scale if _host.get_node("/root/AccessibilityManager").reduced_motion else kalin_base_scale * BREATH_SCALE, 1.6).set_trans(Tween.TRANS_SINE)
 	_kalin_motion_tween.tween_property(_kalin, "scale", kalin_base_scale, 1.6).set_trans(Tween.TRANS_SINE)
 
 func _kalin_cross_portal() -> void:

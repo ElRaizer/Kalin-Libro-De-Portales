@@ -17,6 +17,7 @@ script = ExtResource("2_beat")
 kind = 2
 speaker = "T'u'ul"
 text = "Antes de despedirnos: ¿quién de nosotros es Báalam?"
+question_template = "Antes de despedirnos: ¿quién de nosotros es {animal}?"
 actors = Array[String](["Báalam", "Kuuts", "T'u'ul", "Peek'"])
 target_word = "Báalam"
 

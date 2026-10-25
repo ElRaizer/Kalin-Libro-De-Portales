@@ -1,30 +1,36 @@
 [gd_scene format=3 uid="uid://biosgj4ttvjhh"]
 
 [ext_resource type="Script" uid="uid://cf0u3j8ouco0h" path="res://scripts/world2/W2_Level1.gd" id="1_xq8dk"]
-
 [ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_casa_maya.svg" id="2_1drb2"]
-
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="3_si73q"]
-
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="4_theme"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/CompletionOverlay.tscn" id="5_complete"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/LearningGuide.tscn" id="editor_6"]
-
 [ext_resource type="Resource" path="res://data/exercises/world2.tres" id="editor_7"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/MissionBreak.tscn" id="editor_8"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/FurnishedRoom.tscn" id="editor_9"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/MeaningIllustration.tscn" id="editor_10"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/MissionProgress.tscn" id="editor_11"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/HelpButton.tscn" id="editor_12"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/ChoiceButton.tscn" id="editor_13"]
+[ext_resource type="PackedScene" path="res://scenes/components/RecallPanel.tscn" id="recall_panel"]
+[ext_resource type="PackedScene" path="res://scenes/components/ScreenLayout.tscn" id="responsive"]
+[ext_resource type="Resource" path="res://data/layouts/house.tres" id="layout_profile"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 [node name="Level2" type="Node2D" unique_id=159115184]
 script = ExtResource("1_xq8dk")
@@ -161,6 +167,7 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="StatusPanel" type="Panel" parent="UI" unique_id=208093274]
+visible = false
 offset_left = 50.0
 offset_top = 650.0
 offset_right = 1230.0
@@ -228,6 +235,13 @@ offset_top = 647
 offset_right = 998
 offset_bottom = 705
 
+[node name="RecallPanel" parent="UI" instance=ExtResource("recall_panel")]
+preferred_size = Vector2(744, 312)
+offset_left = 510.0
+offset_top = 300.0
+offset_right = 1254.0
+offset_bottom = 612.0
+
 [connection signal="pressed" from="UI/TopBar/BackBtn" to="." method="_on_menu_pressed"]
 
 [connection signal="pressed" from="UI/TopBar/BookBtn" to="." method="_on_book_pressed"]
@@ -252,3 +266,6 @@ text = "Opción 4"
 visible = false
 layout_mode = 2
 text = "Opción 5"
+
+[node name="ScreenLayout" parent="." instance=ExtResource("responsive")]
+profile = ExtResource("layout_profile")

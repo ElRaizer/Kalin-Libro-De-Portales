@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="5120" height="720" viewBox="0 0 5120 720">
+  <defs>
+    <linearGradient id="ground" x2="0" y2="1">
+      <stop stop-color="#7fb16a" />
+      <stop offset="1" stop-color="#315f40" />
+    </linearGradient>
+    <linearGradient id="wall" x2="0" y2="1">
+      <stop stop-color="#eee0af" />
+      <stop offset="1" stop-color="#c6b478" />
+    </linearGradient>
+  </defs>
+  <path d="M0 405Q700 290 1400 400T2800 395T3840 400T4480 410T5120 400V720H0Z" fill="url(#ground)" />
+  <path d="M0 610Q800 650 1600 610T3200 610T3840 620T4480 610T5120 620V720H0Z" fill="#d9c78f" />
+  <path d="M0 635Q800 672 1600 638T3200 638T3840 647T4480 638T5120 647" fill="none" stroke="#f0e2b5" stroke-width="5" stroke-dasharray="22 26" />
+  <g transform="translate(930 280)">
+    <ellipse cx="130" cy="314" rx="180" ry="18" fill="#233c2b" fill-opacity=".15" />
+    <rect x="0" y="75" width="270" height="235" rx="8" fill="url(#wall)" />
+    <path d="M-35 90L135-45L305 90Z" fill="#987346" />
+    <path d="M-20 80L135-35L288 80" stroke="#b4965d" stroke-width="10" fill="none" />
+    <rect x="102" y="180" width="75" height="130" rx="16" fill="#4d452c" />
+    <rect x="25" y="130" width="50" height="50" rx="5" fill="#91bfd0" />
+    <path d="M0 265H270" stroke="#aa9565" stroke-width="5" />
+  </g>
+  <g transform="translate(1790 280)">
+    <ellipse cx="130" cy="314" rx="180" ry="18" fill="#233c2b" fill-opacity=".15" />
+    <rect x="0" y="75" width="270" height="235" rx="8" fill="url(#wall)" />
+    <path d="M-35 90L135-45L305 90Z" fill="#987346" />
+    <path d="M-20 80L135-35L288 80" stroke="#b4965d" stroke-width="10" fill="none" />
+    <rect x="102" y="180" width="75" height="130" rx="16" fill="#4d452c" />
+    <rect x="25" y="130" width="50" height="50" rx="5" fill="#91bfd0" />
+    <path d="M0 265H270" stroke="#aa9565" stroke-width="5" />
+  </g>
+  <g transform="translate(2610 280)">
+    <ellipse cx="130" cy="314" rx="180" ry="18" fill="#233c2b" fill-opacity=".15" />
+    <rect x="0" y="75" width="270" height="235" rx="8" fill="url(#wall)" />
+    <path d="M-35 90L135-45L305 90Z" fill="#987346" />
+    <path d="M-20 80L135-35L288 80" stroke="#b4965d" stroke-width="10" fill="none" />
+    <rect x="102" y="180" width="75" height="130" rx="16" fill="#4d452c" />
+    <rect x="25" y="130" width="50" height="50" rx="5" fill="#91bfd0" />
+    <path d="M0 265H270" stroke="#aa9565" stroke-width="5" />
+  </g>
+  <g transform="translate(3340 280)">
+    <ellipse cx="130" cy="314" rx="180" ry="18" fill="#233c2b" fill-opacity=".15" />
+    <rect x="0" y="75" width="270" height="235" rx="8" fill="url(#wall)" />
+    <path d="M-35 90L135-45L305 90Z" fill="#987346" />
+    <path d="M-20 80L135-35L288 80" stroke="#b4965d" stroke-width="10" fill="none" />
+    <rect x="102" y="180" width="75" height="130" rx="16" fill="#4d452c" />
+    <rect x="25" y="130" width="50" height="50" rx="5" fill="#91bfd0" />
+    <path d="M0 265H270" stroke="#aa9565" stroke-width="5" />
+  </g>
+  <g transform="translate(100 300)">
+    <path d="M0 285Q18 165 0 60" stroke="#86633e" stroke-width="16" fill="none" />
+    <path d="M0 80Q-90-55-135 10Q-65 15 0 80M0 80Q60-65 130-5Q65 10 0 80M0 80Q-35-65 15-95Q35-15 0 80" fill="#347743" />
+  </g>
+  <g transform="translate(690 300)">
+    <path d="M0 285Q18 165 0 60" stroke="#86633e" stroke-width="16" fill="none" />
+    <path d="M0 80Q-90-55-135 10Q-65 15 0 80M0 80Q60-65 130-5Q65 10 0 80M0 80Q-35-65 15-95Q35-15 0 80" fill="#347743" />
+  </g>
+  <g transform="translate(1530 300)">
+    <path d="M0 285Q18 165 0 60" stroke="#86633e" stroke-width="16" fill="none" />
+    <path d="M0 80Q-90-55-135 10Q-65 15 0 80M0 80Q60-65 130-5Q65 10 0 80M0 80Q-35-65 15-95Q35-15 0 80" fill="#347743" />
+  </g>
+  <g transform="translate(2350 300)">
+    <path d="M0 285Q18 165 0 60" stroke="#86633e" stroke-width="16" fill="none" />
+    <path d="M0 80Q-90-55-135 10Q-65 15 0 80M0 80Q60-65 130-5Q65 10 0 80M0 80Q-35-65 15-95Q35-15 0 80" fill="#347743" />
+  </g>
+  <g transform="translate(3180 300)">
+    <path d="M0 285Q18 165 0 60" stroke="#86633e" stroke-width="16" fill="none" />
+    <path d="M0 80Q-90-55-135 10Q-65 15 0 80M0 80Q60-65 130-5Q65 10 0 80M0 80Q-35-65 15-95Q35-15 0 80" fill="#347743" />
+  </g>
+  <g transform="translate(3750 300)">
+    <path d="M0 285Q18 165 0 60" stroke="#86633e" stroke-width="16" fill="none" />
+    <path d="M0 80Q-90-55-135 10Q-65 15 0 80M0 80Q60-65 130-5Q65 10 0 80M0 80Q-35-65 15-95Q35-15 0 80" fill="#347743" />
+  </g>
+  <g transform="translate(4300 300)">
+    <path d="M0 285Q18 165 0 60" stroke="#86633e" stroke-width="16" fill="none" />
+    <path d="M0 80Q-90-55-135 10Q-65 15 0 80M0 80Q60-65 130-5Q65 10 0 80M0 80Q-35-65 15-95Q35-15 0 80" fill="#347743" />
+  </g>
+  <g transform="translate(4930 300)">
+    <path d="M0 285Q18 165 0 60" stroke="#86633e" stroke-width="16" fill="none" />
+    <path d="M0 80Q-90-55-135 10Q-65 15 0 80M0 80Q60-65 130-5Q65 10 0 80M0 80Q-35-65 15-95Q35-15 0 80" fill="#347743" />
+  </g>
+  <path d="M4000 615q-18-20-23-14q10 3 23 14q5-25 12-24q-3 13-12 24q20-18 27-10q-15 3-27 10" fill="#477b47" />
+  <path d="M4580 615q-18-20-23-14q10 3 23 14q5-25 12-24q-3 13-12 24q20-18 27-10q-15 3-27 10" fill="#477b47" />
+  <path d="M4780 615q-18-20-23-14q10 3 23 14q5-25 12-24q-3 13-12 24q20-18 27-10q-15 3-27 10" fill="#477b47" />
+</svg>

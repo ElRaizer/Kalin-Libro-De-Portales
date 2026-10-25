@@ -31,9 +31,9 @@ destination_cell = Vector2i(11, 1)
 [sub_resource type="Resource" id="Word_kuuts"]
 script = ExtResource("4_word")
 maya_word = "Kuuts"
-spanish_word = "Pavo"
+spanish_word = "Pavo de monte"
 phrase = "In k'aaba'e' Kuuts"
-explanation = "Me llamo Pavo — en maya: Kuuts"
+explanation = "Me llamo Pavo de monte — en maya: Kuuts"
 sprite = ExtResource("6_kuuts")
 destination_text = "Kuuts"
 color = Color(0.38, 0.28, 0.55, 1)

@@ -23,6 +23,9 @@ func _escape() -> void:
 	event.keycode = KEY_ESCAPE
 	event.pressed = true
 	root.push_input(event, true)
+	var book := current_scene.get_node_or_null("LibroHechizos")
+	if book and book.motion.closing:
+		await book.motion.closed
 	await process_frame
 
 func _run() -> void:
@@ -87,7 +90,14 @@ func _run() -> void:
 	level.serve_button.pressed.emit()
 	_check(level._awaiting_continue, "Agua se sirve directamente")
 	level.serve_button.pressed.emit()
-	_check(level.modifier_grid.visible and level.modifier_slot.visible, "El plátano pequeño debe mostrar los tamaños y su espacio")
+	# Elegir una petición con tamaño, independientemente del orden del intento.
+	for request_index: int in range(level.challenges.size()):
+		if not level.challenges[int(level.round_plan[request_index].challenge)].modifier.is_empty():
+			level.round_index = request_index
+			level._show_round()
+			level.mission_break.hide()
+			break
+	_check(level.modifier_grid.visible and level.modifier_slot.visible, "Las peticiones con tamaño deben mostrar sus opciones y su espacio")
 	_check((level.modifier_buttons[""] as Button).visible, "Sin cualidad debe conservar su lugar para mantener cuatro opciones, sin ser un paso obligatorio")
 	for key: String in ["world1_level1", "world1_level2", "world1_level3", "world1_level4"]:
 		await _scene(key)
@@ -98,11 +108,11 @@ func _run() -> void:
 			for word_index: int in range(board.words.size()):
 				var destination: Panel = board.destination_nodes[word_index]
 				var style := destination.get_theme_stylebox("panel") as StyleBoxFlat
-				var color := board.words[word_index].color
-				_check(style.bg_color.is_equal_approx(color.lightened(0.55)), key + " debe conservar el color de la casa al iniciar y consultar pistas")
-				_check(style.border_color.is_equal_approx(color.darkened(0.15)), key + " debe conservar el borde del color de cada animal")
+				var color: Color = board.words[word_index].color if key == "world1_level1" else Color("b99562")
+				_check(style.bg_color.is_equal_approx(color.lightened(0.55)), key + " debe usar color de aprendizaje al inicio y casas neutras en recuerdo")
+				_check(style.border_color.is_equal_approx(color.darkened(0.15)), key + " debe mantener el borde neutro al consultar pistas")
 				var label := destination.get_node("Label") as Label
-				var expected_text := "?" if key == "world1_level4" and phase == 1 else board.words[word_index].get_destination_text()
+				var expected_text: String = "?" if key == "world1_level4" and phase == 1 else (board.words[word_index].get_destination_text() if key == "world1_level1" else board.words[word_index].spanish_word)
 				_check(label.text == expected_text, key + " debe conservar el funcionamiento de las pistas de destino")
 	await _scene("world2_story1")
 	level = current_scene
@@ -121,16 +131,23 @@ func _run() -> void:
 	manager.words_learned = manager.VOCABULARY.duplicate(true)
 	var book: Node = current_scene.libro
 	book.show_book()
+	await book.motion.opened
 	(book.category_buttons[4] as Button).pressed.emit()
+	while book._turning:
+		await process_frame
 	_check("ja'" in book._entries and "janal" in book._entries and "Peek'" not in book._entries, "Comida debe encontrar todos los alimentos sin mezclar animales")
 	(book.category_buttons[1] as Button).pressed.emit()
+	while book._turning:
+		await process_frame
 	_check("Peek'" in book._entries and "ja'" not in book._entries and book._spread_index == 0, "Cambiar de pestaña debe abrir su primera página")
 	book.hide_book()
+	await book.motion.closed
 	manager.reset_save()
 	manager.learn_word("ja'")
 	book.show_book()
 	_check(book._category == 4 and "ja'" in book._visible_words, "Después de reiniciar, una palabra nueva debe abrir de nuevo su página")
 	book.hide_book()
+	await book.motion.closed
 	if failures.is_empty():
 		print("Validación de narrativa y UX visual: OK")
 		quit(0)

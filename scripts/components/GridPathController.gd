@@ -9,6 +9,41 @@ var board: Node2D
 func _init(owner_board: Node2D) -> void:
 	board = owner_board
 
+## Ruta de demostración, sin modificar el tablero. Respeta rocas, otras fichas
+## y caminos ocupados; puede empezar en la punta de un trazo parcial.
+func hint_path(index: int, max_steps: int = 0) -> Array[Vector2i]:
+	var empty: Array[Vector2i] = []
+	if index < 0 or index >= board.words.size() or index in board.connected:
+		return empty
+	var start: Vector2i = board.words[index].start_cell
+	var partial: Array = board.paths.get(index, [])
+	if not partial.is_empty():
+		start = partial.back()
+	var goal: Vector2i = board.words[index].destination_cell
+	var queue: Array[Vector2i] = [start]
+	var parents: Dictionary = {start: start}
+	var cursor := 0
+	while cursor < queue.size():
+		var cell := queue[cursor]
+		cursor += 1
+		if cell == goal:
+			var route: Array[Vector2i] = [cell]
+			while cell != start:
+				cell = parents[cell]
+				route.push_front(cell)
+			if max_steps > 0 and route.size() > max_steps + 1:
+				route.resize(max_steps + 1)
+			return route
+		for direction: Vector2i in [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.UP, Vector2i.LEFT]:
+			var next := cell + direction
+			if not board.is_valid_cell(next) or next in parents:
+				continue
+			if next != goal and board.grid_state[next.y][next.x] != board.Cell.EMPTY:
+				continue
+			parents[next] = cell
+			queue.append(next)
+	return empty
+
 func try_finalize(destination_cell: Vector2i) -> void:
 	if board.active_index < 0 or board.active_index in board.connected:
 		return

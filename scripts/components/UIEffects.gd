@@ -17,6 +17,8 @@ static func configure_horizontal_focus(buttons: Array[Button]) -> void:
 		)
 
 static func shake(host: Node, control: Control, distance: float = 9.0) -> Tween:
+	if host.get_node("/root/AccessibilityManager").reduced_motion:
+		distance = 0
 	var original_x: float = control.position.x
 	var tween := host.create_tween()
 	tween.tween_property(control, "position:x", original_x - distance, 0.05)

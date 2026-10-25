@@ -27,6 +27,8 @@ func _ready() -> void:
 	GameManager.magic_points_changed.connect(_on_progress_changed)
 	GameManager.level_completed.connect(_on_level_completed)
 	GameManager.progress_reset.connect(_on_progress_reset)
+	$UI/ComfortButton.pressed.connect(PauseMenu.open_pause)
+	$UI/VisitButton.pressed.connect(GameManager.visit_village)
 
 func _setup_level_buttons() -> void:
 	level_buttons.clear()
@@ -43,6 +45,9 @@ func _refresh_ui() -> void:
 	magic_lbl.text = "%d / %d páginas recuperadas" % [GameManager.get_recovered_word_count(), GameManager.get_learnable_word_count()]
 	var word_count: int = GameManager.get_recovered_word_count()
 	book_btn.text  = "Libro de Hechizos  (%d palabras)" % word_count
+	$UI/VisitButton.visible = GameManager.is_level_completed(4, 1)
+	$UI/VisitHint.visible = $UI/VisitButton.visible
+	$UI/Center/VBox/ResetBtn.visible = not GameManager.words_learned.is_empty() or not GameManager.completed_levels.is_empty() or not GameManager.resume_scene_key.is_empty()
 	_refresh_level_buttons()
 
 	# Texto del botón Jugar según progreso
@@ -59,6 +64,9 @@ func _refresh_ui() -> void:
 	if is_instance_valid(next_stop):
 		var info := GameManager.get_level_info(next)
 		next_stop.text = "¡Aventura completa!" if info.is_empty() else "Siguiente: " + str(info.get("map_label", ""))
+		var visits := {"world2_explore1": "La casa cobra vida", "world3_explore1": "Una aldea a su medida", "world2_mission1": "Rincones para compartir", "world3_mission1": "Una fiesta a la medida", "world4_mission1": "Los encargos de la aldea", "village_practice": "Tu visita a la aldea"}
+		if GameManager.resume_scene_key in visits:
+			next_stop.text = "Continuar: " + visits[GameManager.resume_scene_key]
 
 func _refresh_level_buttons() -> void:
 	for index: int in range(level_buttons.size()):
@@ -105,6 +113,10 @@ func _on_level_pressed(index: int) -> void:
 			entry_scenes.append_array(["intro", "world1_explore1", "world1_story1"])
 		elif key == "world2_level1":
 			entry_scenes.append("world1_cine2")
+		elif key == "world3_level1":
+			entry_scenes.append("world2_explore1")
+		elif key == "world4_level1":
+			entry_scenes.append("world3_explore1")
 		if GameManager.resume_scene_key in entry_scenes:
 			GameManager.continue_adventure()
 		elif GameManager.scene_states.has(key):
@@ -122,7 +134,7 @@ func _on_level_completed(_world: int, _level: int) -> void:
 	_refresh_ui()
 
 func _on_book_pressed() -> void:
-	libro.show_book()
+	libro.show_book(book_btn)
 
 func _on_reset_pressed() -> void:
 	reset_confirmation.show_dialog()
@@ -161,3 +173,9 @@ func _refresh_world_map() -> void:
 				unlocked = unlocked or level_index == 0 or GameManager.is_level_completed(GameManager.LEVEL_ORDER[level_index - 1].world, GameManager.LEVEL_ORDER[level_index - 1].level)
 		world_buttons[index].disabled = not unlocked
 		world_buttons[index].modulate = Color(world_buttons[index].get_meta("map_base_modulate")) * (Color.WHITE if selected_world == index + 1 else Color(0.85, 0.85, 0.85))
+
+
+func apply_screen_layout(compact: bool) -> void:
+	levels_grid.columns = 2 if compact else 4
+	for button: Button in level_buttons:
+		button.custom_minimum_size.y = 76 if compact else 56

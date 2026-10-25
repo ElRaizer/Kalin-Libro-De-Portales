@@ -1,22 +1,25 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/components/ExplorationScene.gd" id="1_script"]
-
 [ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_isla_cielo.svg" id="2_cielo"]
-
 [ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_isla_sendero.svg" id="3_terreno"]
-
 [ext_resource type="Texture2D" path="res://Arte/sprites/kalin_normal.svg" id="4_kalin"]
-
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="5_theme"]
-
 [ext_resource type="Texture2D" path="res://Arte/efectos/fx_chispa.svg" id="6_chispa"]
-
 [ext_resource type="Texture2D" path="res://Arte/exploracion/ui_flecha_camino.svg" id="7_flecha"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/LearningGuide.tscn" id="editor_8"]
-
 [ext_resource type="Texture2D" path="res://Arte/sprites/kalin_surprised.svg" id="editor_9"]
+[ext_resource type="PackedScene" path="res://scenes/components/ScreenLayout.tscn" id="responsive"]
+[ext_resource type="Resource" path="res://data/layouts/exploration.tres" id="layout_profile"]
+
+
+
+
+
+
+
+
+
 
 [sub_resource type="Curve2D" id="Curve_sendero"]
 _data = {
@@ -30,6 +33,7 @@ blend_mode = 1
 [sub_resource type="Gradient" id="Gradient_aparecer"]
 offsets = PackedFloat32Array(0, 0.15, 0.8, 1)
 colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
 
 [node name="ExplorationScene" type="Node2D"]
 script = ExtResource("1_script")
@@ -55,6 +59,7 @@ curve = SubResource("Curve_sendero")
 [node name="Spots" type="Node2D" parent="."]
 
 [node name="Kalin" type="Node2D" parent="."]
+z_index = 3
 position = Vector2(120, 600)
 
 [node name="Sprite" type="Sprite2D" parent="Kalin"]
@@ -70,20 +75,20 @@ position_smoothing_speed = 6.0
 material = SubResource("Material_brillo")
 position = Vector2(-40, -110)
 emitting = false
-amount = 30
-lifetime = 1.2
+amount = 18
+lifetime = 0.8
 one_shot = true
 explosiveness = 0.85
 texture = ExtResource("6_chispa")
 emission_shape = 1
-emission_sphere_radius = 24.0
+emission_sphere_radius = 12.0
 direction = Vector2(1, -0.6)
 spread = 50.0
 gravity = Vector2(0, 60)
-initial_velocity_min = 220.0
-initial_velocity_max = 420.0
-scale_amount_min = 0.5
-scale_amount_max = 1.1
+initial_velocity_min = 100.0
+initial_velocity_max = 200.0
+scale_amount_min = 0.25
+scale_amount_max = 0.55
 color_ramp = SubResource("Gradient_aparecer")
 
 [node name="UI" type="CanvasLayer" parent="."]
@@ -114,7 +119,7 @@ offset_left = 1040.0
 offset_top = 12.0
 offset_right = 1264.0
 offset_bottom = 58.0
-focus_mode = 0
+focus_mode = 2
 theme = ExtResource("5_theme")
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 17
@@ -264,3 +269,6 @@ offset_bottom = 58
 theme = ExtResource("5_theme")
 theme_type_variation = &"KalinSecondaryButton"
 text = "Menú"
+
+[node name="ScreenLayout" parent="." instance=ExtResource("responsive")]
+profile = ExtResource("layout_profile")

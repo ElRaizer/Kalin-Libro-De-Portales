@@ -11,6 +11,12 @@ mouse_filter = 2
 script = ExtResource("1_hqunn")
 catalog = ExtResource("editor_2")
 
+[node name="WorldMat" type="TextureRect" parent="."]
+visible = false
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
 [node name="Picture" type="TextureRect" parent="."]
 layout_mode = 0
 mouse_filter = 2
@@ -31,3 +37,10 @@ layout_mode = 0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+
+[node name="WorldFront" type="TextureRect" parent="."]
+visible = false
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+z_index = 2

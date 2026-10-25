@@ -1,22 +1,28 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/world1/GridPathLevel.gd" id="1_script"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/GridBoard.tscn" id="2_board"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/LevelHeader.tscn" id="3_header"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/CompletionOverlay.tscn" id="4_complete"]
-
 [ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="5_book"]
-
 [ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="6_theme"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/LearningGuide.tscn" id="editor_7"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/MissionProgress.tscn" id="editor_8"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/ArrivingAnimal.tscn" id="editor_9"]
+[ext_resource type="PackedScene" path="res://scenes/components/RecallPanel.tscn" id="recall_panel"]
+[ext_resource type="PackedScene" path="res://scenes/components/ScreenLayout.tscn" id="responsive"]
+[ext_resource type="Resource" path="res://data/layouts/grid.tres" id="layout_profile"]
+
+
+
+
+
+
+
+
+
+
+
 
 [node name="GridPathLevel" type="Node2D"]
 script = ExtResource("1_script")
@@ -135,3 +141,14 @@ offset_left = 28
 offset_top = 647
 offset_right = 418
 offset_bottom = 705
+
+[node name="RecallPanel" parent="UI" instance=ExtResource("recall_panel")]
+preferred_size = Vector2(720, 300)
+visible = false
+offset_left = 370.0
+offset_top = 220.0
+offset_right = 1090.0
+offset_bottom = 490.0
+
+[node name="ScreenLayout" parent="." instance=ExtResource("responsive")]
+profile = ExtResource("layout_profile")

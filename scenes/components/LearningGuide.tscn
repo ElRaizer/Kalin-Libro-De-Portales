@@ -6,10 +6,30 @@
 [ext_resource type="StyleBox" path="res://themes/hint_ring.tres" id="editor_5"]
 [ext_resource type="Script" uid="uid://dcffg6i7my62w" path="res://scripts/components/LearningGuide.gd" id="script"]
 
+[sub_resource type="StyleBoxFlat" id="ClickPulseStyle"]
+bg_color = Color(0, 0, 0, 0)
+border_color = Color(1, 0.83, 0.31, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_left = 22
+corner_radius_bottom_right = 22
+
 [node name="LearningGuide" type="CanvasLayer" unique_id=1080721864]
 layer = 6
 script = ExtResource("script")
 page_scene = ExtResource("editor_4")
+
+[node name="ClickPulse" type="Panel" parent="."]
+visible = false
+offset_right = 44.0
+offset_bottom = 44.0
+pivot_offset = Vector2(22, 22)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("ClickPulseStyle")
 
 [node name="Hand" type="TextureRect" parent="." unique_id=1029244863]
 visible = false

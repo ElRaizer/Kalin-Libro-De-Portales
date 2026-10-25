@@ -49,6 +49,8 @@ func _grid(grid: GridContainer, context: String) -> void:
 			_check(is_equal_approx(buttons[index].position.y, buttons[index + column].position.y), context + ": botones alineados por fila")
 
 func _navigation(grid: GridContainer, context: String) -> void:
+	if not grid.is_visible_in_tree():
+		return
 	for button: Button in _visible_buttons(grid):
 		for path: NodePath in [button.focus_neighbor_left, button.focus_neighbor_right, button.focus_neighbor_top, button.focus_neighbor_bottom]:
 			if not path.is_empty():
@@ -211,6 +213,6 @@ func _stories() -> void:
 					await _settle()
 					_grid(story.choices_box, key + " tras equivocarse")
 				_check(option.get_global_rect().end.y <= story.actors_root.global_position.y - 8, key + ": respuestas sin tapar los animales")
-			var answer := story.choices_box.get_child(beat.options.find(beat.target_word)) as Button
+			var answer := story.choice_for_word(beat.target_word) as Button
 			answer.pressed.emit()
 			_check(story._waiting_to_continue, key + ": respuesta correcta permite continuar")

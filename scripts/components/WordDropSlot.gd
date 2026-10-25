@@ -41,7 +41,7 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 func pop() -> void:
 	if _slot_tween and _slot_tween.is_valid():
 		_slot_tween.kill()
-	scale = _base_scale * 0.9
+	scale = _base_scale if get_node("/root/AccessibilityManager").reduced_motion else _base_scale * 0.9
 	modulate = _base_modulate * Color(1.15, 1.12, 0.82, 1.0)
 	_slot_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	_slot_tween.tween_property(self, "scale", _base_scale, 0.24)
@@ -71,7 +71,7 @@ func _notification(what: int) -> void:
 func _process(delta: float) -> void:
 	if not _compatible_drag_active:
 		return
-	_border_phase = fmod(_border_phase + BORDER_SPEED * delta, DOT_SPACING)
+	_border_phase = 0.0 if get_node("/root/AccessibilityManager").reduced_motion else fmod(_border_phase + BORDER_SPEED * delta, DOT_SPACING)
 	# Comprobar la posición en cada frame garantiza que el resaltado desaparezca
 	# incluso cuando Godot deja de llamar a _can_drop_data al salir del Control.
 	var cursor_inside := get_global_rect().has_point(get_viewport().get_mouse_position())
@@ -124,7 +124,7 @@ func _glow() -> void:
 	if _slot_tween and _slot_tween.is_valid():
 		_slot_tween.kill()
 	_slot_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_SINE)
-	_slot_tween.tween_property(self, "scale", _base_scale * 1.055, 0.1)
+	_slot_tween.tween_property(self, "scale", _base_scale if get_node("/root/AccessibilityManager").reduced_motion else _base_scale * 1.055, 0.1)
 	_slot_tween.tween_property(self, "modulate", _base_modulate * Color(1.18, 1.13, 0.72, 1.0), 0.1)
 
 func _reset_visual() -> void:

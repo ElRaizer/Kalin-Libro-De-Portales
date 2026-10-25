@@ -101,19 +101,24 @@ func _paths() -> void:
 	await create_timer(0.2).timeout
 	_check(walker.position.is_equal_approx(paused_position), "El libro debe pausar también el salto del animal")
 	level.libro.hide_book()
+	await level.libro.motion.closed
 	await create_timer(1.0).timeout
 	_check(level._arrival_animating, "La llegada no debe recorrer todo el camino en sólo un segundo")
 	await _wait_for_arrival(level)
-	_check(level._dialogue_open and level.dialogue.visible, "El animal debe llegar y dejar visible la palabra recuperada")
+	_check(level._dialogue_open and level.recall.visible, "Tras llegar hay que recuperar el nombre del animal")
 	_check(board.get_word_node(1).visible, "Después del primer acierto deben aparecer los demás animales")
 	await _resume()
 	await _wait_for_arrival(current_scene)
 	level = current_scene
 	board = level.grid_board
-	_check(level._dialogue_open and level.dialogue.visible, "Continuar debe recuperar también la palabra pendiente de leer")
+	_check(level._dialogue_open and level.recall.visible, "Continuar debe conservar la palabra pendiente de recordar")
+	level.recall.first.text = board.words[level._dialogue_word_index].maya_word
+	level._submit_name()
+	_check(level.dialogue.visible and not level.recall.visible, "Recordar el nombre muestra su frase y permite continuar")
 	level.libro.show_book()
 	_check(paused and not level.can_process(), "Consultar el libro debe pausar el ejercicio")
 	level.libro.hide_book()
+	await level.libro.motion.closed
 	_check(not paused, "Cerrar el libro debe reanudar el ejercicio")
 	level._close_dialogue()
 	board._handle_press(board.words[1].start_cell)
@@ -174,6 +179,7 @@ func _continue_hint(button: Button) -> void:
 	await create_timer(0.25).timeout
 	_check(is_equal_approx(guide._idle_seconds, elapsed), "El tiempo de ayuda debe pausarse al consultar el libro")
 	current_scene.libro.hide_book()
+	await current_scene.libro.motion.closed
 	await create_timer(2.1).timeout
 	_check(not guide.hand.visible, "La interacción debe reiniciar la espera de ayuda")
 	await create_timer(2.1).timeout
@@ -218,6 +224,13 @@ func _requests() -> void:
 	_check(current_scene._awaiting_continue, "Se debe restaurar la petición entregada")
 	current_scene._on_serve_pressed()
 	_check(current_scene.round_index == 1, "Continuar una petición debe avanzar una ronda")
+	# El orden ya varía: localizar un reto con tamaño para comprobar esa regla.
+	for index: int in range(current_scene.challenges.size()):
+		if not current_scene.challenges[int(current_scene.round_plan[index].challenge)].modifier.is_empty():
+			current_scene.round_index = index
+			current_scene._show_round()
+			current_scene.mission_break.hide()
+			break
 	var challenge: ExerciseEntry = current_scene._current_challenge()
 	_check(current_scene.modifier_slot.visible and current_scene.modifier_slot.text.is_empty(), "Una petición con tamaño necesita un espacio vacío donde colocar su palabra")
 	current_scene._select_food(challenge.food)
@@ -234,6 +247,7 @@ func _requests() -> void:
 	current_scene.libro.show_book()
 	_check(paused, "El libro debe pausar también las peticiones")
 	current_scene.libro.hide_book()
+	await current_scene.libro.motion.closed
 
 func _portal() -> void:
 	await _scene("world5_level1")
@@ -252,8 +266,11 @@ func _story() -> void:
 	await _resume()
 	_check(current_scene.beat_index == 2 and "Peek'" in current_scene._met_words, "La historia debe recordar el momento y los animales saludados")
 	current_scene._complete_text()
-	await create_timer(0.7).timeout
 	var target: Control = current_scene.actor_buttons["Miis"]
+	var entry_deadline := Time.get_ticks_msec() + 3000
+	while target in current_scene._entering_actors and Time.get_ticks_msec() < entry_deadline:
+		await process_frame
+	await process_frame
 	_check(absf(current_scene.guide.hand.position.x - target.get_global_rect().get_center().x + 22) < 1, "La mano debe seguir al siguiente animal durante su entrada")
 
 func _exploration() -> void:

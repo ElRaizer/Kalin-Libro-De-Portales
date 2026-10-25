@@ -1,0 +1,156 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/ExplorationScene.tscn" id="base"]
+[ext_resource type="Script" path="res://scripts/components/VillageWalk.gd" id="script"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_habitada.svg" id="background"]
+[ext_resource type="PackedScene" path="res://scenes/components/ExplorationSpot.tscn" id="spot"]
+[ext_resource type="Texture2D" path="res://Arte/ilustraciones/ui_casa.svg" id="exit"]
+[ext_resource type="PackedScene" path="res://scenes/components/WorldSpellChoice.tscn" id="choice"]
+[ext_resource type="PackedScene" path="res://scenes/components/MeaningIllustration.tscn" id="art"]
+[ext_resource type="PackedScene" path="res://scenes/ui/LibroHechizos.tscn" id="book"]
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="theme"]
+
+[node name="VillageWalk" instance=ExtResource("base")]
+script = ExtResource("script")
+objective_text = "Pasea, conversa y prueba tus hechizos."
+
+[node name="Terreno" parent="." index="1"]
+texture = ExtResource("background")
+
+[node name="Visit0" parent="Spots" index="0" instance=ExtResource("spot")]
+position = Vector2(900, 590)
+prompt = "Conversar"
+lines = Array[String](["¿Me ayudas?"])
+sprite_offset = Vector2(0, -65)
+sprite_scale = Vector2(1.2, 1.2)
+reach_radius = 180.0
+
+[node name="Visit1" parent="Spots" index="1" instance=ExtResource("spot")]
+position = Vector2(1870, 590)
+prompt = "Conversar"
+lines = Array[String](["¿Me ayudas?"])
+sprite_offset = Vector2(0, -65)
+sprite_scale = Vector2(1.2, 1.2)
+reach_radius = 180.0
+
+[node name="Visit2" parent="Spots" index="2" instance=ExtResource("spot")]
+position = Vector2(2790, 590)
+prompt = "Conversar"
+lines = Array[String](["¿Me ayudas?"])
+sprite_offset = Vector2(0, -65)
+sprite_scale = Vector2(1.2, 1.2)
+reach_radius = 180.0
+
+[node name="Salida" parent="Spots" index="3" instance=ExtResource("spot")]
+position = Vector2(3500, 590)
+prompt = "Seguir la aventura"
+lines = Array[String](["Mis amigos me esperan al otro lado del sendero."])
+is_goal = true
+spot_texture = ExtResource("exit")
+sprite_offset = Vector2(0, -70)
+reach_radius = 180.0
+
+[node name="ChapterPanel" parent="UI" index="0"]
+offset_right = 610.0
+
+[node name="SkipButton" parent="UI" index="1"]
+visible = false
+
+[node name="ObjectivePanel" parent="UI" index="2"]
+offset_top = 618.0
+offset_right = 810.0
+
+[node name="ObjectiveLabel" parent="UI/ObjectivePanel/Content" index="0"]
+theme_override_font_sizes/font_size = 17
+autowrap_mode = 3
+
+[node name="ControlsLabel" parent="UI" index="3"]
+offset_left = 830.0
+theme_override_font_sizes/font_size = 14
+text = "← → · Toca para caminar · E para conversar"
+
+[node name="ContinueButton" parent="UI" index="8"]
+offset_left = 1024.0
+offset_top = 646.0
+offset_right = 1256.0
+offset_bottom = 704.0
+
+[node name="HelpButton" parent="UI" index="9"]
+offset_left = 626.0
+offset_right = 816.0
+
+[node name="MenuButton" parent="UI" index="10"]
+offset_left = 832.0
+offset_right = 1012.0
+
+[node name="BookButton" type="Button" parent="UI" index="11"]
+offset_left = 1040.0
+offset_top = 12.0
+offset_right = 1264.0
+offset_bottom = 58.0
+theme = ExtResource("theme")
+theme_type_variation = &"KalinSecondaryButton"
+text = "Libro"
+
+[node name="LeaveChoices" type="Button" parent="UI" index="12"]
+visible = false
+offset_left = 950.0
+offset_top = 640.0
+offset_right = 1256.0
+offset_bottom = 698.0
+theme = ExtResource("theme")
+theme_type_variation = &"KalinSecondaryButton"
+text = "Seguir caminando →"
+
+[node name="Choices" type="Node2D" parent="." index="8"]
+visible = false
+z_index = 5
+
+[node name="Choice0" parent="Choices" instance=ExtResource("choice")]
+
+[node name="Choice1" parent="Choices" instance=ExtResource("choice")]
+offset_left = 192.0
+offset_right = 370.0
+
+[node name="Choice2" parent="Choices" instance=ExtResource("choice")]
+offset_left = 384.0
+offset_right = 562.0
+
+[node name="Results" type="Node2D" parent="." index="9"]
+z_index = 1
+
+[node name="Item0" parent="Results" instance=ExtResource("art")]
+visible = false
+offset_right = 180.0
+offset_bottom = 130.0
+
+[node name="Item1" parent="Results" instance=ExtResource("art")]
+visible = false
+offset_right = 180.0
+offset_bottom = 130.0
+
+[node name="Item2" parent="Results" instance=ExtResource("art")]
+visible = false
+offset_right = 180.0
+offset_bottom = 130.0
+
+[node name="ChoiceRequest" type="PanelContainer" parent="UI"]
+theme = ExtResource("theme")
+visible = false
+offset_left = 24.0
+offset_top = 78.0
+offset_right = 1256.0
+offset_bottom = 174.0
+theme_type_variation = &"KalinCreamPanel"
+mouse_filter = 2
+
+[node name="Request" type="Label" parent="UI/ChoiceRequest"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
+theme_override_font_sizes/font_size = 24
+text = "La petición de tu amigo"
+autowrap_mode = 3
+mouse_filter = 2
+
+[node name="LibroHechizos" parent="." index="10" instance=ExtResource("book")]
+visible = false

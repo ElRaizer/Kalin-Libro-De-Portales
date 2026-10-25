@@ -26,7 +26,7 @@ auto_advance = 1.8
 [sub_resource type="Resource" id="Beat_3"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡No queda ni una mesa, ni un plato, ni una cama!"
+text = "¡No queda ni una mesa, ni un plato, ni una hamaca!"
 kalin_pose = 1
 actors = Array[String](["Peek'", "Miis", "Kaax"])
 effects = 1

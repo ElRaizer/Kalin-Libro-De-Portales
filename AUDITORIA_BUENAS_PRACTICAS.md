@@ -72,10 +72,15 @@ Antes de integrar un cambio, ejecutar:
 Después, probar manualmente la escena modificada y al menos una transición de
 entrada y salida. No deben ignorarse advertencias nuevas del editor.
 
-El comando importa el proyecto y ejecuta las nueve suites, incluida la prueba
+El comando importa el proyecto y ejecuta las 24 suites, incluida la prueba
 de respeto del inspector. Los datos de prueba quedan aislados de la partida
 real. La notificación de cambios de `GridWordData` y la conservación de la
 escala inicial de Kalin tienen regresiones específicas.
+
+La revisión de aventura añade pruebas de entrada real, paseos con consecuencias,
+borradores del taller, visitas independientes y preferencias de lectura. Las
+teclas adicionales de acentos se mantienen ocultas por decisión del autor, pendientes
+de consulta con el profesor. Ver [MEJORAS_AVENTURA.md](MEJORAS_AVENTURA.md).
 
 ## Referencias oficiales
 
@@ -83,3 +88,9 @@ escala inicial de Kalin tienen regresiones específicas.
 - [Organización y acoplamiento de escenas](https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html)
 - [Guía de estilo de GDScript](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html)
 - [Guardado de partidas](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html)
+
+
+La ampliación del 24 de octubre incorpora contextos semánticos, reconstrucción
+con bloques y completar palabras, interfaz compacta horizontal, encargos tempranos
+y despedida jugable. El guardado usa versión 5. Las 24 suites incluyen las
+regresiones del recorrido y de los controles nuevos; ver [MEJORAS_AVENTURA.md](MEJORAS_AVENTURA.md).

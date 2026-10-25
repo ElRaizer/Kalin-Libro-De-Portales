@@ -299,6 +299,7 @@ func _validate_book_runtime() -> void:
 	root.add_child(book)
 	await process_frame
 	book.show_book()
+	await book.motion.opened
 	if book._entries.size() != 3 or book._spread_count() != 2:
 		failures.append("El Libro no distribuye dos entradas por pliego")
 	if not book.left_page.get_node("Content/Illustration/ContextSprite").visible:
@@ -306,6 +307,8 @@ func _validate_book_runtime() -> void:
 	if not book.right_page.get_node("Content/Illustration/ContextSprite").visible or book.right_page.get_node("Content/Illustration/Placeholder").visible:
 		failures.append("El Libro debe mostrar la nueva ilustración del objeto")
 	book._next_spread()
+	while book._turning:
+		await process_frame
 	if book._spread_index != 1 or not book.next_button.disabled:
 		failures.append("La navegación entre páginas del Libro no respeta sus límites")
 	book.queue_free()

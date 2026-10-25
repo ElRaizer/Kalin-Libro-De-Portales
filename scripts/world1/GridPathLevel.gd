@@ -11,6 +11,7 @@ class_name GridPathLevel
 @export var completion_title: String = "¡Nivel completado!"
 @export_multiline var completion_summary: String = "Reconstruiste los caminos y recuperaste nuevas palabras."
 @export var completion_next_text: String = "Siguiente nivel →"
+@export var vary_board := true
 
 @export_category("Instrucciones")
 @export_multiline var default_instruction: String = "Haz clic en una ficha y arrastra hasta su destino. Conecta las tres para completar el nivel."
@@ -28,6 +29,14 @@ var _dialogue_open: bool = false
 var _dialogue_serial: int = 0
 var _arrival_animating := false
 var _dialogue_word_index := -1
+var _naming_pending := false
+var _named_words: Array[int] = []
+var _attempt := LearningAttempt.new()
+var _name_seed := 1
+var _board_variant := ""
+var _saved_name_text := ""
+var _saved_scaffold: Dictionary = {}
+@onready var recall: RecallPanel = $UI/RecallPanel
 var guide: LearningGuide
 @onready var continue_button: Button = $UI/DialoguePanel/ContinueButton
 @onready var arrival_button: Button = $UI/ArrivalButton
@@ -47,6 +56,7 @@ var arrival_tween: Tween
 @onready var libro: CanvasLayer = $LibroHechizos
 
 func _ready() -> void:
+	recall.hide()
 	dialogue.visible = false
 	level_header.set_title(level_title)
 	_set_default_instruction()
@@ -66,6 +76,33 @@ func _ready() -> void:
 	grid_board.drawing_stopped.connect(_on_drawing_stopped)
 	grid_board.invalid_move.connect(_on_invalid_move)
 	var state := GameManager.get_scene_state(self)
+	_attempt.restore(state.get("attempt"))
+	_saved_scaffold = state.get("scaffold", {}) if state.get("scaffold") is Dictionary else {}
+	_name_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
+	if vary_board:
+		_board_variant = GridReplayLayouts.configure(grid_board, level_number, state, _name_seed)
+	_saved_name_text = str(state.get("recall_text", "")) if bool(state.get("naming_pending", false)) else ""
+	_named_words = ExerciseProgress.restore_markers(state.get("named"), grid_board.words.size())
+	recall.submitted.connect(_submit_name)
+	recall.practice_requested.connect(_practice_name)
+	recall.support_used.connect(mark_learning_help)
+	recall.answer_changed.connect(func():
+		if _naming_pending:
+			GameManager.schedule_checkpoint(self)
+	)
+	if level_number > 1:
+		var authored: Dictionary = {}
+		for index: int in grid_board.destination_nodes:
+			var destination: Panel = grid_board.destination_nodes[index]
+			var style := destination.get_theme_stylebox("panel") as StyleBoxFlat
+			if not style.bg_color.is_equal_approx(grid_board.words[index].color.lightened(0.55)):
+				authored[index] = style
+		grid_board.set_destination_word_colors(false)
+		# Un estilo de autor explícito conserva su prioridad; las casas estándar
+		# dejan de compartir el color de respuesta con el animal.
+		for index: int in authored:
+			(grid_board.destination_nodes[index] as Panel).add_theme_stylebox_override("panel", authored[index])
+		_restore_destination_texts()
 	grid_board.restore_path_state(state.get("board", {}) if state.get("board", {}) is Dictionary else {})
 	mission_progress.update_progress(grid_board.connected.size(), grid_board.words.size(), "Lleva a tus amigos a casa")
 	var pending_word := clampi(int(state.get("dialogue_word", -1)), -1, grid_board.words.size() - 1)
@@ -93,9 +130,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _on_word_selected(word: GridWordData) -> void:
 	guide.stop()
+	_attempt.begin("world1_%d:%d@%d" % [level_number, grid_board.words.find(word), _name_seed])
 	var start_name: String = word.get_start_text().replace("\n", " ")
 	var destination_name: String = word.get_destination_text().replace("\n", " ")
-	_set_instr(selection_instruction % [start_name, destination_name])
+	_set_instr(selection_instruction % [start_name, destination_name] if level_number == 1 else "Lleva al %s a casa y recuerda su nombre maya." % word.spanish_word.to_lower())
 
 func _on_word_connected(word: GridWordData, word_index: int) -> void:
 	GameManager.learn_word(word.maya_word)
@@ -110,6 +148,7 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 	if _dialogue_open:
 		return
 	_dialogue_word_index = word_index
+	_attempt.begin("world1_%d:%d@%d" % [level_number, word_index, _name_seed])
 	dlg_phrase.text = word.phrase if not word.phrase.is_empty() else "%s = %s" % [word.maya_word, word.spanish_word]
 	dlg_hint.text = word.explanation if not word.explanation.is_empty() else "%s significa %s." % [word.maya_word, word.spanish_word]
 	dlg_icon.texture = word.sprite
@@ -161,6 +200,19 @@ func _on_arrival_finished(walker: TextureRect, arrived: Control, current_dialogu
 		arrived.show()
 	_arrival_animating = false
 	arrival_button.hide()
+	if _dialogue_word_index not in _named_words:
+		_naming_pending = true
+		var word: GridWordData = grid_board.words[_dialogue_word_index]
+		for destination: Panel in grid_board.destination_nodes.values():
+			(destination.get_node("Label") as Label).text = "?"
+		recall.configure(["¿Cómo se dice %s en maya?" % word.spanish_word.to_lower()], [word.maya_word], clampi(int(_saved_scaffold.get("mode", 0)), 0, 2))
+		recall.restore_scaffold(_saved_scaffold)
+		_saved_scaffold = {}
+		recall.first.text = _saved_name_text
+		_saved_name_text = ""
+		if level_number == 1:
+			_practice_name()
+		return
 	dialogue.visible = true
 	continue_button.grab_focus()
 	guide.watch_continue(continue_button)
@@ -168,12 +220,12 @@ func _on_arrival_finished(walker: TextureRect, arrived: Control, current_dialogu
 
 func _animate_arrival_step(progress: float, walker: TextureRect, start: Vector2, destination: Vector2, tilt_direction: float) -> void:
 	# La misma elevación y balanceo suaves que usa Kalin al explorar.
-	var stride := sin(progress * PI)
+	var stride := 0.0 if get_node("/root/AccessibilityManager").reduced_motion else sin(progress * PI)
 	walker.position = start.lerp(destination, progress) + Vector2(0.0, -stride * ARRIVAL_HOP_HEIGHT)
 	walker.rotation = stride * ARRIVAL_TILT * tilt_direction
 
 func _close_dialogue() -> void:
-	if not _dialogue_open or _arrival_animating:
+	if not _dialogue_open or _arrival_animating or _naming_pending:
 		return
 	_dialogue_open = false
 	_dialogue_word_index = -1
@@ -206,7 +258,7 @@ func _on_menu_pressed() -> void:
 	_safe_navigate("main_menu")
 
 func _on_book_pressed() -> void:
-	libro.show_book()
+	libro.show_book($UI/LevelHeader/Bar/BookButton)
 
 func _on_replay_pressed() -> void:
 	GameManager.replay_scene(GameManager.scene_key_for(self))
@@ -226,19 +278,27 @@ func _set_mouse_passthrough(control: Control) -> void:
 func _show_help() -> void:
 	if _completing:
 		return
+	if _naming_pending:
+		_practice_name()
+		return
 	if _dialogue_open:
 		guide.point_at(continue_button)
 		return
 	for index: int in range(grid_board.words.size()):
 		if index in grid_board.connected:
 			continue
-		var word: GridWordData = grid_board.words[index]
-		var from := grid_board.cell_to_local_position(word.start_cell) + Vector2.ONE * grid_board.tile_size * 0.5
-		# Demostrar el gesto, sin regalar la ruta de los tableros avanzados.
-		var to := grid_board.cell_to_local_position(word.destination_cell) + Vector2.ONE * grid_board.tile_size * 0.5 if level_number == 1 else from + Vector2(grid_board.tile_size * 2, 0)
-		guide.demonstrate([from, to])
-		_set_instr("Arrastra desde el animal hasta su palabra.")
+		# Los niveles avanzados muestran sólo dos pasos válidos, no la solución.
+		var route := grid_board.get_hint_path(index, 0 if level_number == 1 else 2)
+		if route.size() < 2:
+			continue
+		var points: Array[Vector2] = []
+		for cell: Vector2i in route:
+			points.append(grid_board.cell_to_local_position(cell) + Vector2.ONE * grid_board.tile_size * 0.5)
+		guide.drag_path(grid_board, points)
+		_set_instr("Continúa arrastrando desde la punta del camino." if not grid_board.paths[index].is_empty() else "Arrastra desde el animal hasta su destino.")
 		return
+	guide.stop()
+	_set_instr("Puedes volver a una ficha para rehacer su camino.")
 
 func _on_invalid_move(reason: String, cell: Vector2i) -> void:
 	_set_instr(reason)
@@ -250,8 +310,63 @@ func _on_invalid_move(reason: String, cell: Vector2i) -> void:
 		tween.tween_property(tile, "modulate", tint, 0.25)
 
 func get_checkpoint_state() -> Dictionary:
-	return {"board": grid_board.get_path_state(), "complete": _completing, "dialogue_word": _dialogue_word_index, "dialogue_open": _dialogue_open}
+	return {"board": grid_board.get_path_state(), "board_variant": _board_variant, "complete": _completing, "dialogue_word": _dialogue_word_index, "dialogue_open": _dialogue_open, "named": _named_words, "attempt": _attempt.snapshot(), "recall_text": recall.first.text if _naming_pending else "", "scaffold": recall.scaffold_state(), "naming_pending": _naming_pending, "layout_seed": _name_seed}
+
+func _restore_destination_texts() -> void:
+	for index: int in range(grid_board.words.size()):
+		var word: GridWordData = grid_board.words[index]
+		var label := grid_board.destination_nodes[index].get_node("Label") as Label
+		label.text = word.get_destination_text() if level_number == 1 else word.spanish_word
+		label.tooltip_text = word.spanish_word
+		if level_number > 1:
+			label.add_theme_font_size_override("font_size", 15 if label.text.length() > 10 else (17 if label.text.length() > 5 else 20))
+			(grid_board.destination_nodes[index].get_node("House") as TextureRect).visible = label.text.length() <= 10
+
+func _practice_name() -> void:
+	if not _naming_pending:
+		return
+	mark_learning_help()
+	var word: GridWordData = grid_board.words[_dialogue_word_index]
+	recall.caption.text = "%s significa %s. Escríbelo para practicar." % [word.maya_word, word.spanish_word.to_lower()]
+
+func _submit_name() -> void:
+	if not _naming_pending:
+		return
+	if not recall.ready_to_submit():
+		return
+	var word: GridWordData = grid_board.words[_dialogue_word_index]
+	var result := RecallPanel.match_word(recall.first.text, word.maya_word)
+	if not result.correct:
+		_attempt.miss()
+		recall.advance_support()
+		GameManager.checkpoint(self)
+		return
+	_attempt.supported = _attempt.supported or result.supported
+	GameManager.record_learning([word.maya_word], ExerciseRecallFlow.phase(recall, level_number == 1), _attempt.context, _attempt.supported, _attempt.mistakes)
+	_named_words.append(_dialogue_word_index)
+	_naming_pending = false
+	recall.hide()
+	_restore_destination_texts()
+	dialogue.show()
+	continue_button.grab_focus()
+	guide.watch_continue(continue_button)
+	GameManager.checkpoint(self)
+
+func mark_learning_help() -> void:
+	if grid_board.drawing or _dialogue_open and _dialogue_word_index not in _named_words:
+		_attempt.supported = true
+		GameManager.checkpoint(self)
 
 func _speed_up_arrival() -> void:
 	if arrival_tween and arrival_tween.is_valid():
 		arrival_tween.set_speed_scale(3.0)
+
+func debug_can_answer() -> bool:
+	return OS.is_debug_build() and _naming_pending and not _arrival_animating and not _completing
+
+func debug_answer() -> void:
+	if not debug_can_answer():
+		return
+	mark_learning_help()
+	recall.debug_fill([grid_board.words[_dialogue_word_index].maya_word])
+	_submit_name()

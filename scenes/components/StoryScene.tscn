@@ -1,32 +1,35 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/components/StoryScene.gd" id="1_script"]
-
 [ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level1.svg" id="2_bg"]
-
 [ext_resource type="Texture2D" path="res://Arte/sprites/kalin_normal.svg" id="3_kalin"]
-
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="4_theme"]
-
 [ext_resource type="Texture2D" path="res://Arte/efectos/fx_hoja.svg" id="5_hoja"]
-
 [ext_resource type="Texture2D" path="res://Arte/efectos/fx_lluvia.svg" id="6_lluvia"]
-
 [ext_resource type="Texture2D" path="res://Arte/efectos/fx_muebles.svg" id="7_muebles"]
-
 [ext_resource type="Texture2D" path="res://Arte/efectos/fx_pagina.svg" id="8_pagina"]
-
 [ext_resource type="Texture2D" path="res://Arte/efectos/fx_chispa.svg" id="9_chispa"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/LearningGuide.tscn" id="editor_10"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/StoryVignette.tscn" id="editor_11"]
-
 [ext_resource type="Texture2D" path="res://Arte/sprites/kalin_surprised.svg" id="editor_12"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/StoryActor.tscn" id="editor_13"]
-
 [ext_resource type="PackedScene" path="res://scenes/components/StoryChoice.tscn" id="editor_14"]
+[ext_resource type="PackedScene" path="res://scenes/components/ScreenLayout.tscn" id="responsive"]
+[ext_resource type="Resource" path="res://data/layouts/story.tres" id="layout_profile"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 [sub_resource type="CanvasItemMaterial" id="Material_brillo"]
 blend_mode = 1
@@ -40,6 +43,7 @@ particles_anim_loop = true
 [sub_resource type="Gradient" id="Gradient_aparecer"]
 offsets = PackedFloat32Array(0, 0.15, 0.8, 1)
 colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
 
 [node name="StoryScene" type="Node2D"]
 script = ExtResource("1_script")
@@ -482,3 +486,6 @@ text = "Palabra 3"
 [node name="Choice4" parent="UI/Choices" instance=ExtResource("editor_14")]
 layout_mode = 2
 text = "Palabra 4"
+
+[node name="ScreenLayout" parent="." instance=ExtResource("responsive")]
+profile = ExtResource("layout_profile")

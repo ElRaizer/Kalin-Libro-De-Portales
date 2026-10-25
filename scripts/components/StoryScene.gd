@@ -51,6 +51,10 @@ var _met_words: Array[String] = []
 var _known_words: Array[String] = []
 var _waiting_to_continue: bool = false
 var _navigating: bool = false
+var _attempt := LearningAttempt.new()
+var _layout_seed := 1
+var _guess_targets: Dictionary = {}
+var _last_actor_kind := -1
 var _text_tween: Tween
 var _animator: RefCounted
 var _bubble_scale: Vector2
@@ -114,6 +118,7 @@ func _ready() -> void:
 		title_card, title_label, subtitle_label, flash_rect, celebration
 	)
 	guide = $LearningGuide
+	add_to_group("comfort_visuals")
 	vignette = $Stage/Vignette
 	vignette.mood_changed.connect(_on_vignette_mood)
 	continue_button = $UI/DialogueBox/ContinueButton
@@ -121,6 +126,9 @@ func _ready() -> void:
 	$UI/MenuButton.pressed.connect(_on_menu_pressed)
 	_start_kalin_idle()
 	var state: Dictionary = GameManager.get_scene_state(self)
+	_attempt.restore(state.get("attempt"))
+	_layout_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
+	_prepare_questions(state)
 	var saved_beat := clampi(int(state.get("beat", 0)), 0, maxi(beats.size() - 1, 0))
 	if int(state.get("revision", 1)) < 2:
 		var legacy_index := int(state.get("beat", 0))
@@ -154,8 +162,7 @@ func _ready() -> void:
 		if current_beat().kind == StoryBeat.Kind.ADIVINAR:
 			_guess_actor(current_beat().target_word, current_beat().target_word)
 		elif current_beat().kind == StoryBeat.Kind.ELEGIR:
-			var answer_index: int = current_beat().options.find(current_beat().target_word)
-			_on_choice_pressed(current_beat().target_word, choices_box.get_child(answer_index))
+			_on_choice_pressed(current_beat().target_word, choice_for_word(current_beat().target_word))
 		elif current_beat().kind == StoryBeat.Kind.EXPLORAR:
 			_resolve_interaction()
 
@@ -180,6 +187,38 @@ func _unhandled_input(event: InputEvent) -> void:
 func current_beat() -> StoryBeat:
 	return beats[beat_index]
 
+func _prepare_questions(state: Dictionary) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = _layout_seed
+	var stored: Variant = state.get("guess_targets", {})
+	var previous_targets: Variant = ReplayVariation.previous(state, "guess_targets", {})
+	var asked: Array[String] = []
+	var session: Array[StoryBeat] = []
+	for index: int in range(beats.size()):
+		var beat := beats[index].duplicate() as StoryBeat
+		session.append(beat)
+		if beat.kind != StoryBeat.Kind.ADIVINAR or beat.question_template.is_empty():
+			continue
+		var key := str(index)
+		var candidates: Array[String] = []
+		for word: String in beat.actors:
+			if word != beat.speaker and word not in asked:
+				candidates.append(word)
+		if candidates.is_empty():
+			candidates = beat.actors.duplicate()
+		var chosen := beat.target_word
+		if stored is Dictionary and str(stored.get(key, "")) in beat.actors:
+			chosen = str(stored[key])
+		elif not state.has("beat"):
+			var previous_word := str(previous_targets.get(key, "")) if previous_targets is Dictionary else ""
+			chosen = candidates[ReplayVariation.pick(candidates.size(), rng, candidates.find(previous_word))]
+		# Un capítulo antiguo conserva su pregunta pendiente y su respuesta.
+		beat.target_word = chosen
+		beat.text = beat.question_template.replace("{animal}", chosen)
+		_guess_targets[key] = chosen
+		asked.append(chosen)
+	beats = session
+
 func _next_beat() -> void:
 	beat_index += 1
 	if beat_index >= beats.size():
@@ -189,6 +228,7 @@ func _next_beat() -> void:
 
 func _show_beat(beat: StoryBeat) -> void:
 	guide.stop()
+	_attempt.begin("%s:%d" % [GameManager.scene_key_for(self), beat_index])
 	_waiting_to_continue = false
 	word_bubble.visible = false
 	_clear_choices()
@@ -250,7 +290,10 @@ func _on_vignette_mood(expression: String) -> void:
 
 # ─── Actores ─────────────────────────────────────────────────────────────────
 func _set_stage_actors(words: Array[String]) -> void:
-	if _stage_initialized and words == _stage_words:
+	var kind := int(current_beat().kind)
+	var regroup := kind == StoryBeat.Kind.ADIVINAR and _last_actor_kind != kind
+	_last_actor_kind = kind
+	if _stage_initialized and words == _stage_words and not regroup:
 		return
 	_stage_initialized = true
 	_entering_actors.clear()
@@ -266,8 +309,16 @@ func _set_stage_actors(words: Array[String]) -> void:
 		button.text = ""
 	actor_buttons.clear()
 	_stage_words = words.duplicate()
-	for index: int in range(words.size()):
-		var word: String = words[index]
+	var arranged := words.duplicate()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("%d:%d" % [_layout_seed, beat_index])
+	for index: int in range(arranged.size() - 1, 0, -1):
+		var other := rng.randi_range(0, index)
+		var swap: String = arranged[index]
+		arranged[index] = arranged[other]
+		arranged[other] = swap
+	for index: int in range(arranged.size()):
+		var word: String = arranged[index]
 		var slot := actors_root.get_child(index) as Control
 		var button := slot.get_node("Button") as Button
 		slot.show()
@@ -332,6 +383,7 @@ func _on_actor_pressed(word: String) -> void:
 		_guess_actor(word, beat.target_word)
 
 func _meet_actor(word: String) -> void:
+	GameManager.learn_word(word)
 	CharacterReaction.play(actor_buttons[word])
 	_show_word_bubble(word, COLOR_SUCCESS)
 	if word not in _known_words:
@@ -350,12 +402,17 @@ func _meet_actor(word: String) -> void:
 
 func _guess_actor(word: String, target: String) -> void:
 	if word != target:
+		_attempt.miss()
 		# Repetir el nombre del animal elegido refuerza el vocabulario sin castigar.
 		_show_word_bubble(word, COLOR_RETRY)
 		_set_hint("¡Casi! Ese es %s. Busca a %s." % [word, target], COLOR_HINT)
 		_shake(actor_buttons[word])
 		CharacterReaction.play(actor_buttons[word], false)
+		GameManager.checkpoint(self)
 		return
+	# Reconocer una imagen es práctica; la recuperación escrita se comprueba en
+	# caminos, ejercicios y encargos. No llamar "recuerdo" a una elección al azar.
+	GameManager.record_learning([target], "practice", _attempt.context, _attempt.supported, _attempt.mistakes)
 	_show_word_bubble(word, COLOR_SUCCESS)
 	if word not in _known_words:
 		_known_words.append(word)
@@ -365,8 +422,16 @@ func _guess_actor(word: String, target: String) -> void:
 
 # ─── Opciones escritas (ELEGIR) ──────────────────────────────────────────────
 func _build_choices(options: Array[String]) -> void:
-	for index: int in range(options.size()):
-		var word := options[index]
+	var arranged := options.duplicate()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("%d:%d" % [_layout_seed, beat_index])
+	for index: int in range(arranged.size() - 1, 0, -1):
+		var other := rng.randi_range(0, index)
+		var swap: String = arranged[index]
+		arranged[index] = arranged[other]
+		arranged[other] = swap
+	for index: int in range(arranged.size()):
+		var word: String = arranged[index]
 		var entry: Dictionary = GameManager.get_vocabulary_entry(word)
 		var button := choices_box.get_child(index) as Button
 		button.show()
@@ -380,6 +445,42 @@ func _build_choices(options: Array[String]) -> void:
 	choices_box.visible = true
 	if choices_box.get_child_count() > 0:
 		(choices_box.get_child(0) as Button).grab_focus()
+
+func choice_for_word(word: String) -> Button:
+	for button: Button in choices_box.get_children():
+		if str(button.get_meta("word", "")) == word and button.visible:
+			return button
+	return null
+
+func debug_can_answer() -> bool:
+	if not OS.is_debug_build() or _navigating or _waiting_to_continue or beat_index < 0 or beat_index >= beats.size() or _is_revealing_text():
+		return false
+	var beat := current_beat()
+	if beat.kind == StoryBeat.Kind.ELEGIR:
+		var button := choice_for_word(beat.target_word)
+		return button != null and not button.disabled
+	if beat.kind == StoryBeat.Kind.ADIVINAR:
+		return _actor_is_available(beat.target_word, actor_buttons.get(beat.target_word))
+	if beat.kind == StoryBeat.Kind.CONOCER:
+		for word: String in _stage_words:
+			if _actor_is_available(word, actor_buttons.get(word)):
+				return true
+	return false
+
+func debug_answer() -> void:
+	if not debug_can_answer():
+		return
+	_attempt.supported = true
+	var beat := current_beat()
+	if beat.kind == StoryBeat.Kind.ELEGIR:
+		_on_choice_pressed(beat.target_word, choice_for_word(beat.target_word))
+	elif beat.kind == StoryBeat.Kind.ADIVINAR:
+		_on_actor_pressed(beat.target_word)
+	else:
+		for word: String in _stage_words:
+			if _actor_is_available(word, actor_buttons.get(word)):
+				_on_actor_pressed(word)
+				break
 
 func _clear_choices() -> void:
 	for child: Node in choices_box.get_children():
@@ -399,12 +500,15 @@ func _on_choice_pressed(word: String, button: Button) -> void:
 		return
 	_animate_speaker(beat.speaker)
 	if word != beat.target_word:
+		_attempt.miss()
 		# El botón equivocado revela su significado para que el error enseñe.
 		var entry: Dictionary = GameManager.get_vocabulary_entry(word)
 		button.text = "%s\n%s" % [word, entry.get("spanish", "")]
 		_set_hint("Esa palabra significa «%s». ¡Intenta otra!" % str(entry.get("spanish", "")).to_lower(), COLOR_HINT)
 		_shake(button)
+		GameManager.checkpoint(self)
 		return
+	GameManager.record_learning([word], "practice", _attempt.context, _attempt.supported, _attempt.mistakes)
 	var target_entry: Dictionary = GameManager.get_vocabulary_entry(word)
 	var phrase: String = beat.reveal_phrase if beat.reveal_phrase != "" else str(target_entry.get("estructura", word))
 	var translation: String = beat.reveal_translation if beat.reveal_translation != "" else str(target_entry.get("traduccion", ""))
@@ -444,7 +548,7 @@ func _show_bubble(phrase: String, translation: String, color: Color) -> void:
 	word_bubble.pivot_offset = word_bubble.size * 0.5
 	if _bubble_tween:
 		_bubble_tween.kill()
-	word_bubble.scale = _bubble_scale * 0.9
+	word_bubble.scale = _bubble_scale if get_node("/root/AccessibilityManager").reduced_motion else _bubble_scale * 0.9
 	_bubble_tween = create_tween()
 	_bubble_tween.tween_property(word_bubble, "scale", _bubble_scale, 0.18).set_trans(Tween.TRANS_BACK)
 
@@ -452,6 +556,10 @@ func _reveal_text(text: String) -> void:
 	if _text_tween:
 		_text_tween.kill()
 	dialogue_text.text = text
+	if get_node("/root/AccessibilityManager").instant_text:
+		dialogue_text.visible_ratio = 1.0
+		call_deferred("_on_text_revealed")
+		return
 	dialogue_text.visible_ratio = 0.0
 	_text_tween = create_tween()
 	_text_tween.tween_property(dialogue_text, "visible_ratio", 1.0, text.length() * char_reveal_seconds)
@@ -459,6 +567,23 @@ func _reveal_text(text: String) -> void:
 
 func _is_revealing_text() -> bool:
 	return _text_tween != null and _text_tween.is_running()
+
+func apply_comfort_settings() -> void:
+	_animator.apply_comfort_settings()
+	if get_node("/root/AccessibilityManager").reduced_motion:
+		for button: Button in _actor_tweens:
+			var tween: Tween = _actor_tweens[button]
+			if tween and tween.is_valid():
+				tween.kill()
+			button.position = button.get_meta("home_position")
+			button.modulate.a = button.get_meta("home_alpha")
+		_entering_actors.clear()
+		if _bubble_tween:
+			_bubble_tween.kill()
+		word_bubble.scale = _bubble_scale
+		_refresh_actor_interaction()
+	if get_node("/root/AccessibilityManager").instant_text:
+		_complete_text()
 
 func _complete_text() -> void:
 	if _text_tween:
@@ -491,7 +616,7 @@ func _animate_speaker(speaker: String) -> void:
 
 func _animate_entry(button: Button, target: Vector2, delay: float) -> void:
 	_entering_actors[button] = true
-	button.position = target + Vector2(entry_distance, 0)
+	button.position = target if get_node("/root/AccessibilityManager").reduced_motion else target + Vector2(entry_distance, 0)
 	button.modulate.a = 0.0
 	var tween := create_tween().set_parallel(true)
 	_actor_tweens[button] = tween
@@ -512,7 +637,7 @@ func _hop(button: Button) -> void:
 	var base_y: float = (button.get_meta("home_position") as Vector2).y
 	var tween := create_tween()
 	_actor_tweens[button] = tween
-	tween.tween_property(button, "position:y", base_y - hop_height, 0.12).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(button, "position:y", base_y - (0.0 if get_node("/root/AccessibilityManager").reduced_motion else hop_height), 0.12).set_trans(Tween.TRANS_SINE)
 	tween.tween_property(button, "position:y", base_y, 0.16).set_trans(Tween.TRANS_BOUNCE)
 
 func _shake(button: Button) -> void:
@@ -524,8 +649,8 @@ func _shake(button: Button) -> void:
 	var tween := create_tween()
 	if button.has_meta("home_position"):
 		_actor_tweens[button] = tween
-	tween.tween_property(button, "position:x", base_x - 8.0, 0.05)
-	tween.tween_property(button, "position:x", base_x + 8.0, 0.05)
+	tween.tween_property(button, "position:x", base_x - (0.0 if get_node("/root/AccessibilityManager").reduced_motion else 8.0), 0.05)
+	tween.tween_property(button, "position:x", base_x + (0.0 if get_node("/root/AccessibilityManager").reduced_motion else 8.0), 0.05)
 	tween.tween_property(button, "position:x", base_x, 0.05)
 
 func _sparkle(button: Button) -> void:
@@ -604,7 +729,7 @@ func _show_meet_hint() -> void:
 			return
 
 func get_checkpoint_state() -> Dictionary:
-	return {"revision": 2, "beat": maxi(beat_index, 0), "known": _known_words, "met": _met_words, "resolved": _waiting_to_continue}
+	return {"revision": 2, "beat": maxi(beat_index, 0), "known": _known_words, "met": _met_words, "resolved": _waiting_to_continue, "attempt": _attempt.snapshot(), "layout_seed": _layout_seed, "guess_targets": _guess_targets.duplicate()}
 
 func _on_menu_pressed() -> void:
 	_navigating = true
@@ -631,6 +756,8 @@ func get_configuration_issues() -> PackedStringArray:
 			issues.append("CONOCER necesita animales en actors.")
 		if beat.kind == StoryBeat.Kind.ADIVINAR and beat.target_word not in beat.actors:
 			issues.append("El animal objetivo debe aparecer en actors.")
+		if not beat.question_template.is_empty() and (beat.kind != StoryBeat.Kind.ADIVINAR or not "{animal}" in beat.question_template):
+			issues.append("La plantilla de pregunta necesita ADIVINAR y {animal}.")
 		if beat.kind in [StoryBeat.Kind.CONOCER, StoryBeat.Kind.ADIVINAR] and beat.actors.size() % 2 != 0:
 			issues.append("Las interacciones con animales necesitan una cantidad par de botones.")
 		if beat.kind == StoryBeat.Kind.ELEGIR and (beat.options.size() < 2 or beat.target_word not in beat.options):

@@ -26,7 +26,20 @@ $tests = @(
     "res://tests/validate_animation_loops.gd",
     "res://tests/validate_inspector.gd",
     "res://tests/validate_authoring.gd",
-    "res://tests/validate_story_interaction.gd"
+    "res://tests/validate_story_interaction.gd",
+    "res://tests/validate_answer_layout.gd",
+    "res://tests/validate_learning_evidence.gd",
+    "res://tests/validate_book.gd",
+    "res://tests/validate_adventure_polish.gd",
+    "res://tests/validate_tutorial_gestures.gd",
+    "res://tests/validate_replayability.gd",
+    "res://tests/validate_game_expansion.gd",
+    "res://tests/validate_debug_answer.gd",
+    "res://tests/validate_block_interactions.gd",
+    "res://tests/validate_village_life.gd",
+    "res://tests/validate_village_dialogue.gd",
+    "res://tests/validate_village_composition.gd",
+    "res://tests/validate_combinations.gd"
 )
 
 $validationPreviousAppData = $env:APPDATA

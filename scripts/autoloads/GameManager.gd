@@ -8,6 +8,11 @@ signal word_learned(word_data: Dictionary)
 signal magic_points_changed(new_total: int)
 signal level_completed(world: int, level: int)
 signal progress_reset
+signal learning_changed
+signal save_status_changed(message: String)
+var save_status_message := ""
+var load_failed := false
+var practice_return_key := ""
 
 var magic_points: int = 0
 var words_learned: Dictionary = {}
@@ -15,6 +20,8 @@ var completed_levels: Array[String] = []
 var resume_scene_key: String = ""
 var scene_states: Dictionary = {}
 var tutorials_seen: Array[String] = []
+var learning_progress: Dictionary = {}
+var learning_clock := 0
 
 ## Alias de compatibilidad para consumidores existentes.
 const VOCABULARY: Dictionary = CONTENT.VOCABULARY
@@ -30,10 +37,17 @@ const SAVE_PATH: String = SAVE_REPOSITORY.DEFAULT_PATH
 const SAVE_VERSION: int = SAVE_REPOSITORY.CURRENT_VERSION
 
 var _save_repository: RefCounted
+var _checkpoint_timer: Timer
+var _pending_checkpoint: WeakRef
 
 func _ready() -> void:
 	_save_repository = SAVE_REPOSITORY.new(SAVE_PATH)
 	_load_save()
+	_checkpoint_timer = Timer.new()
+	_checkpoint_timer.one_shot = true
+	_checkpoint_timer.wait_time = 0.35
+	_checkpoint_timer.timeout.connect(_flush_checkpoint)
+	add_child(_checkpoint_timer)
 	get_tree().auto_accept_quit = false
 	get_tree().root.close_requested.connect(quit_game)
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -58,6 +72,38 @@ func learn_word(maya_word: String) -> void:
 func has_learned_word(maya_word: String) -> bool:
 	var key: String = _resolve_vocab_key(maya_word)
 	return key != "" and key in words_learned
+
+func record_learning(words: Array, phase: String, context: String, supported: bool = false, mistakes: int = 0) -> void:
+	var fresh := false
+	for word: String in words:
+		var key := _resolve_vocab_key(word)
+		if not key.is_empty() and context not in LearningProgress.sanitize(learning_progress.get(key)).contexts:
+			fresh = true
+	if not fresh:
+		return
+	learning_clock += 1
+	for word: String in words:
+		var key := _resolve_vocab_key(word)
+		if key.is_empty():
+			continue
+		learn_word(key)
+		var record := LearningProgress.sanitize(learning_progress.get(key))
+		LearningProgress.record_result(record, phase, context, supported, mistakes, learning_clock)
+		learning_progress[key] = record
+	learning_changed.emit()
+	_save()
+
+func learning_caption(word: String) -> String:
+	return LearningProgress.caption(LearningProgress.sanitize(learning_progress.get(_resolve_vocab_key(word))))
+
+func learning_detail(word: String) -> String:
+	var record := LearningProgress.sanitize(learning_progress.get(_resolve_vocab_key(word)))
+	return "Con fragmentos o bloques: %d · Escrituras sin ayuda: %d" % [record.reconstruction, record.writing]
+
+func mark_learning_support() -> void:
+	var scene := get_tree().current_scene
+	if is_instance_valid(scene) and scene.has_method("mark_learning_help"):
+		scene.mark_learning_help()
 
 func get_vocabulary_entry(maya_word: String) -> Dictionary:
 	var key: String = _resolve_vocab_key(maya_word)
@@ -159,8 +205,11 @@ func go_to_scene(key: String) -> void:
 		push_error("GameManager: clave de escena desconocida '%s'" % key)
 		return
 	checkpoint_current_scene()
+	var leaving_practice := get_tree().current_scene != null and get_tree().current_scene.scene_file_path == SCENE_PATHS.village_practice and key == "main_menu"
 	if key != "main_menu":
 		resume_scene_key = key
+	elif leaving_practice:
+		resume_scene_key = practice_return_key
 	elif get_tree().current_scene != null and get_tree().current_scene.scene_file_path == SCENE_PATHS.world5_cine1:
 		resume_scene_key = ""
 	_save()
@@ -176,29 +225,82 @@ func reset_save() -> void:
 	words_learned = {}
 	completed_levels = []
 	resume_scene_key = ""
+	practice_return_key = ""
 	scene_states.clear()
 	tutorials_seen.clear()
+	learning_progress.clear()
+	learning_clock = 0
 	magic_points_changed.emit(0)
 	progress_reset.emit()
 	var error: Error = _get_save_repository().delete_progress()
 	if error != OK:
+		_set_save_status("No se pudo reiniciar la partida. Puedes volver a intentarlo.")
 		push_warning("GameManager: no se pudo borrar el progreso (error %d)" % error)
+	else:
+		load_failed = false
+		_set_save_status("")
 
 func _add_magic(amount: int) -> void:
 	magic_points += amount
 	magic_points_changed.emit(magic_points)
 
 func _save() -> void:
-	var data: Dictionary = {"version": SAVE_VERSION, "magic_points": magic_points, "words_learned": words_learned, "completed_levels": completed_levels, "resume_scene_key": resume_scene_key, "scene_states": scene_states, "tutorials_seen": tutorials_seen}
+	# No sustituir una partida ilegible por datos vacíos al abrir el menú.
+	if load_failed:
+		return
+	var data: Dictionary = {"version": SAVE_VERSION, "magic_points": magic_points, "words_learned": words_learned, "completed_levels": completed_levels, "resume_scene_key": resume_scene_key, "scene_states": scene_states, "tutorials_seen": tutorials_seen, "learning_progress": learning_progress, "learning_clock": learning_clock, "practice_return_key": practice_return_key}
 	var error: Error = _get_save_repository().save_progress(data)
+	_set_save_status("No se pudo guardar. Tu avance sigue en esta sesión. Pulsa Reintentar antes de salir." if error != OK else "")
 	if error != OK:
 		push_warning("GameManager: no se pudo guardar el progreso (error %d)" % error)
+
+func _set_save_status(message: String) -> void:
+	if save_status_message == message:
+		return
+	save_status_message = message
+	save_status_changed.emit(message)
+
+func retry_save() -> void:
+	if load_failed:
+		_load_save()
+		return
+	checkpoint_current_scene()
+	_save()
+
+func visit_village() -> void:
+	if not is_level_completed(4, 1):
+		return
+	if resume_scene_key != "village_practice":
+		practice_return_key = resume_scene_key
+	var previous: Dictionary = scene_states.get("village_practice", {})
+	var delivered: Variant = previous.get("delivered", [])
+	if delivered is Array and delivered.size() >= 3:
+		replay_scene("village_practice")
+	else:
+		go_to_scene("village_practice")
+
+func start_walk(key: String, return_key: String) -> void:
+	if key not in SCENE_PATHS or return_key not in SCENE_PATHS:
+		return
+	# El checkpoint de salida debe ocurrir antes de renovar un paseo completado.
+	go_to_scene(key)
+	var saved: Dictionary = scene_states.get(key, {}).duplicate(true)
+	var solved: Variant = saved.get("solved", [])
+	if solved is Array and solved.size() >= 3:
+		saved = ReplayVariation.replay_state(saved)
+	saved["return_scene"] = return_key
+	scene_states[key] = saved
+	_save()
 
 func _load_save() -> void:
 	var result: Dictionary = _get_save_repository().load_progress()
 	if result.has("_load_error"):
+		load_failed = true
+		_set_save_status("No se pudo recuperar tu partida. Reintenta o pide ayuda antes de empezar de nuevo.")
 		push_warning("GameManager: %s" % result._load_error)
 		return
+	load_failed = false
+	_set_save_status("")
 	if result.is_empty():
 		return
 	magic_points = maxi(int(result.get("magic_points", 0)), 0)
@@ -206,6 +308,9 @@ func _load_save() -> void:
 	resume_scene_key = str(result.get("resume_scene_key", ""))
 	if resume_scene_key not in SCENE_PATHS or resume_scene_key == "main_menu":
 		resume_scene_key = ""
+	practice_return_key = str(result.get("practice_return_key", ""))
+	if practice_return_key not in SCENE_PATHS or practice_return_key in ["main_menu", "village_practice"]:
+		practice_return_key = ""
 	scene_states.clear()
 	var loaded_states: Variant = result.get("scene_states", {})
 	if loaded_states is Dictionary:
@@ -219,16 +324,35 @@ func _load_save() -> void:
 			if tutorial is String and tutorial not in tutorials_seen:
 				tutorials_seen.append(tutorial)
 	words_learned = {}
+	learning_progress.clear()
+	var clock_value: Variant = result.get("learning_clock", 0)
+	learning_clock = clampi(int(clock_value), 0, 1000000) if (clock_value is int or clock_value is float) and is_finite(float(clock_value)) else 0
 	var loaded_words: Variant = result.get("words_learned", {})
 	if loaded_words is Dictionary:
 		for old_key: String in loaded_words:
 			var canonical_key := _resolve_vocab_key(old_key)
 			if canonical_key != "":
 				words_learned[canonical_key] = VOCABULARY[canonical_key].duplicate()
+	var evidence: Variant = result.get("learning_progress", {})
+	if evidence is Dictionary:
+		for word: String in evidence:
+			if word in VOCABULARY and word in words_learned:
+				var record := LearningProgress.sanitize(evidence[word])
+				if int(result.get("version", 0)) < 5:
+					# Las rondas barajadas de v4 no identificaban situaciones distintas.
+					# Conservar la práctica, retirando sólo esa evidencia ambigua.
+					record.recalls = record.recalls.filter(func(context: String): return not LearningProgress.is_legacy_round(context))
+				learning_progress[word] = record
+	# Los logros antiguos son descubrimientos, nunca pruebas de recuerdo. Los
+	# checkpoints con IDs de vocabulario sustituidos deben recrear sus opciones.
+	if int(result.get("version", 0)) < 3:
+		for key: String in scene_states.keys():
+			if key.begins_with("world2_level") or key.begins_with("world3_level") or key.begins_with("world4_level") or key.begins_with("world5_level"):
+				scene_states.erase(key)
 	# Sólo los guardados anteriores al sistema de niveles necesitan esta inferencia.
 	if int(result.get("version", 0)) == 0:
 		_migrate_completed_stage_from_words(3, 1, ["mejen", "nojoch", "ki'"])
-		_migrate_completed_stage_from_words(4, 1, ["ja'", "ja'as", "pak'al", "K'úum"])
+		_migrate_completed_stage_from_words(4, 1, ["ja'", "ja'as", "ich", "K'úum"])
 	magic_points_changed.emit(magic_points)
 
 func _sanitize_completed_levels(value: Variant) -> Array[String]:
@@ -247,6 +371,9 @@ func scene_key_for(node: Node) -> String:
 	return str(SCENE_PATHS.find_key(node.scene_file_path)) if node.scene_file_path in SCENE_PATHS.values() else ""
 
 func checkpoint(node: Node) -> void:
+	if is_instance_valid(_checkpoint_timer):
+		_checkpoint_timer.stop()
+	_pending_checkpoint = null
 	var key := scene_key_for(node)
 	if key.is_empty() or not node.has_method("get_checkpoint_state"):
 		return
@@ -254,6 +381,18 @@ func checkpoint(node: Node) -> void:
 	if node == get_tree().current_scene and key != "main_menu":
 		resume_scene_key = key
 	_save()
+
+## La escritura guarda al dejar de teclear; navegar y salir siguen guardando de inmediato.
+func schedule_checkpoint(node: Node) -> void:
+	if not is_instance_valid(node) or node != get_tree().current_scene:
+		return
+	_pending_checkpoint = weakref(node)
+	_checkpoint_timer.start()
+
+func _flush_checkpoint() -> void:
+	var node: Node = _pending_checkpoint.get_ref() if _pending_checkpoint != null else null
+	if is_instance_valid(node) and node == get_tree().current_scene:
+		checkpoint(node)
 
 func checkpoint_current_scene() -> void:
 	if is_instance_valid(get_tree().current_scene):
@@ -278,7 +417,7 @@ func continue_adventure() -> void:
 func replay_scene(key: String) -> void:
 	# Navegar antes de borrar evita que el checkpoint de salida restaure el estado viejo.
 	go_to_scene(key)
-	scene_states.erase(key)
+	scene_states[key] = ReplayVariation.replay_state(scene_states.get(key, {}))
 	_save()
 
 func mark_tutorial_seen(key: String) -> void:
