@@ -1,7 +1,7 @@
 extends Node
 class_name VillageDialogue
 
-## El encargo elige su texto una vez por visita; sólo los saludos rotan al terminar.
+## El encargo conserva su texto; los saludos y comentarios rotan al terminar de hablar.
 const CATALOG = preload("res://scripts/features/village/data/village_dialogue_catalog.gd")
 static var TARGETS: Dictionary = CombinationCatalog.targets()
 var seed_value: int = 1
@@ -14,12 +14,16 @@ static func task_key(task: VillageTask) -> String:
 
 static func personalize(task: VillageTask, animal: String, seed: int, context: String) -> void:
 	var key: String = task_key(task)
-	var bank: Array = CATALOG.ANIMALS.get(animal, {}).get("tasks", {}).get(key, [])
+	var bank: Dictionary = CATALOG.ANIMALS.get(animal, {}).get("tasks", {}).get(key, {})
 	task.requester = animal
-	if bank.size() >= 3:
-		var variant: int = posmod(hash("%d:%s:%s:%s" % [seed, context, animal, key]), 2)
-		task.request = bank[variant]
-		task.success = bank[2]
+	if not bank.is_empty():
+		var requests: Array[String] = []
+		requests.assign(bank.requests)
+		var thanks: Array[String] = []
+		thanks.assign(bank.thanks)
+		var identity: String = "%d:%s:%s:%s" % [seed, context, animal, key]
+		task.request = requests[posmod(hash(identity + ":request"), requests.size())]
+		task.success = thanks[posmod(hash(identity + ":thanks"), thanks.size())]
 	else:
 		# Contenido futuro: nunca heredar rasgos del dueño anterior del encargo.
 		var description: String = TARGETS.get(
@@ -43,28 +47,37 @@ func restore(saved: Dictionary, seed: int) -> void:
 	for animal: String in CATALOG.ANIMALS:
 		var value: Variant = stored.get(animal, 0)
 		if (value is int or value is float) and is_finite(float(value)) and value >= 0:
-			greeting_visits[animal] = int(
-				fmod(float(value), CATALOG.ANIMALS[animal].greetings.size())
-			)
+			greeting_visits[animal] = int(fmod(float(value), _conversation_cycle(animal)))
 
 
 func prepare(spot: ExplorationSpot) -> void:
 	if not _can_greet(spot):
 		return
 	var bank: Array = CATALOG.ANIMALS[spot.speaker].greetings
-	var order: Array[int] = ReplayVariation.order(
-		bank.size(), posmod(hash("%d:%s" % [seed_value, spot.speaker]), 2000000000) + 1
-	)
-	var cursor: int = int(greeting_visits.get(spot.speaker, 0)) % bank.size()
-	spot.lines.assign([bank[order[cursor]]])
+	spot.lines.assign([_conversation_line(spot.speaker, "greetings", bank)])
 	var success: String = str(spot.get_meta("village_success", ""))
 	if not success.is_empty():
-		spot.lines.append(success)
+		var after_help: Array = CATALOG.ANIMALS[spot.speaker].after_help
+		spot.lines.append(_conversation_line(spot.speaker, "after_help", after_help))
+
+
+func _conversation_line(animal: String, situation: String, bank: Array) -> String:
+	var order: Array[int] = ReplayVariation.order(
+		bank.size(), posmod(hash("%d:%s:%s" % [seed_value, animal, situation]), 2000000000) + 1
+	)
+	var cursor: int = int(greeting_visits.get(animal, 0)) % bank.size()
+	return bank[order[cursor]]
+
+
+func _conversation_cycle(animal: String) -> int:
+	# Un múltiplo de ambos bancos evita cortar la rotación del más corto al reiniciar.
+	var data: Dictionary = CATALOG.ANIMALS[animal]
+	return data.greetings.size() * data.after_help.size()
 
 
 func finish(spot: ExplorationSpot) -> void:
 	if _can_greet(spot):
-		var count: int = CATALOG.ANIMALS[spot.speaker].greetings.size()
+		var count: int = _conversation_cycle(spot.speaker)
 		greeting_visits[spot.speaker] = (int(greeting_visits.get(spot.speaker, 0)) + 1) % count
 
 

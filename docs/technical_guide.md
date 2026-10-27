@@ -396,23 +396,53 @@ volver a animar la escala del mueble durante la celebración, pues separaría su
 
 ## Editar las frases de la aldea
 
-El banco de `scripts/features/village/data/village_dialogue_catalog.gd` organiza los textos por nombre
-del animal. `greetings` contiene sus cinco saludos. `tasks` usa la clave
-`objeto|cualidad` (por ejemplo, `mayak|nojoch`); cada entrada contiene dos peticiones
-alternativas y el agradecimiento al completar el encargo. Mantener las dos variantes
-igualmente claras sobre el objeto y la cualidad, sin añadir palabras mayas nuevas.
+Editar `data/dialogue/village_dialogue.json` y regenerar con
+`python tools/build_combination_dialogue.py`; no editar el módulo generado
+`scripts/features/village/data/village_dialogue_catalog.gd`. El banco organiza los textos por nombre
+del animal. `greetings` contiene sus quince saludos y `after_help`, diez comentarios
+para conversaciones posteriores a resolver su encargo. Ambos bancos contienen frases
+propias del habitante, únicas, completas y de hasta 160 caracteres. Los comentarios
+no suponen un objeto concreto ni acontecimientos futuros: se comparten entre sus pedidos.
+`tasks` usa la clave `objeto|cualidad` (por ejemplo, `mayak|nojoch`); cada entrada
+contiene dos bancos explícitos: `requests`, con tres peticiones, y `thanks`, con dos
+agradecimientos. Cada frase debe aportar un motivo o resultado propio del habitante;
+mantener las tres peticiones igualmente claras sobre el objeto y la cualidad, sin
+añadir palabras mayas nuevas. El generador rechaza bancos incompletos, duplicados,
+campos inesperados, textos vacíos o de más de 160 caracteres y pedidos fuera del
+catálogo cerrado. Las nuevas combinaciones generadas requieren revisión editorial.
 
 `VillageDialogue.personalize()` aplica el texto a las copias del recurso en paseos
-y misiones. La semilla, escena, animal y pedido fijan la variante durante la visita.
+y misiones. La semilla, escena, animal y pedido fijan las variantes durante la visita.
+Peticiones y agradecimientos usan claves de selección independientes: las tres
+peticiones pueden combinarse con cualquiera de los dos agradecimientos. Consultar
+el encargo otra vez, fallar una respuesta o reanudar no vuelve a elegir sus textos.
+Ambos se reconstruyen desde la semilla guardada; los bancos son configuración y no
+añaden campos al formato de partida ni cambian la respuesta esperada del encargo.
 No modificar el texto desde el diálogo o el diario: ambos leen el mismo `VillageTask`.
 Para añadir un pedido, cubrirlo para todos los habitantes y ejecutar
 `validate_village_dialogue.gd`; la prueba detecta combinaciones sin personalizar.
 
 El nodo `VillageDialogue`, instalado por `VillageResidents`, rota los saludos al
 cerrar la conversación. `ExplorationScene` guarda sus contadores por animal en
-`greeting_visits`. Los amigos que ya recibieron su encargo también cambian de saludo,
-manteniendo después el agradecimiento por el mismo resultado. Los amigos de la
-despedida conservan sus peticiones narrativas; sus vecinos sí utilizan este banco.
+`greeting_visits`. Los vecinos muestran un saludo; los amigos que ya recibieron
+su encargo muestran un saludo y un comentario de `after_help`, sin repetir siempre
+el agradecimiento de la entrega. Cada banco se baraja con una semilla propia y se
+recorre completo antes de repetir. El contador se acota al producto de los tamaños
+de ambos bancos para no interrumpir sus ciclos cuando tienen longitudes distintas.
+Abrir o reanudar una conversación no avanza el contador; continuar conserva sus dos
+textos y la línea abierta. Se mantiene el campo numérico vigente del guardado.
+Las peticiones pendientes y el agradecimiento de la entrega conservan su texto.
+Los amigos de la despedida conservan sus peticiones narrativas; sus vecinos sí
+utilizan este banco.
+
+Las 37 combinaciones por doce habitantes cuentan con tres peticiones y dos
+agradecimientos cada una. Se conservan las frases previas y se añaden 888 textos:
+una petición y un agradecimiento por pareja de habitante y pedido. Las nuevas
+peticiones proponen usos distintos, como dibujar, ordenar hojas o escuchar cuentos;
+Kay mantiene los muebles y la merienda en tierra para sus visitas de la orilla.
+Para futuras ampliaciones, priorizar nuevos motivos frente a reformular la misma
+petición cambiando sólo su orden. La suite recorre todas las variantes, sus seis
+emparejamientos, la reanudación y el ajuste de los textos en escritorio y compacto.
 
 ## Poses y capas de los resultados
 
@@ -442,9 +472,10 @@ Taller y Yo quiero permite desactivar `vary_combinations`; los recursos alternat
 de ejercicios conservan sus retos de autor.
 
 Para una combinación nueva, añadir o revisar sus textos para los doce animales en
-`scripts/features/village/data/village_dialogue_catalog.gd` y su representación en `VillageUseArt`.
+`data/dialogue/village_dialogue.json` y su representación en `VillageUseArt`.
 `python tools/build_combination_dialogue.py` conserva las frases existentes y añade
 las ausentes a partir de los contextos propios de cada animal y objeto; revisar el
-resultado editorialmente. El catálogo contiene 888 peticiones, 444 agradecimientos
-y 60 saludos. Ejecutar `tools/validate.ps1` y revisar el atlas renderizado después de
-cambiar textos, cualidades o SVG. Los guardados pendientes anteriores no se sustituyen.
+resultado editorialmente. El catálogo contiene 1.332 peticiones, 888 agradecimientos,
+180 saludos y 120 comentarios posteriores a ayudar. Ejecutar `tools/validate.ps1` y
+revisar el atlas renderizado después de cambiar textos, cualidades o SVG. Los
+guardados pendientes anteriores no se sustituyen.

@@ -121,22 +121,32 @@ La suite de vida en la aldea comprueba composición sin respuestas, restauració
 borrador, ajuste de las hamacas para los doce animales, casas, diversidad del reparto
 y persistencia de habitantes y conversaciones.
 La suite de diálogos recorre las 444 combinaciones de animal y pedido, comprueba
-las dos peticiones y su agradecimiento, los cinco saludos por animal, su rotación
-sin repeticiones y la reanudación de conversaciones con vecinos y amigos ayudados.
+las tres peticiones y dos agradecimientos, los quince saludos y diez comentarios tras
+ayudar por animal, sus ciclos sin repeticiones y la reanudación de conversaciones
+con vecinos y amigos ayudados, también desde el segundo globo.
 
 ### Voces de los habitantes
 
-`scripts/features/village/data/village_dialogue_catalog.gd` contiene 1.392 textos españoles escritos
-para la aldea: 888 peticiones, 444 agradecimientos y 60 saludos. Cada combinación
+`data/dialogue/village_dialogue.json` es la fuente revisada del catálogo generado
+`scripts/features/village/data/village_dialogue_catalog.gd`. Contiene 2.520 textos españoles
+para la aldea: 1.332 peticiones, 888 agradecimientos, 180 saludos y 120 comentarios tras
+ayudar. Cada combinación
 de los doce animales con los 37 tipos de pedido tiene sus propios textos. Se
 personalizan las copias de los encargos después de elegir sus destinatarios; sus
 respuestas mayas y sus cualidades no cambian. El caparazón sólo aparece en la voz
 de Áak. Kay prepara los muebles para sus visitas de la orilla.
 
-La variante de petición permanece estable durante la visita, también en las
-opciones, el diario, la mesa y los avisos de error. Los vecinos y los amigos ya
-ayudados rotan cinco saludos propios sin repetir hasta completar el banco. El
-saludo avanza al terminar la conversación, no al abrirla, y guarda su posición
+Cada pedido contiene los bancos `requests` (tres peticiones) y `thanks` (dos
+agradecimientos). Se eligen por separado según la semilla, la escena, el habitante
+y el pedido; las seis parejas de textos pueden aparecer. Ambas variantes permanecen
+estables durante la visita y al reanudar, también en las opciones, el diario, la
+mesa y los avisos de error. No se modifican las respuestas ni el formato de guardado.
+Los vecinos y los amigos ya
+ayudados rotan quince saludos propios sin repetir hasta completar el banco. Los
+amigos ayudados añaden uno de sus diez comentarios sobre la ayuda y su vida en
+la aldea, en lugar de repetir el agradecimiento de entrega. Los vecinos no usan
+estos comentarios, pues no han recibido un encargo. La conversación avanza su
+contador al terminar, no al abrirla, y guarda su posición
 en el campo opcional `greeting_visits` del formato vigente. Al continuar un diálogo
 abierto se conserva la frase y la línea, incluso tras saludar varias veces.
 

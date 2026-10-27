@@ -152,6 +152,22 @@ PLACES = {
 }
 
 
+def validate_lines(lines, location, count=None):
+    if (not isinstance(lines, list) or len(lines) < 2
+            or (count is not None and len(lines) != count)
+            or any(not isinstance(line, str) or not line.strip() or len(line) > 160
+                   for line in lines)
+            or len(set(lines)) != len(lines)):
+        raise ValueError(f"Banco de diálogo inválido: {location}")
+
+
+def validate_task(bank, location):
+    if not isinstance(bank, dict) or set(bank) != {"requests", "thanks"}:
+        raise ValueError(f"Encargo sin bancos de peticiones y agradecimientos: {location}")
+    for situation, count in (("requests", 3), ("thanks", 2)):
+        validate_lines(bank[situation], f"{location} / {situation}", count)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true")
@@ -162,6 +178,8 @@ def main():
     targets = {word + "|": (word, "", need[0].upper() + need[1:], need) for word, need in basics.items()}
     targets.update({word + "|" + quality: (word, quality, label, need) for word, quality, label, need in rows})
     for animal, data in banks.items():
+        for situation in ("greetings", "after_help"):
+            validate_lines(data[situation], f"{animal} / {situation}")
         place = PLACES[animal]
         for key, (word, quality, label, need) in targets.items():
             if key in data["tasks"]:
@@ -179,13 +197,28 @@ def main():
                 outcome = f"Ya podemos beber y descansar junto a {place}."
             else:
                 outcome = f"La compartiremos con mis amigos junto a {place}." if word != "ja'as" else f"Lo compartiremos con mis amigos junto a {place}."
-            data["tasks"][key] = [f"{context} Necesito {need}.", f"¿Me traes {need}? {context}", f"¡{label}! {outcome}"]
-            assert all(len(line) <= 160 for line in data["tasks"][key]), (animal, key)
-    header = "extends RefCounted\n\n## Banco explícito de peticiones y saludos. Nuevas combinaciones: tools/build_combination_dialogue.py.\n"
+            data["tasks"][key] = {
+                "requests": [
+                    f"{context} Necesito {need}.",
+                    f"¿Me traes {need}? {context}",
+                    f"Me falta {need} para terminar los preparativos. {context}",
+                ],
+                "thanks": [f"¡{label}! {outcome}", f"Gracias por traer {need}. {outcome}"],
+            }
+        if set(data["tasks"]) != set(targets):
+            raise ValueError(f"Pedidos fuera del catálogo cerrado: {animal}")
+        for key, bank in data["tasks"].items():
+            validate_task(bank, f"{animal} / {key}")
+    header = "extends RefCounted\n\n## Banco de encargos y conversaciones. Generador: tools/build_combination_dialogue.py.\n"
     payload = json.dumps(banks, ensure_ascii=False, indent="\t") + "\n"
     write_generated("data/dialogue/village_dialogue.json", payload, args.check)
     write_generated("scripts/features/village/data/village_dialogue_catalog.gd", header + "const ANIMALS := " + payload, args.check)
-    print(f"{len(banks)} animales × {len(targets)} pedidos × 3 frases + 60 saludos = {len(banks) * len(targets) * 3 + 60} textos.")
+    requests = sum(len(bank["requests"]) for data in banks.values() for bank in data["tasks"].values())
+    thanks = sum(len(bank["thanks"]) for data in banks.values() for bank in data["tasks"].values())
+    greetings = sum(len(data["greetings"]) for data in banks.values())
+    after_help = sum(len(data["after_help"]) for data in banks.values())
+    print(f"{requests} peticiones + {thanks} agradecimientos + {greetings} saludos + "
+          f"{after_help} comentarios tras ayudar = {requests + thanks + greetings + after_help} textos.")
 
 
 if __name__ == "__main__":
