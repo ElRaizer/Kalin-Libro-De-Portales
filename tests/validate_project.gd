@@ -533,6 +533,7 @@ func _validate_story_chain() -> void:
 		"world1_cine2": "world2_level1",
 		"world3_story1": "world3_explore2",
 		"world3_explore2": "world4_level1",
+		"world4_story2": "world4_level2",
 		"world4_mission1": "world4_explore1",
 		"world4_explore1": "world5_level1",
 		"world5_story1": "world5_cine1",

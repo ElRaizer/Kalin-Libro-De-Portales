@@ -36,6 +36,8 @@ func _run() -> void:
 				current_scene._select_adjective(challenge.adjective)
 				current_scene._on_cast_pressed()
 				current_scene._on_cast_pressed()
+		elif info.scene_key == "world4_level2":
+			CountingSolver.solve_level(current_scene)
 		elif int(info.world) == 4:
 			for attempt: int in range(current_scene.round_plan.size()):
 				var challenge: ExerciseEntry = current_scene._current_challenge()
@@ -67,6 +69,9 @@ func _run() -> void:
 			expected = "world%d_explore1" % int(info.world)
 		elif int(info.world) == 5:
 			expected = "world5_farewell"
+		elif info.scene_key == "world4_level1":
+			# Después de la comida, la aldea arma el tianguis de los números.
+			expected = "world4_story2"
 		if current_scene.scene_file_path != GameContent.SCENE_PATHS[expected]:
 			failures.append("La salida de %s no abrió %s" % [info.scene_key, expected])
 		if int(info.world) in [2, 3]:
