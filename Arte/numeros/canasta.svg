@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="190" viewBox="0 0 300 190">
+<ellipse cx="150" cy="176" rx="120" ry="10" fill="#4A3016" fill-opacity=".16"/>
+<path d="M24 62H276L248 166Q150 182 52 166Z" fill="#C08A45" stroke="#2A1C14" stroke-width="4"/>
+<path d="M18 50H282V70H18Z" fill="#9C6A30" stroke="#2A1C14" stroke-width="4"/>
+<path d="M36 92Q150 104 264 92" stroke="#8A5A26" stroke-width="5" fill="none"/>
+<path d="M36 118Q150 130 264 118" stroke="#8A5A26" stroke-width="5" fill="none"/>
+<path d="M36 144Q150 156 264 144" stroke="#8A5A26" stroke-width="5" fill="none"/>
+<path d="M56 70L62 164" stroke="#E2B26A" stroke-width="4" stroke-opacity=".7"/>
+<path d="M84 70L90 164" stroke="#E2B26A" stroke-width="4" stroke-opacity=".7"/>
+<path d="M112 70L118 164" stroke="#E2B26A" stroke-width="4" stroke-opacity=".7"/>
+<path d="M140 70L146 164" stroke="#E2B26A" stroke-width="4" stroke-opacity=".7"/>
+<path d="M168 70L174 164" stroke="#E2B26A" stroke-width="4" stroke-opacity=".7"/>
+<path d="M196 70L202 164" stroke="#E2B26A" stroke-width="4" stroke-opacity=".7"/>
+<path d="M224 70L230 164" stroke="#E2B26A" stroke-width="4" stroke-opacity=".7"/>
+<path d="M252 70L258 164" stroke="#E2B26A" stroke-width="4" stroke-opacity=".7"/>
+<path d="M30 60H270" stroke="#4E9AA6" stroke-width="5"/>
+</svg>
