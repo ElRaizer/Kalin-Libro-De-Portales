@@ -13,7 +13,9 @@ const NUMBERS := [
 	"active_task",
 	"choosing",
 	"mistakes",
-	"farewell_choice"
+	"farewell_choice",
+	"bars",
+	"dots"
 ]
 const FLAGS := [
 	"waiting",
@@ -55,7 +57,8 @@ const LISTS := [
 	"residents",
 	"combination_plan",
 	"combination_tasks",
-	"combination_animals"
+	"combination_animals",
+	"basket"
 ]
 const OBJECTS := [
 	"attempt",
