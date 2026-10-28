@@ -32,7 +32,7 @@ next_scene_key = "world1_cine2"
 footstep_surface = "tierra"
 objective_text = "Sigue el sendero hasta la Casa Maya →"
 intro_speaker = "Narrador"
-intro_lines = Array[String](["Kalin y sus amigos caminan hacia la Casa Maya, al final del sendero.", "El huracán dejó restos del hogar regados por el solar. ¡Hay que mirarlos bien!"])
+intro_lines = Array[String](["¡Vamos a la Casa Maya! El huracán dejó cosas tiradas."])
 
 [node name="Imagen" parent="Cielo" index="0"]
 texture = ExtResource("3_r")
@@ -60,7 +60,7 @@ offset = Vector2(0, -58)
 
 [node name="Mesa" parent="Spots" index="0" instance=ExtResource("2_r")]
 position = Vector2(620, 634)
-lines = Array[String](["Una mesa patas arriba y con una pata rota. ¡Ya no se puede usar!", "Aquí se sentaba toda la familia a platicar."])
+lines = Array[String](["¡Una mesa rota! Ya no se puede usar."])
 vocabulary_word = "mayak"
 spot_texture = ExtResource("8_r")
 sprite_offset = Vector2(0, -67)
@@ -68,7 +68,7 @@ sprite_offset = Vector2(0, -67)
 [node name="Plato" parent="Spots" index="1" instance=ExtResource("2_r")]
 position = Vector2(1180, 632)
 prompt = "Recoger"
-lines = Array[String](["Un plato de barro partido en dos, tirado entre el pasto.", "Me guardo un pedazo para copiar su forma con mi magia."])
+lines = Array[String](["Un plato de barro partido en dos."])
 vocabulary_word = "lak"
 reaction = 2
 spot_texture = ExtResource("9_r")
@@ -77,7 +77,7 @@ sprite_offset = Vector2(0, -32)
 [node name="Ramas" parent="Spots" index="2" instance=ExtResource("2_r")]
 position = Vector2(1650, 642)
 prompt = "Mover con magia"
-lines = Array[String](["Las ramas de una palmera tapan el camino.", "Son muy pesadas para saltarlas... ¡pero tengo un hechizo!", "Un poco de magia... ¡arriba!"])
+lines = Array[String](["¡Las ramas tapan el camino! Las moveré con magia."])
 reach_radius = 190
 blocks_path = true
 reaction = 1
@@ -88,7 +88,7 @@ glow_extents = Vector2(150, 70)
 
 [node name="Hamaca" parent="Spots" index="3" instance=ExtResource("2_r")]
 position = Vector2(2150, 628)
-lines = Array[String](["Una hamaca tejida quedó enredada en la albarrada.", "Aquí descansaba alguien después de trabajar todo el día."])
+lines = Array[String](["Una hamaca enredada en la albarrada."])
 vocabulary_word = "k'áan"
 spot_texture = ExtResource("11_r")
 sprite_offset = Vector2(0, -90)
@@ -97,14 +97,14 @@ glow_extents = Vector2(100, 30)
 
 [node name="Silla" parent="Spots" index="4" instance=ExtResource("2_r")]
 position = Vector2(2550, 614)
-lines = Array[String](["Una silla de madera, caída de lado.", "Con unas manos de carpintero —o unos hechizos— volverá a quedar firme."])
+lines = Array[String](["Una silla caída. ¡La arreglaré!"])
 vocabulary_word = "k'áanche'"
 spot_texture = ExtResource("12_r")
 sprite_offset = Vector2(0, -77)
 
 [node name="Fogon" parent="Spots" index="5" instance=ExtResource("2_r")]
 position = Vector2(2950, 624)
-lines = Array[String](["El fogón está frío y la olla, vacía.", "Una casa sin comida no se siente como hogar. ¡Lo arreglaré!"])
+lines = Array[String](["El fogón está frío. ¡No hay comida!"])
 vocabulary_word = "janal"
 spot_texture = ExtResource("13_r")
 sprite_offset = Vector2(0, -67)
@@ -113,7 +113,7 @@ glow_position = Vector2(0, -70)
 [node name="Casa" parent="Spots" index="6" instance=ExtResource("2_r")]
 position = Vector2(3330, 582)
 prompt = "Entrar"
-lines = Array[String](["¡Ahí está la Casa Maya, con la puerta entreabierta!", "Respiro hondo... ¡vamos a ver qué hay adentro!"])
+lines = Array[String](["¡La Casa Maya! Vamos a entrar."])
 surprised = true
 reach_radius = 170
 is_goal = true
