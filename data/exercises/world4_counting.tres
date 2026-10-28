@@ -1,0 +1,127 @@
+[gd_resource type="Resource" script_class="CountingSet" format=3]
+
+[ext_resource type="Script" path="res://scripts/features/counting/counting_set.gd" id="set"]
+[ext_resource type="Script" path="res://scripts/features/counting/counting_round.gd" id="round"]
+
+[sub_resource type="Resource" id="round_1"]
+script = ExtResource("round")
+kind = 0
+guided = true
+numbers = Array[String](["jun", "ka'a", "óox", "kan", "jo'o"])
+requester = "Áak"
+request = "Toca cada número tallado en la estela para aprender su nombre."
+
+[sub_resource type="Resource" id="round_2"]
+script = ExtResource("round")
+guided = true
+number = "óox"
+requester = "Kaax"
+request = "Forma el número tres con granos de cacao."
+
+[sub_resource type="Resource" id="round_3"]
+script = ExtResource("round")
+guided = true
+number = "jo'o"
+requester = "Miis"
+request = "Cinco granos se juntan en una varita. Forma el cinco."
+
+[sub_resource type="Resource" id="round_4"]
+script = ExtResource("round")
+number = "kan"
+requester = "Kéej"
+
+[sub_resource type="Resource" id="round_5"]
+script = ExtResource("round")
+kind = 2
+guided = true
+number = "ka'a"
+requester = "Peek'"
+item = "ja'as"
+distractor = "K'úum"
+request = "Peek' quiere dos plátanos."
+phrase = "In k'a'at ka'ap'éel ja'as"
+answer = "ka'ap'éel"
+translation = "Quiero dos plátanos"
+
+[sub_resource type="Resource" id="round_6"]
+script = ExtResource("round")
+kind = 2
+number = "óox"
+requester = "Kéej"
+item = "ich"
+distractor = "ja'as"
+phrase = "In k'a'at óoxp'éel ich"
+answer = "óoxp'éel"
+translation = "Quiero tres frutas"
+
+[sub_resource type="Resource" id="round_7"]
+script = ExtResource("round")
+kind = 2
+number = "jo'o"
+requester = "Áak"
+item = "K'úum"
+distractor = "ich"
+phrase = "In k'a'at jo'op'éel K'úum"
+answer = "jo'op'éel"
+translation = "Quiero cinco calabazas"
+
+[sub_resource type="Resource" id="round_8"]
+script = ExtResource("round")
+kind = 3
+guided = true
+number = "kan"
+requester = "Miis"
+item = "Miis"
+request = "¿Cuántos gatos llegaron a la plaza? A los animales se les cuenta con -túul."
+phrase = "Kantúul Miis"
+answer = "kantúul"
+translation = "Cuatro gatos"
+options = Array[String](["kantúul", "óoxtúul", "kanp'éel", "jo'otúul"])
+
+[sub_resource type="Resource" id="round_9"]
+script = ExtResource("round")
+kind = 3
+number = "ka'a"
+requester = "Peek'"
+item = "Peek'"
+phrase = "Ka'atúul Peek'"
+answer = "ka'atúul"
+translation = "Dos perros"
+options = Array[String](["ka'atúul", "juntúul", "ka'ap'éel", "óoxtúul"])
+
+[sub_resource type="Resource" id="round_10"]
+script = ExtResource("round")
+kind = 4
+number = "óox"
+requester = "Kaax"
+item = "lak"
+phrase = "Óoxp'éel lak"
+answer = "óoxp'éel"
+translation = "Tres platos"
+options = Array[String](["óoxp'éel", "óoxtúul", "kanp'éel", "ka'ap'éel"])
+
+[sub_resource type="Resource" id="round_11"]
+script = ExtResource("round")
+kind = 4
+number = "jun"
+requester = "Kaax"
+item = "Kaax"
+phrase = "Juntúul Kaax"
+answer = "juntúul"
+translation = "Una gallina"
+options = Array[String](["juntúul", "junp'éel", "ka'atúul", "kantúul"])
+
+[sub_resource type="Resource" id="round_12"]
+script = ExtResource("round")
+kind = 4
+number = "jo'o"
+requester = "Kéej"
+item = "mayak"
+phrase = "Jo'op'éel mayak"
+answer = "jo'op'éel"
+translation = "Cinco mesas"
+options = Array[String](["jo'op'éel", "jo'otúul", "kanp'éel", "óoxp'éel"])
+
+[resource]
+script = ExtResource("set")
+rounds = Array[ExtResource("round")]([SubResource("round_1"), SubResource("round_2"), SubResource("round_3"), SubResource("round_4"), SubResource("round_5"), SubResource("round_6"), SubResource("round_7"), SubResource("round_8"), SubResource("round_9"), SubResource("round_10"), SubResource("round_11"), SubResource("round_12")])

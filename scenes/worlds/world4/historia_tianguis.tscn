@@ -1,0 +1,45 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/features/story/story_scene.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/features/story/story_beat.gd" id="2_beat"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_codice_tianguis.svg" id="3_bg_tianguis"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+text = "La aldea arma un tianguis para darle las gracias a Kalin."
+background = ExtResource("3_bg_tianguis")
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
+mood = 1
+title = "El tianguis"
+subtitle = "Mundo 4 · Las piedras que cuentan"
+
+[sub_resource type="Resource" id="Beat_2"]
+script = ExtResource("2_beat")
+speaker = "Peek'"
+text = "¡Kalin, pide lo que quieras del puesto!"
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
+
+[sub_resource type="Resource" id="Beat_3"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¿Y cuántos pido? ¡No sé contar en maya!"
+kalin_pose = 1
+actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
+
+[sub_resource type="Resource" id="Beat_4"]
+script = ExtResource("2_beat")
+speaker = "Áak"
+text = "Mira esta estela. Los abuelos contaban con puntos y barras."
+actors = Array[String](["Áak"])
+
+[sub_resource type="Resource" id="Beat_5"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Un punto vale uno y una barra vale cinco!"
+actors = Array[String](["Áak", "Peek'"])
+effects = 16
+
+[node name="HistoriaTianguis" instance=ExtResource("1_base")]
+chapter_title = "Mundo 4 · El tianguis de la aldea"
+next_scene_key = "world4_level2"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5")])

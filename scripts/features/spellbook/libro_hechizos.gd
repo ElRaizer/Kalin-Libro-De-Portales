@@ -108,7 +108,7 @@ func show_book(source: Control = null) -> void:
 	_owns_pause = not get_tree().paused
 	get_tree().paused = true
 	if not _new_word.is_empty():
-		_category = int(VocabularyCatalog.entry(_new_word).get("world", 0))
+		_category = VocabularyCatalog.book_category(_new_word)
 	_collect_entries()
 	if _new_word in _entries:
 		_spread_index = floori(float(_entries.find(_new_word)) / _words_per_spread)
@@ -184,10 +184,12 @@ func _exit_tree() -> void:
 func _collect_entries() -> void:
 	_entries.clear()
 	for maya_word: String in GameManager.learned_words():
-		var world: int = int(VocabularyCatalog.entry(maya_word).get("world", 0))
+		var section: int = VocabularyCatalog.book_category(maya_word)
 		if (
 			maya_word not in GameContent.FUTURE_VOCABULARY
-			and (_category == 0 or world == _category or (_category == 4 and maya_word == "janal"))
+			and (
+				_category == 0 or section == _category or (_category == 4 and maya_word == "janal")
+			)
 		):
 			_entries.append(maya_word)
 	_entries.sort_custom(_sort_entries)
@@ -204,7 +206,14 @@ func _sort_entries(a: String, b: String) -> bool:
 	var b_data: Dictionary = VocabularyCatalog.entry(b)
 	var a_stage: int = int(a_data.get("world", 0)) * 100 + int(a_data.get("level", 0))
 	var b_stage: int = int(b_data.get("world", 0)) * 100 + int(b_data.get("level", 0))
-	return a.to_lower() < b.to_lower() if a_stage == b_stage else a_stage < b_stage
+	if a_stage != b_stage:
+		return a_stage < b_stage
+	# Los números se leen en su orden (jun, ka'a, óox...), no alfabéticamente.
+	var a_value: int = VocabularyCatalog.number_value(a)
+	var b_value: int = VocabularyCatalog.number_value(b)
+	if a_value > 0 and b_value > 0:
+		return a_value < b_value
+	return a.to_lower() < b.to_lower()
 
 
 func _spread_count() -> int:

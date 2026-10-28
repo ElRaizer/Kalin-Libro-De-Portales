@@ -551,7 +551,7 @@ func _finish_level() -> void:
 	guide.stop()
 	GameManager.complete_level(4, 1)
 	completion.show_completion(
-		"¡Todos han comido!", "Entendiste las peticiones de tus amigos.", "Al portal →"
+		"¡Todos han comido!", "Entendiste las peticiones de tus amigos.", "Al tianguis →"
 	)
 	GameManager.checkpoint(self)
 
@@ -563,7 +563,7 @@ func _on_menu_pressed() -> void:
 
 func _on_next_level_pressed() -> void:
 	_resolving = true
-	GameManager.go_to_scene("world4_story1")
+	GameManager.go_to_scene("world4_story2")
 
 
 func _on_book_pressed() -> void:

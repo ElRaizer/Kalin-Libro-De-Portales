@@ -124,12 +124,19 @@ theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
 text = "🔒  7. Yo Quiero"
 
-[node name="Level8Button" type="Button" parent="UI/LevelsGrid" unique_id=1595071215]
+[node name="Level8Button" type="Button" parent="UI/LevelsGrid"]
 custom_minimum_size = Vector2(246, 56)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
-text = "🔒  8. El Portal de Regreso"
+text = "🔒  8. Las Piedras que Cuentan"
+
+[node name="Level9Button" type="Button" parent="UI/LevelsGrid" unique_id=1595071215]
+custom_minimum_size = Vector2(246, 56)
+layout_mode = 2
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 16
+text = "🔒  9. El Portal de Regreso"
 
 [node name="Center" type="CenterContainer" parent="UI" unique_id=1672652378]
 offset_left = 340.0

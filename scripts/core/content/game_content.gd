@@ -203,6 +203,56 @@ const VOCABULARY: Dictionary = {
 		"estructura": "In k'a'at K'úum",
 		"traduccion": "Yo quiero calabaza"
 	},
+	"jun":
+	{
+		"spanish": "Uno",
+		"world": 4,
+		"level": 2,
+		"value": 1,
+		"book_category": 6,
+		"estructura": "Juntúul Peek'",
+		"traduccion": "Un perro"
+	},
+	"ka'a":
+	{
+		"spanish": "Dos",
+		"world": 4,
+		"level": 2,
+		"value": 2,
+		"book_category": 6,
+		"estructura": "Ka'ap'éel lak",
+		"traduccion": "Dos platos"
+	},
+	"óox":
+	{
+		"spanish": "Tres",
+		"world": 4,
+		"level": 2,
+		"value": 3,
+		"book_category": 6,
+		"estructura": "Óoxp'éel ja'as",
+		"traduccion": "Tres plátanos"
+	},
+	"kan":
+	{
+		"spanish": "Cuatro",
+		"world": 4,
+		"level": 2,
+		"value": 4,
+		"book_category": 6,
+		"estructura": "Kantúul Miis",
+		"traduccion": "Cuatro gatos"
+	},
+	"jo'o":
+	{
+		"spanish": "Cinco",
+		"world": 4,
+		"level": 2,
+		"value": 5,
+		"book_category": 6,
+		"estructura": "Jo'op'éel K'úum",
+		"traduccion": "Cinco calabazas"
+	},
 	"Bix a beel":
 	{
 		"spanish": "Buenos días",
@@ -315,6 +365,8 @@ const SCENE_PATHS: Dictionary = {
 	"world3_level1": "res://scenes/worlds/world3/level3_hechizos_adjetivos.tscn",
 	"world3_explore1": "res://scenes/worlds/world3/paseo_aldea_a_la_medida.tscn",
 	"world4_level1": "res://scenes/worlds/world4/level4_yo_quiero.tscn",
+	"world4_story2": "res://scenes/worlds/world4/historia_tianguis.tscn",
+	"world4_level2": "res://scenes/worlds/world4/level4_piedras_que_cuentan.tscn",
 	"world4_mission1": "res://scenes/worlds/world4/mision_encargos_aldea.tscn",
 	"world4_explore1": "res://scenes/worlds/world4/exploracion4_camino_portal.tscn",
 	"village_practice": "res://scenes/worlds/world4/practica_encargos_aldea.tscn",
@@ -378,6 +430,14 @@ const LEVEL_ORDER: Array[Dictionary] = [
 		"name": "Yo Quiero",
 		"map_label": "Peticiones",
 		"story_key": "world3_story1"
+	},
+	{
+		"world": 4,
+		"level": 2,
+		"scene_key": "world4_level2",
+		"name": "Las Piedras que Cuentan",
+		"map_label": "Números",
+		"story_key": "world4_story2"
 	},
 	{
 		"world": 5,

@@ -78,6 +78,11 @@
 [ext_resource type="Texture2D" uid="uid://qldaegsumska" path="res://Arte/sprites/expresiones/kalin_pensando.svg" id="texture_71"]
 [ext_resource type="Texture2D" uid="uid://btn3uf2wll66a" path="res://Arte/sprites/kalin_normal.svg" id="texture_72"]
 [ext_resource type="Texture2D" uid="uid://cwb3nicmmdmyw" path="res://Arte/sprites/kalin_surprised.svg" id="texture_73"]
+[ext_resource type="Texture2D" path="res://Arte/numeros/numero_1.svg" id="numero_1"]
+[ext_resource type="Texture2D" path="res://Arte/numeros/numero_2.svg" id="numero_2"]
+[ext_resource type="Texture2D" path="res://Arte/numeros/numero_3.svg" id="numero_3"]
+[ext_resource type="Texture2D" path="res://Arte/numeros/numero_4.svg" id="numero_4"]
+[ext_resource type="Texture2D" path="res://Arte/numeros/numero_5.svg" id="numero_5"]
 
 [sub_resource type="Resource" id="entry_0"]
 script = ExtResource("entry")
@@ -256,11 +261,36 @@ expressions = Dictionary[String, Texture2D]({
 "reaccion_feliz": ExtResource("texture_52")
 })
 
+[sub_resource type="Resource" id="entry_numero_1"]
+script = ExtResource("entry")
+key = "jun"
+texture = ExtResource("numero_1")
+
+[sub_resource type="Resource" id="entry_numero_2"]
+script = ExtResource("entry")
+key = "ka'a"
+texture = ExtResource("numero_2")
+
+[sub_resource type="Resource" id="entry_numero_3"]
+script = ExtResource("entry")
+key = "óox"
+texture = ExtResource("numero_3")
+
+[sub_resource type="Resource" id="entry_numero_4"]
+script = ExtResource("entry")
+key = "kan"
+texture = ExtResource("numero_4")
+
+[sub_resource type="Resource" id="entry_numero_5"]
+script = ExtResource("entry")
+key = "jo'o"
+texture = ExtResource("numero_5")
+
 [resource]
 script = ExtResource("catalog")
 sparkle_scene = ExtResource("sparkle_scene")
 reaction_badge_scene = ExtResource("badge_scene")
-entries = Array[ExtResource("entry")]([SubResource("entry_0"), SubResource("entry_1"), SubResource("entry_2"), SubResource("entry_3"), SubResource("entry_4"), SubResource("entry_5"), SubResource("entry_6"), SubResource("entry_7"), SubResource("entry_8"), SubResource("entry_9"), SubResource("entry_10"), SubResource("entry_11"), SubResource("entry_12"), SubResource("entry_13"), SubResource("entry_14"), SubResource("entry_15"), SubResource("entry_16"), SubResource("entry_17"), SubResource("entry_18"), SubResource("entry_19"), SubResource("entry_20"), SubResource("entry_21"), SubResource("entry_22"), SubResource("entry_23"), SubResource("entry_24"), SubResource("entry_25"), SubResource("entry_26"), SubResource("entry_27"), SubResource("entry_28"), SubResource("entry_29")])
+entries = Array[ExtResource("entry")]([SubResource("entry_0"), SubResource("entry_1"), SubResource("entry_2"), SubResource("entry_3"), SubResource("entry_4"), SubResource("entry_5"), SubResource("entry_6"), SubResource("entry_7"), SubResource("entry_8"), SubResource("entry_9"), SubResource("entry_10"), SubResource("entry_11"), SubResource("entry_12"), SubResource("entry_13"), SubResource("entry_14"), SubResource("entry_15"), SubResource("entry_16"), SubResource("entry_17"), SubResource("entry_18"), SubResource("entry_19"), SubResource("entry_20"), SubResource("entry_21"), SubResource("entry_22"), SubResource("entry_23"), SubResource("entry_24"), SubResource("entry_25"), SubResource("entry_26"), SubResource("entry_27"), SubResource("entry_28"), SubResource("entry_29"), SubResource("entry_numero_1"), SubResource("entry_numero_2"), SubResource("entry_numero_3"), SubResource("entry_numero_4"), SubResource("entry_numero_5")])
 decorations = Dictionary[String, Texture2D]({
 "comida_ja": ExtResource("texture_1"),
 "comida_jaas": ExtResource("texture_2"),
