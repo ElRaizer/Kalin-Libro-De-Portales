@@ -31,17 +31,6 @@ var _workspace_kind: String = ""
 var _active: LineEdit
 
 
-## Mantiene el modo actual y envía los campos por la validación habitual.
-func debug_fill(answers: Array) -> void:
-	if not OS.is_debug_build():
-		return
-	first.text = str(answers[0]) if not answers.is_empty() else ""
-	second.text = str(answers[1]) if answers.size() > 1 else ""
-	if mode == Mode.BLOCKS:
-		_fill_solution(answers)
-	answer_changed.emit()
-
-
 func _ready() -> void:
 	$Margin/Content/Workspace.panel = self
 	answer_changed.connect(_refresh_workspace)

@@ -185,23 +185,6 @@ páginas y chispas.
 
 No se requieren complementos ni dependencias externas.
 
-### Respuestas automáticas para depuración
-
-Al ejecutar con **F5** o **F6**, aparece **DEBUG · Responder (F4)** cuando hay
-una respuesta pendiente. Pulsa el botón o **F4** para contestar correctamente;
-después usa el botón normal de continuar para revisar el resultado. Puedes mover
-la herramienta arrastrando su asa de la izquierda.
-
-Funciona con nombres de animales, preguntas de historia, tarjetas, escritura,
-frases incompletas, bloques, creación de encargos y páginas de la despedida.
-Conserva el trazado de caminos, los paseos y las entregas para poder probarlos.
-Se oculta en la pausa, el libro, los diálogos y las celebraciones.
-
-Usa `OS.is_debug_build()`: también está disponible en exportaciones **Debug**;
-en una exportación **Release**, el autoload se elimina sin crear controles ni
-activar el atajo. Las respuestas automáticas cuentan como ayuda y mantienen el
-guardado habitual, sin acreditar recuerdo ni escritura independiente.
-
 ## Controles
 
 - En todos los menús: `Tab` / `Shift+Tab` o flechas para mover el foco; `Enter` o `Espacio` para activar la opción resaltada.

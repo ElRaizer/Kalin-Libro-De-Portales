@@ -93,7 +93,7 @@ func _automatic_support() -> void:
 			panel.mode == RecallPanel.Mode.BLOCKS and scene._attempt.mistakes == 2,
 			"El apoyo alcanzado se conserva desde JSON: " + key
 		)
-		panel.debug_fill(panel.expected)
+		_fill_answers(panel, panel.expected)
 		panel.submitted.emit()
 		_check(
 			panel._showing_result and panel.get_node("Margin/Content/Result").visible,
@@ -148,7 +148,7 @@ func _mission_support() -> void:
 			mission.mission_panel.visible and mission.recall.mode == RecallPanel.Mode.BLOCKS,
 			"Reabrir el taller conserva los apoyos del encargo"
 		)
-		mission.recall.debug_fill(mission.recall.expected)
+		_fill_answers(mission.recall, mission.recall.expected)
 		mission._forge()
 		_check(
 			(
@@ -290,7 +290,7 @@ func _pieces() -> void:
 	press.pressed = false
 	root.push_input(press, true)
 	await process_frame
-	panel.debug_fill(panel.expected)
+	_fill_answers(panel, panel.expected)
 	scene._on_cast_pressed()
 	for physical_size: Vector2i in [Vector2i(1280, 720), Vector2i(640, 360)]:
 		root.size = physical_size
@@ -321,7 +321,7 @@ func _walk_requests() -> void:
 		"Los avisos no sustituyen la petición persistente"
 	)
 	await _capture("peticion_visible")
-	walk.debug_answer()
+	_answer_walk(walk)
 	_close_lines(walk)
 	_check(
 		0 in walk.solved and not walk.get_node("UI/ChoiceRequest").visible,
@@ -342,8 +342,31 @@ func _walk_requests() -> void:
 	for index: int in range(walk.encounters.size()):
 		if walk.encounters[index].task.item == "k'áan":
 			walk._show_choices(index)
-			walk.debug_answer()
+			_answer_walk(walk)
 			_close_lines(walk)
 			walk._place_kalin(walk._encounter_spot(index).position.x)
 			walk.camera.reset_smoothing()
 			await _capture("capas_hamaca")
+
+
+## Escribe las respuestas como lo haría el jugador; en el modo de bloques coloca
+## las piezas de la solución. Sólo para preparar el estado de estas pruebas.
+func _fill_answers(panel: RecallPanel, answers: Array) -> void:
+	panel.first.text = str(answers[0]) if not answers.is_empty() else ""
+	panel.second.text = str(answers[1]) if answers.size() > 1 else ""
+	if panel.mode == RecallPanel.Mode.BLOCKS:
+		panel._fill_solution(answers)
+	panel.answer_changed.emit()
+
+
+## Elige en el paseo el hechizo que resuelve la petición abierta.
+func _answer_walk(walk: Node) -> void:
+	var index: int = walk._choice_index
+	if index < 0:
+		return
+	var task: VillageTask = walk.encounters[index].task
+	for option: int in range(walk._choice_order.size()):
+		var spell: ExerciseEntry = walk.encounters[index].choices[walk._choice_order[option]]
+		if spell.noun == task.item and spell.adjective == task.quality:
+			walk._choose(option)
+			return

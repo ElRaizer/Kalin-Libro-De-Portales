@@ -111,8 +111,8 @@ Las teclas adicionales de acentos y cierre glotal conservan la decisión del aut
 
 ### Verificación
 
-`tools/validate.ps1` ejecuta 25 suites, incluidas `validate_game_expansion.gd`,
-`validate_debug_answer.gd`, `validate_block_interactions.gd`, `validate_village_life.gd`,
+`tools/validate.ps1` ejecuta las suites, incluidas `validate_game_expansion.gd`,
+`validate_block_interactions.gd`, `validate_village_life.gd`,
 `validate_village_dialogue.gd` y `validate_village_composition.gd`.
 La prueba nueva comprueba el contexto semántico, reconstrucción con arrastre,
 restauración desde JSON, encargos, páginas parciales del portal, movimiento y

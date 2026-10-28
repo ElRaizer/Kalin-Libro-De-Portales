@@ -437,29 +437,6 @@ func _canonical_input(typed: String, quality: bool) -> Dictionary:
 	return {"word": typed, "supported": true}
 
 
-func debug_can_answer() -> bool:
-	return (
-		OS.is_debug_build()
-		and mission_panel.visible
-		and active_task >= 0
-		and active_task not in delivered
-	)
-
-
-func debug_answer() -> void:
-	if not debug_can_answer():
-		return
-	mark_learning_help()
-	var task: VillageTask = tasks[task_indices[active_task]]
-	if _cards_mode:
-		_draft_item = task.item
-		_draft_quality = task.quality
-		_update_recipe()
-	else:
-		recall.debug_fill([task.item, task.quality])
-	_forge()
-
-
 func _forge() -> void:
 	if not mission_panel.visible or active_task < 0:
 		return

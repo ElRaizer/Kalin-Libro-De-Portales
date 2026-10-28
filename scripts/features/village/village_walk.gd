@@ -355,18 +355,3 @@ func get_checkpoint_state() -> Dictionary:
 		}
 	)
 	return saved.duplicate(true)
-
-
-func debug_can_answer() -> bool:
-	return OS.is_debug_build() and _choice_index >= 0 and not is_dialogue_open()
-
-
-func debug_answer() -> void:
-	if not debug_can_answer():
-		return
-	var task: VillageTask = encounters[_choice_index].task
-	for index: int in range(_choice_order.size()):
-		var spell: ExerciseEntry = encounters[_choice_index].choices[_choice_order[index]]
-		if spell.noun == task.item and spell.adjective == task.quality:
-			_choose(index)
-			return

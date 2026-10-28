@@ -468,17 +468,3 @@ func _on_scaffold_changed() -> void:
 			"La casa · %d / %d · %s" % [round_index + 1, total_rounds, phase_lbl.text]
 		)
 		GameManager.schedule_checkpoint(self)
-
-
-func debug_can_answer() -> bool:
-	return OS.is_debug_build() and not _completing and not _waiting and not mission_break.visible
-
-
-func debug_answer() -> void:
-	if not debug_can_answer():
-		return
-	mark_learning_help()
-	var word: String = _current_object().maya
-	if recall.visible:
-		recall.debug_fill([word])
-	_on_choice_pressed(word)

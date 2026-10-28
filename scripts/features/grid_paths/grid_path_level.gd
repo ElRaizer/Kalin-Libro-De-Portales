@@ -521,15 +521,3 @@ func mark_learning_help() -> void:
 func _speed_up_arrival() -> void:
 	if arrival_tween and arrival_tween.is_valid():
 		arrival_tween.set_speed_scale(3.0)
-
-
-func debug_can_answer() -> bool:
-	return OS.is_debug_build() and _naming_pending and not _arrival_animating and not _completing
-
-
-func debug_answer() -> void:
-	if not debug_can_answer():
-		return
-	mark_learning_help()
-	recall.debug_fill([grid_board.words[_dialogue_word_index].maya_word])
-	_submit_name()

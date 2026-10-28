@@ -739,25 +739,3 @@ func _on_scaffold_changed() -> void:
 			"La comida · %d / %d · %s" % [round_index + 1, round_plan.size(), phase_label.text]
 		)
 		GameManager.schedule_checkpoint(self)
-
-
-func debug_can_answer() -> bool:
-	return (
-		OS.is_debug_build()
-		and not _resolving
-		and not _awaiting_continue
-		and not mission_break.visible
-	)
-
-
-func debug_answer() -> void:
-	if not debug_can_answer():
-		return
-	mark_learning_help()
-	var challenge: ExerciseEntry = _current_challenge()
-	if recall.visible:
-		recall.debug_fill([challenge.food, challenge.modifier])
-	else:
-		_select_food(challenge.food)
-		_select_modifier(challenge.modifier)
-	_on_serve_pressed()

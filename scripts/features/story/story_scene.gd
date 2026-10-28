@@ -505,45 +505,6 @@ func choice_for_word(word: String) -> Button:
 	return null
 
 
-func debug_can_answer() -> bool:
-	if (
-		not OS.is_debug_build()
-		or _navigating
-		or _waiting_to_continue
-		or beat_index < 0
-		or beat_index >= beats.size()
-		or _is_revealing_text()
-	):
-		return false
-	var beat: StoryBeat = current_beat()
-	if beat.kind == StoryBeat.Kind.ELEGIR:
-		var button: Button = choice_for_word(beat.target_word)
-		return button != null and not button.disabled
-	if beat.kind == StoryBeat.Kind.ADIVINAR:
-		return _actor_is_available(beat.target_word, actor_buttons.get(beat.target_word))
-	if beat.kind == StoryBeat.Kind.CONOCER:
-		for word: String in _stage_words:
-			if _actor_is_available(word, actor_buttons.get(word)):
-				return true
-	return false
-
-
-func debug_answer() -> void:
-	if not debug_can_answer():
-		return
-	_attempt.supported = true
-	var beat: StoryBeat = current_beat()
-	if beat.kind == StoryBeat.Kind.ELEGIR:
-		_on_choice_pressed(beat.target_word, choice_for_word(beat.target_word))
-	elif beat.kind == StoryBeat.Kind.ADIVINAR:
-		_on_actor_pressed(beat.target_word)
-	else:
-		for word: String in _stage_words:
-			if _actor_is_available(word, actor_buttons.get(word)):
-				_on_actor_pressed(word)
-				break
-
-
 func _clear_choices() -> void:
 	for child: Node in choices_box.get_children():
 		(child as Button).hide()

@@ -435,22 +435,3 @@ func _get_configuration_warnings() -> PackedStringArray:
 func _on_scaffold_changed() -> void:
 	if recall.visible and not recall.is_preparing():
 		GameManager.schedule_checkpoint(self)
-
-
-func debug_can_answer() -> bool:
-	return (
-		OS.is_debug_build()
-		and not _resolving
-		and not _awaiting_continue
-		and challenge_index < challenges.size()
-	)
-
-
-func debug_answer() -> void:
-	if not debug_can_answer():
-		return
-	mark_learning_help()
-	var answer: String = challenges[challenge_index].correct
-	if recall.visible:
-		recall.debug_fill([answer])
-	_on_option_pressed(answer)

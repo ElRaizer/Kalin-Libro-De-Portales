@@ -651,25 +651,3 @@ func _on_scaffold_changed() -> void:
 		phase_label.text = ExerciseRecallFlow.caption(recall, false, false)
 		mission_progress.update_progress(round_index, round_plan.size(), _phase_caption())
 		GameManager.schedule_checkpoint(self)
-
-
-func debug_can_answer() -> bool:
-	return (
-		OS.is_debug_build()
-		and not _resolving
-		and not _awaiting_continue
-		and not mission_break.visible
-	)
-
-
-func debug_answer() -> void:
-	if not debug_can_answer():
-		return
-	mark_learning_help()
-	var challenge: ExerciseEntry = _current_challenge()
-	if recall.visible:
-		recall.debug_fill([challenge.noun, challenge.adjective])
-	else:
-		_select_noun(challenge.noun)
-		_select_adjective(challenge.adjective)
-	_on_cast_pressed()

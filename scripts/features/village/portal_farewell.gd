@@ -157,25 +157,6 @@ func _choose(index: int) -> void:
 	GameManager.checkpoint(self)
 
 
-func debug_can_answer() -> bool:
-	return (
-		OS.is_debug_build()
-		and (choices_panel.visible and choice_index >= 0 or assembly.visible and placed.size() < 3)
-	)
-
-
-func debug_answer() -> void:
-	if not debug_can_answer():
-		return
-	if choices_panel.visible:
-		_choose(_choices.find(gifts[choice_index].correct))
-	else:
-		for index: int in range(3):
-			if index not in placed:
-				_place_page(PAGE_KEYS[index], index)
-				break
-
-
 func _close_choices() -> void:
 	choice_index = -1
 	choices_panel.hide()
