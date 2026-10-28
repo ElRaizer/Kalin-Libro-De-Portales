@@ -38,6 +38,11 @@ La interfaz conserva la grafía canónica. El nombre técnico del archivo elimin
 | Yuum bo'otik | `Yuum_bootik.ogg` |
 | Ka xi'ik tech jats'uts | `Ka_xiik_tech_jatsuts.ogg` |
 | Tak ti' uláak' k'iin | `Tak_ti_ulaak_kiin.ogg` |
+| jun | `jun.ogg` |
+| ka'a | `kaa.ogg` |
+| óox | `oox.ogg` |
+| kan | `kan.ogg` |
+| jo'o | `joo.ogg` |
 
 La entrada reservada `T'uut'` usará `Tuut.ogg` cuando se incorpore a una escena.
 

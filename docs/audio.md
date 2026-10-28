@@ -53,7 +53,8 @@ Reglas automáticas:
 | `musica_jarana_casa_maya` | Estilo jarana yucateca en 3/4 (Sol mayor, 138 bpm) | Mundo 2, paseo La casa cobra vida, Rincones para compartir, Capítulo 6 |
 | `musica_taller_adjetivos` | Taller juguetón (Do mayor, 104 bpm) | Mundo 3, Una fiesta a la medida |
 | `musica_milpa_manana` | Mañana luminosa en 6/8 (Re mayor) | Exploración de la milpa |
-| `musica_cocina_aldea` | Fiesta de la comida (Fa mayor, 116 bpm) | Mundo 4 |
+| `musica_cocina_aldea` | Fiesta de la comida (Fa mayor, 116 bpm) | Mundo 4 · Yo Quiero |
+| `musica_tianguis` | Tianguis alegre; el motivo sube de uno en uno, como quien cuenta (Sol mayor, 104 bpm) | El tianguis, Las piedras que cuentan |
 | `musica_camino_portal` | Asombro y amanecer (Mi lidio, 80 bpm) | Capítulo 8, exploración del camino al portal |
 | `musica_portal_regreso` | Magia con determinación (Re menor, 96 bpm) | Mundo 5 |
 | `musica_despedida` | Tema de Kalin, tierno (Sol mayor, 72 bpm) | Los recuerdos que llevamos, Capítulo 9 |
@@ -68,7 +69,7 @@ Reglas automáticas:
 | `ambiente_selva_pajaros` | Mundo 1 · niveles 1 a 3, Capítulos 2 y 3 |
 | `ambiente_grillos_atardecer` | Camino a la Casa Maya, regreso a casa |
 | `ambiente_viento_suave` | Casa maya vacía |
-| `ambiente_aldea_dia` | Capítulos 5 a 7, mundos 2, 3 y 4, paseos, misiones y práctica de la aldea |
+| `ambiente_aldea_dia` | Capítulos 5 a 7, mundos 2, 3 y 4 (incluido el tianguis), paseos, misiones y práctica de la aldea |
 | `ambiente_milpa_manana` | La milpa |
 | `ambiente_portal_zumbido` | Camino al portal, Capítulos 8 y 9, Mundo 5, despedida |
 
@@ -129,7 +130,7 @@ python tools/generar_audio/generar.py musica_sak_beh acierto  # archivos sueltos
 | Archivo | Contenido |
 |---|---|
 | `sintesis.py` | Instrumentos, filtros, reverberación y exportación a OGG |
-| `musica.py` | Las 16 piezas. Melodías escritas por grados (`"1:1.5 2:.5 3:1"`), acordes por grado y patrones de acompañamiento |
+| `musica.py` | Las 17 piezas. Melodías escritas por grados (`"1:1.5 2:.5 3:1"`), acordes por grado y patrones de acompañamiento |
 | `ambientes.py` | Los 8 ambientes en bucle |
 | `efectos.py` | Los efectos y su sonoridad objetivo (`EFECTOS`) |
 

@@ -87,7 +87,8 @@ El orden oficial vive en `GameContent.LEVEL_ORDER`:
 2. Mundo 2, nivel 1: lanzamiento del hechizo correcto.
 3. Mundo 3, nivel 1: adjetivos.
 4. Mundo 4, nivel 1: *In k'a'at* en fases guiada y de recuerdo.
-5. Mundo 5, nivel 1: recapitulación, cortesía y portal de regreso.
+5. Mundo 4, nivel 2: números del uno al cinco (ver [Las piedras que cuentan](#las-piedras-que-cuentan)).
+6. Mundo 5, nivel 1: recapitulación, cortesía y portal de regreso.
 
 Cada nivel debe llamar `GameManager.complete_level(mundo, nivel)` con su identidad real. **Continuar** usa `resume_scene_key` y el checkpoint de la escena. Si la sesión actual no tiene checkpoint, consulta el primer elemento incompleto de `LEVEL_ORDER`.
 
@@ -99,6 +100,33 @@ Para agregar un nivel:
 4. Configura la escena siguiente.
 5. Registra su vocabulario en `GameContent.VOCABULARY`.
 6. Prueba comenzar, terminar, salir al menú y usar **Continuar** con una partida nueva y una existente.
+
+## Las piedras que cuentan
+
+Mundo 4 · Nivel 2 (`world4_level2`, escena `scenes/worlds/world4/level4_piedras_que_cuentan.tscn`).
+Va después de la comida: `world4_level1` → capítulo **El tianguis** (`world4_story2`,
+`historia_tianguis.tscn`) → nivel → `world4_story1` (El portal despierta).
+
+| Pieza | Responsabilidad |
+|---|---|
+| `MayaNumeral` (`scripts/features/counting/`) | Reglas puras de puntos y barras: un punto vale 1, una barra 5 y cinco puntos se reúnen en una barra. |
+| `CountingSession` | Ronda, tablilla, canasta, respuesta, intento y checkpoint validado. Sin nodos ni autoloads. |
+| `CountingRound` / `CountingSet` | Contenido de autor en `data/exercises/world4_counting.tres`; se edita en el Inspector y avisa si falta algo. |
+| `NumeralView` | Dibuja un numeral con las texturas de cacao y varita elegidas en el Inspector. |
+| `counting_exercise.gd` (`scripts/worlds/world4/`) | Presenta cada fase y conecta la entrada; usa `RecallPanel`, `LearningGuide` y `MissionProgress`. |
+
+Fases de `CountingRound.kind`: `STELE` (conocer los numerales de la estela),
+`BUILD` (formar el número con granos y varitas), `MARKET` (llenar la canasta con
+la cantidad pedida; cosas con `-p'éel`), `FRIENDS` (contar animales; `-túul`) y
+`RECALL` (escribir número con clasificador y lo contado). Las frases completas son
+texto de autor: el código no construye la morfología maya. Las opciones se
+ofrecen en número par y se barajan con la semilla de la partida.
+
+Los números del vocabulario tienen `value` y `book_category = 6`: el Libro de
+Hechizos los muestra en la pestaña **Números**, ordenados por valor. Su
+ilustración es el numeral de puntos y barras (`Arte/numeros/`, en el catálogo
+visual). El arte se genera con `python tools/build_counting_art.py`: amate,
+líneas rojas de códice, contorno negro, azul maya y ocre, sin `rgba()`.
 
 ## Capítulos de historia
 

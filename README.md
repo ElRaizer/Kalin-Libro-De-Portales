@@ -27,7 +27,7 @@ La comprobación posterior y su cobertura de restauración se describen en la
 - Ventana redimensionable entre **640 × 360** y **1920 × 1080**, con escalado proporcional 16:9.
 - Escena principal: `res://scenes/ui/main_menu/main_menu.tscn`, con mapa de cinco lugares.
 - Progreso local con guardado automático de escena, ronda, selección y caminos parciales.
-- Ocho niveles distribuidos en cinco mundos, tres misiones de encargos y una despedida jugable.
+- Nueve niveles distribuidos en cinco mundos, tres misiones de encargos y una despedida jugable.
 - Interfaz compacta para teléfono en horizontal, con libro de una entrada por página y alternativas de toque al arrastre.
 - Transición entre tarjetas, completar palabras, construir con bloques y escribir libremente; cada modalidad conserva su tipo de evidencia.
 - Nueve capítulos de historia animados y tres cinemáticas que acompañan toda la aventura, desde la noche del huracán hasta el regreso de Kalin.
@@ -69,6 +69,7 @@ Cada **mundo** representa una mecánica. Los **niveles** de un mismo mundo reuti
 | 2 | 1 | La Casa Maya | Selección del hechizo correcto para objetos del hogar |
 | 3 | 1 | Hechizos de Adjetivos | Construcción de frases con sustantivo y adjetivo en dos fases |
 | 4 | 1 | Yo Quiero | Estructura *In k'a'at* y alimentos |
+| 4 | 2 | Las Piedras que Cuentan | Números del uno al cinco, numeración de puntos y barras y clasificadores `-p'éel` / `-túul` |
 | 5 | 1 | El Portal de Regreso | Recapitulación, cortesía y despedida |
 
 El orden de progreso es Mundo 1 completo → Mundo 2 → Mundo 3 → Mundo 4 → Mundo 5. El último mundo recupera los fragmentos finales del libro y cierra la aventura con el portal de regreso.
@@ -143,6 +144,23 @@ cruza el palmar y el Sak Beh roto y termina en la aldea.
   el Capítulo 1.
 
 La exploración se puede saltar con **Saltar exploración**. `Esc` abre la pausa.
+
+### Las piedras que cuentan
+
+Después de la comida, la aldea arma un tianguis para agradecerle a Kalin. Áak le
+enseña una estela con los números de los antiguos mayas: un punto vale uno y una
+barra vale cinco. El nivel tiene cinco fases:
+
+1. **Conocer:** tocar cada numeral de la estela (jun, ka'a, óox, kan, jo'o).
+2. **Construir:** formar el número sobre una tablilla con granos de cacao y varitas.
+3. **Tianguis:** un amigo pide «In k'a'at óoxp'éel ich» y se llena la canasta.
+4. **¿Cuántos?:** contar a los amigos que llegan; los animales se cuentan con `-túul`.
+5. **Recuerdo:** escribir el número con su clasificador y lo contado.
+
+Los números aparecen en la pestaña **Números** del Libro de Hechizos, ilustrados
+con puntos y barras. El arte toma como referencia los códices mayas: papel amate,
+líneas rojas y azul maya. Las formas y los clasificadores siguen pendientes de
+revisión con hablantes (ver [vocabulario](docs/vocabulary.md)).
 
 ### Exploraciones con vocabulario
 
