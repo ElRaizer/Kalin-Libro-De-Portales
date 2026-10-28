@@ -22,18 +22,18 @@ La interfaz conserva la grafía canónica. El nombre técnico del archivo elimin
 | Áak | `Aak.ogg` |
 | mayak | `mayak.ogg` |
 | lak | `lak.ogg` |
-| ch'áak | `chaak.ogg` |
-| chan | `chan.ogg` |
+| k'áan | `kaan.ogg` |
+| k'áanche' | `kaanche.ogg` |
 | janal | `janal.ogg` |
 | mejen | `mejen.ogg` |
 | nojoch | `nojoch.ogg` |
 | ki' | `ki.ogg` |
 | ja' | `ja.ogg` |
 | ja'as | `jaas.ogg` |
-| pak'al | `pakal.ogg` |
+| ich | `ich.ogg` |
 | K'úum | `Kuum.ogg` |
 | Jats'uts | `Jatsuts.ogg` |
-| jach' | `jach.ogg` |
+| chich | `chich.ogg` |
 | Bix a beel | `Bix_a_beel.ogg` |
 | Yuum bo'otik | `Yuum_bootik.ogg` |
 | Ka xi'ik tech jats'uts | `Ka_xiik_tech_jatsuts.ogg` |

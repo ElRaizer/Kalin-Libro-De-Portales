@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="ExerciseSet" format=3 uid="uid://dua5e8m1gc6l2"]
 
-[ext_resource type="Script" uid="uid://c5idu2th63kpg" path="res://scripts/data/ExerciseEntry.gd" id="entry"]
-[ext_resource type="Script" uid="uid://bk5vcps6fqkbt" path="res://scripts/data/ExerciseSet.gd" id="set"]
+[ext_resource type="Script" uid="uid://c5idu2th63kpg" path="res://scripts/features/exercises/exercise_entry.gd" id="entry"]
+[ext_resource type="Script" uid="uid://bk5vcps6fqkbt" path="res://scripts/features/exercises/exercise_set.gd" id="set"]
 
 [sub_resource type="Resource" id="challenges_1"]
 script = ExtResource("entry")
@@ -15,17 +15,17 @@ options = Array[String](["In k'aaba'e' Peek'", "In k'a'at Peek'", "Yuum bo'otik"
 script = ExtResource("entry")
 section = "OBJETOS"
 prompt = "Crea una mesa para tus amigos."
-clue = "Hay una mesa"
-correct = "Ti' yaan jun mayak"
-options = Array[String](["Ti' yaan jun mayak", "In mayake' mejen", "In k'a'at mayak", "Yuum bo'otik"])
+clue = "Mesa"
+correct = "mayak"
+options = Array[String](["mayak", "lak", "k'áanche'", "k'áan"])
 
 [sub_resource type="Resource" id="challenges_3"]
 script = ExtResource("entry")
 section = "CUALIDADES"
 prompt = "Crea una mesa grande."
-clue = "Mi mesa es grande"
-correct = "In mayake' nojoch"
-options = Array[String](["In mayake' nojoch", "In mayake' mejen", "Ti' yaan jun mayak", "In k'a'at mayak"])
+clue = "Objeto · cualidad: mesa grande"
+correct = "mayak · nojoch"
+options = Array[String](["mayak · nojoch", "mayak · mejen", "Ti' yaan jun mayak", "In k'a'at mayak"])
 
 [sub_resource type="Resource" id="challenges_4"]
 script = ExtResource("entry")

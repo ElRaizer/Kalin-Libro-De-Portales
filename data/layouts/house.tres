@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ScreenLayoutProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/ui/data/screen_layout_profile.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+rectangles = {
+NodePath("UI/NextButton"): Rect2(980, 632, 276, 72),
+NodePath("UI/MissionProgress"): Rect2(24, 632, 932, 72),
+NodePath("UI/RecallPanel"): Rect2(500, 270, 754, 344),
+NodePath("UI/RequestPanel"): Rect2(510, 80, 744, 176),
+NodePath("UI/RequestPanel/AnimalSprite"): Rect2(20, 8, 130, 152)
+}
+hidden = Array[NodePath]([NodePath("UI/StatusPanel")])
+font_sizes = {}

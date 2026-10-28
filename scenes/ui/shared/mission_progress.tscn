@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/shared/mission_progress.gd" id="script"]
+
+[ext_resource type="StyleBox" path="res://themes/mission_progress.tres" id="editor_2"]
+
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="editor_3"]
+
+[node name="MissionProgress" type="Control"]
+script = ExtResource("script")
+mouse_filter = 2
+background_style = ExtResource("editor_2")
+theme = ExtResource("editor_3")

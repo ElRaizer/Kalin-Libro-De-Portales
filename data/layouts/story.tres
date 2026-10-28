@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ScreenLayoutProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/ui/data/screen_layout_profile.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+rectangles = {
+NodePath("UI/ChapterPanel"): Rect2(16, 10, 832, 64),
+NodePath("UI/MenuButton"): Rect2(860, 10, 160, 64),
+NodePath("UI/SkipButton"): Rect2(1032, 10, 232, 64),
+NodePath("UI/DialogueBox"): Rect2(24, 492, 1232, 214),
+NodePath("UI/DialogueBox/DialogueText"): Rect2(24, 46, 1184, 106),
+NodePath("UI/DialogueBox/ContinueButton"): Rect2(936, 144, 272, 66),
+NodePath("UI/DialogueBox/HintLabel"): Rect2(24, 160, 900, 42)
+}
+hidden = Array[NodePath]([])
+font_sizes = {NodePath("UI/ChapterPanel/ChapterLabel"): 24, NodePath("UI/SkipButton"): 24}

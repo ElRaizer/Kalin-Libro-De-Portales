@@ -1,0 +1,2 @@
+# Herramientas de desarrollo; el juego no necesita paquetes de Python.
+gdtoolkit==4.5.0

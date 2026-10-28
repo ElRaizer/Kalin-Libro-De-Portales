@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ScreenLayoutProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/ui/data/screen_layout_profile.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+rectangles = {
+NodePath("UI/HelpButton"): Rect2(650, 10, 176, 66),
+NodePath("UI/MenuButton"): Rect2(838, 10, 180, 66),
+NodePath("UI/BookButton"): Rect2(1030, 10, 234, 66),
+NodePath("UI/SkipButton"): Rect2(1030, 10, 234, 66),
+NodePath("UI/ChapterPanel"): Rect2(16, 10, 622, 66),
+NodePath("UI/ContinueButton"): Rect2(980, 624, 276, 80),
+NodePath("UI/LeaveChoices"): Rect2(940, 624, 316, 80),
+NodePath("UI/ObjectivePanel"): Rect2(16, 620, 900, 88),
+NodePath("UI/DialogueBox"): Rect2(24, 88, 1232, 218),
+NodePath("UI/DialogueBox/DialogueText"): Rect2(24, 48, 1184, 108),
+NodePath("UI/DialogueBox/HintLabel"): Rect2(24, 164, 1184, 42),
+NodePath("UI/JournalButton"): Rect2(950, 552, 306, 68),
+NodePath("UI/CarriedLabel"): Rect2(730, 80, 526, 42)
+}
+hidden = Array[NodePath]([NodePath("UI/ControlsLabel")])
+font_sizes = {NodePath("UI/ChapterPanel/ChapterLabel"): 24, NodePath("UI/ObjectivePanel/Content/CounterLabel"): 24}

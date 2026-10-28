@@ -1,0 +1,73 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/features/story/story_scene.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/features/story/story_beat.gd" id="2_beat"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_atardecer.svg" id="4_bg_atardecer"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_milpa.svg" id="5_bg_milpa"]
+
+[sub_resource type="Resource" id="Beat_1"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Los objetos ya están a su medida!"
+background = ExtResource("4_bg_atardecer")
+actors = Array[String](["Peek'", "Miis", "Áak", "K'éek'en"])
+celebrate_page = true
+effects = 16
+visual_scene = "tamano"
+visual_solved = true
+
+
+
+
+
+[sub_resource type="Resource" id="Beat_6"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "¡Tanto trabajar nos dio hambre!"
+actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
+screen_shake = false
+kind = 4
+visual_scene = "hambre"
+
+[sub_resource type="Resource" id="Beat_7"]
+script = ExtResource("2_beat")
+speaker = "K'éek'en"
+text = "In k'a'at significa: yo quiero."
+actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
+
+[sub_resource type="Resource" id="Beat_8"]
+script = ExtResource("2_beat")
+kind = 3
+speaker = "Peek'"
+text = "Quiero agua: In k'a'at ja'. ¿Encuentras ja'?"
+actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
+target_word = "ja'"
+options = Array[String](["janal", "ja'", "ja'as", "K'úum"])
+
+[sub_resource type="Resource" id="Beat_9"]
+script = ExtResource("2_beat")
+speaker = "Kéej"
+text = "¡Yo quiero plátano! Ja'as."
+actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
+
+[sub_resource type="Resource" id="Beat_10"]
+script = ExtResource("2_beat")
+speaker = "Kalin"
+text = "¡Vamos a servirles!"
+actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
+
+[sub_resource type="Resource" id="Beat_11"]
+script = ExtResource("2_beat")
+speaker = "Narrador"
+text = "¡A buscar comida!"
+background = ExtResource("5_bg_milpa")
+actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
+kalin_motion = 1
+title = "Mundo 4"
+subtitle = "Yo Quiero"
+auto_advance = 2.0
+
+[node name="Historia7" instance=ExtResource("1_base")]
+chapter_title = "Mundo 3 · Capítulo 7 — La aldea tiene hambre"
+next_scene_key = "world3_explore2"
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_6"), SubResource("Beat_7"), SubResource("Beat_8"), SubResource("Beat_9"), SubResource("Beat_10"), SubResource("Beat_11")])

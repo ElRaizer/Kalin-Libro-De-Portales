@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ScreenLayoutProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/ui/data/screen_layout_profile.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+rectangles = {
+NodePath("UI/ComfortButton"): Rect2(24, 10, 248, 64),
+NodePath("UI/TitleLabel"): Rect2(280, 66, 960, 62),
+NodePath("UI/SubLabel"): Rect2(280, 126, 960, 42),
+NodePath("UI/WorldMap"): Rect2(92, 176, 1096, 188),
+NodePath("UI/LevelsGrid"): Rect2(24, 384, 600, 168),
+NodePath("UI/NextStop"): Rect2(656, 382, 600, 46),
+NodePath("UI/Center"): Rect2(656, 432, 600, 272),
+NodePath("UI/VisitButton"): Rect2(24, 610, 600, 78)
+}
+hidden = Array[NodePath]([NodePath("UI/VisitHint")])
+font_sizes = {NodePath("UI/TitleLabel"): 40, NodePath("UI/TopBar/MagicLabel"): 24}

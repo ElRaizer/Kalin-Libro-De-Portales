@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ScreenLayoutProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/ui/data/screen_layout_profile.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+rectangles = {
+NodePath("Shade/Panel"): Rect2(290, 30, 700, 664),
+NodePath("Shade/Panel/ResumeButton"): Rect2(28, 82, 644, 72),
+NodePath("Shade/Panel/MenuButton"): Rect2(28, 166, 644, 72),
+NodePath("Shade/Panel/ComfortTitle"): Rect2(28, 250, 644, 36),
+NodePath("Shade/Panel/ReducedMotion"): Rect2(28, 290, 644, 60),
+NodePath("Shade/Panel/ReducedFlashes"): Rect2(28, 358, 644, 60),
+NodePath("Shade/Panel/InstantText"): Rect2(28, 426, 644, 60),
+NodePath("Shade/Panel/ComfortHint"): Rect2(28, 506, 644, 48),
+NodePath("Shade/Panel/VolumeControls"): Rect2(28, 562, 644, 84),
+NodePath("Shade/Panel/Title"): Rect2(28, 20, 644, 42)
+}
+hidden = Array[NodePath]([])
+font_sizes = {}

@@ -2,27 +2,59 @@
 
 Videojuego educativo desarrollado en Godot para practicar vocabulario y estructuras básicas de maya yucateco. El proyecto forma parte del Servicio Social prestado a la UMT.
 
+## Mantenimiento del código
+
+Las reglas para mantener esta base al agregar cambios están en
+[AGENTS.md](AGENTS.md), la guía inicial para trabajar en el repositorio.
+
+La base actual usa un único formato de guardado (6), sin migraciones, alias de
+sistemas retirados ni campos de recursos en desuso. Las partidas anteriores
+requieren reinicio desde el menú.
+
+La estructura y los contratos vigentes se describen en [Arquitectura](docs/architecture.md).
+Para abrir, validar, formatear y regenerar contenido consultar
+[Mantenimiento](docs/maintenance.md) y la [guía de autoría](docs/technical_guide.md).
+El cierre de esta revisión está en [Base única y tipado explícito](docs/reviews/cleanup_2026-10-25.md).
+Las regresiones adicionales y sus correcciones se registran en la
+[revisión final](docs/reviews/final_review_2026-10-25.md).
+La comprobación posterior y su cobertura de restauración se describen en la
+[verificación ampliada de la base única](docs/reviews/exhaustive_review_2026-10-25.md).
+
 ## Estado del proyecto
 
 - Motor oficial: **Godot 4.6.3**.
 - Resolución de diseño: **1280 × 720**.
-- Ventana redimensionable entre **960 × 540** y **1920 × 1080**, con escalado proporcional 16:9.
-- Escena principal: `res://scenes/MainMenu.tscn`, con mapa de cinco lugares.
+- Ventana redimensionable entre **640 × 360** y **1920 × 1080**, con escalado proporcional 16:9.
+- Escena principal: `res://scenes/ui/main_menu/main_menu.tscn`, con mapa de cinco lugares.
 - Progreso local con guardado automático de escena, ronda, selección y caminos parciales.
-- Ocho escenas jugables distribuidas en cinco mundos.
+- Ocho niveles distribuidos en cinco mundos, tres misiones de encargos y una despedida jugable.
+- Interfaz compacta para teléfono en horizontal, con libro de una entrada por página y alternativas de toque al arrastre.
+- Transición entre tarjetas, completar palabras, construir con bloques y escribir libremente; cada modalidad conserva su tipo de evidencia.
 - Nueve capítulos de historia animados y tres cinemáticas que acompañan toda la aventura, desde la noche del huracán hasta el regreso de Kalin.
-- Cuatro exploraciones libres: la orilla de la isla antes del primer capítulo y tres recorridos más (camino a la Casa Maya, la milpa y el camino al portal) que repasan vocabulario maya antes de los mundos 2, 4 y 5.
-- Música, ambientes y efectos de sonido en todas las escenas: 16 piezas musicales, 8 ambientes y más de 60 efectos con instrumentos de la península (marimba, flauta de carrizo, jarana, tunkul, caracol). Todo se genera por síntesis, sin derechos de autor de terceros, y el volumen se ajusta en la pausa.
+- Una exploración libre de la isla antes del primer capítulo: el jugador camina con Kalin por la orilla, examina objetos y llega a la aldea de los animales.
+- Tres exploraciones más (camino a la Casa Maya, la milpa y el camino al portal) que repasan vocabulario maya: cada objeto presenta una palabra y Kalin la anota en su libro.
+- Dos paseos por la aldea después de casa y taller, con seis necesidades que se resuelven eligiendo hechizos sobre el escenario y cambios que permanecen guardados.
+- Descansos con salida a caminar y regreso a la petición pendiente; visitas independientes a la aldea después del Mundo 4.
+- Opciones de lectura y movimiento desde **A tu ritmo** en el mapa o la pausa.
+- Música, ambientes y efectos de sonido en todas las escenas: 16 piezas, 8 ambientes y más de 60 efectos con instrumentos de la península (marimba, flauta de carrizo, jarana, tunkul, caracol). Se generan por síntesis, sin derechos de autor de terceros; el volumen se ajusta en la pausa. Ver [Música y efectos](docs/audio.md).
 - Los audios de pronunciación están planeados, pero todavía no han sido grabados.
 
 El proyecto es un prototipo funcional en desarrollo. La navegación principal, el libro de hechizos y el guardado están implementados; todavía quedan mecánicas y contenido narrativo por ampliar.
 
-La [revisión visual](REVISION_UX_VISUAL.md) añade una introducción más corta,
+La [revisión visual](docs/learning_and_missions.md) añade una introducción más corta,
 peticiones y tarjetas grandes, pistas graduales, bloques de tres peticiones en
 taller y comida, reacciones visuales a las elecciones y cinco situaciones
 narrativas que se animan solas en ciclos continuos. El libro tiene pestañas ilustradas y `Esc`
 abre la pausa. Las pruebas y capturas verifican la implementación; la prueba
-con niños está preparada y sigue pendiente.
+con niños sigue pendiente.
+
+## Aprendizaje y misión de encargos
+
+Las páginas cuentan descubrimientos. El libro distingue además práctica, primer recuerdo y recuperaciones sin ayuda en situaciones separadas. Las rondas de recuerdo comienzan por escribir sin dibujos de solución. Un primer error activa completar la palabra y un segundo error activa los bloques, sin selector de modalidad. Las partes correctas de una frase se conservan. Consultar el libro, recibir pistas o corregir errores se registra como práctica apoyada. Los apoyos y las posiciones de las piezas se guardan por intento.
+
+Tras la casa y el taller hay encargos para preparar rincones y una fiesta. Tras la historia del portal, **Los encargos de la aldea** permite caminar, recibir peticiones, crear objetos, transportarlos y entregarlos a sus destinatarios. Cada visita selecciona tres necesidades distintas del catálogo permitido para su capítulo y prioriza palabras con menos evidencia de recuerdo. Las 28 combinaciones válidas de objeto y cualidad varían entre partidas, junto con sus destinatarios; se conservan al continuar. También se puede abrir `scenes/worlds/world4/mision_encargos_aldea.tscn` con F6.
+
+El vocabulario fue cotejado documentalmente con la UADY; las fuentes por entrada y los cambios se detallan en [docs/vocabulary.md](docs/vocabulary.md). Las frases completas y pronunciaciones siguen pendientes de revisión con personas hablantes. El diseño de aprendizaje, la misión y la persistencia vigente se explican en [docs/learning_and_missions.md](docs/learning_and_missions.md).
 
 ## Organización jugable
 
@@ -56,6 +88,12 @@ alimentos se entregan. Las frases recuperadas esperan a **Continuar**; tras
 cuatro segundos sin interacción, la mano señala el botón. El
 Libro de Hechizos pausa el ejercicio y usa las mismas ilustraciones SVG que
 las peticiones; en el repaso se retiran los dibujos de las respuestas.
+
+El libro viaja desde su botón hasta el centro, se abre y regresa al cerrarse.
+Las páginas y las categorías cambian con una transición breve; las flechas
+del teclado permiten hojearlo y `Esc` lo cierra. Cada entrada muestra su
+estado de aprendizaje y el botón de pronunciación. Mientras falta la grabación,
+el botón muestra un aviso y permanece en silencio.
 
 ## Historia
 
@@ -108,20 +146,16 @@ La exploración se puede saltar con **Saltar exploración**. `Esc` abre la pausa
 
 ### Exploraciones con vocabulario
 
-Tres recorridos más usan los mismos controles y suman un objetivo de
-aprendizaje: cada objeto importante presenta una palabra maya. Al examinarlo,
-Kalin la dice, aparece su significado y la frase modelo, la anota en su libro
-(aviso «Anotaste …») y el panel cuenta las **Palabras mayas**. Solo repasan:
-las palabras se aprenden y dan magia en el nivel, no en la exploración.
+Tres recorridos más usan la misma mecánica y repasan palabras mayas. Cada objeto
+que brilla presenta una palabra con su significado y su frase modelo, y el panel
+cuenta «Palabras mayas: n / total». Sólo repasan: aprender la palabra y ganar
+magia sigue ocurriendo en los niveles.
 
-| Exploración | Va entre | Ambiente | Palabras |
-|---|---|---|---|
-| Camino a la Casa Maya | Capítulo 5 y la cinemática de la Casa Maya vacía | Atardecer en el solar | mayak, lak, ch'áak, chan, janal |
-| La milpa | Capítulo 7 y el nivel «Yo quiero» | Mañana entre maíz y plátanos | ja', ja'as, pak'al, K'úum |
-| El camino al portal | Capítulo 8 y el nivel del portal | Amanecer sobre el Sak Beh | Bix a beel, Yuum bo'otik, Ka xi'ik tech jats'uts, Tak ti' uláak' k'iin |
-
-Cada una tiene un obstáculo que Kalin aparta con magia (ramas, una valla caída
-o zarzas) y una meta que lleva a la siguiente escena.
+| Recorrido | Va entre | Palabras |
+|---|---|---|
+| Camino a la Casa Maya | Capítulo 5 y la cinemática de la casa vacía | `mayak`, `lak`, `k'áan`, `k'áanche'`, `janal` |
+| La milpa | Capítulo 7 y el Mundo 4 | `ja'`, `ja'as`, `ich`, `K'úum` |
+| El camino al portal | Los encargos de la aldea y el Mundo 5 | `Bix a beel`, `Yuum bo'otik`, `Ka xi'ik tech jats'uts`, `Tak ti' uláak' k'iin` |
 
 ### Cinemáticas y animaciones
 
@@ -151,6 +185,23 @@ páginas y chispas.
 
 No se requieren complementos ni dependencias externas.
 
+### Respuestas automáticas para depuración
+
+Al ejecutar con **F5** o **F6**, aparece **DEBUG · Responder (F4)** cuando hay
+una respuesta pendiente. Pulsa el botón o **F4** para contestar correctamente;
+después usa el botón normal de continuar para revisar el resultado. Puedes mover
+la herramienta arrastrando su asa de la izquierda.
+
+Funciona con nombres de animales, preguntas de historia, tarjetas, escritura,
+frases incompletas, bloques, creación de encargos y páginas de la despedida.
+Conserva el trazado de caminos, los paseos y las entregas para poder probarlos.
+Se oculta en la pausa, el libro, los diálogos y las celebraciones.
+
+Usa `OS.is_debug_build()`: también está disponible en exportaciones **Debug**;
+en una exportación **Release**, el autoload se elimina sin crear controles ni
+activar el atajo. Las respuestas automáticas cuentan como ayuda y mantienen el
+guardado habitual, sin acreditar recuerdo ni escritura independiente.
+
 ## Controles
 
 - En todos los menús: `Tab` / `Shift+Tab` o flechas para mover el foco; `Enter` o `Espacio` para activar la opción resaltada.
@@ -159,25 +210,33 @@ No se requieren complementos ni dependencias externas.
 - Mundo 1: clic y arrastre, o flechas para mover el cursor del tablero. `Enter` / `Espacio` inicia el camino; las flechas lo trazan y `Esc` lo cancela.
 - Mundos 2, 3, 4 y 5: `Tab` / flechas para elegir una palabra o respuesta y `Enter` / `Espacio` para confirmarla.
 - Libro de hechizos: flechas izquierda/derecha para cambiar de página y `Esc` para cerrarlo. Al cerrar, el foco vuelve al control que abrió el libro.
-- `Esc` pausa la aventura; si el libro está abierto, lo cierra primero. Si hay un trazo activo, detiene ese trazo. La pausa permite seguir jugando, volver al mapa y ajustar el volumen de la música y de los sonidos.
-- Menú principal: el botón **Sonido** silencia o activa todo el audio.
+- `Esc` pausa la aventura; si el libro está abierto, lo cierra primero. Si hay un trazo activo, detiene ese trazo. La pausa permite seguir jugando o volver al mapa.
 
 ## Documentación
 
-- [INSTRUCCIONES.md](INSTRUCCIONES.md): instalación, estructura técnica y mantenimiento.
-- [AUDITORIA_BUENAS_PRACTICAS.md](AUDITORIA_BUENAS_PRACTICAS.md): cumplimiento, correcciones y pendientes de diseño.
-- [VOCABULARIO.md](VOCABULARIO.md): grafías adoptadas, normalizaciones y decisiones del GDD.
-- [MEJORAS_UX.md](MEJORAS_UX.md): interacción visual, arte, continuación y pruebas de esta iteración.
-- [REVISION_UX_VISUAL.md](REVISION_UX_VISUAL.md): presentación por pasos, pistas graduales, narrativa visual, bloques, libro y pausa.
-- [ANIMACIONES.md](ANIMACIONES.md): escenas en bucle, expresiones SVG y pruebas de continuidad.
-- [PRUEBA_CON_NINOS.md](PRUEBA_CON_NINOS.md): protocolo de observación y criterios propuestos para la prueba con niños.
-- [AUDIO.md](AUDIO.md): música por escena, ambientes, efectos, configuración en el Inspector y cómo regenerar el audio.
+- [docs/adventure.md](docs/adventure.md): paseos, descansos, borradores, comodidad y decisiones pendientes de validación.
+- [docs/replayability.md](docs/replayability.md): preguntas variables, planes guardados y 48 variantes de tableros con rutas sin cruces.
+
+- [docs/technical_guide.md](docs/technical_guide.md): instalación, estructura técnica y mantenimiento.
+- [docs/reviews/previous_practices_review.md](docs/reviews/previous_practices_review.md): cumplimiento, correcciones y pendientes de diseño.
+- [docs/vocabulary.md](docs/vocabulary.md): inventario completo para revisión con mayahablantes, palabras y frases con su significado en español, variantes, dudas y hoja de correcciones.
+- [docs/learning_and_missions.md](docs/learning_and_missions.md): evidencia por palabra, recuerdo sin ayuda, encargos y pruebas.
+- [docs/audio.md](docs/audio.md): música por escena, ambientes, efectos, configuración en el Inspector y cómo regenerar el audio.
 - [Arte/audio/README.md](Arte/audio/README.md): preparación y nombres de las pronunciaciones pendientes.
+
+## Ampliación de jugabilidad del 24 de octubre
+
+Ver [docs/adventure.md](docs/adventure.md) para el recorrido ampliado, los apoyos automáticos, los bloques intercambiables, la mesa de composición, los doce habitantes con casas propias, la interfaz compacta y la migración al formato de guardado 5. `tools/validate.ps1` incluye 25 suites. Las nuevas escenas pueden abrirse con F6:
+
+- `scenes/worlds/world2/mision_rincones_de_la_casa.tscn`.
+- `scenes/worlds/world3/mision_preparar_la_fiesta.tscn`.
+- `scenes/worlds/world5/despedida_los_recuerdos.tscn`.
 
 ## Trabajo pendiente
 
 - Grabar, revisar e integrar las pronunciaciones.
 - Escuchar la música y los efectos con el equipo y con niños, y ajustar en `data/audio_catalog.tres` o en `tools/generar_audio/` lo que no convenza.
+- Acortar los diálogos de las exploraciones 2 a 4 al estilo de una línea breve de los capítulos.
 - Diseñar más niveles para los mundos 2, 3 y 4.
 - Ampliar las variaciones y la dificultad de los mundos 2, 3 y 4.
 - Validar las frases de cortesía del Mundo 5 con una persona hablante o especialista.

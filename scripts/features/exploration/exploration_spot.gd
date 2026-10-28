@@ -1,0 +1,254 @@
+@tool
+extends Node2D
+class_name ExplorationSpot
+
+## Punto interactuable de una escena de exploración (ExplorationScene).
+## Se coloca arrastrándolo sobre el sendero y se configura en el Inspector:
+## qué dice Kalin al examinarlo, si bloquea el paso y qué le pasa al terminar.
+## Mientras nadie lo examina brilla para invitar al jugador a acercarse.
+
+enum Reaction {
+	NINGUNA,  ## El objeto se queda donde está y deja de brillar.
+	APARTAR,  ## La magia de Kalin lo levanta y lo quita del camino.
+	RECOGER,  ## Vuela hacia Kalin y desaparece (lo guarda en su libro).
+}
+
+const PULSE_SPEED := 3.0
+const PULSE_STRENGTH := 0.22
+const LIFT_HEIGHT := 70.0
+const LIFT_SECONDS := 0.55
+const SLIDE_DISTANCE := 260.0
+const SLIDE_SECONDS := 0.6
+const COLLECT_SECONDS := 0.7
+const COLLECT_SCALE := 0.2
+const CLICK_PADDING := 24.0
+const PROMPT_GAP := 34.0
+const NO_SPRITE_HEIGHT := 180.0
+const MAGIC_TINT := Color(1.4, 1.35, 1.0)
+
+@export_category("Interacción")
+## Texto del botón que aparece al acercarse ("Examinar", "Mover", "Saludar"...).
+@export var prompt: String = "Examinar"
+## "Kalin", "Narrador" o la palabra maya del animal que habla.
+@export var speaker: String = "Kalin"
+## Cada línea es un globo de diálogo; se avanza con clic, E, Espacio o Enter.
+@export var lines: Array[String] = []:
+	set(value):
+		lines = value
+		update_configuration_warnings()
+## Kalin pone cara de sorpresa mientras dura el diálogo.
+@export var surprised: bool = false
+## Distancia horizontal a la que Kalin puede examinar el objeto.
+@export_range(40.0, 400.0, 10.0) var reach_radius: float = 150.0
+
+@export_category("Vocabulario")
+## Palabra maya del vocabulario canónico que Kalin anota al terminar el diálogo.
+## Se añade sola una última línea con la palabra, su significado y la frase
+## modelo. Sólo repasa: aprenderla y ganar magia sigue siendo trabajo del nivel.
+@export var vocabulary_word: String = "":
+	set(value):
+		vocabulary_word = value
+		update_configuration_warnings()
+
+@export_category("Camino")
+## Kalin no puede pasar de este punto hasta examinarlo.
+@export var blocks_path: bool = false
+## Al terminar su diálogo la exploración termina y empieza la historia.
+@export var is_goal: bool = false
+## El diálogo se abre solo cuando Kalin llega (sin pulsar nada).
+@export var auto_trigger: bool = false
+## Qué le pasa al objeto la primera vez que se examina.
+@export var reaction: Reaction = Reaction.NINGUNA
+
+@export_category("Presentación")
+## Dibujo propio de esta instancia. Se configura en el nodo ExplorationSpot,
+## sin editar los hijos internos de la escena reutilizable.
+@export var spot_texture: Texture2D:
+	set(value):
+		spot_texture = value
+		_apply_visual_configuration()
+@export var sprite_offset: Vector2 = Vector2(0, -45):
+	set(value):
+		sprite_offset = value
+		_apply_visual_configuration()
+@export var sprite_scale: Vector2 = Vector2.ONE:
+	set(value):
+		sprite_scale = value
+		_apply_visual_configuration()
+@export var glow_position: Vector2 = Vector2(0, -40):
+	set(value):
+		glow_position = value
+		_apply_visual_configuration()
+@export var glow_extents: Vector2 = Vector2(50, 30):
+	set(value):
+		glow_extents = value
+		_apply_visual_configuration()
+
+# ─── Estado ──────────────────────────────────────────────────────────────────
+var examined: bool = false
+var _time: float = 0.0
+var _reaction_tween: Tween
+var _base_modulate: Color
+
+# ─── Nodos ───────────────────────────────────────────────────────────────────
+@onready var sprite: Sprite2D = $Sprite
+@onready var glow: CPUParticles2D = $Brillo
+
+
+# ────────────────────────────────────────────────────────────────────────────
+func _ready() -> void:
+	_apply_visual_configuration()
+	if Engine.is_editor_hint():
+		return
+	_base_modulate = sprite.modulate
+	_time = randf() * TAU
+
+
+func _apply_visual_configuration() -> void:
+	var sprite_node: Sprite2D = get_node_or_null("Sprite") as Sprite2D
+	if sprite_node:
+		sprite_node.texture = spot_texture
+		sprite_node.offset = sprite_offset
+		sprite_node.scale = sprite_scale
+	var glow_node: CPUParticles2D = get_node_or_null("Brillo") as CPUParticles2D
+	if glow_node:
+		glow_node.position = glow_position
+		glow_node.emission_rect_extents = glow_extents
+
+
+func _process(delta: float) -> void:
+	if Engine.is_editor_hint() or examined:
+		return
+	# Un pulso de luz suave indica que el objeto todavía guarda algo.
+	_time += delta
+	var pulse: float = (sin(_time * PULSE_SPEED) + 1.0) * 0.5 * PULSE_STRENGTH
+	sprite.modulate = _base_modulate * Color(1.0 + pulse, 1.0 + pulse, 1.0 + pulse * 0.5)
+
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = PackedStringArray()
+	if lines.is_empty():
+		warnings.append("Agrega al menos una línea de diálogo en «lines».")
+	if vocabulary_word != "" and VocabularyCatalog.entry(vocabulary_word).is_empty():
+		warnings.append("«%s» no existe en el vocabulario canónico." % vocabulary_word)
+	return warnings
+
+
+# ─── API para ExplorationScene ───────────────────────────────────────────────
+
+
+## Líneas del diálogo: las del Inspector más la de vocabulario, si hay palabra.
+func dialogue_lines() -> Array[String]:
+	var result: Array[String] = lines.duplicate()
+	var vocabulary_line: String = vocabulary_text()
+	if vocabulary_line != "":
+		result.append(vocabulary_line)
+	return result
+
+
+## true si al examinarlo Kalin anota una palabra maya en su libro.
+func teaches_word() -> bool:
+	return vocabulary_word != "" and not VocabularyCatalog.entry(vocabulary_word).is_empty()
+
+
+## Texto (con BBCode) que presenta la palabra maya; vacío si no está en el vocabulario.
+func vocabulary_text() -> String:
+	if not teaches_word():
+		return ""
+	var entry: Dictionary = VocabularyCatalog.entry(vocabulary_word)
+	var text: String = (
+		"Palabra maya: [color=#ffd27a][b]%s[/b][/color] significa «%s»."
+		% [vocabulary_word, entry.spanish]
+	)
+	if entry.estructura != vocabulary_word:
+		text += " Se dice «%s»: %s." % [entry.estructura, entry.traduccion]
+	return text
+
+
+## true mientras el objeto impide que Kalin siga avanzando.
+func is_blocking() -> bool:
+	return blocks_path and not examined
+
+
+## Un objeto que ya se apartó o se recogió no vuelve a mostrar su botón.
+func can_interact() -> bool:
+	return not examined or reaction == Reaction.NINGUNA
+
+
+## Indica si un punto del mundo cae sobre el dibujo del objeto (para el clic).
+func contains_point(world_point: Vector2) -> bool:
+	if sprite.texture == null or not sprite.visible:
+		return (
+			absf(world_point.x - global_position.x) <= reach_radius * 0.5
+			and world_point.y <= global_position.y
+		)
+	var local_point: Vector2 = sprite.to_local(world_point)
+	return sprite.get_rect().grow(CLICK_PADDING).has_point(local_point)
+
+
+## Posición (en el mundo) sobre la que flota el botón de interacción.
+func prompt_anchor() -> Vector2:
+	if sprite.texture == null:
+		return global_position + Vector2(0.0, -NO_SPRITE_HEIGHT)
+	var top: Vector2 = sprite.to_global(Vector2(0.0, sprite.get_rect().position.y))
+	return top + Vector2(0.0, -PROMPT_GAP)
+
+
+func mark_examined() -> void:
+	examined = true
+	glow.emitting = false
+	sprite.modulate = _base_modulate
+
+
+## Anima la reacción configurada y devuelve el Tween (o null si no hay).
+## `collector` es la posición global hacia la que vuela un objeto recogido.
+func play_reaction(collector: Vector2) -> Tween:
+	if _reaction_tween:
+		_reaction_tween.kill()
+	match reaction:
+		Reaction.APARTAR:
+			_reaction_tween = _move_aside()
+		Reaction.RECOGER:
+			_reaction_tween = _fly_to(collector)
+		_:
+			_reaction_tween = null
+	return _reaction_tween
+
+
+# ─── Animaciones ─────────────────────────────────────────────────────────────
+func _move_aside() -> Tween:
+	var tween: Tween = create_tween()
+	(
+		tween
+		. tween_property(sprite, "position:y", sprite.position.y - LIFT_HEIGHT, LIFT_SECONDS)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_OUT)
+	)
+	tween.parallel().tween_property(sprite, "modulate", MAGIC_TINT, LIFT_SECONDS)
+	tween.parallel().tween_property(sprite, "rotation", -0.12, LIFT_SECONDS)
+	(
+		tween
+		. tween_property(sprite, "position:x", sprite.position.x + SLIDE_DISTANCE, SLIDE_SECONDS)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_IN)
+	)
+	tween.parallel().tween_property(sprite, "modulate:a", 0.0, SLIDE_SECONDS)
+	tween.tween_callback(sprite.hide)
+	return tween
+
+
+func _fly_to(collector: Vector2) -> Tween:
+	var target: Vector2 = to_local(collector)
+	var tween: Tween = create_tween().set_parallel(true)
+	(
+		tween
+		. tween_property(sprite, "position", target, COLLECT_SECONDS)
+		. set_trans(Tween.TRANS_BACK)
+		. set_ease(Tween.EASE_IN)
+	)
+	tween.tween_property(sprite, "scale", sprite.scale * COLLECT_SCALE, COLLECT_SECONDS)
+	tween.tween_property(sprite, "modulate:a", 0.0, COLLECT_SECONDS * 0.4).set_delay(
+		COLLECT_SECONDS * 0.6
+	)
+	tween.chain().tween_callback(sprite.hide)
+	return tween
