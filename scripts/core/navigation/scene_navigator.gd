@@ -32,7 +32,7 @@ func go_to_scene(key: String) -> bool:
 	checkpoint_current_scene()
 	var leaving_practice: bool = (
 		get_tree().current_scene != null
-		and get_tree().current_scene.scene_file_path == SCENE_PATHS.village_practice
+		and get_tree().current_scene.scene_file_path == SCENE_PATHS.village_home
 		and key == "main_menu"
 	)
 	var next_resume: String = _session.resume_scene_key
@@ -58,24 +58,6 @@ func _request_scene(path: String) -> Error:
 	return get_tree().change_scene_to_file(path)
 
 
-func visit_village() -> void:
-	if not _session.is_level_completed(4, 1):
-		return
-	var return_key: String = _session.practice_return_key
-	if _session.resume_scene_key != "village_practice":
-		return_key = _session.resume_scene_key
-	var previous: Dictionary = _session.scene_states.get("village_practice", {})
-	var delivered: Variant = previous.get("delivered", [])
-	var accepted: bool
-	if delivered is Array and delivered.size() >= 3:
-		accepted = replay_scene("village_practice")
-	else:
-		accepted = go_to_scene("village_practice")
-	if accepted:
-		_session.practice_return_key = return_key
-		_save.call()
-
-
 func start_walk(key: String, return_key: String) -> void:
 	if key not in SCENE_PATHS or return_key not in SCENE_PATHS:
 		return
@@ -88,6 +70,20 @@ func start_walk(key: String, return_key: String) -> void:
 		saved = ReplayVariation.replay_state(saved)
 	saved["return_scene"] = return_key
 	_session.scene_states[key] = saved
+	_save.call()
+
+
+func visit_home(return_key: String = "main_menu") -> void:
+	if return_key not in SCENE_PATHS:
+		return
+	var previous: String = _session.resume_scene_key
+	if not go_to_scene("village_home"):
+		return
+	var saved: Dictionary = _session.scene_states.get("village_home", {}).duplicate(true)
+	saved.return_scene = return_key
+	_session.scene_states.village_home = saved
+	if previous != "village_home":
+		_session.practice_return_key = previous
 	_save.call()
 
 

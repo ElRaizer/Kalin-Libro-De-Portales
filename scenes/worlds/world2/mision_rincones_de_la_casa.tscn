@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://scenes/worlds/world4/mision_encargos_aldea.tscn" id="base"]
 [ext_resource type="Script" path="res://scripts/features/village/village_task.gd" id="task"]
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_habitada.svg" id="background"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_village_plaza.svg" id="background"]
 [ext_resource type="Texture2D" path="res://Arte/exploracion/entrada_taller.svg" id="workshop_exit"]
 
 [sub_resource type="Resource" id="task_0"]
@@ -54,7 +54,9 @@ quality = ""
 success = "¡La merienda está lista! Tú también eres parte de la aldea."
 
 [node name="Mision_RinconesDeLaCasa" instance=ExtResource("base")]
+mission_kind = "home"
 chapter_title = "Rincones para compartir"
+gathering_title = "¡Rincones para compartir!"
 completion_objective = "¡Listo! El taller nos espera →"
 next_scene_key = "world2_story1"
 tasks = Array[ExtResource("task")]([SubResource("task_0"), SubResource("task_1"), SubResource("task_2"), SubResource("task_3"), SubResource("task_4"), SubResource("task_5")])

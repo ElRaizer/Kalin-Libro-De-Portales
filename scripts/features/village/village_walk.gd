@@ -2,6 +2,10 @@ extends ExplorationScene
 class_name VillageWalk
 
 @export var encounters: Array[VillageEncounter] = []
+@export var interpret_requests: bool = true
+var translated: Array[int] = []
+var helped: Array[int] = []
+var _translation_button: Button
 var solved: Array[int] = []
 var _choice_index: int = -1
 var _choice_order: Array[int] = []
@@ -25,6 +29,8 @@ func _ready() -> void:
 		return
 	var saved: Dictionary = GameManager.get_scene_state(self)
 	solved = ExerciseProgress.restore_markers(saved.get("solved"), encounters.size())
+	translated = ExerciseProgress.restore_markers(saved.get("translated"), encounters.size())
+	helped = ExerciseProgress.restore_markers(saved.get("helped"), encounters.size())
 	_layout_seed = int(saved.get("layout_seed", randi_range(1, 2000000000)))
 	_prepare_encounters(saved)
 	var world: int = 2 if GameManager.scene_key_for(self) == "world2_explore1" else 3
@@ -67,10 +73,12 @@ func _ready() -> void:
 		_encounter_spot(0), _encounter_spot(1), _encounter_spot(2)
 	]
 	VillageResidents.install(self, recipients, _residents, _layout_seed)
-	choices_root.z_index = 6
+	choices_root.z_index = 1000
 	super._ready()
 	$UI/BookButton.pressed.connect(func(): $LibroHechizos.show_book($UI/BookButton))
 	leave_choices.pressed.connect(_close_choices)
+	_translation_button = $UI/TranslationButton
+	_translation_button.pressed.connect(_translate_request)
 	for index: int in range(3):
 		(choices_root.get_child(index) as Button).pressed.connect(_choose.bind(index))
 	_restore_results()
@@ -166,6 +174,7 @@ func _can_walk() -> bool:
 
 func _process(delta: float) -> void:
 	super._process(delta)
+	$UI/ObjectivePanel.visible = _choice_index < 0
 	if _choice_index >= 0:
 		_layout_choices()
 
@@ -182,7 +191,7 @@ func open_spot(spot: ExplorationSpot) -> void:
 	var index: int = _index_for(spot)
 	if index >= 0:
 		spot.lines.assign(
-			[encounters[index].task.success if index in solved else encounters[index].task.request]
+			[encounters[index].task.success if index in solved else _request_text(index)]
 		)
 		spot.set_meta("village_success", encounters[index].task.success if index in solved else "")
 	super.open_spot(spot)
@@ -218,18 +227,22 @@ func _show_choices(index: int, previous_mistakes: int = 0) -> void:
 		var button: Button = choices_root.get_child(cursor) as Button
 		(button.get_node("Art") as MeaningIllustration).show_meaning(spell.noun, spell.adjective)
 		(button.get_node("Word") as Label).text = (
-			spell.noun + ("\n" + spell.adjective if not spell.adjective.is_empty() else "")
+			spell.translation
+			if interpret_requests
+			else spell.noun + ("\n" + spell.adjective if not spell.adjective.is_empty() else "")
 		)
-		button.tooltip_text = "Crear " + spell.noun + " " + spell.adjective
+		button.tooltip_text = "Elegir " + spell.translation
 	choices_root.show()
 	leave_choices.show()
+	_translation_button.visible = interpret_requests
+	_translation_button.disabled = index in translated
 	controls_label.text = "Elige un hechizo sobre el escenario · Tab / Enter"
 	controls_label.hide()
-	objective_label.text = encounters[index].task.request
+	objective_label.text = _request_text(index)
+	$UI/ObjectivePanel.hide()
 	$UI/ChoiceRequest.show()
 	$UI/ChoiceRequest/Request.text = (
-		"%s necesita tu ayuda:\n%s"
-		% [encounters[index].task.requester, encounters[index].task.request]
+		"%s necesita tu ayuda:\n%s" % [encounters[index].task.requester, _request_text(index)]
 	)
 	(choices_root.get_child(0) as Button).grab_focus()
 	GameManager.checkpoint(self)
@@ -243,7 +256,7 @@ func _choose(button_index: int) -> void:
 	var spell: ExerciseEntry = encounter.choices[_choice_order[button_index]]
 	if spell.noun != encounter.task.item or spell.adjective != encounter.task.quality:
 		_mistakes += 1
-		_show_notice("Ese hechizo crea algo diferente. " + encounter.task.request)
+		_show_notice("Mira lo que representa esa opción y vuelve a leer las fichas de la petición.")
 		CharacterReaction.play(choices_root.get_child(button_index), false)
 		GameManager.checkpoint(self)
 		return
@@ -251,9 +264,9 @@ func _choose(button_index: int) -> void:
 		GameManager.learn_word(word)
 	GameManager.record_learning(
 		encounter.task.words(),
-		"practice",
+		"recognition" if interpret_requests else "practice",
 		GameManager.scene_key_for(self) + ":visit%d@%d" % [index, _layout_seed],
-		true,
+		not interpret_requests or index in translated or index in helped,
 		_mistakes
 	)
 	solved.append(index)
@@ -273,6 +286,7 @@ func _close_choices() -> void:
 	choices_root.hide()
 	$UI/ChoiceRequest.hide()
 	leave_choices.hide()
+	_translation_button.hide()
 	camera.offset.x = 0
 	controls_label.text = "← → · Toca para caminar · E para conversar"
 	controls_label.show()
@@ -289,12 +303,20 @@ func _restore_results() -> void:
 			continue
 		var spot: ExplorationSpot = _encounter_spot(index)
 		spot.mark_examined()
+		spot.z_index = 1
 		spot.sprite.texture = GameManager.get_visual_expression(
 			encounters[index].task.requester, "reaccion_feliz"
 		)
 		result.position = spot.position + Vector2(-90, -125)
 		result.show_meaning(encounters[index].task.item, encounters[index].task.quality)
-		VillageUseMotion.attach(spot.sprite, result, encounters[index].task.item)
+		VillageUseMotion.attach(
+			spot.sprite, result, encounters[index].task.item, encounters[index].task.requester
+		)
+		if free_roam:
+			spot.z_index = int(spot.position.y)
+			result.z_index = int(spot.position.y) - 1
+	if free_roam and _roaming != null:
+		_roaming.ensure_safe(navigation_obstacles())
 
 
 func _update_counter() -> void:
@@ -307,14 +329,21 @@ func _update_counter() -> void:
 
 func _restore_objective() -> void:
 	if _choice_index >= 0:
-		objective_label.text = encounters[_choice_index].task.request
+		objective_label.text = _request_text(_choice_index)
 		objective_label.remove_theme_color_override("font_color")
 	else:
 		super._restore_objective()
 
 
 func mark_learning_help() -> void:
-	pass  # Todas las elecciones de este paseo ya se registran como práctica apoyada.
+	var index: int = (
+		_choice_index
+		if _choice_index >= 0
+		else (_index_for(_active_spot) if is_instance_valid(_active_spot) else -1)
+	)
+	if index >= 0 and index not in helped:
+		helped.append(index)
+		GameManager.checkpoint(self)
 
 
 func close_transient_ui() -> bool:
@@ -326,6 +355,7 @@ func close_transient_ui() -> bool:
 
 func _show_help() -> void:
 	if _choice_index >= 0:
+		mark_learning_help()
 		var task: VillageTask = encounters[_choice_index].task
 		for index: int in range(_choice_order.size()):
 			var spell: ExerciseEntry = encounters[_choice_index].choices[_choice_order[index]]
@@ -334,6 +364,13 @@ func _show_help() -> void:
 				break
 	else:
 		super._show_help()
+
+
+func _show_orientation() -> void:
+	if _choice_index >= 0:
+		guide.highlight($UI/ChoiceRequest)
+	else:
+		super._show_orientation()
 
 
 func get_checkpoint_state() -> Dictionary:
@@ -348,7 +385,9 @@ func get_checkpoint_state() -> Dictionary:
 			"layout_seed": _layout_seed,
 			"encounter_plan": _encounter_plan.duplicate(),
 			"residents": _residents.duplicate(),
-			"return_scene": _return_scene
+			"return_scene": _return_scene,
+			"translated": translated.duplicate(),
+			"helped": helped.duplicate()
 		}
 	)
 	return saved.duplicate(true)
@@ -361,9 +400,43 @@ func debug_can_answer() -> bool:
 func debug_answer() -> void:
 	if not debug_can_answer():
 		return
+	mark_learning_help()
 	var task: VillageTask = encounters[_choice_index].task
 	for index: int in range(_choice_order.size()):
 		var spell: ExerciseEntry = encounters[_choice_index].choices[_choice_order[index]]
 		if spell.noun == task.item and spell.adjective == task.quality:
 			_choose(index)
 			return
+
+
+func _request_text(index: int) -> String:
+	var task: VillageTask = encounters[index].task
+	if not interpret_requests or index in translated:
+		return task.request
+	return (
+		task.purpose
+		+ "\n"
+		+ task.item
+		+ (" · " + task.quality if not task.quality.is_empty() else "")
+	)
+
+
+func _translate_request() -> void:
+	if _choice_index < 0:
+		return
+	if _choice_index not in translated:
+		translated.append(_choice_index)
+	_translation_button.disabled = true
+	$UI/ChoiceRequest/Request.text = (
+		"%s necesita tu ayuda:\n%s"
+		% [encounters[_choice_index].task.requester, _request_text(_choice_index)]
+	)
+	GameManager.checkpoint(self)
+
+
+func navigation_obstacles() -> Array[Rect2]:
+	var obstacles: Array[Rect2] = super.navigation_obstacles()
+	for index: int in solved:
+		var spot: ExplorationSpot = _encounter_spot(index)
+		obstacles.append(Rect2(spot.position - Vector2(180, 25), Vector2(360, 50)))
+	return obstacles

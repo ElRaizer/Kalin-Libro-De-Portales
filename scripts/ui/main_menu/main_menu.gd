@@ -35,7 +35,7 @@ func _ready() -> void:
 	GameManager.level_completed.connect(_on_level_completed)
 	GameManager.progress_reset.connect(_on_progress_reset)
 	$UI/ComfortButton.pressed.connect(PauseMenu.open_pause)
-	$UI/VisitButton.pressed.connect(GameManager.visit_village)
+	$UI/VisitButton.pressed.connect(GameManager.visit_home)
 
 
 func _setup_level_buttons() -> void:
@@ -57,7 +57,8 @@ func _refresh_ui() -> void:
 	)
 	var word_count: int = GameManager.get_recovered_word_count()
 	book_btn.text = "Libro de Hechizos  (%d palabras)" % word_count
-	$UI/VisitButton.visible = GameManager.is_level_completed(4, 1)
+	$UI/VisitButton.visible = not GameManager.session.words_learned.is_empty()
+	$UI/VisitButton.text = "Mi aldea"
 	$UI/VisitHint.visible = $UI/VisitButton.visible
 	$UI/Center/VBox/ResetBtn.visible = (
 		GameManager.load_failed
@@ -94,7 +95,7 @@ func _refresh_ui() -> void:
 			"world2_mission1": "Rincones para compartir",
 			"world3_mission1": "Una fiesta a la medida",
 			"world4_mission1": "Los encargos de la aldea",
-			"village_practice": "Tu visita a la aldea"
+			"village_home": "Tu aldea"
 		}
 		if GameManager.session.resume_scene_key in visits:
 			next_stop.text = "Continuar: " + visits[GameManager.session.resume_scene_key]

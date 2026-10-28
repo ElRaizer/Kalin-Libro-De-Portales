@@ -163,7 +163,7 @@ func _array_values(value: Variant) -> void:
 func _blocks_lifecycle() -> void:
 	await _load("world3_level1", {"layout_seed": 113})
 	var count: int = current_scene.challenges.size()
-	await _load("world3_level1", {"round": count, "layout_seed": 113})
+	await _load("world3_level1", PhraseExerciseFixture.recall_state(113, count))
 	current_scene.recall.set_mode(RecallPanel.Mode.BLOCKS, false)
 	var saved: Dictionary = current_scene.get_checkpoint_state()
 	await _load("world3_level1", saved)

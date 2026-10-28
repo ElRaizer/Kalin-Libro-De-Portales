@@ -53,7 +53,11 @@ static func _pool() -> Array[String]:
 
 
 static func install(
-	host: Node2D, recipients: Array[ExplorationSpot], residents: Array[String], seed_value: int
+	host: Node2D,
+	recipients: Array[ExplorationSpot],
+	residents: Array[String],
+	seed_value: int,
+	mission_layout: bool = false
 ) -> void:
 	var dialogue: VillageDialogue = VillageDialogue.new()
 	dialogue.name = "VillageDialogue"
@@ -65,7 +69,18 @@ static func install(
 	for index: int in range(recipients.size()):
 		recipients[index].z_index = 1
 		recipients[index].set_meta("village_resident", true)
-		_home(homes, recipients[index].position, residents[index], 1.0)
+		if residents[index] == "Kay":
+			install_water(recipients[index])
+		_home(
+			homes,
+			(
+				recipients[index].position - Vector2(0, 110)
+				if mission_layout
+				else recipients[index].position
+			),
+			residents[index],
+			0.48 if mission_layout else 1.0
+		)
 	var remaining: Array[String] = []
 	var pool: Array[String] = _pool()
 	for index: int in ReplayVariation.order(pool.size(), seed_value + 1717):
@@ -76,6 +91,8 @@ static func install(
 		recipients[0].position.lerp(recipients[1].position, 0.5),
 		recipients[1].position.lerp(recipients[2].position, 0.5)
 	]
+	if mission_layout:
+		positions.assign([Vector2(380, 450), Vector2(1040, 430), Vector2(1600, 450)])
 	for index: int in range(3):
 		var word: String = remaining[index]
 		var spot: ExplorationSpot = SPOT.instantiate() as ExplorationSpot
@@ -88,10 +105,18 @@ static func install(
 		dialogue.prepare(spot)
 		spot.spot_texture = host.get_node("/root/GameManager").get_visual_texture(word)
 		spot.sprite_offset = Vector2(0, -61)
-		spot.sprite_scale = Vector2.ONE
+		spot.sprite_scale = Vector2.ONE * (0.65 if mission_layout else 1.0)
 		spot.reach_radius = 130
 		host.get_node("Spots").add_child(spot)
-		_home(homes, spot.position, word, 0.8)
+		if word == "Kay":
+			install_water(spot)
+		_home(homes, spot.position, word, 0.42 if mission_layout else 0.8)
+
+
+static func install_water(spot: ExplorationSpot) -> void:
+	var habitat: VillageHabitat = VillageHabitat.new()
+	spot.add_child(habitat)
+	habitat.configure(spot.sprite)
 
 
 static func _home(parent: Node2D, ground: Vector2, word: String, factor: float) -> void:

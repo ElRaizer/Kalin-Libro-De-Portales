@@ -6,6 +6,7 @@ var answer_button: Button
 var _dragging: bool = false
 var _drag_offset: Vector2 = Vector2.ZERO
 var _placed: bool = false
+var _toolbar_requested: bool = false
 
 
 func _ready() -> void:
@@ -53,7 +54,7 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	toolbar.visible = can_answer()
+	toolbar.visible = _toolbar_requested and can_answer()
 	if toolbar.visible and not _placed:
 		toolbar.position = Vector2(
 			get_viewport().get_visible_rect().size.x - toolbar.size.x - 16, 76
@@ -82,7 +83,10 @@ func answer_current() -> void:
 func _input(event: InputEvent) -> void:
 	if not OS.is_debug_build():
 		return
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F4:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F3:
+		_toolbar_requested = not _toolbar_requested
+		get_viewport().set_input_as_handled()
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F4:
 		if (
 			not event.alt_pressed
 			and not event.ctrl_pressed

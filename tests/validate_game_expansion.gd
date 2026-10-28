@@ -5,6 +5,17 @@ extends "res://tests/validate_adventure.gd"
 var capture_folder: String = ""
 
 
+func _approach_spot(scene: Node, spot: ExplorationSpot) -> void:
+	scene._place_kalin(spot.position.x)
+	if scene.free_roam:
+		scene.kalin.position.y = clampf(
+			spot.position.y + 70, scene.roaming_floor.x, scene.roaming_floor.y - 10
+		)
+	_check(
+		scene._is_within_reach(spot), "La conversación se prepara dentro del alcance en ambos ejes"
+	)
+
+
 func _scene(key: String, state: Dictionary = {}) -> Node:
 	manager.session.scene_states[key] = state.duplicate(true)
 	change_scene_to_file(GameContent.SCENE_PATHS[key])
@@ -94,7 +105,7 @@ func _semantic_evidence() -> void:
 
 
 func _scaffolds() -> void:
-	var workshop: Node = await _scene("world3_level1", {"round": 7, "layout_seed": 51})
+	var workshop: Node = await _scene("world3_level1", PhraseExerciseFixture.recall_state(51, 6, 1))
 	workshop.mission_break.hide()
 	var panel: RecallPanel = workshop.recall
 	_check(
@@ -225,36 +236,31 @@ func _farewell() -> void:
 	_close_lines(farewell)
 	farewell._place_kalin(3500)
 	farewell.open_spot(farewell.get_node("Spots/Salida"))
-	_check(not farewell.assembly.visible, "El portal espera a que Kalin comparta los recuerdos")
+	_check(not farewell.memory_choice.visible, "El portal espera a la despedida")
 	_close_lines(farewell)
 	await _complete_farewell()
 	_check(
-		farewell.collected.size() == 3 and farewell.placed.size() == 3,
-		"La despedida se completa caminando y reuniendo las páginas"
+		farewell.collected.size() == 3 and not farewell.memory.is_empty(),
+		"La despedida permite una preferencia personal"
 	)
 	await _capture("05_portal_recuerdos")
-	farewell.placed.erase(2)
-	farewell._restore_pages()
+	var chosen: Dictionary = farewell.memory.duplicate(true)
+	var before: Dictionary = manager.session.learning_progress.duplicate(true)
 	farewell = await _resume("world5_farewell")
 	_check(
-		farewell.assembly.visible and farewell.placed.size() == 2,
-		"Continuar conserva el portal abierto con sus páginas parciales"
+		farewell.memory_choice.visible and farewell.memory == chosen,
+		"Continuar conserva el recuerdo y el portal abierto"
 	)
-	farewell._place_page("home", 2)
-	_check(farewell.placed.size() == 2, "Una página en un destino incorrecto no activa el portal")
-	farewell._select_page("friends")
-	var event: InputEventMouseButton = InputEventMouseButton.new()
-	event.button_index = MOUSE_BUTTON_LEFT
-	event.pressed = true
-	farewell._slot_input(event, 2)
+	farewell.memory_choice.choose(2)
+	_check(farewell.memory.kind != chosen.kind, "La preferencia puede cambiarse antes de confirmar")
 	_check(
-		farewell.placed.size() == 3 and farewell.get_node("UI/Assembly/Continue").visible,
-		"El clic alternativo al arrastre también completa el portal"
+		manager.session.learning_progress == before,
+		"Elegir o restaurar un recuerdo no acredita resultados educativos"
 	)
 	var ending: Node = load(GameContent.SCENE_PATHS.world5_story1).instantiate()
 	_check(
 		ending.beats.all(func(beat: StoryBeat): return beat.kind == StoryBeat.Kind.DIALOGO),
-		"La despedida narrativa deja de repetir cuestionarios"
+		"La despedida narrativa conserva su propósito sin repetir cuestionarios"
 	)
 	ending.free()
 
@@ -267,9 +273,9 @@ func _motion() -> void:
 		story._next_beat()
 	story._complete_text()
 	await create_timer(0.7).timeout
-	var actor: Button = story.actor_buttons.values()[0]
-	story._hop(actor)
-	(story._actor_tweens[actor] as Tween).custom_step(0.12)
+	var actor: Button = story.interaction.actor_buttons.values()[0]
+	story.interaction._hop(actor)
+	(story.interaction._actor_tweens[actor] as Tween).custom_step(0.12)
 	_check(
 		actor.position.is_equal_approx(actor.get_meta("home_position")),
 		"Reducir movimiento retira el salto de los animales de historia"
@@ -329,7 +335,7 @@ func _screens() -> void:
 				scene._show_round()
 				scene.mission_break.hide()
 			if key in ["world3_level1", "world4_level1"]:
-				scene.round_index = 7
+				scene.round_index = PhraseExerciseFixture.round_for(scene.round_plan, false, 1)
 				scene._show_round()
 				scene.mission_break.hide()
 				scene.recall.apply_compact(layout.compact)
@@ -379,7 +385,7 @@ func _save_version() -> void:
 
 
 func _keyboard_dock() -> void:
-	var scene: Node = await _scene("world3_level1", {"round": 9, "layout_seed": 70})
+	var scene: Node = await _scene("world3_level1", PhraseExerciseFixture.recall_state(70))
 	scene.mission_break.hide()
 	await process_frame
 	var layout: ScreenLayout = scene.get_node("ScreenLayout") as ScreenLayout

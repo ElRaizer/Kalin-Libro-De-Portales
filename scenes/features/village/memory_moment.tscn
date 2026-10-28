@@ -1,0 +1,44 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/features/village/memory_moment.gd" id="script"]
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://scenes/ui/shared/meaning_illustration.tscn" id="art"]
+
+[node name="MemoryMoment" type="Panel"]
+offset_right = 400.0
+offset_bottom = 264.0
+theme = ExtResource("theme")
+theme_type_variation = &"KalinCreamPanel"
+mouse_filter = 2
+script = ExtResource("script")
+
+[node name="Title" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 384.0
+offset_bottom = 48.0
+theme_override_colors/font_color = Color(0.09, 0.35, 0.34, 1)
+theme_override_font_sizes/font_size = 26
+horizontal_alignment = 1
+
+[node name="Stage" type="Node2D" parent="."]
+position = Vector2(200, 214)
+
+[node name="Actor" type="Sprite2D" parent="Stage"]
+position = Vector2(0, -65)
+z_index = 1
+
+[node name="Object" parent="Stage" instance=ExtResource("art")]
+offset_left = -90.0
+offset_top = -130.0
+offset_right = 90.0
+offset_bottom = 0.0
+
+[node name="Caption" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 222.0
+offset_right = 384.0
+offset_bottom = 256.0
+theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1

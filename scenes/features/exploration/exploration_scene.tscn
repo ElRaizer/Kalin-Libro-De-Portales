@@ -59,7 +59,7 @@ curve = SubResource("Curve_sendero")
 [node name="Spots" type="Node2D" parent="."]
 
 [node name="Kalin" type="Node2D" parent="."]
-z_index = 3
+z_index = 4
 position = Vector2(120, 600)
 
 [node name="Sprite" type="Sprite2D" parent="Kalin"]

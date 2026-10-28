@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://scenes/worlds/world4/mision_encargos_aldea.tscn" id="base"]
 [ext_resource type="Script" path="res://scripts/features/village/village_task.gd" id="task"]
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_habitada.svg" id="background"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_village_plaza.svg" id="background"]
 
 [sub_resource type="Resource" id="task_0"]
 script = ExtResource("task")
@@ -53,7 +53,9 @@ quality = "ki'"
 success = "¡Huele delicioso! La compartiremos entre todos."
 
 [node name="Mision_PrepararLaFiesta" instance=ExtResource("base")]
+mission_kind = "party"
 chapter_title = "Una fiesta a la medida"
+gathering_title = "¡La fiesta ya está lista!"
 completion_objective = "¡Listo! Vamos a compartir la comida →"
 next_scene_key = "world3_story1"
 tasks = Array[ExtResource("task")]([SubResource("task_0"), SubResource("task_1"), SubResource("task_2"), SubResource("task_3"), SubResource("task_4"), SubResource("task_5")])

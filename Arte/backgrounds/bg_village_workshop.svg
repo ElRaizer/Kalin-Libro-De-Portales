@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+<g id="tree"><path d="M-8 0L-5-100H6L10 0" fill="#8d7048"/><path d="M-5-62L-33-86M5-42L35-74" stroke="#8d7048" stroke-width="7"/><path d="M-66-100C-80-149-40-174-8-158C19-188 67-157 65-127C98-105 67-66 31-76C7-51-49-60-66-100" fill="#537f58"/><path d="M-56-120Q-24-154 11-142M23-118Q48-141 63-118" fill="none" stroke="#729565" stroke-width="7" stroke-linecap="round"/></g>
+<g id="shrub"><ellipse cy="-6" rx="42" ry="11" fill="#6b8755"/><path d="M-38-7C-50-37-17-47-6-30C10-56 39-35 37-16C57-5 34 5 18-2Z" fill="#87a96b"/><path d="M-18-14L-8-20M10-15L18-24" stroke="#b5c28a" stroke-width="4" stroke-linecap="round"/></g>
+<g id="pot"><path d="M-18-17H18L12 9H-12Z" fill="#b57346"/><path d="M-20-17H20" stroke="#dda66a" stroke-width="7" stroke-linecap="round"/><path d="M0-18V-46M0-26Q-25-47-19-54Q1-51 0-26M0-32Q20-57 26-48Q22-30 0-32" fill="#67995f" stroke="#67995f" stroke-width="3"/></g>
+<g id="flower"><path d="M0 1V-14M0-4L-7-9" stroke="#648659" stroke-width="3"/><circle cy="-17" r="7" fill="#e4aa62"/><circle cy="-17" r="3" fill="#ffe7a4"/></g>
+<g id="grass"><path d="M-9 0L-13-11M-3 0L-1-17M5 0L12-10" fill="none" stroke="#8da36a" stroke-width="3" stroke-linecap="round"/></g>
+<g id="stone"><ellipse cy="2" rx="16" ry="5" fill="#8a9871" opacity=".3"/><path d="M-15 0L-10-8L3-12L15-4L17 1Z" fill="#a4ad87"/><path d="M-10-7L2-10L11-5" fill="none" stroke="#c5c8a1" stroke-width="2"/></g>
+</defs>
+<path fill="#d9e5ba" d="M0 0H1280V720H0Z"/>
+<g fill="#fff2d0" opacity=".8"><path d="M106 105Q120 78 146 91Q175 64 199 97Q230 88 238 111H106Z"/><path d="M834 92Q846 62 871 79Q897 47 928 81Q954 72 971 101H834Z"/></g>
+<circle cx="640" cy="103" r="28" fill="#f5d782"/>
+<path d="M0 217Q180 129 355 195T705 178T1050 191T1280 170V400H0Z" fill="#a9c49a"/>
+<path d="M0 253Q148 193 302 225T620 215T937 226T1280 207V410H0Z" fill="#83a77b"/>
+<path d="M0 318Q220 279 429 315T832 304T1280 306V720H0Z" fill="#b8c58a"/>
+<path d="M0 432Q150 386 235 417T450 436T740 430T1040 422T1280 394V720H0Z" fill="#c4ce96"/>
+<path d="M-50 568Q190 533 381 559T754 561T1330 550" fill="none" stroke="#a6ad77" stroke-width="61"/>
+<path d="M-50 566Q190 531 381 557T754 559T1330 548" fill="none" stroke="#e2ca92" stroke-width="48"/>
+<path d="M162 559Q183 494 135 424M1103 558Q1085 486 1150 427" fill="none" stroke="#dfcc98" stroke-width="32" stroke-linecap="round"/>
+<path d="M296 328Q294 309 310 286M968 312L980 279" fill="none" stroke="#d5c28d" stroke-width="23" stroke-linecap="round"/>
+<g fill="#efe0b2" opacity=".8"><ellipse cx="184" cy="558" rx="24" ry="5"/><ellipse cx="398" cy="566" rx="18" ry="4"/><ellipse cx="641" cy="569" rx="25" ry="5"/><ellipse cx="901" cy="558" rx="19" ry="4"/><ellipse cx="1185" cy="555" rx="23" ry="5"/></g>
+<use href="#tree" x="27" y="306"/><use href="#tree" x="1254" y="315"/><use href="#tree" x="525" y="277" transform="translate(105 65) scale(.8)"/>
+<use href="#shrub" x="49" y="326"/><use href="#shrub" x="1220" y="317"/><use href="#shrub" x="565" y="306"/>
+<g opacity=".8"><use href="#grass" x="75" y="468"/><use href="#grass" x="200" y="494"/><use href="#grass" x="440" y="319"/><use href="#grass" x="850" y="316"/><use href="#grass" x="1194" y="498"/><use href="#grass" x="690" y="335"/></g>
+<use href="#pot" x="180" y="309"/><use href="#pot" x="1088" y="307"/>
+<use href="#stone" x="73" y="578"/><use href="#stone" x="1205" y="584"/>
+<path d="M260 346Q330 320 407 335L505 385" fill="none" stroke="#dcc18b" stroke-width="33"/>
+<path d="M299 298L468 298L490 319H277Z" fill="#ad7d48"/><path d="M296 318V340M470 318V340" stroke="#7f603c" stroke-width="10"/>
+<ellipse cx="382" cy="278" rx="29" ry="8" fill="#b09b5c"/><path d="M355 274Q359 238 383 235Q406 237 411 274" fill="none" stroke="#f1d27b" stroke-width="4"/>
+<g fill="#d9b977"><path d="M373 248L378 252L374 260L369 255Z"/><path d="M407 234L412 241L406 246L402 240Z"/><path d="M351 258L355 263L351 268L347 263Z"/></g>
+<g fill="#b78248" stroke="#8b643f" stroke-width="3"><path d="M1055 269H1130V294H1055Z"/><path d="M1065 243H1123V266H1065Z"/><path d="M1152 287H1216V309H1152Z"/></g>
+<g stroke="#ecc589" stroke-width="3"><path d="M1065 277H1122M1075 253H1115M1161 296H1207"/></g>
+<path d="M644 251V312M705 251V312M639 254H712" stroke="#90653d" stroke-width="8" fill="none"/><path d="M655 254V283M680 254V290M699 254V277" stroke="#ceb276" stroke-width="4"/><path d="M650 283H661M674 290H688M694 277H705" stroke="#ad7c48" stroke-width="8"/>
+<use href="#shrub" x="209" y="309"/><use href="#flower" x="64" y="357"/><use href="#flower" x="1215" y="462"/>
+<g fill="#a4b47c"><ellipse cx="580" cy="470" rx="42" ry="8"/><ellipse cx="827" cy="399" rx="34" ry="6"/></g>
+</svg>

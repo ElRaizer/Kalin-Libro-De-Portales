@@ -185,7 +185,7 @@ func _narrative() -> void:
 	choice.theme_type_variation = &"KalinPrimaryButton"
 	_mount(story)
 	var options: Array[String] = ["nojoch"]
-	story._build_choices(options)
+	story.interaction._build_choices(options)
 	_check(
 		choice.theme_type_variation == &"KalinPrimaryButton",
 		"Las opciones narrativas deben respetar una variante de tema personalizada"
@@ -385,7 +385,9 @@ func _rounds() -> void:
 					"El taller debe respetar el tamaño de icono del Inspector"
 				)
 			else:
-				for index: int in range(level.challenges.size()):
+				for index: int in range(level.round_plan.size()):
+					if not level.round_plan[index].guided:
+						continue
 					if not (
 						level.challenges[int(level.round_plan[index].challenge)].modifier.is_empty()
 					):

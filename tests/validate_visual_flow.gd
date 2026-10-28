@@ -62,16 +62,25 @@ func _run() -> void:
 	_check(
 		(
 			not level._awaiting_continue
-			and level.result_art.word == "mayak"
-			and level.result_art.quality == "mejen"
+			and not level.result_art.visible
+			and level.selected_noun == "mayak"
+			and level.selected_adjective == "mejen"
 		),
-		"El error debe mostrar lo creado y dejar corregirlo"
+		"El error conserva las tarjetas para corregir sin mostrar una creación"
 	)
 	var wanted: ExerciseEntry = level._current_challenge()
 	(level.noun_buttons[wanted.noun] as Button).pressed.emit()
 	(level.adjective_buttons[wanted.adjective] as Button).pressed.emit()
 	level.cast_button.pressed.emit()
-	_check(level._awaiting_continue, "Corregir las dos tarjetas debe permitir continuar")
+	_check(
+		(
+			level._awaiting_continue
+			and level.result_art.visible
+			and level.result_art.word == wanted.noun
+			and level.result_art.quality == wanted.adjective
+		),
+		"Confirmar las tarjetas correctas muestra la creación y permite continuar"
+	)
 	_check(
 		level.cast_button.position.is_equal_approx(Vector2(1024, 646)),
 		"La acción principal debe conservar su ubicación"
@@ -132,7 +141,9 @@ func _run() -> void:
 	_check(level._awaiting_continue, "Agua se sirve directamente")
 	level.serve_button.pressed.emit()
 	# Elegir una petición con tamaño, independientemente del orden del intento.
-	for request_index: int in range(level.challenges.size()):
+	for request_index: int in range(level.round_plan.size()):
+		if not level.round_plan[request_index].guided:
+			continue
 		if not level.challenges[int(level.round_plan[request_index].challenge)].modifier.is_empty():
 			level.round_index = request_index
 			level._show_round()
@@ -185,7 +196,7 @@ func _run() -> void:
 	while level.current_beat().kind != StoryBeat.Kind.EXPLORAR:
 		level._next_beat()
 	_check(
-		level._waiting_to_continue and level.vignette.visible,
+		level.can_continue() and level.vignette.visible,
 		"La situación debe animarse sola y dejar continuar al jugador"
 	)
 	_check(

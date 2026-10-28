@@ -50,17 +50,40 @@ func has_learned_word(maya_word: String) -> bool:
 
 
 func record_learning(
-	words: Array, phase: String, context: String, supported: bool = false, mistakes: int = 0
+	words: Array,
+	phase: String,
+	context: String,
+	supported: bool = false,
+	mistakes: int = 0,
+	evidence: Dictionary = {}
 ) -> void:
-	var result: Dictionary = session.record_learning(words, phase, context, supported, mistakes)
+	var result: Dictionary = session.record_learning(
+		words, phase, context, supported, mistakes, evidence
+	)
 	if not result.changed:
 		return
+	magic_points_changed.emit(session.magic_points)
 	if not result.learned.is_empty():
-		magic_points_changed.emit(session.magic_points)
 		for word: String in result.learned:
 			word_learned.emit(VocabularyCatalog.entry(word))
 	learning_changed.emit()
 	_save()
+
+
+func prepare_sharing_corner() -> bool:
+	if not session.prepare_sharing_corner():
+		return false
+	magic_points_changed.emit(session.magic_points)
+	_save()
+	return true
+
+
+func purchase_design(word: String) -> bool:
+	if not session.purchase_design(word):
+		return false
+	magic_points_changed.emit(session.magic_points)
+	_save()
+	return true
 
 
 func learning_caption(word: String) -> String:
@@ -73,16 +96,16 @@ func learning_detail(word: String) -> String:
 	var record: Dictionary = LearningProgress.sanitize(
 		session.learning_progress.get(VocabularyCatalog.resolve(word))
 	)
-	return (
-		"Con fragmentos o bloques: %d · Escrituras sin ayuda: %d"
-		% [record.reconstruction, record.writing]
-	)
+	return LearningProgress.detail(record)
 
 
 func mark_learning_support() -> void:
+	var changed: bool = session.mark_pending_challenge_help()
 	var scene: Node = get_tree().current_scene
 	if is_instance_valid(scene) and scene.has_method("mark_learning_help"):
 		scene.mark_learning_help()
+	if changed:
+		_save()
 
 
 func recovered_pages_text() -> String:
@@ -182,8 +205,8 @@ func retry_save() -> void:
 	_save()
 
 
-func visit_village() -> void:
-	_navigation().visit_village()
+func visit_home(return_key: String = "main_menu") -> void:
+	_navigation().visit_home(return_key)
 
 
 func start_walk(key: String, return_key: String) -> void:

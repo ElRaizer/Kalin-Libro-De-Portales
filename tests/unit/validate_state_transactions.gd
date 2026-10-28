@@ -119,7 +119,7 @@ func _navigation_failure() -> void:
 	session.complete_level(4, 1)
 	session.practice_return_key = "world1_level1"
 	Engine.print_error_messages = false
-	navigator.visit_village()
+	navigator.visit_home()
 	Engine.print_error_messages = previous_errors
 	check(
 		session.practice_return_key == "world1_level1",

@@ -1,8 +1,41 @@
 [gd_resource type="Resource" script_class="VisualCatalog" format=3 uid="uid://cctn1i82s0qd6"]
 
+[ext_resource type="Texture2D" uid="uid://cj2ynro4su5bu" path="res://Arte/aldea/uso/aak_consume.svg" id="aak_consume"]
+[ext_resource type="Texture2D" uid="uid://curmbdi4tbb1c" path="res://Arte/aldea/uso/aak_look.svg" id="aak_look"]
+[ext_resource type="Texture2D" uid="uid://bs2hpm85eb6ab" path="res://Arte/aldea/uso/aak_reach.svg" id="aak_reach"]
+[ext_resource type="Texture2D" uid="uid://pm3ecpnm5mic" path="res://Arte/aldea/uso/baalam_consume.svg" id="baalam_consume"]
+[ext_resource type="Texture2D" uid="uid://dopug880c2f7b" path="res://Arte/aldea/uso/baalam_look.svg" id="baalam_look"]
+[ext_resource type="Texture2D" uid="uid://52jn63wqyc2x" path="res://Arte/aldea/uso/baalam_reach.svg" id="baalam_reach"]
 [ext_resource type="PackedScene" path="res://scenes/ui/shared/reaction_badge.tscn" id="badge_scene"]
 [ext_resource type="Script" uid="uid://cydhhino66wur" path="res://scripts/ui/data/visual_catalog.gd" id="catalog"]
+[ext_resource type="Texture2D" uid="uid://doxovkh6swc2h" path="res://Arte/aldea/uso/chiich_consume.svg" id="chiich_consume"]
+[ext_resource type="Texture2D" uid="uid://c6vduvjcx8vby" path="res://Arte/aldea/uso/chiich_look.svg" id="chiich_look"]
+[ext_resource type="Texture2D" uid="uid://c0jngtfnqes7p" path="res://Arte/aldea/uso/chiich_reach.svg" id="chiich_reach"]
 [ext_resource type="Script" uid="uid://umpkq1ul2nps" path="res://scripts/ui/data/visual_entry.gd" id="entry"]
+[ext_resource type="Texture2D" uid="uid://ci2ys7supkvuv" path="res://Arte/aldea/uso/kaax_consume.svg" id="kaax_consume"]
+[ext_resource type="Texture2D" uid="uid://df6fj5701pim4" path="res://Arte/aldea/uso/kaax_look.svg" id="kaax_look"]
+[ext_resource type="Texture2D" uid="uid://o1g5fob60y77" path="res://Arte/aldea/uso/kaax_reach.svg" id="kaax_reach"]
+[ext_resource type="Texture2D" uid="uid://b03dbxspmub3h" path="res://Arte/aldea/uso/kay_consume.svg" id="kay_consume"]
+[ext_resource type="Texture2D" uid="uid://cynepqis3etyf" path="res://Arte/aldea/uso/kay_look.svg" id="kay_look"]
+[ext_resource type="Texture2D" uid="uid://i46vksymlctp" path="res://Arte/aldea/uso/kay_reach.svg" id="kay_reach"]
+[ext_resource type="Texture2D" uid="uid://cmyyjjijjx0lq" path="res://Arte/aldea/uso/keej_consume.svg" id="keej_consume"]
+[ext_resource type="Texture2D" uid="uid://c6rsoi2plg4df" path="res://Arte/aldea/uso/keej_look.svg" id="keej_look"]
+[ext_resource type="Texture2D" uid="uid://dpfporefubog1" path="res://Arte/aldea/uso/keej_reach.svg" id="keej_reach"]
+[ext_resource type="Texture2D" uid="uid://h08tqdqbmipu" path="res://Arte/aldea/uso/keek_en_consume.svg" id="keek_en_consume"]
+[ext_resource type="Texture2D" uid="uid://wc8q12onntfo" path="res://Arte/aldea/uso/keek_en_look.svg" id="keek_en_look"]
+[ext_resource type="Texture2D" uid="uid://bkqnug7budwg8" path="res://Arte/aldea/uso/keek_en_reach.svg" id="keek_en_reach"]
+[ext_resource type="Texture2D" uid="uid://bpbp4fr6wkbus" path="res://Arte/aldea/uso/kuuts_consume.svg" id="kuuts_consume"]
+[ext_resource type="Texture2D" uid="uid://fpl00vv27127" path="res://Arte/aldea/uso/kuuts_look.svg" id="kuuts_look"]
+[ext_resource type="Texture2D" uid="uid://cbl82l4d4hy6a" path="res://Arte/aldea/uso/kuuts_reach.svg" id="kuuts_reach"]
+[ext_resource type="Texture2D" uid="uid://1o61w8eby8rf" path="res://Arte/aldea/uso/maax_consume.svg" id="maax_consume"]
+[ext_resource type="Texture2D" uid="uid://k8eftkbnssas" path="res://Arte/aldea/uso/maax_look.svg" id="maax_look"]
+[ext_resource type="Texture2D" uid="uid://1v1cui1sk4g3" path="res://Arte/aldea/uso/maax_reach.svg" id="maax_reach"]
+[ext_resource type="Texture2D" uid="uid://nl3wnufdh5du" path="res://Arte/aldea/uso/miis_consume.svg" id="miis_consume"]
+[ext_resource type="Texture2D" uid="uid://c00h0yptl1prf" path="res://Arte/aldea/uso/miis_look.svg" id="miis_look"]
+[ext_resource type="Texture2D" uid="uid://dljaolf0q2mbe" path="res://Arte/aldea/uso/miis_reach.svg" id="miis_reach"]
+[ext_resource type="Texture2D" uid="uid://cx8g5boep7xfr" path="res://Arte/aldea/uso/peek_consume.svg" id="peek_consume"]
+[ext_resource type="Texture2D" uid="uid://6d7vme8j1nu2" path="res://Arte/aldea/uso/peek_look.svg" id="peek_look"]
+[ext_resource type="Texture2D" uid="uid://5kpfn8cbimv3" path="res://Arte/aldea/uso/peek_reach.svg" id="peek_reach"]
 [ext_resource type="PackedScene" path="res://scenes/ui/shared/sparkle.tscn" id="sparkle_scene"]
 [ext_resource type="Texture2D" uid="uid://dtdomwloivwbk" path="res://Arte/exploracion/prop_pagina.svg" id="texture_0"]
 [ext_resource type="Texture2D" uid="uid://blkdrohpd1u0d" path="res://Arte/ilustraciones/comida_ja.svg" id="texture_1"]
@@ -30,7 +63,6 @@
 [ext_resource type="Texture2D" uid="uid://dxvlhcgvwktu3" path="res://Arte/ilustraciones/objeto_chan.svg" id="texture_23"]
 [ext_resource type="Texture2D" uid="uid://2oc21m255ccn" path="res://Arte/ilustraciones/objeto_lak.svg" id="texture_24"]
 [ext_resource type="Texture2D" uid="uid://bd7cj6ydmp5fh" path="res://Arte/ilustraciones/objeto_mayak.svg" id="texture_25"]
-[ext_resource type="Texture2D" uid="uid://bcht30h8bkur3" path="res://Arte/ilustraciones/prop_peso.svg" id="texture_26"]
 [ext_resource type="Texture2D" uid="uid://bxdnmf5sb653" path="res://Arte/ilustraciones/silueta_chan.svg" id="texture_27"]
 [ext_resource type="Texture2D" uid="uid://lyk3k1koslak" path="res://Arte/ilustraciones/ui_casa.svg" id="texture_28"]
 [ext_resource type="Texture2D" uid="uid://qudy1rcxpn2w" path="res://Arte/ilustraciones/ui_corazon.svg" id="texture_29"]
@@ -78,6 +110,9 @@
 [ext_resource type="Texture2D" uid="uid://qldaegsumska" path="res://Arte/sprites/expresiones/kalin_pensando.svg" id="texture_71"]
 [ext_resource type="Texture2D" uid="uid://btn3uf2wll66a" path="res://Arte/sprites/kalin_normal.svg" id="texture_72"]
 [ext_resource type="Texture2D" uid="uid://cwb3nicmmdmyw" path="res://Arte/sprites/kalin_surprised.svg" id="texture_73"]
+[ext_resource type="Texture2D" uid="uid://ckf2s0qsqu22r" path="res://Arte/aldea/uso/tuul_consume.svg" id="tuul_consume"]
+[ext_resource type="Texture2D" uid="uid://dryit5c38mijw" path="res://Arte/aldea/uso/tuul_look.svg" id="tuul_look"]
+[ext_resource type="Texture2D" uid="uid://dbucscxnbxbtb" path="res://Arte/aldea/uso/tuul_reach.svg" id="tuul_reach"]
 
 [sub_resource type="Resource" id="entry_0"]
 script = ExtResource("entry")
@@ -88,11 +123,21 @@ texture = ExtResource("texture_9")
 script = ExtResource("entry")
 key = "Báalam"
 texture = ExtResource("texture_36")
+expressions = Dictionary[String, Texture2D]({
+"activity_consume": ExtResource("baalam_consume"),
+"activity_look": ExtResource("baalam_look"),
+"activity_reach": ExtResource("baalam_reach")
+})
 
 [sub_resource type="Resource" id="entry_2"]
 script = ExtResource("entry")
 key = "Ch'íich'"
 texture = ExtResource("texture_37")
+expressions = Dictionary[String, Texture2D]({
+"activity_consume": ExtResource("chiich_consume"),
+"activity_look": ExtResource("chiich_look"),
+"activity_reach": ExtResource("chiich_reach")
+})
 
 [sub_resource type="Resource" id="entry_3"]
 script = ExtResource("entry")
@@ -103,6 +148,11 @@ texture = ExtResource("texture_11")
 script = ExtResource("entry")
 key = "K'éek'en"
 texture = ExtResource("texture_41")
+expressions = Dictionary[String, Texture2D]({
+"activity_consume": ExtResource("keek_en_consume"),
+"activity_look": ExtResource("keek_en_look"),
+"activity_reach": ExtResource("keek_en_reach")
+})
 
 [sub_resource type="Resource" id="entry_5"]
 script = ExtResource("entry")
@@ -118,32 +168,60 @@ texture = ExtResource("texture_6")
 script = ExtResource("entry")
 key = "Kaax"
 texture = ExtResource("texture_38")
+expressions = Dictionary[String, Texture2D]({
+"activity_consume": ExtResource("kaax_consume"),
+"activity_look": ExtResource("kaax_look"),
+"activity_reach": ExtResource("kaax_reach")
+})
 
 [sub_resource type="Resource" id="entry_8"]
 script = ExtResource("entry")
 key = "Kay"
 texture = ExtResource("texture_39")
+expressions = Dictionary[String, Texture2D]({
+"activity_consume": ExtResource("kay_consume"),
+"activity_look": ExtResource("kay_look"),
+"activity_reach": ExtResource("kay_reach")
+})
 
 [sub_resource type="Resource" id="entry_9"]
 script = ExtResource("entry")
 key = "Kuuts"
 texture = ExtResource("texture_42")
+expressions = Dictionary[String, Texture2D]({
+"activity_consume": ExtResource("kuuts_consume"),
+"activity_look": ExtResource("kuuts_look"),
+"activity_reach": ExtResource("kuuts_reach")
+})
 
 [sub_resource type="Resource" id="entry_10"]
 script = ExtResource("entry")
 key = "Kéej"
 texture = ExtResource("texture_40")
+expressions = Dictionary[String, Texture2D]({
+"activity_consume": ExtResource("keej_consume"),
+"activity_look": ExtResource("keej_look"),
+"activity_reach": ExtResource("keej_reach")
+})
 
 [sub_resource type="Resource" id="entry_11"]
 script = ExtResource("entry")
 key = "Ma'ax"
 texture = ExtResource("texture_43")
+expressions = Dictionary[String, Texture2D]({
+"activity_consume": ExtResource("maax_consume"),
+"activity_look": ExtResource("maax_look"),
+"activity_reach": ExtResource("maax_reach")
+})
 
 [sub_resource type="Resource" id="entry_12"]
 script = ExtResource("entry")
 key = "Miis"
 texture = ExtResource("texture_44")
 expressions = Dictionary[String, Texture2D]({
+"activity_consume": ExtResource("miis_consume"),
+"activity_look": ExtResource("miis_look"),
+"activity_reach": ExtResource("miis_reach"),
 "cola": ExtResource("texture_53"),
 "duda": ExtResource("texture_54"),
 "feliz": ExtResource("texture_55"),
@@ -158,6 +236,9 @@ script = ExtResource("entry")
 key = "Peek'"
 texture = ExtResource("texture_45")
 expressions = Dictionary[String, Texture2D]({
+"activity_consume": ExtResource("peek_consume"),
+"activity_look": ExtResource("peek_look"),
+"activity_reach": ExtResource("peek_reach"),
 "cola": ExtResource("texture_60"),
 "duda": ExtResource("texture_61"),
 "feliz": ExtResource("texture_62"),
@@ -172,6 +253,11 @@ expressions = Dictionary[String, Texture2D]({
 script = ExtResource("entry")
 key = "T'u'ul"
 texture = ExtResource("texture_46")
+expressions = Dictionary[String, Texture2D]({
+"activity_consume": ExtResource("tuul_consume"),
+"activity_look": ExtResource("tuul_look"),
+"activity_reach": ExtResource("tuul_reach")
+})
 
 [sub_resource type="Resource" id="entry_15"]
 script = ExtResource("entry")
@@ -248,6 +334,9 @@ script = ExtResource("entry")
 key = "Áak"
 texture = ExtResource("texture_35")
 expressions = Dictionary[String, Texture2D]({
+"activity_consume": ExtResource("aak_consume"),
+"activity_look": ExtResource("aak_look"),
+"activity_reach": ExtResource("aak_reach"),
 "duda": ExtResource("texture_47"),
 "feliz": ExtResource("texture_48"),
 "neutro": ExtResource("texture_49"),
@@ -294,7 +383,6 @@ decorations = Dictionary[String, Texture2D]({
 "objeto_lak": ExtResource("texture_24"),
 "objeto_mayak": ExtResource("texture_25"),
 "page": ExtResource("texture_0"),
-"prop_peso": ExtResource("texture_26"),
 "silueta_chan": ExtResource("texture_27"),
 "ui_casa": ExtResource("texture_28"),
 "ui_corazon": ExtResource("texture_29"),

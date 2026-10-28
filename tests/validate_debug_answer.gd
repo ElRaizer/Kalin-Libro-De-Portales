@@ -44,16 +44,29 @@ func _run() -> void:
 
 
 func _exercises() -> void:
+	await _scene("world3_level1")
+	_check(
+		not debug_tool.toolbar.visible, "La interfaz debug empieza oculta y no tapa las acciones"
+	)
 	for key: String in ["world2_level1", "world3_level1", "world4_level1"]:
 		var exercise: Node = await _scene(key)
-		var count: int = (
-			exercise.objects.size() if key == "world2_level1" else exercise.challenges.size()
-		)
-		for round_number: int in [0, count, count + 1, count + 3]:
-			exercise = await _scene(key, {"round": round_number, "layout_seed": 420})
+		var plan: Array[Dictionary] = []
+		if key != "world2_level1":
+			plan.assign(exercise.round_plan)
+		var rounds: Array[int] = [0]
+		for offset: int in [0, 1, 3]:
+			rounds.append(
+				(
+					exercise.objects.size() + offset
+					if key == "world2_level1"
+					else PhraseExerciseFixture.round_for(exercise.round_plan, false, offset)
+				)
+			)
+		for round_number: int in rounds:
+			exercise = await _scene(key, {"round": round_number, "layout_seed": 420, "plan": plan})
 			exercise.mission_break.hide()
 			var mode: int = exercise.recall.mode
-			if key == "world3_level1" and round_number == count + 1:
+			if key == "world3_level1" and round_number == rounds[2]:
 				await _capture("debug_responder_bloques")
 			_check(debug_tool.can_answer(), "Debe ofrecer respuesta en " + key)
 			# También bloquea la entrada detrás del libro, que posee la pausa.
@@ -85,6 +98,11 @@ func _exercises() -> void:
 				"Dos pulsaciones no deben saltar la revisión del resultado"
 			)
 			_check(not debug_tool.can_answer(), "Debug espera al Continuar normal")
+	var toggle: InputEventKey = InputEventKey.new()
+	toggle.keycode = KEY_F3
+	toggle.pressed = true
+	root.push_input(toggle, true)
+	await process_frame
 	var portal: Node = await _scene("world5_level1")
 	for index: int in [0, 4]:
 		portal = await _scene("world5_level1", {"challenge": index, "layout_seed": 420})
@@ -163,7 +181,7 @@ func _stories() -> void:
 		for index: int in range(story.beats.size()):
 			story.auto_timer.stop()
 			story._complete_text()
-			for tween: Tween in story._actor_tweens.values().duplicate():
+			for tween: Tween in story.interaction._actor_tweens.values().duplicate():
 				if tween.is_valid():
 					tween.custom_step(2.0)
 			await process_frame
@@ -174,7 +192,7 @@ func _stories() -> void:
 						break
 					debug_tool.answer_current()
 				_check(
-					story._waiting_to_continue,
+					story.can_continue(),
 					"Debug resuelve la interacción narrativa %s:%d" % [key, index]
 				)
 				if kind not in checked:
@@ -197,8 +215,7 @@ func _farewell_answers() -> void:
 			"Debug encuentra la cortesía correcta aunque se barajen opciones"
 		)
 		_close_lines(farewell)
-	farewell.assembly.show()
-	for count: int in range(3):
-		debug_tool.answer_current()
-		_check(farewell.placed.size() == count + 1, "Cada pulsación coloca un recuerdo en su hueco")
-	_check(not debug_tool.can_answer(), "Tras colocar las páginas se espera la despedida normal")
+	farewell._open_memory_choice()
+	debug_tool.answer_current()
+	_check(farewell.memory.is_empty(), "Debug no decide la preferencia personal del niño")
+	_check(not debug_tool.can_answer(), "La elección de un recuerdo no tiene respuesta correcta")

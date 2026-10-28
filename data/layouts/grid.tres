@@ -5,7 +5,7 @@
 script = ExtResource("script")
 rectangles = {
 NodePath("UI/ArrivalButton"): Rect2(980, 632, 276, 72),
-NodePath("UI/DialoguePanel/ContinueButton"): Rect2(936, 134, 272, 66)
+NodePath("UI/DialoguePanel/ContinueButton"): Rect2(528, 126, 272, 60)
 }
 hidden = Array[NodePath]([])
 font_sizes = {}

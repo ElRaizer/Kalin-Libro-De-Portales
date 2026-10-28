@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c410igixn8urf"]
 
 [ext_resource type="PackedScene" path="res://scenes/ui/shared/meaning_illustration.tscn" id="art"]
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_habitada_portal.svg" id="background"]
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_village_plaza.svg" id="background"]
 [ext_resource type="PackedScene" path="res://scenes/features/exploration/exploration_scene.tscn" id="base"]
 [ext_resource type="Texture2D" uid="uid://bd7cj6ydmp5fh" path="res://Arte/ilustraciones/objeto_mayak.svg" id="bench"]
 [ext_resource type="PackedScene" path="res://scenes/features/spellbook/libro_hechizos.tscn" id="book"]
@@ -11,6 +11,18 @@
 [ext_resource type="PackedScene" path="res://scenes/features/exploration/exploration_spot.tscn" id="spot"]
 [ext_resource type="Script" uid="uid://dbkqq78fwom5o" path="res://scripts/features/village/village_task.gd" id="task"]
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="theme"]
+
+
+[ext_resource type="PackedScene" path="res://scenes/features/village/village_gathering.tscn" id="gathering"]
+
+
+[ext_resource type="Resource" path="res://data/layouts/village_mission.tres" id="mission_layout"]
+
+[sub_resource type="Curve2D" id="plaza_path"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 120, 600, 0, 0, 0, 0, 2400, 600)
+}
+point_count = 2
 
 [sub_resource type="Resource" id="task_0"]
 script = ExtResource("task")
@@ -61,17 +73,19 @@ success = "¡Ya podemos compartir la comida!"
 
 [node name="EncargosAldea" unique_id=522379239 instance=ExtResource("base")]
 script = ExtResource("script")
+free_roam = true
 tasks = Array[ExtResource("task")]([SubResource("task_0"), SubResource("task_1"), SubResource("task_2"), SubResource("task_3"), SubResource("task_4"), SubResource("task_5")])
 chapter_title = "Misión · Los encargos de la aldea"
 next_scene_key = "world5_level1"
 objective_text = "Habla con tus amigos, crea y entrega sus encargos."
-intro_lines = Array[String](["Antes de irme, ayudaré a mis amigos. Les preguntaré qué necesitan, crearé sus encargos en el taller y se los llevaré."])
+intro_lines = Array[String](["Preparemos una mesa común. Cada aporte se queda en la plaza. Puedo elegir el orden y tocar los accesos para ir directamente."])
 
 [node name="Terreno" parent="." index="1"]
+scale = Vector2(2, 1)
 texture = ExtResource("background")
 
 [node name="Workbench" parent="Spots" index="0" unique_id=1758949882 instance=ExtResource("spot")]
-position = Vector2(450, 600)
+position = Vector2(240, 600)
 prompt = "Crear en el taller"
 lines = Array[String](["Aquí crearé los encargos de mis amigos."])
 reach_radius = 175.0
@@ -79,31 +93,31 @@ spot_texture = ExtResource("bench")
 sprite_offset = Vector2(0, -65)
 
 [node name="Recipient0" parent="Spots" index="1" unique_id=1468021991 instance=ExtResource("spot")]
-position = Vector2(1120, 600)
+position = Vector2(700, 550)
 prompt = "Hablar / entregar"
 lines = Array[String](["¿Me ayudas con mi encargo?"])
 reach_radius = 175.0
 sprite_offset = Vector2(0, -65)
-sprite_scale = Vector2(1.35, 1.35)
+sprite_scale = Vector2(1.05, 1.05)
 
 [node name="Recipient1" parent="Spots" index="2" unique_id=2003822509 instance=ExtResource("spot")]
-position = Vector2(1980, 600)
+position = Vector2(1250, 590)
 prompt = "Hablar / entregar"
 lines = Array[String](["¿Me ayudas con mi encargo?"])
 reach_radius = 175.0
 sprite_offset = Vector2(0, -65)
-sprite_scale = Vector2(1.35, 1.35)
+sprite_scale = Vector2(1.05, 1.05)
 
 [node name="Recipient2" parent="Spots" index="3" unique_id=1443110497 instance=ExtResource("spot")]
-position = Vector2(2800, 600)
+position = Vector2(1800, 540)
 prompt = "Hablar / entregar"
 lines = Array[String](["¿Me ayudas con mi encargo?"])
 reach_radius = 175.0
 sprite_offset = Vector2(0, -65)
-sprite_scale = Vector2(1.35, 1.35)
+sprite_scale = Vector2(1.05, 1.05)
 
 [node name="Salida" parent="Spots" index="4" unique_id=306559844 instance=ExtResource("spot")]
-position = Vector2(3500, 590)
+position = Vector2(2300, 580)
 prompt = "Despertar el portal"
 lines = Array[String](["¡Todos recibieron sus encargos! Usaré las palabras del libro para despertar el portal."])
 reach_radius = 175.0
@@ -290,6 +304,7 @@ theme_type_variation = &"KalinPrimaryButton"
 text = "Crear y llevar ✦"
 
 [node name="Delivered" type="Node2D" parent="." index="8" unique_id=1955812620]
+z_index = 1
 
 [node name="Item0" parent="Delivered" index="0" unique_id=577993654 instance=ExtResource("art")]
 visible = false
@@ -386,3 +401,70 @@ offset_bottom = 488.0
 text = "Volver a la aldea"
 
 theme_type_variation = &"KalinSecondaryButton"
+
+[node name="VillageButton" type="Button" parent="UI"]
+offset_left = 610.0
+offset_top = 622.0
+offset_right = 928.0
+offset_bottom = 682.0
+theme = ExtResource("theme")
+theme_type_variation = &"KalinSecondaryButton"
+text = "Probar hechizos"
+
+
+[node name="VillageGathering" parent="UI" instance=ExtResource("gathering")]
+
+[node name="Sendero" parent="."]
+curve = SubResource("plaza_path")
+
+
+[node name="Direct" type="HBoxContainer" parent="UI"]
+offset_left = 16.0
+offset_top = 88.0
+offset_right = 1264.0
+offset_bottom = 148.0
+theme = ExtResource("theme")
+theme_override_constants/separation = 10
+
+[node name="Task0" type="Button" parent="UI/Direct"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+size_flags_horizontal = 3
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 22
+text = "Amigo 1"
+
+[node name="Task1" type="Button" parent="UI/Direct"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+size_flags_horizontal = 3
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 22
+text = "Amigo 2"
+
+[node name="Task2" type="Button" parent="UI/Direct"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+size_flags_horizontal = 3
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 22
+text = "Amigo 3"
+
+[node name="Create" type="Button" parent="UI/Direct"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+size_flags_horizontal = 3
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 22
+text = "Crear aporte"
+
+[node name="Exit" type="Button" parent="UI/Direct"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+size_flags_horizontal = 3
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 22
+text = "Continuar →"
+
+[node name="ScreenLayout" parent="."]
+profile = ExtResource("mission_layout")

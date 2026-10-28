@@ -141,7 +141,7 @@ func _run() -> void:
 	while current_scene.current_beat().kind != StoryBeat.Kind.EXPLORAR:
 		current_scene._next_beat()
 	_check(
-		current_scene._waiting_to_continue and not current_scene.continue_button.disabled,
+		current_scene.can_continue() and not current_scene.continue_button.disabled,
 		"La escena debe permitir continuar sin tocar la animación"
 	)
 	current_scene.vignette.seek_cycle(3.4)
@@ -154,7 +154,7 @@ func _run() -> void:
 	change_scene_to_file(GameContent.SCENE_PATHS.world2_story1)
 	await scene_changed
 	_check(
-		current_scene.beat_index == moment and current_scene._waiting_to_continue,
+		current_scene.beat_index == moment and current_scene.can_continue(),
 		"Un checkpoint visual debe seguir siendo navegable sin el botón antiguo"
 	)
 	if failures.is_empty():

@@ -236,28 +236,26 @@ func _stories() -> void:
 			story._complete_text()
 			await _settle()
 			if beat.kind in [StoryBeat.Kind.ADIVINAR, StoryBeat.Kind.CONOCER]:
-				for tween: Tween in story._actor_tweens.values().duplicate():
+				for tween: Tween in story.interaction._actor_tweens.values().duplicate():
 					if tween.is_valid():
 						tween.custom_step(2.0)
 				await _settle()
 				_check(
-					story.actor_buttons.size() % 2 == 0,
+					story.interaction.actor_buttons.size() % 2 == 0,
 					key + ": cantidad par de respuestas con animales"
 				)
-				for button: Button in story.actor_buttons.values():
+				for button: Button in story.interaction.actor_buttons.values():
 					_check(
 						button.is_visible_in_tree() and not button.disabled,
 						key + ": animales disponibles para responder"
 					)
 				await _shot("%s_animales_%d" % [key, index])
 				if beat.kind == StoryBeat.Kind.ADIVINAR:
-					(story.actor_buttons[beat.target_word] as Button).pressed.emit()
+					(story.interaction.actor_buttons[beat.target_word] as Button).pressed.emit()
 				else:
-					for button: Button in story.actor_buttons.values():
+					for button: Button in story.interaction.actor_buttons.values():
 						button.pressed.emit()
-				_check(
-					story._waiting_to_continue, key + ": interacción con animales permite continuar"
-				)
+				_check(story.can_continue(), key + ": interacción con animales permite continuar")
 				continue
 			_grid(story.choices_box, key)
 			_check(
@@ -277,6 +275,6 @@ func _stories() -> void:
 					option.get_global_rect().end.y <= story.actors_root.global_position.y - 8,
 					key + ": respuestas sin tapar los animales"
 				)
-			var answer: Button = story.choice_for_word(beat.target_word) as Button
+			var answer: Button = story.interaction.choice_for_word(beat.target_word) as Button
 			answer.pressed.emit()
-			_check(story._waiting_to_continue, key + ": respuesta correcta permite continuar")
+			_check(story.can_continue(), key + ": respuesta correcta permite continuar")

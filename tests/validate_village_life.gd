@@ -30,33 +30,29 @@ func _run() -> void:
 func _workspace() -> void:
 	for key: String in ["world3_level1", "world4_level1"]:
 		var scene: Node = await _scene(key)
-		var count: int = scene.challenges.size()
-		scene = await _scene(key, {"round": count, "layout_seed": 166})
+		var state: Dictionary = PhraseExerciseFixture.recall_state(166, scene.challenges.size())
+		scene = await _scene(key, state)
 		scene.mission_break.hide()
 		var panel: RecallPanel = scene.recall
-		var workspace: Control = panel.get_node("Margin/Content/Workspace") as Control
 		_check(
-			workspace.visible and not scene._attempt.supported,
-			"El espacio de composición aparece sin acreditar apoyo"
+			panel.first.is_visible_in_tree() and not scene._attempt.supported,
+			"La escritura comienza con su único campo editable y sin apoyo"
 		)
 		_check(
-			workspace.get_node("First").text == "…",
-			"El espacio vacío no muestra la palabra esperada"
+			panel.get_node_or_null("Margin/Content/Workspace") == null,
+			"No existe una segunda representación de la respuesta escrita"
 		)
 		panel.first.text = "ensayo"
 		panel.first.text_changed.emit("ensayo")
 		_check(
-			workspace.get_node("First").text == "ensayo" and not scene._attempt.supported,
-			"La mesa sólo refleja lo escrito, sin validar ni dar pistas"
+			panel.first.text == "ensayo" and not scene._attempt.supported,
+			"Escribir un borrador no revela contenido ni valida antes de confirmar"
 		)
-		workspace.get_node("First").pressed.emit()
+		panel.first.grab_focus()
 		_check(panel.first.has_focus(), "La tablilla permite volver a editar su palabra")
 		scene = await _resume(key)
 		panel = scene.recall
-		workspace = panel.get_node("Margin/Content/Workspace")
-		_check(
-			workspace.get_node("First").text == "ensayo", "El borrador vuelve a la mesa al reanudar"
-		)
+		_check(panel.first.text == "ensayo", "El borrador vuelve al campo editable al reanudar")
 		for physical_size: Vector2i in [
 			Vector2i(1920, 1080), Vector2i(1280, 720), Vector2i(640, 360)
 		]:
@@ -72,13 +68,14 @@ func _workspace() -> void:
 			await _capture("mesa_%s_%d" % [key, physical_size.x])
 		panel.advance_support()
 		panel.advance_support()
-		_check(not workspace.visible, "El modo de bloques conserva su espacio propio")
+		_check(not panel.first.visible, "El modo de bloques conserva su espacio propio")
 	root.size = Vector2i(1280, 720)
 
 
 func _physical_objects() -> void:
 	var scene: Node = await _scene("world3_mission1", {"intro_done": true})
 	var spot: ExplorationSpot = scene.get_node("Spots/Recipient0") as ExplorationSpot
+	spot.z_index = 1
 	var result: MeaningIllustration = scene.get_node("Delivered/Item0") as MeaningIllustration
 	result.show()
 	for word: String in VillageResidents.HOMES:
@@ -88,7 +85,7 @@ func _physical_objects() -> void:
 		spot.speaker = word
 		for quality: String in ["mejen", "nojoch"]:
 			result.show_meaning("k'áan", quality)
-			VillageUseMotion.attach(spot.sprite, result, "k'áan")
+			VillageUseMotion.attach(spot.sprite, result, "k'áan", word)
 			var motion: VillageUseMotion = result.get_node("UseMotion") as VillageUseMotion
 			motion._pose(0)
 			_check(
@@ -151,8 +148,7 @@ func _residents() -> void:
 		"world3_explore1",
 		"world2_mission1",
 		"world3_mission1",
-		"world4_mission1",
-		"village_practice"
+		"world4_mission1"
 	]:
 		var scene: Node = await _scene(key, {"intro_done": true, "layout_seed": 203})
 		var cast: Array = scene.get_checkpoint_state().residents.duplicate()
@@ -172,7 +168,7 @@ func _residents() -> void:
 		scene = await _resume(key)
 		_check(scene.get_checkpoint_state().residents == cast, "El reparto no cambia al reanudar")
 		var neighbour: ExplorationSpot = scene.get_node("Spots/Neighbour0") as ExplorationSpot
-		scene._place_kalin(neighbour.position.x)
+		_approach_spot(scene, neighbour)
 		scene.open_spot(neighbour)
 		manager.checkpoint(scene)
 		scene = await _resume(key)

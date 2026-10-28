@@ -38,6 +38,8 @@
 
 
 
+[ext_resource type="Texture2D" path="res://Arte/ui/request_stage.svg" id="request_stage"]
+
 [node name="Level4" type="Node2D" unique_id=1962404994]
 script = ExtResource("1_fat62")
 content = ExtResource("editor_17")
@@ -71,46 +73,80 @@ title = "Mundo 4 · Yo Quiero"
 [node name="RequestPanel" type="Panel" parent="UI" unique_id=1104352659]
 offset_left = 24.0
 offset_top = 86.0
-offset_right = 368.0
 offset_bottom = 622.0
 theme = ExtResource("4_qb5em")
-theme_type_variation = &"KalinRequestPanel"
 
-[node name="Content" type="VBoxContainer" parent="UI/RequestPanel" unique_id=1638669196]
+
+offset_right = 464.0
+
+theme_type_variation = &"KalinStagePanel"
+[node name="Backdrop" type="TextureRect" parent="UI/RequestPanel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("request_stage")
+expand_mode = 1
+mouse_filter = 2
+
+[node name="Content" type="Control" parent="UI/RequestPanel" unique_id=1638669196]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 18.0
-offset_top = 12.0
-offset_right = -18.0
-offset_bottom = -12.0
 theme_override_constants/separation = 8
 
+
+offset_left = 0.0
+
+offset_top = 0.0
+
+offset_right = 0.0
+
+offset_bottom = 0.0
 [node name="PhaseLabel" type="Label" parent="UI/RequestPanel/Content" unique_id=748856553]
-visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.48, 0.08, 1)
 theme_override_font_sizes/font_size = 15
 text = "FASE 1 · APRENDE"
 horizontal_alignment = 1
 
+
+visible = false
 [node name="AnimalSprite" type="TextureRect" parent="UI/RequestPanel/Content" unique_id=1506204657]
-custom_minimum_size = Vector2(0, 138)
-layout_mode = 2
 expand_mode = 3
 stretch_mode = 5
 
+
+layout_mode = 0
+
+custom_minimum_size = Vector2(0, 0)
+
+offset_left = 130.0
+
+offset_top = 160.0
+
+offset_right = 310.0
+
+offset_bottom = 344.0
 [node name="AnimalLabel" type="Label" parent="UI/RequestPanel/Content" unique_id=1457575819]
-layout_mode = 2
 theme_override_colors/font_color = Color(0.23, 0.12, 0.06, 1)
 theme_override_font_sizes/font_size = 24
 text = "Peek' · Perro"
 horizontal_alignment = 1
 
+
+layout_mode = 0
+
+custom_minimum_size = Vector2(0, 0)
+
+offset_left = 40.0
+
+offset_top = 345.0
+
+offset_right = 400.0
+
+offset_bottom = 382.0
 [node name="RequestLabel" type="Label" parent="UI/RequestPanel/Content" unique_id=411969183]
 visible = false
-custom_minimum_size = Vector2(0, 38)
-layout_mode = 2
 theme_override_colors/font_color = Color(0.28, 0.2, 0.12, 1)
 theme_override_font_sizes/font_size = 17
 text = "Perro pide agua"
@@ -118,28 +154,42 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="VisualClue" parent="UI/RequestPanel/Content" unique_id=2065262678 instance=ExtResource("editor_14")]
-custom_minimum_size = Vector2(0, 218)
-layout_mode = 2
 
+layout_mode = 0
+
+custom_minimum_size = Vector2(0, 0)
+
+offset_left = 26.0
+
+offset_top = 24.0
+
+offset_right = 414.0
+
+offset_bottom = 112.0
 [node name="SpellPanel" type="Panel" parent="UI" unique_id=226511988]
-offset_left = 388.0
-offset_top = 86.0
-offset_right = 1256.0
-offset_bottom = 242.0
 theme = ExtResource("4_qb5em")
 theme_type_variation = &"KalinSpellPanel"
 
+
+offset_left = 488.0
+
+offset_top = 450.0
+
+offset_right = 1256.0
+
+offset_bottom = 542.0
 [node name="Content" type="VBoxContainer" parent="UI/SpellPanel" unique_id=1754432108]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 18.0
-offset_top = 18.0
 offset_right = -18.0
-offset_bottom = -12.0
 theme_override_constants/separation = 10
 
+
+offset_top = 8.0
+
+offset_bottom = -8.0
 [node name="Heading" type="Label" parent="UI/SpellPanel/Content" unique_id=1854169503]
 visible = false
 layout_mode = 2
@@ -153,6 +203,8 @@ layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
 
+
+custom_minimum_size = Vector2(0, 64)
 [node name="Prefix" type="Label" parent="UI/SpellPanel/Content/Sentence" unique_id=569451649]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.24, 0.14, 0.08, 1)
@@ -182,13 +234,17 @@ vertical_alignment = 1
 accepted_kind = "modifier"
 
 [node name="ChoicesPanel" type="Panel" parent="UI" unique_id=980889088]
-offset_left = 388.0
-offset_top = 258.0
-offset_right = 1256.0
-offset_bottom = 542.0
 theme = ExtResource("4_qb5em")
 theme_type_variation = &"KalinChoicesPanel"
 
+
+offset_left = 488.0
+
+offset_top = 86.0
+
+offset_right = 1256.0
+
+offset_bottom = 438.0
 [node name="Content" type="VBoxContainer" parent="UI/ChoicesPanel" unique_id=2050732262]
 layout_mode = 0
 anchor_right = 1.0
@@ -386,21 +442,25 @@ word_value = "Jats'uts"
 word_kind = "modifier"
 
 [node name="FeedbackPanel" type="Panel" parent="UI" unique_id=2101980638]
-offset_left = 388.0
 offset_top = 558.0
 offset_right = 1256.0
 offset_bottom = 622.0
 theme = ExtResource("4_qb5em")
 theme_type_variation = &"KalinFeedbackPanel"
 
+
+offset_left = 488.0
 [node name="FeedbackLabel" type="Label" parent="UI/FeedbackPanel" unique_id=1069728747]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 offset_left = 14.0
 offset_top = 8.0
-offset_right = 1218.0
-offset_bottom = 58.0
-theme_override_colors/font_color = Color(0.35, 0.25, 0.15, 1)
-theme_override_font_sizes/font_size = 17
+offset_right = -14.0
+offset_bottom = -8.0
+theme_override_colors/font_color = Color(0.3, 0.21, 0.12, 1)
+theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3

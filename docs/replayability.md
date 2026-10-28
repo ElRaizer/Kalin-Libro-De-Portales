@@ -12,8 +12,11 @@ corta, el primer hechizo del taller conserva su ejemplo y comida empieza sin tam
   junto con `target_word`. Los recursos de autor no se modifican.
 - La casa mezcla por separado presentación y recuerdo. Cada fase cubre todos sus
   objetos. El taller y comida conservan el primer ejemplo y mezclan el resto de
-  la práctica; sus fases de recuerdo cubren todas las preguntas en otro orden y
-  no empiezan repitiendo la última de la práctica.
+  la práctica en episodios de hasta tres retos. Cada grupo va seguido del recuerdo
+  de esos mismos retos antes de introducir el siguiente grupo. Se mantiene una
+  presentación y una recuperación por reto; cuando hay más de uno, el recuerdo
+  no empieza repitiendo el último ejemplo. Los planes completos ya guardados
+  conservan su orden al continuar.
 - Cada paseo ofrece dos necesidades por personaje, con respuestas entre sus
   tres tarjetas. Las tres se eligen conjuntamente para evitar repetir objetos y
   se mezcla el orden de los personajes. Los encargos aplican el mismo criterio,
@@ -106,8 +109,10 @@ peticiones sin cualidad. No se utiliza el producto cartesiano de todas las palab
 Agua conserva su petición simple. Se excluyen cualidades como deliciosa para muebles,
 fuerte para alimentos y las combinaciones que requieren un contexto adicional.
 
-Taller y Yo quiero seleccionan seis peticiones al comenzar un intento, con práctica
-antes del recuerdo y doce rondas en total. El taller mantiene una silla fuerte como
+Taller y Yo quiero seleccionan seis peticiones al comenzar un intento. Cada petición
+conserva una recuperación; se añade presentación guiada cuando contiene palabras
+todavía no conocidas. El plan completo se guarda y no cambia al reanudar.
+El taller mantiene una silla fuerte como
 primer ejemplo y cubre las cinco cualidades; los demás ejemplos varían. Comida cubre
 sus cinco alimentos, incluyendo agua sin cualidad. Los tres encargos de cada visita
 usan objetos distintos. Las semillas y la evidencia de recuerdo distribuyen los
@@ -120,4 +125,4 @@ El reparto se realiza localmente, sin coordinación entre dispositivos.
 
 `validate_combinations.gd` comprueba 128 semillas por capítulo, cobertura de las 28
 combinaciones, 256 selecciones de aldea, opciones correctas, entrega de encargos,
-compatibilidad JSON, recapitulación y presentación móvil. Forma parte de las 25 suites.
+compatibilidad JSON, recapitulación y presentación móvil. Forma parte de las suites descubiertas por el ejecutor.

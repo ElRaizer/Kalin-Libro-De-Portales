@@ -2,7 +2,7 @@ extends RefCounted
 class_name SaveSchema
 
 ## Valida el contenedor antes de restaurar una sesión o aceptar un respaldo.
-const CURRENT_VERSION: int = 6
+const CURRENT_VERSION: int = 9
 const MAX_POINTS := 1000000000
 
 
@@ -41,6 +41,22 @@ static func validate(data: Dictionary) -> Dictionary:
 	for key: String in ["resume_scene_key", "practice_return_key"]:
 		if data.has(key) and data[key] is not String:
 			return {"_load_error": "El campo '%s' no contiene texto válido." % key}
+	if data.has("economy") and not MagicEconomy.valid_state(data.economy):
+		return {"_load_error": "La economía contiene objetivos o compras inválidos."}
+	if data.has("garden") and not GardenLayout.valid_state(data.garden):
+		return {"_load_error": "La parcela contiene muebles o apoyos inválidos."}
+	var economy: Dictionary = data.get("economy", MagicEconomy.empty_state())
+	var known: Dictionary = data.get("words_learned", {})
+	for field: String in ["awards", "designs"]:
+		for word: String in economy[field]:
+			if word not in known:
+				return {
+					"_load_error": "Un objetivo o diseño no corresponde a palabras presentadas."
+				}
+	if data.has("garden"):
+		for object: Dictionary in data.garden.objects:
+			if not MagicEconomy.can_build(economy, object.key, known):
+				return {"_load_error": "La parcela contiene un diseño sin abrir."}
 	return data.duplicate(true)
 
 

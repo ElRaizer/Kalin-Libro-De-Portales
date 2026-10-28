@@ -1,7 +1,8 @@
 param(
     [string]$GodotPath = $env:GODOT_BIN,
     [ValidateRange(10, 1800)][int]$TimeoutSeconds = 180,
-    [string]$Suite = ""
+    [string]$Suite = "",
+    [string]$CaptureDirectory = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -71,6 +72,11 @@ if ($Suite) {
     $tests = @($tests | Where-Object { [IO.Path]::GetFileNameWithoutExtension($_) -eq $Suite })
 }
 if ($tests.Count -eq 0) { throw "No se encontraron suites para '$Suite'." }
+if ($CaptureDirectory) {
+    if (-not $Suite) { throw 'Las capturas requieren seleccionar una suite con -Suite.' }
+    $CaptureDirectory = [IO.Path]::GetFullPath($CaptureDirectory)
+    New-Item -ItemType Directory -Force -Path $CaptureDirectory | Out-Null
+}
 
 $validationPreviousAppData = $env:APPDATA
 $validationPreviousLocalAppData = $env:LOCALAPPDATA
@@ -90,7 +96,12 @@ try {
     }
     foreach ($test in $tests) {
         Write-Host "Ejecutando $test con Godot $actualVersion"
-        $testResult = Invoke-Godot -Arguments @("--headless", "--path", ".", "--script", $test)
+        $testArguments = @("--path", ".", "--script", $test)
+        if ($CaptureDirectory) {
+            $testArguments += @("--", "--capture=$CaptureDirectory")
+        }
+        else { $testArguments = @('--headless') + $testArguments }
+        $testResult = Invoke-Godot -Arguments $testArguments
         $testOutput = $testResult.Output
         $testOutput | ForEach-Object { Write-Host $_ }
         if ($testResult.ExitCode -ne 0 -or ($testOutput -join "`n") -match "(?m)^(SCRIPT ERROR:|ERROR:|WARNING:)") {

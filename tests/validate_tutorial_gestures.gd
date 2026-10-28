@@ -295,7 +295,9 @@ func _cards_and_buttons() -> void:
 	scene._show_help()
 	_control_click(scene.guide, scene.serve_button, "Servir agua")
 	scene.round_index = 0
-	for index: int in range(scene.challenges.size()):
+	for index: int in range(scene.round_plan.size()):
+		if not scene.round_plan[index].guided:
+			continue
 		if scene.challenges[int(scene.round_plan[index].challenge)].modifier != "":
 			scene.round_index = index
 			break
@@ -334,11 +336,11 @@ func _story() -> void:
 	while story.current_beat().kind != StoryBeat.Kind.CONOCER:
 		story._next_beat()
 	story._complete_text()
-	for tween: Tween in story._actor_tweens.values().duplicate():
+	for tween: Tween in story.interaction._actor_tweens.values().duplicate():
 		if tween.is_valid():
 			tween.custom_step(2.0)
 	await process_frame
-	story._show_meet_hint()
+	story.interaction._show_meet_hint()
 	var target: Control = story.guide._point_target
 	_check(is_instance_valid(target), "Saludar a un personaje ofrece un clic")
 	if is_instance_valid(target):

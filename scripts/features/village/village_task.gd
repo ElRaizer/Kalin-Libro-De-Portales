@@ -4,6 +4,7 @@ class_name VillageTask
 
 @export var requester: String = ""
 @export_multiline var request: String = ""
+@export_multiline var purpose: String = ""
 @export var item: String = ""
 @export var quality: String = ""
 @export var success: String = ""
