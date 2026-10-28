@@ -87,6 +87,7 @@
 [ext_resource type="AudioStream" path="res://Audio/musica/musica_despedida.ogg" id="87_24x2s"]
 [ext_resource type="AudioStream" path="res://Audio/musica/musica_regreso_casa.ogg" id="88_ofmy0"]
 [ext_resource type="Script" path="res://scripts/ui/data/audio_catalog.gd" id="89_5ndh1"]
+[ext_resource type="AudioStream" path="res://Audio/musica/musica_tianguis.ogg" id="musica_tianguis"]
 
 [sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_kc4nk"]
 random_pitch = 1.08
@@ -202,7 +203,9 @@ scene_music = Dictionary[String, AudioStream]({
 "world5_cine1": ExtResource("88_ofmy0"),
 "world5_farewell": ExtResource("87_24x2s"),
 "world5_level1": ExtResource("86_5q8ce"),
-"world5_story1": ExtResource("87_24x2s")
+"world5_story1": ExtResource("87_24x2s"),
+"world4_level2": ExtResource("musica_tianguis"),
+"world4_story2": ExtResource("musica_tianguis")
 })
 scene_ambience = Dictionary[String, AudioStream]({
 "village_practice": ExtResource("68_p0nnr"),
@@ -235,7 +238,9 @@ scene_ambience = Dictionary[String, AudioStream]({
 "world5_cine1": ExtResource("69_m28hu"),
 "world5_farewell": ExtResource("72_etc4c"),
 "world5_level1": ExtResource("72_etc4c"),
-"world5_story1": ExtResource("72_etc4c")
+"world5_story1": ExtResource("72_etc4c"),
+"world4_level2": ExtResource("68_p0nnr"),
+"world4_story2": ExtResource("68_p0nnr")
 })
 effects = Dictionary[String, AudioStream]({
 "acierto": ExtResource("19_5yi16"),

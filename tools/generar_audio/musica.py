@@ -514,6 +514,28 @@ def cocina_aldea() -> np.ndarray:
 	return c.mezclar(-18)
 
 
+def tianguis() -> np.ndarray:
+	"""Mundo 4 · las piedras que cuentan: tianguis alegre con un motivo que sube
+	de uno en uno, como quien cuenta (Sol mayor, 104 bpm)."""
+	c = Cancion(104, 4, 16, 55, semilla=31)
+	c.pista("marimba", -0.1, 0.25, -17)
+	c.pista("ocarina", 0.25, 0.3, -20)
+	c.pista("jarana", -0.35, 0.2, -22)
+	c.pista("bajo", 0.0, 0.06, -20)
+	c.pista("sonaja", 0.45, 0.15, -15, "pico")
+	c.pista("tunkul", -0.2, 0.18, -9, "pico")
+	acordes = "1 4 5 1 1 4 2/5 1 6 4 5 1 4 1 2/5 1"
+	# Uno, dos, tres, cuatro, cinco: la escala sube grado por grado y responde.
+	melodia = "1:.5 2:.5 3:.5 4:.5 5:2 | 6:1 5:1 4:1 3:1 | 2:.5 3:.5 4:.5 5:.5 6:1 5:1 | 3:2 r:2 | 1:.5 2:.5 3:.5 4:.5 5:2 | 1':1 7:.5 6:.5 5:2 | 4:1 6:1 5:1 2:1 | 1:2 r:2 | 3:1 3:.5 4:.5 5:1 5:1 | 6:1 1':1 6:2 | 5:1 5:.5 4:.5 3:1 2:1 | 3:2 r:2 | 1:.5 2:.5 3:.5 4:.5 5:1 1':1 | 7:1 6:1 5:2 | 2:1 4:1 3:1 2:1 | 1:2 r:2"
+	c.melodia("marimba", s.marimba, melodia, 0, 1, tremolo=True)
+	c.melodia("ocarina", s.ocarina, "5:2 6:2 | 5:4 | 4:2 3:2 | 1:4 | 5:2 6:2 | 1':4 | 6:2 5:2 | 3:4", 8, 1, vel=0.5)
+	c.arpegio("jarana", s.pulsada, acordes, ARPEGIO_CORCHEAS, 0, 0, 0.4)
+	c.bajo("bajo", acordes, BAJO_UNO_TRES)
+	c.ritmo("sonaja", sacudida, "x.oxx.oxx.oxx.ox")
+	c.ritmo("tunkul", lambda v: s.tunkul(120.0, round(v, 2)), "x.......x.x.....|x.......x...o...")
+	return c.mezclar(-19)
+
+
 def camino_portal() -> np.ndarray:
 	"""Camino al portal: asombro y amanecer (Mi lidio, 80 bpm)."""
 	c = Cancion(80, 4, 16, 64, "lidio", reverb_t60=3.0, reverb_brillo=0.75, semilla=23)
@@ -618,6 +640,7 @@ PIEZAS = {
 	"musica_taller_adjetivos": taller_adjetivos,
 	"musica_milpa_manana": milpa_manana,
 	"musica_cocina_aldea": cocina_aldea,
+	"musica_tianguis": tianguis,
 	"musica_camino_portal": camino_portal,
 	"musica_portal_regreso": portal_regreso,
 	"musica_despedida": despedida,
