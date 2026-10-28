@@ -5,6 +5,8 @@
 [ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_portal_isla.svg" id="3_bg_portal_isla"]
 [ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_intro_portal.svg" id="4_bg_portal"]
 [ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_intro_room.svg" id="5_bg_cuarto"]
+[ext_resource type="Script" path="res://scripts/features/village/homecoming_memory.gd" id="memory_script"]
+[ext_resource type="PackedScene" path="res://scenes/features/village/memory_moment.tscn" id="memory_moment"]
 
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
@@ -67,3 +69,14 @@ beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2
 
 [node name="SkipButton" parent="UI" index="1"]
 text = "Saltar cinemática ▶▶"
+
+[node name="HomecomingMemory" type="Node" parent="."]
+script = ExtResource("memory_script")
+
+[node name="UI" type="CanvasLayer" parent="HomecomingMemory"]
+
+[node name="MemoryMoment" parent="HomecomingMemory/UI" instance=ExtResource("memory_moment")]
+offset_left = 742.0
+offset_top = 174.0
+offset_right = 1142.0
+offset_bottom = 438.0

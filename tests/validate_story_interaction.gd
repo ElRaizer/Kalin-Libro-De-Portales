@@ -24,10 +24,7 @@ func _release(story: Node) -> void:
 
 func _mount(key: String, fresh: bool = true) -> Node:
 	if fresh:
-		manager.session.scene_states.clear()
-		manager.session.words_learned.clear()
-		manager.session.completed_levels.clear()
-		manager.session.resume_scene_key = ""
+		manager.session.reset()
 	var story: Node = load(GameContent.SCENE_PATHS[key]).instantiate()
 	root.add_child(story)
 	current_scene = story
@@ -36,7 +33,7 @@ func _mount(key: String, fresh: bool = true) -> Node:
 
 func _ready_input(story: Node) -> void:
 	story._complete_text()
-	for tween: Tween in story._actor_tweens.values().duplicate():
+	for tween: Tween in story.interaction._actor_tweens.values().duplicate():
 		if tween.is_valid():
 			tween.custom_step(2.0)
 	await process_frame
@@ -57,20 +54,23 @@ func _assert_locked(story: Node, context: String) -> void:
 
 
 func _assert_ignored(story: Node, context: String) -> void:
-	var met: Array = story._met_words.duplicate()
-	var waiting: bool = story._waiting_to_continue
+	var met: Array = story.interaction.met_words.duplicate()
+	var waiting: bool = story.can_continue()
 	var bubble_visible: bool = story.word_bubble.visible
-	var bubble_text: String = story.bubble_maya.text
-	story._on_actor_pressed("")
-	story._on_actor_pressed("animal_inexistente")
+	var bubble_text: String = story.interaction.bubble_maya.text
+	story.interaction.press_actor("")
+	story.interaction.press_actor("animal_inexistente")
 	for slot: Control in story.actors_root.get_children():
 		(slot.get_node("Button") as Button).pressed.emit()
 	_check(
-		story._met_words == met and story._waiting_to_continue == waiting,
+		story.interaction.met_words == met and story.can_continue() == waiting,
 		context + ": una pulsación bloqueada no debe cambiar el progreso"
 	)
 	_check(
-		story.word_bubble.visible == bubble_visible and story.bubble_maya.text == bubble_text,
+		(
+			story.word_bubble.visible == bubble_visible
+			and story.interaction.bubble_maya.text == bubble_text
+		),
 		context + ": una pulsación bloqueada no debe abrir ni sustituir un diálogo"
 	)
 
@@ -102,7 +102,7 @@ func _run() -> void:
 					)
 			var beat: StoryBeat = story.current_beat()
 			if beat.kind in [StoryBeat.Kind.CONOCER, StoryBeat.Kind.ADIVINAR]:
-				for button: Button in story.actor_buttons.values():
+				for button: Button in story.interaction.actor_buttons.values():
 					_check(
 						(
 							not button.disabled
@@ -115,42 +115,42 @@ func _run() -> void:
 				_assert_ignored(story, context + ", en pausa")
 				paused = false
 				# Aunque un nodo se oculte después de activarse, el manejador lo rechaza.
-				var first: Button = story.actor_buttons.values()[0]
+				var first: Button = story.interaction.actor_buttons.values()[0]
 				first.get_parent().hide()
 				var bubble_before: bool = story.word_bubble.visible
 				first.pressed.emit()
 				_check(
-					story.word_bubble.visible == bubble_before and not story._waiting_to_continue,
+					story.word_bubble.visible == bubble_before and not story.can_continue(),
 					context + ": un animal oculto no debe responder"
 				)
 				first.get_parent().show()
-				story._refresh_actor_interaction()
+				story.interaction.refresh()
 				if beat.kind == StoryBeat.Kind.CONOCER:
 					for word: String in beat.actors:
-						var button: Button = story.actor_buttons[word]
+						var button: Button = story.interaction.actor_buttons[word]
 						button.pressed.emit()
 						_check(
-							word in story._met_words and button.disabled,
+							word in story.interaction.met_words and button.disabled,
 							context + ": saludar debe registrar al animal y desactivar su botón"
 						)
-						var count: int = story._met_words.size()
+						var count: int = story.interaction.met_words.size()
 						button.pressed.emit()
 						_check(
-							story._met_words.size() == count,
+							story.interaction.met_words.size() == count,
 							context + ": repetir el clic no debe repetir el saludo"
 						)
 				else:
 					for word: String in beat.actors:
 						if word != beat.target_word:
-							(story.actor_buttons[word] as Button).pressed.emit()
+							(story.interaction.actor_buttons[word] as Button).pressed.emit()
 							_check(
-								not story._waiting_to_continue,
+								not story.can_continue(),
 								context + ": un error debe permitir intentarlo de nuevo"
 							)
 							break
-					(story.actor_buttons[beat.target_word] as Button).pressed.emit()
+					(story.interaction.actor_buttons[beat.target_word] as Button).pressed.emit()
 				_check(
-					story._waiting_to_continue,
+					story.can_continue(),
 					context + ": completar la interacción debe permitir continuar"
 				)
 				_assert_locked(story, context + ", resuelto")
@@ -163,7 +163,9 @@ func _run() -> void:
 						not story.word_bubble.visible and story.choices_box.visible,
 						context + ": los saludos no deben tapar las respuestas"
 					)
-					var answer: Button = story.choice_for_word(beat.target_word) as Button
+					var answer: Button = (
+						story.interaction.choice_for_word(beat.target_word) as Button
+					)
 					answer.pressed.emit()
 					_assert_ignored(story, context + ", tras responder la pregunta")
 			if index + 1 < story.beats.size():
@@ -171,7 +173,7 @@ func _run() -> void:
 		# Una señal tardía al salir tampoco debe indexar un momento inexistente.
 		story._navigating = true
 		story.beat_index = story.beats.size()
-		story._refresh_actor_interaction()
+		story.interaction.refresh()
 		_assert_ignored(story, key + ", saliendo")
 		await _release(story)
 	await _check_entrance_gate()
@@ -200,7 +202,7 @@ func _check_entrance_gate() -> void:
 	_assert_ignored(story, "Durante la entrada de los animales")
 	await _ready_input(story)
 	_check(
-		not (story.actor_buttons["Peek'"] as Button).disabled,
+		not (story.interaction.actor_buttons["Peek'"] as Button).disabled,
 		"La interacción debe habilitarse cuando termina la entrada"
 	)
 	await _release(story)
@@ -211,27 +213,27 @@ func _check_resume() -> void:
 	while story.current_beat().kind != StoryBeat.Kind.CONOCER:
 		story._next_beat()
 	await _ready_input(story)
-	(story.actor_buttons["Peek'"] as Button).pressed.emit()
+	(story.interaction.actor_buttons["Peek'"] as Button).pressed.emit()
 	manager.checkpoint(story)
 	await _release(story)
 	story = _mount("world1_story1", false)
 	await _ready_input(story)
 	_check(
 		(
-			(story.actor_buttons["Peek'"] as Button).disabled
-			and not (story.actor_buttons["Miis"] as Button).disabled
+			(story.interaction.actor_buttons["Peek'"] as Button).disabled
+			and not (story.interaction.actor_buttons["Miis"] as Button).disabled
 		),
 		"Continuar debe conservar el saludo ya realizado y habilitar los pendientes"
 	)
 	for word: String in story.current_beat().actors:
-		if word not in story._met_words:
-			(story.actor_buttons[word] as Button).pressed.emit()
+		if word not in story.interaction.met_words:
+			(story.interaction.actor_buttons[word] as Button).pressed.emit()
 	manager.checkpoint(story)
 	await _release(story)
 	story = _mount("world1_story1", false)
 	await _ready_input(story)
 	_check(
-		story._waiting_to_continue and not story.continue_button.disabled,
+		story.can_continue() and not story.continue_button.disabled,
 		"Restaurar una presentación resuelta debe permitir seguir"
 	)
 	_assert_locked(story, "Presentación restaurada y resuelta")
@@ -247,19 +249,24 @@ func _check_resume() -> void:
 		await _ready_input(story)
 		var beat: StoryBeat = story.current_beat()
 		if expected_kind == StoryBeat.Kind.ADIVINAR:
-			(story.actor_buttons[beat.target_word] as Button).pressed.emit()
+			(story.interaction.actor_buttons[beat.target_word] as Button).pressed.emit()
 		else:
-			(story.choice_for_word(beat.target_word) as Button).pressed.emit()
+			(story.interaction.choice_for_word(beat.target_word) as Button).pressed.emit()
 		manager.checkpoint(story)
+		var evidence_before: Dictionary = manager.session.learning_progress.duplicate(true)
 		await _release(story)
 		story = _mount(key, false)
 		await _ready_input(story)
 		_check(
-			story._waiting_to_continue and not story.continue_button.disabled,
+			story.can_continue() and not story.continue_button.disabled,
 			key + ": una respuesta restaurada debe permitir continuar"
 		)
 		_assert_locked(story, key + ", respuesta restaurada")
 		_assert_ignored(story, key + ", respuesta restaurada")
+		_check(
+			manager.session.learning_progress == evidence_before,
+			"Restaurar la presentación de una respuesta no repite el reconocimiento"
+		)
 		await _release(story)
 
 
@@ -267,14 +274,14 @@ func _check_prompt_and_real_input() -> void:
 	var story: Node = _mount("world1_story1")
 	while story.current_beat().kind != StoryBeat.Kind.CONOCER:
 		story._next_beat()
-	for tween: Tween in story._actor_tweens.values().duplicate():
+	for tween: Tween in story.interaction._actor_tweens.values().duplicate():
 		if tween.is_valid():
 			tween.custom_step(2.0)
 	_assert_locked(story, "Mientras se escribe la consigna con los animales presentes")
 	_assert_ignored(story, "Mientras se escribe la consigna con los animales presentes")
 	story._text_tween.custom_step(100.0)
 	await process_frame
-	var dog: Button = story.actor_buttons["Peek'"]
+	var dog: Button = story.interaction.actor_buttons["Peek'"]
 	_check(not dog.disabled, "Terminar de escribir debe activar los animales sin exigir otro clic")
 	var point: Vector2 = dog.get_global_rect().get_center()
 	var motion: InputEventMouseMotion = InputEventMouseMotion.new()
@@ -287,13 +294,19 @@ func _check_prompt_and_real_input() -> void:
 		click.position = point
 		root.push_input(click, true)
 	await process_frame
-	_check("Peek'" in story._met_words, "Un clic real en un animal habilitado debe saludarlo")
-	(story.actor_buttons["Miis"] as Button).grab_focus()
+	_check(
+		"Peek'" in story.interaction.met_words,
+		"Un clic real en un animal habilitado debe saludarlo"
+	)
+	(story.interaction.actor_buttons["Miis"] as Button).grab_focus()
 	for pressed: bool in [true, false]:
 		var key: InputEventKey = InputEventKey.new()
 		key.keycode = KEY_SPACE
 		key.pressed = pressed
 		root.push_input(key, true)
 	await process_frame
-	_check("Miis" in story._met_words, "El teclado debe permitir saludar a un animal habilitado")
+	_check(
+		"Miis" in story.interaction.met_words,
+		"El teclado debe permitir saludar a un animal habilitado"
+	)
 	await _release(story)

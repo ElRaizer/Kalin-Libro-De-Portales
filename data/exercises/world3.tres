@@ -121,10 +121,10 @@ spanish = "comida"
 
 [resource]
 script = ExtResource("set")
-content_world = 3
 variation_policy = 1
 catalog_id = &"world3"
 authored_signature = "2d56ea815eaf8d314bedefe3add48ab30e1da8571966272bf5e7e1495f7b4e7a"
+content_world = 3
 nouns = Array[ExtResource("entry")]([SubResource("nouns_1"), SubResource("nouns_2"), SubResource("nouns_3"), SubResource("nouns_4"), SubResource("nouns_5")])
 adjectives = Array[ExtResource("entry")]([SubResource("adjectives_1"), SubResource("adjectives_2"), SubResource("adjectives_3"), SubResource("adjectives_4"), SubResource("adjectives_5")])
 challenges = Array[ExtResource("entry")]([SubResource("challenges_1"), SubResource("challenges_2"), SubResource("challenges_3"), SubResource("challenges_4"), SubResource("challenges_5"), SubResource("challenges_6")])

@@ -56,10 +56,10 @@ func _run() -> void:
 	await create_timer(0.9).timeout
 	await _shot("10_bloque")
 	current_scene.mission_break._continue()
-	current_scene.round_index = 7
+	current_scene.round_index = PhraseExerciseFixture.round_for(current_scene.round_plan, false, 1)
 	current_scene._show_round()
 	await _shot("11_apoyo_intermedio")
-	current_scene.round_index = 10
+	current_scene.round_index = PhraseExerciseFixture.round_for(current_scene.round_plan, false, 4)
 	current_scene._show_round()
 	await _shot("12_recuerdo")
 	await _scene("world4_level1", "13_comida")

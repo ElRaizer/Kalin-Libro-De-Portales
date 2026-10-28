@@ -41,23 +41,3 @@ static func previous(state: Dictionary, key: String, fallback: Variant = null) -
 
 static func replay_state(state: Dictionary) -> Dictionary:
 	return SceneStateSchema.replay_state(state)
-
-
-static func two_phase(
-	count: int, seed_value: int, fixed_first: bool, previous_plan: Array = []
-) -> Array[Dictionary]:
-	var previous_guided: Array = []
-	for item: Variant in previous_plan.slice(0, count):
-		previous_guided.append(item.get("challenge", -1) if item is Dictionary else item)
-	var guided: Array[int] = order(count, seed_value, previous_guided, fixed_first)
-	var recall: Array[int] = order(count, seed_value + 7919, guided)
-	if count > 1 and recall[0] == guided.back():
-		var swap: int = recall[0]
-		recall[0] = recall[1]
-		recall[1] = swap
-	var result: Array[Dictionary] = []
-	for index: int in guided:
-		result.append({"challenge": index, "guided": true})
-	for index: int in recall:
-		result.append({"challenge": index, "guided": false})
-	return result

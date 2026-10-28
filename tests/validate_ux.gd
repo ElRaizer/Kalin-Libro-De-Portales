@@ -302,7 +302,7 @@ func _phrases() -> void:
 	)
 	current_scene._on_cast_pressed()
 	_check(current_scene.round_index == 1, "Continuar adjetivos debe avanzar una ronda")
-	current_scene.round_index = current_scene.challenges.size()
+	current_scene.round_index = PhraseExerciseFixture.round_for(current_scene.round_plan, false)
 	current_scene._show_round()
 	for button: Button in current_scene.noun_buttons.values():
 		_check(
@@ -352,7 +352,9 @@ func _requests() -> void:
 	current_scene._on_serve_pressed()
 	_check(current_scene.round_index == 1, "Continuar una petición debe avanzar una ronda")
 	# El orden ya varía: localizar un reto con tamaño para comprobar esa regla.
-	for index: int in range(current_scene.challenges.size()):
+	for index: int in range(current_scene.round_plan.size()):
+		if not current_scene.round_plan[index].guided:
+			continue
 		if not (
 			current_scene
 			. challenges[int(current_scene.round_plan[index].challenge)]
@@ -381,7 +383,7 @@ func _requests() -> void:
 	)
 	current_scene._on_serve_pressed()
 	_check(current_scene._awaiting_continue, "La petición completa debe poder entregarse")
-	current_scene.round_index = current_scene.challenges.size()
+	current_scene.round_index = PhraseExerciseFixture.round_for(current_scene.round_plan, false)
 	current_scene._show_round()
 	for button: Button in current_scene.food_buttons.values():
 		_check(
@@ -417,16 +419,19 @@ func _story() -> void:
 	await _scene("world1_story1")
 	current_scene._next_beat()
 	current_scene._next_beat()
-	current_scene._meet_actor("Peek'")
+	current_scene.interaction._meet_actor("Peek'")
 	await _resume()
 	_check(
-		current_scene.beat_index == 2 and "Peek'" in current_scene._met_words,
+		current_scene.beat_index == 2 and "Peek'" in current_scene.interaction.met_words,
 		"La historia debe recordar el momento y los animales saludados"
 	)
 	current_scene._complete_text()
-	var target: Control = current_scene.actor_buttons["Miis"]
+	var target: Control = current_scene.interaction.actor_buttons["Miis"]
 	var entry_deadline: int = Time.get_ticks_msec() + 3000
-	while target in current_scene._entering_actors and Time.get_ticks_msec() < entry_deadline:
+	while (
+		target in current_scene.interaction._entering_actors
+		and Time.get_ticks_msec() < entry_deadline
+	):
 		await process_frame
 	await process_frame
 	_check(

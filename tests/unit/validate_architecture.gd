@@ -43,6 +43,7 @@ func _save_boundaries() -> void:
 		)
 	var session: GameSession = GameSession.new()
 	session.learn_word("Miis")
+	session.record_learning(["Miis"], "recall", "backup_fixture")
 	var before: Dictionary = session.snapshot()
 	check(
 		not session.restore({"version": SaveSchema.CURRENT_VERSION, "magic_points": {}}),
@@ -163,11 +164,11 @@ func _exercise_session() -> void:
 		exercise.build_plan(6, {})
 		check(
 			exercise.plan.size() == 12 and exercise.is_guided(),
-			"Ambos ejercicios empiezan con seis rondas guiadas"
+			"Ambos ejercicios conservan doce rondas y empiezan con práctica"
 		)
-		exercise.round_index = 6
+		exercise.round_index = PhraseExerciseFixture.round_for(exercise.plan, false)
 		exercise.begin_round("test", "Miis", ["Áak", "mejen"])
-		check(not exercise.is_guided(), "La segunda vuelta es de recuerdo")
+		check(not exercise.is_guided(), "Tras el primer grupo se pide recuerdo")
 		check(
 			(
 				exercise.submit(["Aak", "mejen"], ["Áak", "mejen"], true)
@@ -191,13 +192,13 @@ func _exercise_session() -> void:
 		check(
 			(
 				restored.plan == exercise.plan
-				and restored.round_index == 6
+				and restored.round_index == exercise.round_index
 				and restored.attempt.mistakes == 1
 			),
 			"JSON conserva plan, ronda e intento"
 		)
 		check(
-			exercise.advance() and exercise.round_index == 7,
+			exercise.advance() and exercise.round_index == restored.round_index + 1,
 			"Continuar avanza exactamente una ronda"
 		)
 
@@ -237,7 +238,7 @@ func _grid_without_nodes() -> void:
 func _checkpoints() -> void:
 	var story: Node = load("res://scenes/worlds/world1/historia1_isla_animales.tscn").instantiate()
 	var snapshot: Dictionary = story.get_checkpoint_state()
-	story._known_words.append("Miis")
+	story.interaction.known_words.append("Miis")
 	check(snapshot.known.is_empty(), "El snapshot de historia no cambia con su escena")
 	story.free()
 	var session: GameSession = GameSession.new()

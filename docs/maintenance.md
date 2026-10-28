@@ -103,3 +103,15 @@ formato, e importa y ejecuta las suites en Windows. Se activa en pull requests,
 publicaciones a `main`/`master` y de forma manual. Su ejecución remota debe
 comprobarse después de publicar estos cambios; crear el archivo no confirma que
 GitHub lo haya ejecutado.
+
+## Capturas con el mismo aislamiento
+
+El ejecutor permite usar renderer real y pasar el destino de las capturas a una
+suite que lo admita. Seleccionar una sola suite es obligatorio para este modo:
+
+```powershell
+.\tools\validate.ps1 -GodotPath $env:GODOT_BIN -Suite validate_product_improvements -CaptureDirectory "$PWD/.ui-review/implementation"
+```
+
+La partida y las preferencias siguen aisladas. Los errores y advertencias del motor
+mantienen los mismos criterios de fallo que la validación headless.

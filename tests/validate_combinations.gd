@@ -18,7 +18,7 @@ func _run() -> void:
 	await process_frame
 	if failures.is_empty():
 		print(
-			"OK: 28 combinaciones válidas, 37 pedidos, 1392 textos, planes variables, práctica previa, opciones y guardado vigente."
+			"OK: combinaciones y diálogos válidos, planes variables, práctica previa, opciones y guardado vigente."
 		)
 	else:
 		for failure: String in failures:
@@ -43,11 +43,18 @@ func _catalog() -> void:
 		_check(data.tasks.size() == 37, "Cada animal tiene textos para los 37 pedidos")
 		for id: String in CombinationCatalog.targets():
 			_check(
-				data.tasks.has(id) and data.tasks[id].size() == 3,
-				"Dos peticiones y un agradecimiento por combinación"
+				(
+					data.tasks.has(id)
+					and data.tasks[id].requests.size() == 3
+					and data.tasks[id].thanks.size() == 2
+				),
+				"Tres peticiones y dos agradecimientos por combinación"
 			)
 			if data.tasks.has(id):
-				for line: String in data.tasks[id]:
+				var lines: Array[String] = []
+				lines.append_array(data.tasks[id].requests)
+				lines.append_array(data.tasks[id].thanks)
+				for line: String in lines:
 					_check(
 						(
 							line.length() <= 160
@@ -149,7 +156,7 @@ func _runtime() -> void:
 			scene._show_round()
 			scene.mission_break.hide()
 			var task: ExerciseEntry = scene._current_challenge()
-			if world == 4 and round_value < 6:
+			if world == 4 and scene._is_guided_phase():
 				_check(
 					scene.modifier_buttons[task.modifier].visible,
 					"La cualidad correcta siempre queda disponible"
@@ -202,8 +209,7 @@ func _runtime() -> void:
 		"world3_explore1",
 		"world2_mission1",
 		"world3_mission1",
-		"world4_mission1",
-		"village_practice"
+		"world4_mission1"
 	]:
 		var scene: Node = await _scene(key, {"intro_done": true, "layout_seed": 817})
 		var state: Dictionary = scene.get_checkpoint_state()

@@ -55,7 +55,7 @@ Origen: [catálogo](../scripts/core/content/game_content.gd), [niveles del mundo
 | A05 | `K'éek'en` | Cerdo | Mundo 1 · nivel 2 | Confirmar ambos apóstrofos y acento; el juego representa un cerdo. |
 | A06 | `Ma'ax` | Mono | Mundo 1 · nivel 2 | Confirmar escritura y especie representada como mono. |
 | A07 | `Báalam` | Jaguar | Mundo 1 · nivel 3 | Confirmar acento y correspondencia con el jaguar ilustrado. |
-| A08 | `Kuuts` | Pavo de monte | Mundo 1 · nivel 3 | El juego precisa pavo de monte; distinguir del pavo doméstico. |
+| A08 | `Kuuts` | Pavo | Mundo 1 · nivel 3 | Etiqueta breve visible; el cotejo documental conserva el sentido de pavo de monte. |
 | A09 | `T'u'ul` | Conejo | Mundo 1 · nivel 3 | Confirmar posición de los dos apóstrofos y vocales. |
 | A10 | `Kay` | Pez | Mundo 1 · nivel 4 | Confirmar la grafía para pez y distinguir de otras palabras parecidas. |
 | A11 | `Ch'íich'` | Pájaro | Mundo 1 · nivel 4 | Confirmar glotalización, vocal larga y sentido genérico de pájaro. |
@@ -131,7 +131,7 @@ Intención del juego: **Me llamo …**. Confirmar la fórmula completa y si resu
 | P05 | `In k'aaba'e' K'éek'en` | Me llamo Cerdo | Activa |
 | P06 | `In k'aaba'e' Ma'ax` | Me llamo Mono | Activa |
 | P07 | `In k'aaba'e' Báalam` | Me llamo Jaguar | Activa |
-| P08 | `In k'aaba'e' Kuuts` | Me llamo Pavo de monte | Activa |
+| P08 | `In k'aaba'e' Kuuts` | Me llamo Pavo | Activa |
 | P09 | `In k'aaba'e' T'u'ul` | Me llamo Conejo | Activa |
 | P10 | `In k'aaba'e' Kay` | Me llamo Pez | Activa |
 | P11 | `In k'aaba'e' Ch'íich'` | Me llamo Pájaro | Activa |
@@ -173,7 +173,7 @@ Origen: [catálogo](../scripts/core/content/game_content.gd), [ejercicios del mu
 
 La misión selecciona tres de estos seis encargos, uno por personaje. Para que la consulta cubra todas las partidas se incluyen los seis. La escena de práctica hereda los mismos datos. Las peticiones siguientes **están en español**: no existe una traducción maya completa implementada para ellas. La respuesta del taller usa las fichas indicadas.
 
-Origen: [Misión](../scenes/worlds/world4/mision_encargos_aldea.tscn), [práctica libre](../scenes/worlds/world4/practica_encargos_aldea.tscn) y [control del taller](../scripts/features/village/village_mission.gd).
+Origen: [Misión](../scenes/worlds/world4/mision_encargos_aldea.tscn), [aldea persistente](../scenes/features/village/village_home.tscn) y [control del taller](../scripts/features/village/village_mission.gd).
 
 | ID | Personaje | Petición exacta en español | Respuesta en fichas |
 |---|---|---|---|
@@ -283,7 +283,7 @@ Estas filas explican dudas que ya motivaron cambios. No se deben enseñar como s
 | `ch'áak` = cama | `k'áan` = hamaca | Cambió el concepto y la ilustración. Confirmar hamaca; si se vuelve a incluir cama, solicitar su forma correcta por separado. |
 | `pak'al` = fruta | `ich` = fruta | Confirmar fruta genérica y distinguir las grafías y sentidos relacionados con plantío o naranja agria mencionados en el cotejo anterior. |
 | `jach'` = fuerte | `chich` = fuerte | Confirmar resistencia física de una silla; el cotejo previo distingue el intensificador JACH del adjetivo buscado. |
-| `Kuuts` = pavo | `Kuuts` = pavo de monte | Precisar especie y diferencia respecto al pavo doméstico. |
+| `Kuuts` = pavo | `Kuuts` = Pavo (etiqueta breve) | El cotejo conserva pavo de monte; precisar especie y diferencia respecto al pavo doméstico. |
 
 ### 5.3. Diferencias de presentación y tolerancia al escribir
 
@@ -444,7 +444,7 @@ Las presentaciones, peticiones y cortesías conservan material del prototipo y s
 
 ### Persistencia vigente
 
-El formato 6 guarda las claves canónicas de este catálogo. Los identificadores
+El formato 9 guarda las claves canónicas de este catálogo. Los identificadores
 retirados no se convierten en páginas nuevas ni se aceptan como respuestas.
 Los formatos anteriores requieren reiniciar la partida. Las correcciones de
 contenido no establecen equivalencias léxicas con las palabras sustituidas.

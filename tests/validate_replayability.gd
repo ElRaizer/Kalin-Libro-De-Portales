@@ -68,18 +68,21 @@ func _run() -> void:
 func _plans() -> void:
 	var seen: Dictionary = {}
 	for seed_value: int in range(1, 65):
-		var plan: Array[Dictionary] = ReplayVariation.two_phase(6, seed_value, true)
+		var exercise: PhraseExerciseSession = PhraseExerciseSession.new()
+		exercise.seed_value = seed_value
+		exercise.build_plan(6, {})
+		var plan: Array[Dictionary] = exercise.plan
 		_check(plan[0].challenge == 0 and plan[0].guided, "El primer ejemplo conserva su sencillez")
 		_check(
 			ExerciseProgress.restore_plan(plan, 6, []).size() == 12,
-			"Cada fase cubre todas las preguntas exactamente una vez"
+			"Práctica y recuerdo cubren todas las preguntas exactamente una vez"
 		)
 		_check(
-			plan[5].challenge != plan[6].challenge,
+			plan[2].challenge != plan[3].challenge and plan[8].challenge != plan[9].challenge,
 			"El recuerdo no repite inmediatamente el último ejemplo"
 		)
-		var next: Array[Dictionary] = ReplayVariation.two_phase(6, seed_value, true, plan)
-		_check(next.slice(0, 6) != plan.slice(0, 6), "Repetir cambia el orden posterior al ejemplo")
+		exercise.build_plan(6, {"previous_variation": {"plan": plan}})
+		_check(exercise.plan != plan, "Repetir cambia el orden posterior al ejemplo")
 		seen[str(plan)] = true
 	_check(seen.size() > 20, "Desde la primera partida hay órdenes diferentes")
 
@@ -262,12 +265,12 @@ func _questions() -> void:
 	while story.current_beat().kind != StoryBeat.Kind.ADIVINAR:
 		story._next_beat()
 	story._complete_text()
-	for tween: Tween in story._actor_tweens.values().duplicate():
+	for tween: Tween in story.interaction._actor_tweens.values().duplicate():
 		if tween.is_valid():
 			tween.custom_step(2.0)
 	await process_frame
-	story._on_actor_pressed(story.current_beat().target_word)
-	_check(story._waiting_to_continue, "La respuesta variable resuelve la interacción real")
+	story.interaction.press_actor(story.current_beat().target_word)
+	_check(story.can_continue(), "La respuesta variable resuelve la interacción real")
 	await _capture("animal_variable")
 
 

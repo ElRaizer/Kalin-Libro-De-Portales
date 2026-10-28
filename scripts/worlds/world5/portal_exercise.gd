@@ -72,7 +72,8 @@ func _ready() -> void:
 	next_button.pressed.connect(_advance_challenge)
 	recall.submitted.connect(func(): _on_option_pressed(recall.first.text))
 	recall.practice_requested.connect(_practice_with_cards)
-	recall.support_used.connect(mark_learning_help)
+	recall.support_used.connect(func() -> void: GameManager.checkpoint(self))
+	ExerciseRecallFlow.bind_support(recall, _attempt)
 	recall.answer_changed.connect(_on_scaffold_changed)
 	var state: Dictionary = GameManager.get_scene_state(self)
 	_attempt.restore(state.get("attempt"))
@@ -204,6 +205,7 @@ func _on_option_pressed(phrase: String) -> void:
 		return
 	var challenge: ExerciseEntry = challenges[challenge_index]
 	guide.stop()
+	var spelling_correction: bool = false
 	if recall.visible:
 		if phrase == recall.first.text and not recall.ready_to_submit():
 			return
@@ -211,6 +213,7 @@ func _on_option_pressed(phrase: String) -> void:
 		if match_result.correct:
 			phrase = match_result.word
 			_attempt.supported = _attempt.supported or match_result.supported
+			spelling_correction = match_result.supported
 	if phrase != challenge.correct:
 		_attempt.miss()
 		_mistakes += 1
@@ -265,12 +268,21 @@ func _on_option_pressed(phrase: String) -> void:
 		for word: String in VocabularyCatalog.learnable_keys():
 			if word in challenge.correct.split(" ", false):
 				evidence_words.append(word)
+	if recall.visible:
+		for word: String in evidence_words:
+			_attempt.observe(
+				word,
+				true,
+				spelling_correction,
+				ExerciseRecallFlow.phase(recall, challenge_index >= 4)
+			)
 	GameManager.record_learning(
 		evidence_words,
 		ExerciseRecallFlow.phase(recall, challenge_index >= 4),
 		_attempt.context,
 		_attempt.supported,
-		_attempt.mistakes
+		_attempt.mistakes,
+		_attempt.evidence(evidence_words)
 	)
 	_render_success(true)
 
@@ -361,11 +373,13 @@ func _show_help() -> void:
 	if _awaiting_continue:
 		guide.point_at(next_button)
 	elif not _resolving:
-		mark_learning_help()
 		if recall.visible:
+			_attempt.guidance = true
+			GameManager.checkpoint(self)
 			recall.explain_support()
 			guide.highlight(recall)
 			return
+		mark_learning_help()
 		if _help_stage < 2:
 			guide.highlight(challenge_art if _help_stage == 0 else options_box)
 			_help_stage += 1
@@ -395,7 +409,7 @@ func get_checkpoint_state() -> Dictionary:
 
 func mark_learning_help() -> void:
 	if not _resolving:
-		_attempt.supported = true
+		_attempt.use_content_help()
 		GameManager.checkpoint(self)
 
 

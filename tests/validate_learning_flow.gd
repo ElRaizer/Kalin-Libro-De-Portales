@@ -49,23 +49,23 @@ func _validate_story_runtime() -> void:
 		if beat.kind == StoryBeat.Kind.CONOCER and not checked_meet:
 			await _ready_actor_input(story)
 			checked_meet = true
-			if story._waiting_to_continue:
+			if story.can_continue():
 				failures.append("La historia avanza antes de conocer a los animales")
 			for word: String in beat.actors:
-				(story.actor_buttons[word] as Button).pressed.emit()
-			if not story._waiting_to_continue:
+				(story.interaction.actor_buttons[word] as Button).pressed.emit()
+			if not story.can_continue():
 				failures.append("Conocer a todos los animales no habilita el avance")
 		elif beat.kind == StoryBeat.Kind.ADIVINAR and not checked_guess:
 			await _ready_actor_input(story)
 			checked_guess = true
 			for word: String in beat.actors:
 				if word != beat.target_word:
-					(story.actor_buttons[word] as Button).pressed.emit()
+					(story.interaction.actor_buttons[word] as Button).pressed.emit()
 					break
-			if story._waiting_to_continue:
+			if story.can_continue():
 				failures.append("Una respuesta incorrecta no debe avanzar la historia")
-			(story.actor_buttons[beat.target_word] as Button).pressed.emit()
-			if not story._waiting_to_continue:
+			(story.interaction.actor_buttons[beat.target_word] as Button).pressed.emit()
+			if not story.can_continue():
 				failures.append("La respuesta correcta no habilita el avance")
 	if not checked_meet or not checked_guess:
 		failures.append("El primer capítulo debe incluir los momentos CONOCER y ADIVINAR")
@@ -75,7 +75,7 @@ func _validate_story_runtime() -> void:
 
 func _ready_actor_input(story: Node) -> void:
 	story._complete_text()
-	for tween: Tween in story._actor_tweens.values().duplicate():
+	for tween: Tween in story.interaction._actor_tweens.values().duplicate():
 		if tween.is_valid():
 			tween.custom_step(2.0)
 	await process_frame
@@ -180,10 +180,10 @@ func _validate_story_choice_runtime() -> void:
 		failures.append("ELEGIR no creó las opciones del capítulo 6")
 	else:
 		wrong_button.pressed.emit()
-		if story._waiting_to_continue or not wrong_button.text.contains("\n"):
+		if story.can_continue() or not wrong_button.text.contains("\n"):
 			failures.append("Un error en ELEGIR debe revelar el significado sin avanzar")
 		right_button.pressed.emit()
-		if not story._waiting_to_continue or story.choices_box.visible:
+		if not story.can_continue() or story.choices_box.visible:
 			failures.append(
 				"La respuesta correcta en ELEGIR no muestra la frase ni permite avanzar"
 			)

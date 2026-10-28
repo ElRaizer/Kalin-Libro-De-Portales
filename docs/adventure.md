@@ -16,9 +16,8 @@ pendientes hasta que el equipo pueda realizar esas sesiones.
 - Comida → historia 8 → encargos de la aldea → repaso del portal → **Los recuerdos
   que llevamos** → despedida narrativa → regreso a casa.
 - En la despedida se camina hasta tres amigos, se utilizan expresiones conocidas,
-  se reúnen recuerdos y se colocan tres páginas en el portal. Las páginas aceptan
-  arrastre o selección seguida de toque. El cierre narrativo conserva la emoción
-  de la despedida y deja de repetir los cuestionarios.
+  se elige un recuerdo personal y se confirma el cruce del portal. Su imagen vuelve
+  a verse al llegar a casa. No es un cuestionario ni acredita aprendizaje.
 - **Mis encargos** permite consultar las peticiones conocidas y seleccionar cuál
   preparar. No revela palabras mayas. Las entregas conservan una pose de uso:
   descansar en la hamaca, sentarse, utilizar una mesa o compartir comida.
@@ -44,7 +43,7 @@ selecciona una casilla y luego el destino. Las piezas colocadas conservan una re
 atenuada en su posición del banco: tocarla o arrastrar la pieza hasta el banco la devuelve.
 La vista previa queda centrada bajo el cursor. Deshacer restaura la última disposición. El guardado conserva
 las casillas vacías, el orden, el apoyo alcanzado y hasta veinte acciones de historial;
-los borradores anteriores con bloques se migran al nuevo tablero.
+los borradores del formato vigente conservan el tablero.
 
 Completar y Bloques registran reconstrucción apoyada. Las escrituras correctas
 sin ayuda se cuentan aparte; sólo recuperaciones en situaciones semánticas
@@ -55,10 +54,9 @@ Las teclas adicionales de acentos y cierre glotal conservan la decisión del aut
 
 ### Presentación y teléfonos
 
-- Durante la escritura de Taller y Yo quiero, una mesa de composición muestra sólo
-  el texto que el jugador ha escrito. Tocar sus tablillas vuelve al campo respectivo.
-  No consulta las respuestas ni valida palabras antes de confirmar; conserva la
-  dificultad y la evidencia de recuerdo. Con una palabra, la tablilla queda centrada.
+- Durante la escritura de Taller y Yo quiero sólo aparecen los campos editables,
+  sin repetir las respuestas en tablillas. Las tarjetas usan destinos contenidos;
+  confirmar el acierto muestra el resultado ilustrado.
 - Se mantiene el diseño 1280 × 720 con escalado proporcional. La ventana de
   escritorio admite 640 × 360 a 1920 × 1080. La exportación móvil usa horizontal
   con giro entre sus dos orientaciones horizontales.
@@ -111,7 +109,7 @@ Las teclas adicionales de acentos y cierre glotal conservan la decisión del aut
 
 ### Verificación
 
-`tools/validate.ps1` ejecuta 25 suites, incluidas `validate_game_expansion.gd`,
+`tools/validate.ps1` descubre las suites, incluidas `validate_game_expansion.gd`,
 `validate_debug_answer.gd`, `validate_block_interactions.gd`, `validate_village_life.gd`,
 `validate_village_dialogue.gd` y `validate_village_composition.gd`.
 La prueba nueva comprueba el contexto semántico, reconstrucción con arrastre,
@@ -121,22 +119,32 @@ La suite de vida en la aldea comprueba composición sin respuestas, restauració
 borrador, ajuste de las hamacas para los doce animales, casas, diversidad del reparto
 y persistencia de habitantes y conversaciones.
 La suite de diálogos recorre las 444 combinaciones de animal y pedido, comprueba
-las dos peticiones y su agradecimiento, los cinco saludos por animal, su rotación
-sin repeticiones y la reanudación de conversaciones con vecinos y amigos ayudados.
+las tres peticiones y dos agradecimientos, los quince saludos y diez comentarios tras
+ayudar por animal, sus ciclos sin repeticiones y la reanudación de conversaciones
+con vecinos y amigos ayudados, también desde el segundo globo.
 
 ### Voces de los habitantes
 
-`scripts/features/village/data/village_dialogue_catalog.gd` contiene 1.392 textos españoles escritos
-para la aldea: 888 peticiones, 444 agradecimientos y 60 saludos. Cada combinación
+`data/dialogue/village_dialogue.json` es la fuente revisada del catálogo generado
+`scripts/features/village/data/village_dialogue_catalog.gd`. Contiene 2.520 textos españoles
+para la aldea: 1.332 peticiones, 888 agradecimientos, 180 saludos y 120 comentarios tras
+ayudar. Cada combinación
 de los doce animales con los 37 tipos de pedido tiene sus propios textos. Se
 personalizan las copias de los encargos después de elegir sus destinatarios; sus
 respuestas mayas y sus cualidades no cambian. El caparazón sólo aparece en la voz
 de Áak. Kay prepara los muebles para sus visitas de la orilla.
 
-La variante de petición permanece estable durante la visita, también en las
-opciones, el diario, la mesa y los avisos de error. Los vecinos y los amigos ya
-ayudados rotan cinco saludos propios sin repetir hasta completar el banco. El
-saludo avanza al terminar la conversación, no al abrirla, y guarda su posición
+Cada pedido contiene los bancos `requests` (tres peticiones) y `thanks` (dos
+agradecimientos). Se eligen por separado según la semilla, la escena, el habitante
+y el pedido; las seis parejas de textos pueden aparecer. Ambas variantes permanecen
+estables durante la visita y al reanudar, también en las opciones, el diario, la
+mesa y los avisos de error. No se modifican las respuestas ni el formato de guardado.
+Los vecinos y los amigos ya
+ayudados rotan quince saludos propios sin repetir hasta completar el banco. Los
+amigos ayudados añaden uno de sus diez comentarios sobre la ayuda y su vida en
+la aldea, en lugar de repetir el agradecimiento de entrega. Los vecinos no usan
+estos comentarios, pues no han recibido un encargo. La conversación avanza su
+contador al terminar, no al abrirla, y guarda su posición
 en el campo opcional `greeting_visits` del formato vigente. Al continuar un diálogo
 abierto se conserva la frase y la línea, incluso tras saludar varias veces.
 
@@ -273,7 +281,7 @@ godot_console.exe --path . --script res://tests/validate_adventure_polish.gd -- 
 `tests/validate_tutorial_gestures.gd` comprueba clics sin desplazamiento, posiciones
 con cámara, trayectorias y caminos parciales de los cuatro tableros, los cuatro
 tipos de tarjeta, personajes y acciones de continuar. Admite el mismo argumento
-`--capture` y forma parte de las 25 suites de `tools/validate.ps1`.
+`--capture` y forma parte de las suites descubiertas por `tools/validate.ps1`.
 
 La variación desde la primera partida, los bancos de preguntas y los 48 tableros
 con solución comprobada se documentan en [docs/replayability.md](replayability.md).
@@ -288,3 +296,20 @@ con solución comprobada se documentan en [docs/replayability.md](replayability.
   instalada la plantilla de exportación de Godot 4.6.3.
 - Ampliar gradualmente las situaciones del mundo y las animaciones de uso de cada
   objeto. Las pantallas de práctica y recuerdo siguen disponibles.
+
+## Plaza y cierre vigentes
+
+Las misiones de Casa, Fiesta y Comida distribuyen los tres grupos en un recorrido
+con profundidad, cámara y espacio entre aportes. Su orden es elegible. El diario
+«Encargos y lugares» permite ir directamente mediante toque, Tab y Enter.
+Entregar coloca el objeto directamente en su lugar funcional, sin otro menú de
+ubicación. El acomodo libre pertenece al jardín. Mirada, alcance y uso tienen
+gestos específicos; la comida permanece en un recipiente apoyado, Ma’ax lleva
+su porción con una mano visible, las aves alcanzan el recipiente con el pico y
+Kay recibe desde el agua. La pausa y el movimiento reducido conservan los apoyos.
+
+El formato vigente 9 conserva el recuerdo personal, la economía y el jardín.
+El cierre permite elegir un momento en lugar de emparejar páginas idénticas.
+`memory` guarda una preferencia personal validada, y no afecta a los contadores de
+aprendizaje. Las comprobaciones y capturas de la continuación se registran en
+[el plan vigente](development_plan.md#continuación-autónoma-acordada-después-de-p1).

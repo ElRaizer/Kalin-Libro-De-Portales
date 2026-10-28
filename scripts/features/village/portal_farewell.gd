@@ -1,27 +1,24 @@
 extends ExplorationScene
 class_name PortalFarewell
 
-## El cierre se prepara caminando, usando las expresiones ya descubiertas y
-## devolviendo las páginas al portal. No añade vocabulario ni acredita recuerdo libre.
+## Cortesía y una preferencia personal que vuelve a verse en el libro al llegar a casa.
 @export var gifts: Array[ExerciseEntry] = []
 var collected: Array[int] = []
-var placed: Array[int] = []
+var memory: Dictionary = {}
+var _memories: Array[Dictionary] = []
 var choice_index: int = -1
-var selected_page: String = ""
 var _seed: int = 1
 var _choices: Array[String] = []
-const PAGE_KEYS: Array[String] = ["paths", "home", "friends"]
-const PAGE_NAMES: Array[String] = ["Caminos", "Hogar", "Amistad"]
 @onready var choices_panel: Panel = $UI/FarewellChoices
-@onready var assembly: Panel = $UI/Assembly
+@onready var memory_choice: MemoryChoice = $UI/MemoryChoice
 
 
 func _ready() -> void:
 	var saved: Dictionary = GameManager.get_scene_state(self)
 	collected = ExerciseProgress.restore_markers(saved.get("gifts"), 3)
-	placed = ExerciseProgress.restore_markers(saved.get("pages"), 3)
+	memory = VillageMemory.normalize(saved.get("memory"))
 	if collected.size() < 3:
-		placed.clear()
+		memory.clear()
 	_seed = int(saved.get("layout_seed", randi_range(1, 2000000000)))
 	for index: int in range(3):
 		var spot: ExplorationSpot = _friend(index)
@@ -39,22 +36,12 @@ func _ready() -> void:
 		($UI/FarewellChoices/Options.get_child(index) as Button).pressed.connect(
 			_choose.bind(index)
 		)
-	for index: int in range(3):
-		var card: DraggableWordButton = $UI/Assembly/Cards.get_child(index) as DraggableWordButton
-		card.pressed.connect(_select_page.bind(PAGE_KEYS[index]))
-		var slot: WordDropSlot = $UI/Assembly/Slots.get_child(index) as WordDropSlot
-		slot.word_dropped.connect(_place_page.bind(index))
-		slot.gui_input.connect(_slot_input.bind(index))
-	$UI/Assembly/Close.pressed.connect(func(): assembly.hide())
-	$UI/Assembly/Continue.pressed.connect(_finish)
+	memory_choice.selected.connect(_select_memory)
+	memory_choice.confirmed.connect(_finish)
+	memory_choice.closed.connect(func(): GameManager.checkpoint(self))
 	_update_counter()
-	_restore_pages()
-	if (
-		saved.get("assembly_open", false) == true
-		and collected.size() == 3
-		and not is_dialogue_open()
-	):
-		assembly.show()
+	if saved.get("memory_open", false) == true and collected.size() == 3 and not is_dialogue_open():
+		_open_memory_choice()
 	elif int(saved.get("farewell_choice", -1)) in range(3) and not is_dialogue_open():
 		_show_choices(int(saved.farewell_choice))
 
@@ -64,7 +51,7 @@ func _friend(index: int) -> ExplorationSpot:
 
 
 func _can_walk() -> bool:
-	return not choices_panel.visible and not assembly.visible and super._can_walk()
+	return not choices_panel.visible and not memory_choice.visible and super._can_walk()
 
 
 func open_spot(spot: ExplorationSpot) -> void:
@@ -77,9 +64,7 @@ func open_spot(spot: ExplorationSpot) -> void:
 			)
 		else:
 			_has_target = false
-			assembly.show()
-			_restore_pages()
-			($UI/Assembly/Cards.get_child(0) as Button).grab_focus()
+			_open_memory_choice()
 			GameManager.checkpoint(self)
 		return
 	var index: int = _friend_index(spot)
@@ -106,6 +91,8 @@ func _close_spot(spot: ExplorationSpot) -> void:
 
 
 func _show_choices(index: int) -> void:
+	if index not in range(3) or index in collected:
+		return
 	choice_index = index
 	_has_target = false
 	$UI/FarewellChoices/Request.text = gifts[index].request
@@ -155,22 +142,12 @@ func _choose(index: int) -> void:
 
 
 func debug_can_answer() -> bool:
-	return (
-		OS.is_debug_build()
-		and (choices_panel.visible and choice_index >= 0 or assembly.visible and placed.size() < 3)
-	)
+	return OS.is_debug_build() and choices_panel.visible and choice_index >= 0
 
 
 func debug_answer() -> void:
-	if not debug_can_answer():
-		return
-	if choices_panel.visible:
+	if debug_can_answer():
 		_choose(_choices.find(gifts[choice_index].correct))
-	else:
-		for index: int in range(3):
-			if index not in placed:
-				_place_page(PAGE_KEYS[index], index)
-				break
 
 
 func _close_choices() -> void:
@@ -180,55 +157,33 @@ func _close_choices() -> void:
 	GameManager.checkpoint(self)
 
 
-func _select_page(key: String) -> void:
-	selected_page = key
-	$UI/Assembly/Hint.text = (
-		"Ahora toca el lugar de la página «%s», o arrástrala hasta él."
-		% PAGE_NAMES[PAGE_KEYS.find(key)]
-	)
+func _open_memory_choice() -> void:
+	_place_kalin($Spots/Salida.position.x - 360)
+	camera.offset.x = 280
+	camera.reset_smoothing()
+	var visits: Array[Dictionary] = []
+	for world: int in [2, 3, 4]:
+		visits.append(GameManager.saved_scene_state("world%d_mission1" % world))
+	_memories = VillageMemory.options(visits, gifts)
+	memory_choice.open_choice(_memories, memory)
+	$UI/ObjectivePanel.hide()
+	controls_label.hide()
+	prompt_button.hide()
 
 
-func _slot_input(event: InputEvent, index: int) -> void:
-	if (
-		event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT
-		or event.is_action_pressed("ui_accept")
-	):
-		_place_page(selected_page, index)
-		get_viewport().set_input_as_handled()
-
-
-func _place_page(key: String, index: int) -> void:
-	if not assembly.visible or collected.size() < 3 or index in placed:
+func _select_memory(value: Dictionary) -> void:
+	if collected.size() != 3:
 		return
-	if key != PAGE_KEYS[index]:
-		$UI/Assembly/Hint.text = "Busca el mismo símbolo que aparece en la página."
-		return
-	placed.append(index)
-	selected_page = ""
-	_restore_pages()
+	memory = VillageMemory.normalize(value)
 	GameManager.checkpoint(self)
 
 
-func _restore_pages() -> void:
-	for index: int in range(3):
-		var card: Button = $UI/Assembly/Cards.get_child(index) as Button
-		card.disabled = index in placed
-		var slot: WordDropSlot = $UI/Assembly/Slots.get_child(index) as WordDropSlot
-		slot.text = "\n" + PAGE_NAMES[index]
-		slot.add_theme_color_override("font_color", Color("176b67"))
-		if index in placed:
-			PhraseBuilderController.mark_slot(slot, true)
-		else:
-			PhraseBuilderController.clear_mark(slot)
-	$UI/Assembly/Continue.visible = placed.size() == 3
-	$UI/Assembly/Hint.text = (
-		"¡El portal guarda lo que vivimos! Ya puedo despedirme."
-		if placed.size() == 3
-		else "Cada página guarda un recuerdo. Tócala y elige su lugar, o arrástrala."
-	)
-	$UI/Assembly/PortalVisual.set_energy(float(placed.size()) * 8.0 / 3.0)
-	if placed.size() == 3:
-		$UI/Assembly/Continue.grab_focus()
+func _process(delta: float) -> void:
+	super._process(delta)
+	$UI/ObjectivePanel.visible = not memory_choice.visible and not choices_panel.visible
+	controls_label.visible = not memory_choice.visible and not choices_panel.visible
+	if not memory_choice.visible:
+		camera.offset.x = 0
 
 
 func _update_counter() -> void:
@@ -236,9 +191,9 @@ func _update_counter() -> void:
 		return
 	counter_label.text = "Recuerdos compartidos: %d / 3" % collected.size()
 	objective_label.text = (
-		"Despídete de tus amigos y reúne las páginas."
+		"Despídete de tus amigos."
 		if collected.size() < 3
-		else "Lleva los recuerdos al portal →"
+		else "Elige un recuerdo para llevar a casa →"
 	)
 	for index: int in range(collected.size()):
 		_friend(collected[index]).sprite.texture = GameManager.get_visual_expression(
@@ -247,9 +202,9 @@ func _update_counter() -> void:
 
 
 func _finish() -> void:
-	if placed.size() != 3:
+	if collected.size() != 3 or memory.is_empty():
 		return
-	assembly.hide()
+	memory_choice.hide()
 	super._finish()
 
 
@@ -257,15 +212,15 @@ func close_transient_ui() -> bool:
 	if choices_panel.visible:
 		_close_choices()
 		return true
-	if assembly.visible:
-		assembly.hide()
+	if memory_choice.visible:
+		memory_choice.hide()
 		GameManager.checkpoint(self)
 		return true
 	return false
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if choices_panel.visible or assembly.visible:
+	if choices_panel.visible or memory_choice.visible:
 		return
 	super._unhandled_input(event)
 
@@ -273,15 +228,17 @@ func _unhandled_input(event: InputEvent) -> void:
 func _show_help() -> void:
 	if choices_panel.visible:
 		guide.point_at($UI/FarewellChoices/Options.get_child(0))
-	elif assembly.visible:
-		for index: int in range(3):
-			if index not in placed:
-				guide.drag_between(
-					$UI/Assembly/Cards.get_child(index), $UI/Assembly/Slots.get_child(index)
-				)
-				return
+	elif memory_choice.visible:
+		guide.highlight(memory_choice)
 	else:
 		super._show_help()
+
+
+func _show_orientation() -> void:
+	if memory_choice.visible or choices_panel.visible:
+		guide.stop()
+		return
+	super._show_orientation()
 
 
 func get_checkpoint_state() -> Dictionary:
@@ -289,9 +246,9 @@ func get_checkpoint_state() -> Dictionary:
 	saved.merge(
 		{
 			"gifts": collected.duplicate(),
-			"pages": placed.duplicate(),
+			"memory": memory.duplicate(true),
 			"farewell_choice": choice_index,
-			"assembly_open": assembly.visible,
+			"memory_open": memory_choice.visible,
 			"layout_seed": _seed
 		}
 	)

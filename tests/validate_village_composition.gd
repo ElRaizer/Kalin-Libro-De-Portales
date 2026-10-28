@@ -65,6 +65,7 @@ func _atlas() -> void:
 			floor_line.size = Vector2(284, 5)
 			host.add_child(floor_line)
 			var spot: ExplorationSpot = VillageResidents.SPOT.instantiate() as ExplorationSpot
+			spot.z_index = 1
 			spot.speaker = animal
 			spot.lines.assign([animal])
 			spot.spot_texture = manager.get_visual_expression(animal, "reaccion_feliz")
@@ -83,7 +84,7 @@ func _atlas() -> void:
 			results.add_child(art)
 			var parts: PackedStringArray = key.split("|")
 			art.show_meaning(parts[0], parts[1])
-			VillageUseMotion.attach(spot.sprite, art, parts[0])
+			VillageUseMotion.attach(spot.sprite, art, parts[0], spot.speaker)
 			var motion: VillageUseMotion = art.get_node("UseMotion") as VillageUseMotion
 			motion.set_process(false)
 			motion._pose(0)
@@ -157,7 +158,23 @@ func _check_composition(
 				motion.pond.visible and is_zero_approx(spot.sprite.rotation),
 				"Kay permanece junto al agua sin adoptar una pose terrestre"
 			)
-		if art.word in ["lak", "janal", "ja'", "ja'as", "ich", "K'úum"]:
+		if art.word == "ja'":
+			if spot.speaker == "Kay":
+				_check(
+					motion.pond.visible and not motion._vessel.visible,
+					"El agua de Kay llena el estanque sin vaso ni tapete"
+				)
+			else:
+				_check(
+					motion._stand.visible and motion._vessel.visible,
+					"El agua se sirve en un recipiente con soporte"
+				)
+		elif art.word in ["janal", "ja'as", "ich", "K'úum"] and spot.speaker != "Kay":
+			_check(
+				motion._stand.visible and motion._vessel.visible and motion._portion.visible,
+				"La comida está servida en un recipiente alcanzable"
+			)
+		elif art.word == "lak":
 			_check(art.world_mat.visible, "Los platos, alimentos y agua tienen un apoyo visible")
 		_check(not art.reference.visible, "No quedan copias de comparación en el escenario")
 	if art.quality == "Jats'uts":
@@ -176,8 +193,7 @@ func _world_scenes() -> void:
 		"world3_explore1",
 		"world2_mission1",
 		"world3_mission1",
-		"world4_mission1",
-		"village_practice"
+		"world4_mission1"
 	]:
 		var state: Dictionary = {
 			"intro_done": true, "layout_seed": 89, "residents": ["Miis", "Áak", "Kay"]
