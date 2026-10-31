@@ -56,18 +56,6 @@ static func entry(word: String) -> Dictionary:
 	return {} if key.is_empty() else GameContent.VOCABULARY[key].duplicate(true)
 
 
-## Sección del Libro de Hechizos: `book_category` cuando la entrada la define
-## (por ejemplo, los números) y, si no, el mundo donde se aprende.
-static func book_category(word: String) -> int:
-	var data: Dictionary = entry(word)
-	return int(data.get("book_category", data.get("world", 0)))
-
-
-## Valor numérico de una entrada que es un número (0 si no lo es).
-static func number_value(word: String) -> int:
-	return int(entry(word).get("value", 0))
-
-
 static func level_info(scene_key: String) -> Dictionary:
 	for level: Dictionary in GameContent.LEVEL_ORDER:
 		if level.scene_key == scene_key:

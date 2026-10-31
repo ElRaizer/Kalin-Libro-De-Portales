@@ -137,41 +137,6 @@
 	  "url": "https://www.mayas.uady.mx/diccionario/c_esp.html",
 	  "sense": "Calabaza"
 	},
-	"jun": {
-	  "status": "secondary_source_pending",
-	  "institution": "Omniglot (provisional; el diccionario web de la UADY no respondía el 2026-10-28)",
-	  "url": "https://www.omniglot.com/language/numbers/yucatecmaya.htm",
-	  "sense": "Uno",
-	  "classifiers": "https://historicalsyntax.org/hs/index.php/hs/article/view/219"
-	},
-	"ka'a": {
-	  "status": "secondary_source_pending",
-	  "institution": "Omniglot (provisional; el diccionario web de la UADY no respondía el 2026-10-28)",
-	  "url": "https://www.omniglot.com/language/numbers/yucatecmaya.htm",
-	  "sense": "Dos",
-	  "classifiers": "https://historicalsyntax.org/hs/index.php/hs/article/view/219"
-	},
-	"óox": {
-	  "status": "secondary_source_pending",
-	  "institution": "Omniglot (provisional; el diccionario web de la UADY no respondía el 2026-10-28)",
-	  "url": "https://www.omniglot.com/language/numbers/yucatecmaya.htm",
-	  "sense": "Tres",
-	  "classifiers": "https://historicalsyntax.org/hs/index.php/hs/article/view/219"
-	},
-	"kan": {
-	  "status": "secondary_source_pending",
-	  "institution": "Omniglot (provisional; el diccionario web de la UADY no respondía el 2026-10-28)",
-	  "url": "https://www.omniglot.com/language/numbers/yucatecmaya.htm",
-	  "sense": "Cuatro",
-	  "classifiers": "https://historicalsyntax.org/hs/index.php/hs/article/view/219"
-	},
-	"jo'o": {
-	  "status": "secondary_source_pending",
-	  "institution": "Omniglot (provisional; el diccionario web de la UADY no respondía el 2026-10-28)",
-	  "url": "https://www.omniglot.com/language/numbers/yucatecmaya.htm",
-	  "sense": "Cinco",
-	  "classifiers": "https://historicalsyntax.org/hs/index.php/hs/article/view/219"
-	},
 	"Kuuts": {
 	  "status": "lexical_cross_check",
 	  "institution": "UADY",

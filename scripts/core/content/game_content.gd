@@ -203,56 +203,6 @@ const VOCABULARY: Dictionary = {
 		"estructura": "In k'a'at K'úum",
 		"traduccion": "Yo quiero calabaza"
 	},
-	"jun":
-	{
-		"spanish": "Uno",
-		"world": 4,
-		"level": 2,
-		"value": 1,
-		"book_category": 6,
-		"estructura": "Juntúul Peek'",
-		"traduccion": "Un perro"
-	},
-	"ka'a":
-	{
-		"spanish": "Dos",
-		"world": 4,
-		"level": 2,
-		"value": 2,
-		"book_category": 6,
-		"estructura": "Ka'ap'éel lak",
-		"traduccion": "Dos platos"
-	},
-	"óox":
-	{
-		"spanish": "Tres",
-		"world": 4,
-		"level": 2,
-		"value": 3,
-		"book_category": 6,
-		"estructura": "Óoxp'éel ja'as",
-		"traduccion": "Tres plátanos"
-	},
-	"kan":
-	{
-		"spanish": "Cuatro",
-		"world": 4,
-		"level": 2,
-		"value": 4,
-		"book_category": 6,
-		"estructura": "Kantúul Miis",
-		"traduccion": "Cuatro gatos"
-	},
-	"jo'o":
-	{
-		"spanish": "Cinco",
-		"world": 4,
-		"level": 2,
-		"value": 5,
-		"book_category": 6,
-		"estructura": "Jo'op'éel K'úum",
-		"traduccion": "Cinco calabazas"
-	},
 	"Bix a beel":
 	{
 		"spanish": "Buenos días",

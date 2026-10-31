@@ -12,8 +12,6 @@
 
 [ext_resource type="Texture2D" path="res://Arte/ilustraciones/cortesia_gracias.svg" id="6_vklc6"]
 
-[ext_resource type="Texture2D" path="res://Arte/numeros/numero_3.svg" id="7_numeros"]
-
 [node name="Categories" type="HBoxContainer"]
 layout_mode = 0
 offset_left = 28.0
@@ -23,7 +21,7 @@ offset_bottom = 110.0
 theme_override_constants/separation = 8
 
 [node name="Category0" type="Button" parent="."]
-custom_minimum_size = Vector2(154, 44)
+custom_minimum_size = Vector2(183, 44)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_constants/icon_max_width = 32
@@ -34,7 +32,7 @@ icon = ExtResource("1_aleg0")
 expand_icon = true
 
 [node name="Category1" type="Button" parent="."]
-custom_minimum_size = Vector2(154, 44)
+custom_minimum_size = Vector2(183, 44)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_constants/icon_max_width = 32
@@ -45,7 +43,7 @@ icon = ExtResource("2_y8qk7")
 expand_icon = true
 
 [node name="Category2" type="Button" parent="."]
-custom_minimum_size = Vector2(154, 44)
+custom_minimum_size = Vector2(183, 44)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_constants/icon_max_width = 32
@@ -56,7 +54,7 @@ icon = ExtResource("3_5lsnv")
 expand_icon = true
 
 [node name="Category3" type="Button" parent="."]
-custom_minimum_size = Vector2(154, 44)
+custom_minimum_size = Vector2(183, 44)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_constants/icon_max_width = 32
@@ -67,7 +65,7 @@ icon = ExtResource("4_orn0j")
 expand_icon = true
 
 [node name="Category4" type="Button" parent="."]
-custom_minimum_size = Vector2(154, 44)
+custom_minimum_size = Vector2(183, 44)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_constants/icon_max_width = 32
@@ -78,7 +76,7 @@ icon = ExtResource("5_4rvuc")
 expand_icon = true
 
 [node name="Category5" type="Button" parent="."]
-custom_minimum_size = Vector2(154, 44)
+custom_minimum_size = Vector2(183, 44)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_constants/icon_max_width = 32
@@ -86,15 +84,4 @@ theme_override_font_sizes/font_size = 18
 toggle_mode = true
 text = "Cortesía"
 icon = ExtResource("6_vklc6")
-expand_icon = true
-
-[node name="Category6" type="Button" parent="."]
-custom_minimum_size = Vector2(154, 44)
-layout_mode = 2
-theme_type_variation = &"KalinSecondaryButton"
-theme_override_constants/icon_max_width = 32
-theme_override_font_sizes/font_size = 18
-toggle_mode = true
-text = "Números"
-icon = ExtResource("7_numeros")
 expand_icon = true
