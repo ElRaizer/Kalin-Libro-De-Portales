@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ScreenLayoutProfile" format=3]
+[ext_resource type="Script" path="res://scripts/ui/data/screen_layout_profile.gd" id="script"]
+[resource]
+script = ExtResource("script")
+rectangles = {
+NodePath("UI/Controls/Title"): Rect2(20, 10, 610, 48),
+NodePath("UI/Controls/Book"): Rect2(680, 8, 180, 56),
+NodePath("UI/Controls/Map"): Rect2(875, 8, 180, 56),
+NodePath("UI/Controls/Return"): Rect2(1070, 8, 190, 56),
+NodePath("UI/Controls/Hint"): Rect2(24, 612, 850, 95),
+NodePath("UI/Controls/Context"): Rect2(910, 638, 350, 64)
+}
+font_sizes = {NodePath("UI/Controls/Title"): 24}
+minimum_body_font = 26

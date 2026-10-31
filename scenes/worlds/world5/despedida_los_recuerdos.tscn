@@ -7,13 +7,9 @@
 [ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_aldea_habitada_portal.svg" id="background"]
 [ext_resource type="Texture2D" path="res://Arte/exploracion/portal_aldea.svg" id="exit"]
 [ext_resource type="PackedScene" path="res://scenes/features/spellbook/libro_hechizos.tscn" id="book"]
-[ext_resource type="PackedScene" path="res://scenes/ui/shared/portal_visual.tscn" id="portal"]
-[ext_resource type="PackedScene" path="res://scenes/features/exercises/word_drop_slot.tscn" id="slot"]
-[ext_resource type="Script" path="res://scripts/features/exercises/draggable_word_button.gd" id="draggable"]
 [ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="theme"]
-[ext_resource type="Texture2D" path="res://Arte/ilustraciones/recuerdo_caminos.svg" id="paths"]
-[ext_resource type="Texture2D" path="res://Arte/ilustraciones/recuerdo_hogar.svg" id="home"]
-[ext_resource type="Texture2D" path="res://Arte/ilustraciones/recuerdo_amistad.svg" id="friends"]
+
+[ext_resource type="PackedScene" path="res://scenes/features/village/memory_choice.tscn" id="memory"]
 
 [sub_resource type="Resource" id="gift0"]
 script = ExtResource("entry")
@@ -41,10 +37,11 @@ options = Array[String](["Bix a beel", "Yuum bo'otik", "Ka xi'ik tech jats'uts",
 
 [node name="DespedidaJugable" instance=ExtResource("base")]
 script = ExtResource("script")
+free_roam = true
 chapter_title = "Los recuerdos que llevamos"
 next_scene_key = "world5_story1"
-objective_text = "Despídete de tus amigos y reúne las páginas."
-intro_lines = Array[String](["El portal ya tiene luz. Antes de partir, compartiré un último momento con mis amigos y llevaré nuestras páginas hasta él."])
+objective_text = "Despídete de tus amigos y elige tu recuerdo."
+intro_lines = Array[String](["El portal ya tiene luz. Antes de partir, compartiré un último momento con mis amigos y elegiré qué momento quiero llevar a casa."])
 gifts = Array[ExtResource("entry")]([SubResource("gift0"), SubResource("gift1"), SubResource("gift2")])
 
 [node name="Terreno" parent="."]
@@ -76,8 +73,8 @@ sprite_scale = Vector2(1.35, 1.35)
 
 [node name="Salida" parent="Spots" instance=ExtResource("spot")]
 position = Vector2(3500, 590)
-prompt = "Preparar el portal"
-lines = Array[String](["Aquí colocaré las páginas que guardan nuestra aventura."])
+prompt = "Elegir mi recuerdo"
+lines = Array[String](["Aquí elegiré qué recuerdo llevar a casa."])
 reach_radius = 175.0
 is_goal = true
 spot_texture = ExtResource("exit")
@@ -167,182 +164,7 @@ text = "Seguir caminando"
 
 theme_type_variation = &"KalinSecondaryButton"
 
-[node name="Assembly" type="Panel" parent="UI"]
-offset_left = 90.0
-offset_top = 80.0
-offset_right = 1190.0
-offset_bottom = 628.0
-visible = false
-theme = ExtResource("theme")
-theme_type_variation = &"KalinCreamPanel"
 
-[node name="PortalVisual" instance=ExtResource("portal") parent="UI/Assembly"]
-offset_left = 16.0
-offset_top = 94.0
-offset_right = 320.0
-offset_bottom = 444.0
-
-[node name="Title" type="Label" parent="UI/Assembly"]
-offset_left = 340.0
-offset_top = 20.0
-offset_right = 1076.0
-offset_bottom = 70.0
-text = "El libro guarda nuestra aventura"
-theme_override_font_sizes/font_size = 32
-
-theme_override_colors/font_color = Color(0.23, 0.14, 0.08, 1)
-
-[node name="Hint" type="Label" parent="UI/Assembly"]
-offset_left = 340.0
-offset_top = 78.0
-offset_right = 1076.0
-offset_bottom = 174.0
-autowrap_mode = 3
-theme_override_font_sizes/font_size = 26
-
-theme_override_colors/font_color = Color(0.23, 0.14, 0.08, 1)
-
-[node name="Cards" type="HBoxContainer" parent="UI/Assembly"]
-offset_left = 340.0
-offset_top = 184.0
-offset_right = 1076.0
-offset_bottom = 296.0
-theme_override_constants/separation = 14
-
-[node name="Page0" type="Button" parent="UI/Assembly/Cards"]
-layout_mode = 2
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(224, 112)
-script = ExtResource("draggable")
-word_value = "paths"
-word_kind = "noun"
-text = "Caminos"
-icon = ExtResource("paths")
-expand_icon = true
-theme_override_constants/icon_max_width = 48
-theme_override_font_sizes/font_size = 26
-
-theme_type_variation = &"KalinSecondaryButton"
-
-[node name="Page1" type="Button" parent="UI/Assembly/Cards"]
-layout_mode = 2
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(224, 112)
-script = ExtResource("draggable")
-word_value = "home"
-word_kind = "noun"
-text = "Hogar"
-icon = ExtResource("home")
-expand_icon = true
-theme_override_constants/icon_max_width = 48
-theme_override_font_sizes/font_size = 26
-
-theme_type_variation = &"KalinSecondaryButton"
-
-[node name="Page2" type="Button" parent="UI/Assembly/Cards"]
-layout_mode = 2
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(224, 112)
-script = ExtResource("draggable")
-word_value = "friends"
-word_kind = "noun"
-text = "Amistad"
-icon = ExtResource("friends")
-expand_icon = true
-theme_override_constants/icon_max_width = 48
-theme_override_font_sizes/font_size = 26
-
-theme_type_variation = &"KalinSecondaryButton"
-
-[node name="Slots" type="HBoxContainer" parent="UI/Assembly"]
-offset_left = 340.0
-offset_top = 320.0
-offset_right = 1076.0
-offset_bottom = 436.0
-theme_override_constants/separation = 14
-
-[node name="Slot0" instance=ExtResource("slot") parent="UI/Assembly/Slots"]
-layout_mode = 2
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(224, 112)
-focus_mode = 2
-accepted_kind = "noun"
-theme_type_variation = &"KalinNounSlot"
-theme_override_font_sizes/font_size = 26
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Slot1" instance=ExtResource("slot") parent="UI/Assembly/Slots"]
-layout_mode = 2
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(224, 112)
-focus_mode = 2
-accepted_kind = "noun"
-theme_type_variation = &"KalinNounSlot"
-theme_override_font_sizes/font_size = 26
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Slot2" instance=ExtResource("slot") parent="UI/Assembly/Slots"]
-layout_mode = 2
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(224, 112)
-focus_mode = 2
-accepted_kind = "noun"
-theme_type_variation = &"KalinNounSlot"
-theme_override_font_sizes/font_size = 26
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Close" type="Button" parent="UI/Assembly"]
-offset_left = 24.0
-offset_top = 466.0
-offset_right = 308.0
-offset_bottom = 530.0
-text = "Volver a caminar"
-
-theme_type_variation = &"KalinSecondaryButton"
-
-[node name="Continue" type="Button" parent="UI/Assembly"]
-offset_left = 720.0
-offset_top = 466.0
-offset_right = 1076.0
-offset_bottom = 530.0
-visible = false
-text = "Despedirme →"
-theme_type_variation = &"KalinPrimaryButton"
-theme_override_font_sizes/font_size = 28
+[node name="MemoryChoice" parent="UI" instance=ExtResource("memory")]
 
 [node name="LibroHechizos" instance=ExtResource("book") parent="."]
-
-
-
-[node name="Symbol" type="TextureRect" parent="UI/Assembly/Slots/Slot0"]
-offset_left = 88.0
-offset_top = 4.0
-offset_right = 136.0
-offset_bottom = 52.0
-texture = ExtResource("paths")
-expand_mode = 1
-stretch_mode = 5
-mouse_filter = 2
-
-[node name="Symbol" type="TextureRect" parent="UI/Assembly/Slots/Slot1"]
-offset_left = 88.0
-offset_top = 4.0
-offset_right = 136.0
-offset_bottom = 52.0
-texture = ExtResource("home")
-expand_mode = 1
-stretch_mode = 5
-mouse_filter = 2
-
-[node name="Symbol" type="TextureRect" parent="UI/Assembly/Slots/Slot2"]
-offset_left = 88.0
-offset_top = 4.0
-offset_right = 136.0
-offset_bottom = 52.0
-texture = ExtResource("friends")
-expand_mode = 1
-stretch_mode = 5
-mouse_filter = 2

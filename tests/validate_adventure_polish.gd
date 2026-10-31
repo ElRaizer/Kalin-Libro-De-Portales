@@ -78,7 +78,7 @@ func _capture(name: String) -> void:
 
 
 func _approach(scene: Node, spot: ExplorationSpot) -> void:
-	scene._place_kalin(spot.position.x - 145)
+	scene._place_kalin(spot.position.x)
 	scene.camera.reset_smoothing()
 	await process_frame
 	await process_frame
@@ -138,11 +138,16 @@ func _walks() -> void:
 		_check(
 			(
 				walk.kalin_sprite.texture == first_pose
-				and walk.kalin_sprite.position.y < walk._kalin_base_position.y
+				and not walk.kalin_sprite.visible
+				and walk._roaming.walker._upper.position.y == -74
+				and walk._roaming.walker._body.position.y < 0
+				and walk._roaming.walker._left.position.y == -10
+				and walk._roaming.walker._right.position.y == -10
 			),
-			"Kalin conserva su dibujo y camina con saltitos"
+			"Kalin conserva el salto del recorte completo en los paseos de ambos mundos"
 		)
 		walk.walk(0.0, 0.0)
+		_check(walk._roaming.walker._body.position.y == 0, "Al detenerse termina el saltito")
 		_check(
 			walk.kalin_sprite.texture == first_pose,
 			"Detenerse conserva la identidad visual del personaje"
@@ -196,9 +201,10 @@ func _walks() -> void:
 			"El paseo conduce a su capítulo"
 		)
 	# Un descanso debe volver al intento guardado, no reiniciar ni crear un bucle.
-	await _scene("world3_level1")
-	current_scene.round_index = 6
-	current_scene._show_round()
+	var episode: PhraseExerciseSession = PhraseExerciseSession.new()
+	episode.build_plan(6, {})
+	manager.session.scene_states.world3_level1 = {"plan": episode.plan, "round": 6}
+	await _scene("world3_level1", false)
 	await _click(current_scene.mission_break.get_node("WalkButton"))
 	await create_timer(0.1).timeout
 	_check(
@@ -219,7 +225,7 @@ func _walks() -> void:
 	await scene_changed
 	await process_frame
 	_check(
-		current_scene.next_scene_key == "world3_mission1",
+		current_scene.scene_file_path == GameContent.SCENE_PATHS.world3_mission1,
 		"La salida final pasa a los encargos y no vuelve al nivel completado"
 	)
 
@@ -287,7 +293,7 @@ func _drafts() -> void:
 func _fallbacks() -> void:
 	for world: int in [3, 4]:
 		await _scene("world%d_level1" % world)
-		current_scene.round_index = current_scene.challenges.size()
+		current_scene.round_index = PhraseExerciseFixture.round_for(current_scene.round_plan, false)
 		current_scene._show_round()
 		if current_scene.mission_break.visible:
 			await _click(current_scene.mission_break.continue_button)
@@ -315,7 +321,7 @@ func _fallbacks() -> void:
 			"El progreso muestra el apoyo que está utilizando el jugador"
 		)
 	await _scene("world3_level1")
-	current_scene.round_index = 7
+	current_scene.round_index = PhraseExerciseFixture.round_for(current_scene.round_plan, false, 1)
 	current_scene._show_round()
 	if not capture_folder.is_empty():
 		root.size = Vector2i(960, 540)
@@ -333,14 +339,10 @@ func _practice_and_comfort() -> void:
 	await _click(current_scene.get_node("UI/VisitButton"))
 	await create_timer(0.1).timeout
 	_check(
-		(
-			current_scene.scene_file_path == GameContent.SCENE_PATHS.village_practice
-			and current_scene.free_practice
-		),
+		current_scene.scene_file_path == GameContent.SCENE_PATHS.village_home,
 		"El mapa ofrece una visita independiente"
 	)
-	await _close_dialogue(current_scene)
-	await _click(current_scene.skip_button)
+	await _click(current_scene.return_button)
 	await create_timer(0.7).timeout
 	_check(
 		(
@@ -397,8 +399,7 @@ func _landscape_edges() -> void:
 		"world3_explore1",
 		"world3_explore2",
 		"world4_mission1",
-		"world4_explore1",
-		"village_practice"
+		"world4_explore1"
 	]:
 		await _scene(key)
 		var scene: Node = current_scene
@@ -425,7 +426,7 @@ func _landscape_edges() -> void:
 			)
 		if key == "world4_mission1":
 			_check(
-				terrain.texture.resource_path.ends_with("bg_aldea_habitada_portal.svg"),
+				terrain.texture.resource_path.ends_with("bg_village_plaza.svg"),
 				"El paseo final utiliza su propio claro del portal"
 			)
 			_check(
@@ -440,13 +441,3 @@ func _landscape_edges() -> void:
 				bounds.size.x >= 5120, "La aldea conserva margen de paisaje más allá del sendero"
 			)
 			await _capture("08_aldea_extremo")
-		elif key == "village_practice":
-			_check(
-				(
-					terrain.texture.resource_path.ends_with("bg_aldea_habitada.svg")
-					and scene.get_node("Spots/Salida").spot_texture.resource_path.ends_with(
-						"ui_casa.svg"
-					)
-				),
-				"La visita de práctica conserva la aldea y su salida al mapa"
-			)

@@ -37,6 +37,9 @@ const COLOR_NOTICE := Color("ffd27a")
 ## Meta que se muestra en el panel inferior izquierdo.
 @export var objective_text: String = "Sigue el sendero."
 @export_range(80.0, 600.0, 10.0) var walk_speed: float = 300.0
+@export var free_roam: bool = false
+@export var roaming_floor: Vector2 = Vector2(420, 640)
+var _roaming: ExplorationRoaming
 
 @export_category("Entrada")
 ## Diálogo opcional que aparece al empezar, antes de que Kalin pueda caminar.
@@ -150,6 +153,20 @@ func _ready() -> void:
 			if spot.teaches_word():
 				words_found += 1
 	_place_kalin(clampf(float(state.get("x", _min_x)), _min_x, walk_limit()))
+	if free_roam:
+		_roaming = ExplorationRoaming.new()
+		_roaming.configure(
+			kalin,
+			kalin_sprite,
+			Rect2(
+				_min_x, roaming_floor.x, walk_limit() - _min_x, roaming_floor.y - roaming_floor.x
+			),
+			walk_speed
+		)
+		if SaveSchema.is_number(state.get("y")):
+			kalin.position.y = clampf(float(state.y), roaming_floor.x + 1, roaming_floor.y - 1)
+		if state.get("walk_target") is Dictionary:
+			_roaming.restore(state.walk_target, navigation_obstacles())
 	camera.reset_smoothing()
 	_intro_done = bool(state.get("intro_done", false))
 	_update_counter()
@@ -167,10 +184,17 @@ func _ready() -> void:
 			break
 	if not _dialogue.is_open() and not _intro_done and not intro_lines.is_empty():
 		_start_dialogue(intro_speaker, intro_lines, intro_surprised)
+	if free_roam and state.get("walk_target") is Dictionary and not is_dialogue_open():
+		var pending: Variant = state.walk_target.get("spot")
+		if pending is String:
+			for spot: ExplorationSpot in spots:
+				if str(spot.name) == pending and spot.can_interact():
+					_pending_spot = spot
+					break
 	if _dialogue.is_open():
 		_dialogue.restore_line(int(state.get("line", 0)))
 	else:
-		call_deferred("_show_help")
+		call_deferred("_show_orientation")
 
 
 func _process(delta: float) -> void:
@@ -213,6 +237,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func _collect_spots() -> void:
 	for child: Node in spots_root.get_children():
 		if child is ExplorationSpot:
+			if free_roam:
+				child.z_index = int(child.position.y)
 			spots.append(child)
 	spots.sort_custom(_sort_by_x)
 
@@ -271,10 +297,30 @@ func _can_walk() -> bool:
 	return not (_navigating or _dialogue.is_open() or _resolving)
 
 
+func navigation_obstacles() -> Array[Rect2]:
+	var obstacles: Array[Rect2] = []
+	for spot: ExplorationSpot in spots:
+		if spot.speaker == "Kay" and spot.sprite.has_meta("village_habitat"):
+			obstacles.append(Rect2(spot.position - Vector2(125, 100), Vector2(250, 120)))
+	return obstacles
+
+
 ## Mueve a Kalin en la dirección indicada (-1 izquierda, 1 derecha). Si no hay
 ## dirección, sigue hacia el destino elegido con clic, si lo hay. Durante un
 ## diálogo, una animación o el cambio de escena Kalin se queda quieto.
 func walk(direction: float, delta: float) -> void:
+	if free_roam and _roaming != null:
+		if _roaming.step(
+			direction,
+			delta,
+			_can_walk(),
+			get_node("/root/AccessibilityManager").reduced_motion,
+			navigation_obstacles()
+		):
+			_on_arrived()
+		if _can_walk():
+			_check_auto_trigger()
+		return
 	if not _can_walk():
 		_idle()
 		return
@@ -324,6 +370,8 @@ func walk(direction: float, delta: float) -> void:
 
 func _place_kalin(x: float) -> void:
 	kalin.position = Vector2(x, ground_y(x))
+	if free_roam:
+		kalin.z_index = int(kalin.position.y)
 
 
 func _idle() -> void:
@@ -359,6 +407,10 @@ func _walk_to_point(world_point: Vector2) -> void:
 			break
 	_target_x = clampf(world_point.x, _min_x, _max_x)
 	_has_target = true
+	if free_roam and _roaming != null:
+		if _pending_spot != null:
+			world_point.y = _pending_spot.position.y + 70
+		_roaming.target(world_point, navigation_obstacles())
 
 
 func _on_arrived() -> void:
@@ -372,11 +424,17 @@ func _on_arrived() -> void:
 
 func _face(x: float) -> void:
 	kalin_sprite.flip_h = x < kalin.position.x
+	if free_roam and _roaming != null:
+		_roaming.face(x)
 
 
 # ─── Objetos ─────────────────────────────────────────────────────────────────
 func _is_within_reach(spot: ExplorationSpot) -> bool:
-	return absf(spot.global_position.x - kalin.position.x) <= spot.reach_radius
+	return (
+		spot.global_position.distance_to(kalin.global_position) <= spot.reach_radius
+		if free_roam
+		else absf(spot.global_position.x - kalin.position.x) <= spot.reach_radius
+	)
 
 
 func _update_nearby_spot() -> void:
@@ -384,11 +442,19 @@ func _update_nearby_spot() -> void:
 	if _can_walk():
 		var best_distance: float = INF
 		for spot: ExplorationSpot in spots:
-			var distance: float = absf(spot.global_position.x - kalin.position.x)
+			var distance: float = (
+				spot.global_position.distance_to(kalin.global_position)
+				if free_roam
+				else absf(spot.global_position.x - kalin.position.x)
+			)
 			if spot.can_interact() and distance <= spot.reach_radius and distance < best_distance:
 				best_distance = distance
 				_nearby_spot = spot
 	prompt_button.visible = _nearby_spot != null
+	for spot: ExplorationSpot in spots:
+		spot.set_interaction_highlight(
+			_can_walk() and absf(spot.global_position.x - kalin.position.x) < 430.0
+		)
 	if _nearby_spot == null:
 		return
 	prompt_button.text = _nearby_spot.prompt
@@ -600,6 +666,10 @@ func _go_to_next_scene() -> void:
 
 
 func _show_help() -> void:
+	_show_orientation()
+
+
+func _show_orientation() -> void:
 	if _dialogue.is_open() or _navigating:
 		return
 	var closest: ExplorationSpot
@@ -638,6 +708,11 @@ func get_checkpoint_state() -> Dictionary:
 		"active": str(_active_spot.name) if _active_spot != null else "",
 		"line": _dialogue.line_index if _dialogue.is_open() else 0
 	}
+	if free_roam and _roaming != null:
+		state.y = kalin.position.y
+		state.walk_target = _roaming.snapshot()
+		if not state.walk_target.is_empty() and _pending_spot != null:
+			state.walk_target.spot = str(_pending_spot.name)
 	for child: Node in get_children():
 		if child.has_method("checkpoint_extension"):
 			state.merge(child.checkpoint_extension().duplicate(true))

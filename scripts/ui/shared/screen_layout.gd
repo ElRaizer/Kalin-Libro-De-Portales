@@ -24,7 +24,7 @@ func _ready() -> void:
 
 
 static func is_compact(window: Window, width_limit: int = 1024) -> bool:
-	if DisplayServer.get_name() == "headless":
+	if not is_instance_valid(window) or DisplayServer.get_name() == "headless":
 		return false
 	return (
 		window.size.x <= width_limit
@@ -34,6 +34,8 @@ static func is_compact(window: Window, width_limit: int = 1024) -> bool:
 
 
 func _capture() -> void:
+	if not is_inside_tree() or is_queued_for_deletion():
+		return
 	var host: Node = get_parent()
 	if profile != null:
 		for path: NodePath in profile.rectangles:
@@ -52,8 +54,24 @@ func _capture() -> void:
 			var control: CanvasItem = host.get_node_or_null(path) as CanvasItem
 			if control:
 				_hidden[control] = control.visible
-	for control: Node in host.find_children("*", "Control", true, false):
+	_capture_controls(host)
+	_captured = true
+	refresh()
+
+
+## Registra controles creados después de la captura inicial sin sustituir sus bases anteriores.
+func register_controls(container: Control) -> void:
+	if not is_instance_valid(container) or not get_parent().is_ancestor_of(container):
+		return
+	_capture_controls(container)
+	refresh()
+
+
+func _capture_controls(container: Node) -> void:
+	for control: Node in container.find_children("*", "Control", true, false):
 		if _inside_book(control):
+			continue
+		if control in _fonts:
 			continue
 		if control is Label or control is Button or control is LineEdit:
 			_fonts[control] = {
@@ -67,8 +85,6 @@ func _capture() -> void:
 			}
 		if control is Button:
 			_minimums[control] = control.custom_minimum_size
-	_captured = true
-	refresh()
 
 
 func _inside_book(node: Node) -> bool:
@@ -83,7 +99,7 @@ func _inside_book(node: Node) -> bool:
 
 
 func refresh() -> void:
-	if not _captured:
+	if not _captured or not is_inside_tree() or is_queued_for_deletion():
 		return
 	compact = preview_compact or is_compact(get_window(), compact_width)
 	var host: Node = get_parent()
@@ -135,6 +151,11 @@ func refresh() -> void:
 	# El controlador del ejercicio solicita la fase y no introduce coordenadas.
 	for control: Control in _rectangles:
 		if control.has_meta("recall_panel"):
+			if profile != null:
+				control.set_meta("recall_height", profile.recall_height)
+				control.set_meta("single_recall_height", profile.single_recall_height)
+				control.set_meta("writing_height", profile.writing_height)
+				control.set_meta("single_writing_height", profile.single_writing_height)
 			ExerciseRecallFlow.expand_for_recall(
 				control,
 				control.get_meta("recall_spell"),

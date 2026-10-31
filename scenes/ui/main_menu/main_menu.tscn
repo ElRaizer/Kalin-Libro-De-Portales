@@ -219,7 +219,7 @@ offset_right = 330.0
 offset_bottom = 676.0
 theme_override_colors/font_color = Color(0.9, 1, 0.9, 1)
 theme_override_font_sizes/font_size = 17
-text = "Tres encargos para practicar\na tu ritmo"
+text = "Explora, crea y practica\na tu ritmo"
 horizontal_alignment = 1
 
 [node name="LibroHechizos" parent="." unique_id=1731784252 instance=ExtResource("2")]

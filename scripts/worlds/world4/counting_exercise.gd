@@ -82,7 +82,6 @@ func _ready() -> void:
 		var option: Button = options_grid.get_child(index) as Button
 		option.pressed.connect(_on_option_pressed.bind(option))
 		_option_buttons.append(option)
-	recall.set_workspace("")
 	recall.submitted.connect(_on_action_pressed)
 	recall.practice_requested.connect(_practice_with_cards)
 	recall.support_used.connect(mark_learning_help)

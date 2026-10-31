@@ -15,11 +15,7 @@ func _check(condition: bool, message: String) -> void:
 
 
 func _fresh() -> void:
-	manager.session.scene_states.clear()
-	manager.session.words_learned.clear()
-	manager.session.completed_levels.clear()
-	manager.session.tutorials_seen.clear()
-	manager.session.resume_scene_key = ""
+	manager.session.reset()
 
 
 func _release(node: Node) -> void:
@@ -212,6 +208,20 @@ func _validate_saved_boards() -> void:
 		_fresh()
 		var instance: Node = load(GameContent.SCENE_PATHS[key]).instantiate()
 		var board: GridBoard = instance.get_node("GridBoard") as GridBoard
+		for word: GridWordData in board.words:
+			if word.maya_word == "Kuuts":
+				var entry: Dictionary = VocabularyCatalog.entry(word.maya_word)
+				_check(
+					word.spanish_word == "Pavo" and word.spanish_word == entry.spanish,
+					"Kuuts debe mostrarse como Pavo en el nivel y en el catálogo"
+				)
+				_check(
+					(
+						word.explanation == "Me llamo Pavo — en maya: Kuuts"
+						and entry.traduccion == "Me llamo Pavo"
+					),
+					"La presentación de Kuuts debe conservar el nombre breve Pavo"
+				)
 		var preview: Node = board.get_node("Preview")
 		var saved: Array[Node] = preview.get_children()
 		var first_tile: TextureRect = preview.get_node_or_null("Tile_0_0") as TextureRect

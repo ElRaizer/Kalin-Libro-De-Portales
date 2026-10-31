@@ -106,7 +106,7 @@ func _run() -> void:
 	await _shot("fruta_con_tamano")
 	current_scene._select_modifier("")
 	await _shot("fruta_tamano_retirado")
-	current_scene.round_index = current_scene.challenges.size()
+	current_scene.round_index = PhraseExerciseFixture.round_for(current_scene.round_plan, false)
 	current_scene._show_round()
 	await _shot("peticion_recuerdo")
 	await _scene("world5_level1", "portal")

@@ -178,6 +178,9 @@ def main():
     targets = {word + "|": (word, "", need[0].upper() + need[1:], need) for word, need in basics.items()}
     targets.update({word + "|" + quality: (word, quality, label, need) for word, quality, label, need in rows})
     for animal, data in banks.items():
+        purpose = data.get("purpose")
+        if not isinstance(purpose, str) or not purpose.strip() or len(purpose) > 130:
+            raise ValueError(f"Propósito de interpretación inválido: {animal}")
         for situation in ("greetings", "after_help"):
             validate_lines(data[situation], f"{animal} / {situation}")
         place = PLACES[animal]

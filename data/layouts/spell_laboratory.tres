@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="ScreenLayoutProfile" format=3]
+[ext_resource type="Script" path="res://scripts/ui/data/screen_layout_profile.gd" id="script"]
+[resource]
+script = ExtResource("script")
+minimum_body_font = 26
+font_sizes = {NodePath("Shade/Panel/Content/Title"): 28, NodePath("Shade/Panel/Content/Hint"): 24, NodePath("Shade/Panel/Content/Stage/Seal"): 64}

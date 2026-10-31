@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#a8d6bb"/>
+  <path d="M0 190Q170 95 340 180T660 170T980 160T1280 150V580H0Z" fill="#629d78"/>
+  <path d="M0 310Q180 220 340 300T680 290T1000 280T1280 300V600H0Z" fill="#4d8766"/>
+  <path d="M0 480Q480 426 1280 468V720H0Z" fill="#b8bd7b"/>
+  <path d="M0 570Q400 536 1280 558V635Q500 615 0 650Z" fill="#d7c696"/>
+  <ellipse cx="764" cy="579" rx="430" ry="35" fill="#8a753f" opacity=".22"/>
+  <path d="M340 547Q760 520 1150 547L1165 590Q760 565 325 590Z" fill="#e8cd8f" stroke="#b58c54" stroke-width="3"/>
+  <path d="M360 556Q760 533 1135 556M355 566Q760 543 1140 566M350 576Q760 553 1145 576" fill="none" stroke="#c49b61" stroke-width="2"/>
+  <path d="M40 0V435M1235 0V455" stroke="#75583c" stroke-width="38"/>
+  <path d="M0 58Q160 12 250 86M1090 58Q1190 15 1280 75" fill="none" stroke="#507758" stroke-width="88"/>
+  <path d="M80 192Q620 265 1200 192" fill="none" stroke="#8a6841" stroke-width="4"/>
+  <path d="M280 221L300 258L322 226M510 242L530 279L553 243M752 242L773 279L795 239M987 224L1007 262L1029 219" fill="#f1cf73"/>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><ellipse cx="60" cy="44" rx="26" ry="24" fill="#C85820" />
+  <path d="M52 24 Q56 14 60 20 Q64 10 68 18 Q72 8 76 16 Q80 24 74 28 Q68 24 64 28 Q60 24 56 28 Q52 24 52 24 Z" fill="#CC2020" />
+  <ellipse cx="60" cy="60" rx="8" ry="6" fill="#CC2020" />
+  <polygon points="44,48 26,54 44,58" fill="#E4A020" />
+  <ellipse cx="72" cy="40" rx="9" ry="9" fill="white" />
+  <ellipse cx="73" cy="41" rx="6" ry="6" fill="#C84010" />
+  <circle cx="74" cy="40" rx="3" ry="3" fill="#1A0808" />
+  <circle cx="73" cy="39" r="2" fill="white" />
+  <path d="M66 33 Q72 28 80 33" stroke="#A83010" stroke-width="2.5" fill="none" stroke-linecap="round" />
+</svg>

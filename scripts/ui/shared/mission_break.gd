@@ -23,6 +23,7 @@ func show_block(
 ) -> void:
 	$WalkButton.hide()
 	$WalkHint.hide()
+	continue_button.text = "Seguir →"
 	_previous_focus = get_viewport().gui_get_focus_owner()
 	(get_node("Title") as Label).text = title
 	if word.is_empty():
@@ -33,6 +34,25 @@ func show_block(
 	show()
 	SoundCue.play(self, "mision_pausa")
 	continue_button.grab_focus()
+	call_deferred("_focus_continue")
+
+
+func show_episode(
+	number: int, guided: bool, situation: String, word: String, quality: String, animal: String
+) -> void:
+	show_block(
+		"Episodio %d · %s" % [number, "Nuevas peticiones" if guided else "Recuerda lo practicado"],
+		situation,
+		word,
+		quality,
+		animal
+	)
+	continue_button.text = "Practicar →" if guided else "Recordar →"
+
+
+func _focus_continue() -> void:
+	if is_visible_in_tree():
+		continue_button.grab_focus()
 
 
 func offer_walk(key: String, return_key: String) -> void:

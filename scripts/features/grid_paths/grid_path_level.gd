@@ -96,7 +96,8 @@ func _ready() -> void:
 	_named_words = ExerciseProgress.restore_markers(state.get("named"), grid_board.words.size())
 	recall.submitted.connect(_submit_name)
 	recall.practice_requested.connect(_practice_name)
-	recall.support_used.connect(mark_learning_help)
+	recall.support_used.connect(func() -> void: GameManager.checkpoint(self))
+	ExerciseRecallFlow.bind_support(recall, _attempt)
 	recall.answer_changed.connect(
 		func():
 			if _naming_pending:
@@ -489,6 +490,12 @@ func _submit_name() -> void:
 		return
 	var word: GridWordData = grid_board.words[_dialogue_word_index]
 	var result: Dictionary = WordMatcher.match_word(recall.first.text, word.maya_word)
+	_attempt.observe(
+		word.maya_word,
+		result.correct,
+		result.supported,
+		ExerciseRecallFlow.phase(recall, level_number == 1)
+	)
 	if not result.correct:
 		_attempt.miss()
 		recall.advance_support()
@@ -500,7 +507,8 @@ func _submit_name() -> void:
 		ExerciseRecallFlow.phase(recall, level_number == 1),
 		_attempt.context,
 		_attempt.supported,
-		_attempt.mistakes
+		_attempt.mistakes,
+		_attempt.evidence([word.maya_word])
 	)
 	_named_words.append(_dialogue_word_index)
 	_naming_pending = false
@@ -514,7 +522,7 @@ func _submit_name() -> void:
 
 func mark_learning_help() -> void:
 	if grid_board.drawing or _dialogue_open and _dialogue_word_index not in _named_words:
-		_attempt.supported = true
+		_attempt.use_content_help()
 		GameManager.checkpoint(self)
 
 

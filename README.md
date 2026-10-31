@@ -7,7 +7,7 @@ Videojuego educativo desarrollado en Godot para practicar vocabulario y estructu
 Las reglas para mantener esta base al agregar cambios están en
 [AGENTS.md](AGENTS.md), la guía inicial para trabajar en el repositorio.
 
-La base actual usa un único formato de guardado (6), sin migraciones, alias de
+La base actual usa un único formato de guardado (9), sin migraciones, alias de
 sistemas retirados ni campos de recursos en desuso. Las partidas anteriores
 requieren reinicio desde el menú.
 
@@ -74,7 +74,7 @@ Cada **mundo** representa una mecánica. Los **niveles** de un mismo mundo reuti
 
 El orden de progreso es Mundo 1 completo → Mundo 2 → Mundo 3 → Mundo 4 → Mundo 5. El último mundo recupera los fragmentos finales del libro y cierra la aventura con el portal de regreso.
 
-La interfaz muestra páginas recuperadas. Los puntos mágicos se conservan en el guardado como puntuación acumulativa; no se consumen ni bloquean el avance.
+La interfaz muestra páginas recuperadas. Los puntos mágicos abren diseños una sola vez; las copias y los ensayos son gratuitos. Cada palabra acredita como máximo 10 puntos según el apoyo usado. Comprar diseños nunca bloquea el acceso a la historia.
 
 Los cuatro niveles del Mundo 1 usan tableros de 12 columnas y presentan una
 progresión propia: un primer camino corto con demostración visual, planificación
@@ -227,11 +227,23 @@ No se requieren complementos ni dependencias externas.
 
 ## Ampliación de jugabilidad del 24 de octubre
 
-Ver [docs/adventure.md](docs/adventure.md) para el recorrido ampliado, los apoyos automáticos, los bloques intercambiables, la mesa de composición, los doce habitantes con casas propias, la interfaz compacta y la migración al formato de guardado 5. `tools/validate.ps1` incluye 25 suites. Las nuevas escenas pueden abrirse con F6:
+Ver [docs/adventure.md](docs/adventure.md) para el recorrido ampliado, los apoyos automáticos, los bloques intercambiables, la respuesta única y la plaza compartida, los doce habitantes con casas propias, la interfaz compacta y el formato de guardado vigente. `tools/validate.ps1` descubre las suites automáticamente. Las nuevas escenas pueden abrirse con F6:
 
 - `scenes/worlds/world2/mision_rincones_de_la_casa.tscn`.
 - `scenes/worlds/world3/mision_preparar_la_fiesta.tscn`.
 - `scenes/worlds/world5/despedida_los_recuerdos.tscn`.
+
+## Mejoras de experiencia
+
+El [plan de implementación](docs/development_plan.md) registra especificaciones, orden,
+estado y criterios de aceptación. Taller y comida conservan el arte SVG y presentan
+una petición estable con campos de respuesta verticales. Los paseos permiten
+interpretar fichas conocidas y consultar su traducción. **Mi aldea** ofrece barrios,
+jardín con almacén, mesa de trazos y sala de retos opcional. Las entregas muestran
+el uso del objeto y una celebración conjunta, sin otro menú obligatorio de acomodo. El libro incluye
+**Ver mi práctica**, con evidencia diferenciada y orientación de controles separada
+de pistas de contenido. El formato 9 requiere reiniciar partidas de otros formatos
+desde el menú; no se borran automáticamente.
 
 ## Trabajo pendiente
 
@@ -244,4 +256,4 @@ Ver [docs/adventure.md](docs/adventure.md) para el recorrido ampliado, los apoyo
 - Validar textos y pronunciaciones con una persona hablante o especialista en maya yucateco.
 - Observar a niños de alrededor de 10 años jugando sin explicación inicial y ajustar las ayudas según los resultados.
 - Ampliar pruebas de accesibilidad, relaciones de aspecto y exportaciones objetivo.
-- Ampliar la validación automática hasta cubrir interacción, navegación y migraciones completas del guardado.
+- Completar los ajustes de ritmo y las animaciones particulares registrados en el plan de mejoras.

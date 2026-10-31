@@ -238,8 +238,7 @@ func _personalized_scenes() -> void:
 		"world3_explore1",
 		"world2_mission1",
 		"world3_mission1",
-		"world4_mission1",
-		"village_practice"
+		"world4_mission1"
 	]
 	for key: String in keys:
 		var state: Dictionary = {
@@ -273,6 +272,8 @@ func _personalized_scenes() -> void:
 			requests.append(task.request)
 			thanks.append(task.success)
 		if key == "world3_explore1":
+			# La revisión editorial inspecciona la traducción consultada explícitamente.
+			scene.translated.append(0)
 			var spot: ExplorationSpot = scene.get_node("Spots/Visit0") as ExplorationSpot
 			scene._place_kalin(spot.position.x - 120)
 			scene.camera.reset_smoothing()
@@ -329,7 +330,7 @@ func _completed_friends() -> void:
 		var spot: ExplorationSpot = scene.get_node(spot_name) as ExplorationSpot
 		var magic_points: int = manager.session.magic_points
 		var learning: Dictionary = manager.session.learning_progress.duplicate(true)
-		scene._place_kalin(spot.position.x)
+		_approach_spot(scene, spot)
 		scene.open_spot(spot)
 		var lines: Array = spot.lines.duplicate()
 		_check(
@@ -353,7 +354,7 @@ func _completed_friends() -> void:
 		)
 		_close_lines(scene)
 		spot = scene.get_node(spot_name)
-		scene._place_kalin(spot.position.x)
+		_approach_spot(scene, spot)
 		scene.open_spot(spot)
 		_check(
 			spot.lines[0] != lines[0] and spot.lines[1] != lines[1],
@@ -416,7 +417,7 @@ func _saved_conversations() -> void:
 		var scene: Node = await _scene(key, {"intro_done": true, "layout_seed": 303})
 		for visit: int in range(2):
 			var spot: ExplorationSpot = scene.get_node("Spots/Neighbour0") as ExplorationSpot
-			scene._place_kalin(spot.position.x)
+			_approach_spot(scene, spot)
 			scene.open_spot(spot)
 			var line: String = spot.lines[0]
 			var before: Dictionary = scene.get_node("VillageDialogue").greeting_visits.duplicate()
@@ -431,7 +432,7 @@ func _saved_conversations() -> void:
 			)
 			_close_lines(scene)
 			spot = scene.get_node("Spots/Neighbour0")
-			scene._place_kalin(spot.position.x)
+			_approach_spot(scene, spot)
 			scene.open_spot(spot)
 			_check(
 				spot.lines[0] != line,

@@ -93,7 +93,8 @@ func _ready() -> void:
 	next_button.pressed.connect(_advance_round)
 	recall.submitted.connect(func(): _on_choice_pressed(recall.first.text))
 	recall.practice_requested.connect(_practice_with_cards)
-	recall.support_used.connect(mark_learning_help)
+	recall.support_used.connect(func() -> void: GameManager.checkpoint(self))
+	ExerciseRecallFlow.bind_support(recall, _attempt)
 	recall.answer_changed.connect(_on_scaffold_changed)
 	mission_break.continued.connect(func(): guide.watch_action(choices_grid))
 	_restore_room()
@@ -262,6 +263,12 @@ func _on_choice_pressed(word: String) -> void:
 	guide.stop()
 	if current_phase == 1 and not _practice_fallback:
 		var match_result: Dictionary = WordMatcher.match_word(word, _current_object().maya)
+		_attempt.observe(
+			_current_object().maya,
+			match_result.correct,
+			match_result.supported,
+			ExerciseRecallFlow.phase(recall, false)
+		)
 		if match_result.correct:
 			word = match_result.word
 			_attempt.supported = _attempt.supported or match_result.supported
@@ -273,7 +280,8 @@ func _on_choice_pressed(word: String) -> void:
 			ExerciseRecallFlow.phase(recall, current_phase == 0),
 			_attempt.context,
 			_attempt.supported,
-			_attempt.mistakes
+			_attempt.mistakes,
+			_attempt.evidence([word])
 		)
 		GameManager.mark_tutorial_seen("objects")
 		_render_success(true)
@@ -355,11 +363,13 @@ func _show_help() -> void:
 	if _waiting:
 		guide.point_at(next_button)
 		return
-	mark_learning_help()
 	if recall.visible:
+		_attempt.guidance = true
+		GameManager.checkpoint(self)
 		recall.explain_support()
 		guide.highlight(recall)
 		return
+	mark_learning_help()
 	if (
 		not (round_index == 0 and "objects" not in GameManager.session.tutorials_seen)
 		and _help_stage < 2
@@ -397,7 +407,7 @@ func _on_menu_pressed() -> void:
 
 
 func _on_next_level_pressed() -> void:
-	GameManager.start_walk("world2_explore1", "world2_mission1")
+	GameManager.go_to_scene("world2_mission1")
 
 
 func _on_book_pressed() -> void:
@@ -428,7 +438,7 @@ func get_checkpoint_state() -> Dictionary:
 
 func mark_learning_help() -> void:
 	if not _waiting and not _completing:
-		_attempt.supported = true
+		_attempt.use_content_help()
 		GameManager.checkpoint(self)
 
 

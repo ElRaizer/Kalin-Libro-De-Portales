@@ -33,7 +33,11 @@ func _automatic_support() -> void:
 		var round_number: int = (
 			scene.objects.size()
 			if key == "world2_level1"
-			else (0 if key == "world5_level1" else scene.challenges.size())
+			else (
+				0
+				if key == "world5_level1"
+				else PhraseExerciseFixture.round_for(scene.round_plan, false)
+			)
 		)
 		var state: Dictionary = {
 			"challenge" if key == "world5_level1" else "round": round_number, "layout_seed": 735
@@ -161,7 +165,7 @@ func _mission_support() -> void:
 
 
 func _pieces() -> void:
-	var scene: Node = await _scene("world3_level1", {"round": 7, "layout_seed": 88})
+	var scene: Node = await _scene("world3_level1", PhraseExerciseFixture.recall_state(88, 6, 1))
 	scene.mission_break.hide()
 	var panel: RecallPanel = scene.recall
 	panel.advance_support()
@@ -306,19 +310,24 @@ func _walk_requests() -> void:
 	walk._place_kalin(walk._encounter_spot(0).position.x - 140)
 	walk.camera.reset_smoothing()
 	walk._show_choices(0)
+	var task: VillageTask = walk.encounters[0].task
+	var request: String = task.item + (" · " + task.quality if not task.quality.is_empty() else "")
 	_check(
 		(
 			walk.get_node("UI/ChoiceRequest").visible
-			and walk.get_node("UI/ChoiceRequest/Request").text.contains(
-				walk.encounters[0].task.request
-			)
+			and walk.get_node("UI/ChoiceRequest/Request").text.contains(request)
 		),
-		"La petición completa permanece junto a las opciones"
+		"Las fichas completas de la petición permanecen junto a las opciones"
 	)
 	walk._show_notice("Otra indicación temporal")
 	_check(
-		walk.get_node("UI/ChoiceRequest/Request").text.contains(walk.encounters[0].task.request),
+		walk.get_node("UI/ChoiceRequest/Request").text.contains(request),
 		"Los avisos no sustituyen la petición persistente"
+	)
+	walk._translate_request()
+	_check(
+		walk.get_node("UI/ChoiceRequest/Request").text.contains(task.request),
+		"La traducción opcional conserva también la petición completa"
 	)
 	await _capture("peticion_visible")
 	_answer_walk(walk)
@@ -329,6 +338,9 @@ func _walk_requests() -> void:
 	)
 	var art: MeaningIllustration = walk.get_node("Results/Item0") as MeaningIllustration
 	var spot: ExplorationSpot = walk._encounter_spot(0)
+	walk._place_kalin(spot.position.x)
+	walk.kalin.position.y = 630
+	walk.walk(0.0, 0.0)
 	_check(
 		(
 			walk.kalin.z_index > art.z_index + (art.get_parent() as CanvasItem).z_index
@@ -336,7 +348,6 @@ func _walk_requests() -> void:
 		),
 		"Kalin pasa delante del animal y del objeto juntos"
 	)
-	walk._place_kalin(spot.position.x)
 	await _capture("capas_aldea")
 	# Comprueba también la hamaca específica del informe, desde ambos lados.
 	for index: int in range(walk.encounters.size()):

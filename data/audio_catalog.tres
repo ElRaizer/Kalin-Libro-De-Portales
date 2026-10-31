@@ -173,7 +173,6 @@ rain_ambience = ExtResource("65_s2bac")
 scene_music = Dictionary[String, AudioStream]({
 "intro": ExtResource("73_4qvgo"),
 "main_menu": ExtResource("74_x02we"),
-"village_practice": ExtResource("78_qutdr"),
 "world1_cine1": ExtResource("75_7xgxm"),
 "world1_cine2": ExtResource("80_0cw52"),
 "world1_explore1": ExtResource("76_vqpux"),
@@ -198,6 +197,7 @@ scene_music = Dictionary[String, AudioStream]({
 "world3_story1": ExtResource("78_qutdr"),
 "world4_explore1": ExtResource("85_te63x"),
 "world4_level1": ExtResource("84_rapvh"),
+"village_home": ExtResource("78_qutdr"),
 "world4_mission1": ExtResource("78_qutdr"),
 "world4_story1": ExtResource("85_te63x"),
 "world5_cine1": ExtResource("88_ofmy0"),
@@ -208,7 +208,6 @@ scene_music = Dictionary[String, AudioStream]({
 "world4_story2": ExtResource("musica_tianguis")
 })
 scene_ambience = Dictionary[String, AudioStream]({
-"village_practice": ExtResource("68_p0nnr"),
 "world1_cine1": ExtResource("65_s2bac"),
 "world1_cine2": ExtResource("70_wjo22"),
 "world1_explore1": ExtResource("66_3m18j"),
@@ -233,6 +232,7 @@ scene_ambience = Dictionary[String, AudioStream]({
 "world3_story1": ExtResource("68_p0nnr"),
 "world4_explore1": ExtResource("72_etc4c"),
 "world4_level1": ExtResource("68_p0nnr"),
+"village_home": ExtResource("68_p0nnr"),
 "world4_mission1": ExtResource("68_p0nnr"),
 "world4_story1": ExtResource("72_etc4c"),
 "world5_cine1": ExtResource("69_m28hu"),

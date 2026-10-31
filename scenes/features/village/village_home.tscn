@@ -1,0 +1,28 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/features/village/village_home.gd" id="script"]
+[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://scenes/features/spellbook/libro_hechizos.tscn" id="book"]
+[ext_resource type="PackedScene" path="res://scenes/features/village/spell_laboratory.tscn" id="lab"]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/shared/screen_layout.tscn" id="layout"]
+[ext_resource type="Resource" path="res://data/layouts/village_home.tres" id="profile"]
+
+[node name="VillageHome" type="Node2D"]
+script = ExtResource("script")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="Controls" type="Control" parent="UI"]
+theme = ExtResource("theme")
+mouse_filter = 2
+
+[node name="LibroHechizos" parent="." instance=ExtResource("book")]
+
+[node name="SpellLaboratory" parent="." instance=ExtResource("lab")]
+
+[node name="ScreenLayout" parent="." instance=ExtResource("layout")]
+profile = ExtResource("profile")

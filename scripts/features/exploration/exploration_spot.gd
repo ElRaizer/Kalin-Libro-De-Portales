@@ -89,6 +89,7 @@ var examined: bool = false
 var _time: float = 0.0
 var _reaction_tween: Tween
 var _base_modulate: Color
+var _highlighted: bool = true
 
 # ─── Nodos ───────────────────────────────────────────────────────────────────
 @onready var sprite: Sprite2D = $Sprite
@@ -117,12 +118,19 @@ func _apply_visual_configuration() -> void:
 
 
 func _process(delta: float) -> void:
-	if Engine.is_editor_hint() or examined:
+	if Engine.is_editor_hint() or examined or not _highlighted:
 		return
 	# Un pulso de luz suave indica que el objeto todavía guarda algo.
 	_time += delta
 	var pulse: float = (sin(_time * PULSE_SPEED) + 1.0) * 0.5 * PULSE_STRENGTH
 	sprite.modulate = _base_modulate * Color(1.0 + pulse, 1.0 + pulse, 1.0 + pulse * 0.5)
+
+
+func set_interaction_highlight(enabled: bool) -> void:
+	_highlighted = enabled and not examined
+	glow.emitting = _highlighted
+	if not _highlighted:
+		sprite.modulate = _base_modulate
 
 
 func _get_configuration_warnings() -> PackedStringArray:

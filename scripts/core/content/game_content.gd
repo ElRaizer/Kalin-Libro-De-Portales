@@ -291,12 +291,12 @@ const VOCABULARY: Dictionary = {
 	},
 	"Kuuts":
 	{
-		"spanish": "Pavo de monte",
+		"spanish": "Pavo",
 		"emoji": "🦃",
 		"world": 1,
 		"level": 3,
 		"estructura": "In k'aaba'e' Kuuts",
-		"traduccion": "Me llamo Pavo de monte"
+		"traduccion": "Me llamo Pavo"
 	},
 	"Báalam":
 	{
@@ -337,6 +337,7 @@ const VOCABULARY: Dictionary = {
 }
 
 const SCENE_PATHS: Dictionary = {
+	"village_home": "res://scenes/features/village/village_home.tscn",
 	"intro": "res://scenes/ui/main_menu/intro.tscn",
 	"main_menu": "res://scenes/ui/main_menu/main_menu.tscn",
 	"world1_level1": "res://scenes/worlds/world1/level1_caminos_blancos.tscn",
@@ -369,7 +370,6 @@ const SCENE_PATHS: Dictionary = {
 	"world4_level2": "res://scenes/worlds/world4/level4_piedras_que_cuentan.tscn",
 	"world4_mission1": "res://scenes/worlds/world4/mision_encargos_aldea.tscn",
 	"world4_explore1": "res://scenes/worlds/world4/exploracion4_camino_portal.tscn",
-	"village_practice": "res://scenes/worlds/world4/practica_encargos_aldea.tscn",
 	"world5_farewell": "res://scenes/worlds/world5/despedida_los_recuerdos.tscn",
 	"world5_level1": "res://scenes/worlds/world5/level5_portal_de_regreso.tscn",
 }

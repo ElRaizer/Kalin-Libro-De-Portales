@@ -5,7 +5,6 @@
 
 [ext_resource type="Script" path="res://scripts/features/exercises/recall_block_bank.gd" id="bank"]
 [ext_resource type="PackedScene" path="res://scenes/ui/shared/meaning_illustration.tscn" id="art"]
-[ext_resource type="PackedScene" path="res://scenes/features/exercises/recall_workbench.tscn" id="workspace"]
 
 [sub_resource type="StyleBoxFlat" id="input"]
 content_margin_left = 12.0
@@ -88,7 +87,7 @@ text = "Bloques"
 
 theme_type_variation = &"KalinSecondaryButton"
 
-[node name="Fields" type="HBoxContainer" parent="Margin/Content" unique_id=1456796075]
+[node name="Fields" type="VBoxContainer" parent="Margin/Content" unique_id=1456796075]
 layout_mode = 2
 theme_override_constants/separation = 16
 
@@ -163,10 +162,6 @@ theme_type_variation = &"KalinSecondaryButton"
 [node name="Letters" type="HBoxContainer" parent="Margin/Content" unique_id=635282706]
 layout_mode = 2
 theme_override_constants/separation = 8
-
-[node name="Workspace" parent="Margin/Content" instance=ExtResource("workspace")]
-visible = false
-layout_mode = 2
 
 [node name="A" type="Button" parent="Margin/Content/Letters" unique_id=1959819176]
 visible = false

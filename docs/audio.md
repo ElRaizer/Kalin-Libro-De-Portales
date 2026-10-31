@@ -47,7 +47,7 @@ Reglas automáticas:
 | `musica_huracan` | Tambores graves y cadencia dramática (Re menor, 84 bpm) | Cinemática del huracán |
 | `musica_orilla_isla` | Descubrimiento tranquilo (La mayor, 84 bpm) | Exploración de la orilla, Capítulo 1 |
 | `musica_sak_beh` | Rompecabezas con ritmo (Sol mayor, 108 bpm) | Mundo 1 · niveles 1 a 4 |
-| `musica_aldea_animales` | Juguetón y saltarín (Fa mayor, 100 bpm) | Capítulos 2 a 5 y 7, paseo Una aldea a su medida, encargos y práctica de la aldea |
+| `musica_aldea_animales` | Juguetón y saltarín (Fa mayor, 100 bpm) | Capítulos 2 a 5 y 7, paseo Una aldea a su medida, encargos de la aldea, Tu aldea |
 | `musica_camino_solar` | Vals tranquilo al atardecer (Do mayor, 3/4) | Exploración del camino a la Casa Maya |
 | `musica_casa_vacia` | Melancolía (La menor, 64 bpm) | Cinemática de la casa vacía |
 | `musica_jarana_casa_maya` | Estilo jarana yucateca en 3/4 (Sol mayor, 138 bpm) | Mundo 2, paseo La casa cobra vida, Rincones para compartir, Capítulo 6 |
@@ -69,7 +69,7 @@ Reglas automáticas:
 | `ambiente_selva_pajaros` | Mundo 1 · niveles 1 a 3, Capítulos 2 y 3 |
 | `ambiente_grillos_atardecer` | Camino a la Casa Maya, regreso a casa |
 | `ambiente_viento_suave` | Casa maya vacía |
-| `ambiente_aldea_dia` | Capítulos 5 a 7, mundos 2, 3 y 4 (incluido el tianguis), paseos, misiones y práctica de la aldea |
+| `ambiente_aldea_dia` | Capítulos 5 a 7, mundos 2, 3 y 4 (incluido el tianguis), paseos, misiones y Tu aldea |
 | `ambiente_milpa_manana` | La milpa |
 | `ambiente_portal_zumbido` | Camino al portal, Capítulos 8 y 9, Mundo 5, despedida |
 

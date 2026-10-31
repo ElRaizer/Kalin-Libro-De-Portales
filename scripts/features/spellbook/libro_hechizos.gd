@@ -54,10 +54,20 @@ func _ready() -> void:
 	audio_notice.visible = false
 	_known_words = GameManager.learned_words()
 	_build_categories()
+	$BG/Book/Header/ProjectButton.pressed.connect(show_project)
+	$BG/Book/Project/Close.pressed.connect(
+		func() -> void:
+			$BG/Book/Project.hide()
+			$BG/Book/Header/ProjectButton.grab_focus()
+	)
+	$BG/Book/Project/Table.pressed.connect(_purchase_project_design.bind("mayak"))
+	$BG/Book/Project/Strong.pressed.connect(_purchase_project_design.bind("chich"))
 	motion.opened.connect(_on_opened)
 	motion.closed.connect(_on_closed)
 	compact_page.get_node("Content/AudioButton").pressed.connect(_play_visible_audio.bind(0))
 	get_window().size_changed.connect(_update_screen_layout)
+	for page: Panel in [left_page, right_page, compact_page]:
+		page.get_node("Content/PracticeButton").pressed.connect(_toggle_practice.bind(page))
 	_update_screen_layout()
 
 
@@ -100,6 +110,7 @@ func _select_category(index: int) -> void:
 func show_book(source: Control = null) -> void:
 	if visible:
 		return
+	$BG/Book/Project.hide()
 	GameManager.mark_learning_support()
 	_previous_focus = get_viewport().gui_get_focus_owner()
 	_source_button = source
@@ -126,6 +137,7 @@ func hide_book() -> void:
 	if not visible or motion.closing:
 		return
 	SoundCue.play(self, "libro_cerrar")
+	$BG/Book/Project.hide()
 	_cancel_turn()
 	_clear_effects()
 	_set_page_input(false)
@@ -261,6 +273,7 @@ func _render_page(page: Panel, entry_index: int, visible_slot: int) -> void:
 	var maya_word: String = _entries[entry_index]
 	var data: Dictionary = VocabularyCatalog.entry(maya_word)
 	_visible_words[visible_slot] = maya_word
+	page.set_meta("entry_word", maya_word)
 	var stage: Label = content.get_node("StageLabel") as Label
 	stage.text = GameManager.learning_caption(maya_word).get_slice(" · ", 0)
 	stage.tooltip_text = (
@@ -288,6 +301,7 @@ func _render_page(page: Panel, entry_index: int, visible_slot: int) -> void:
 		illustration.visible = false
 		placeholder.visible = true
 		placeholder.text = "%s\nIlustración futura" % str(data.get("emoji", "✦"))
+	_render_practice(page)
 	var audio_button: Button = content.get_node("AudioButton") as Button
 	var audio_exists: bool = ResourceLoader.exists(_audio_path(maya_word))
 	audio_button.disabled = _turning or motion.busy
@@ -380,6 +394,7 @@ func _cancel_turn() -> void:
 
 
 func _set_page_input(enabled: bool) -> void:
+	$BG/Book/Header/ProjectButton.disabled = not enabled
 	for button: Button in category_buttons:
 		button.disabled = not enabled
 	previous_button.disabled = not enabled or _entries.is_empty() or _spread_index <= 0
@@ -388,6 +403,7 @@ func _set_page_input(enabled: bool) -> void:
 	)
 	for page: Panel in [left_page, right_page, compact_page]:
 		(page.get_node("Content/AudioButton") as Button).disabled = not enabled
+		(page.get_node("Content/PracticeButton") as Button).disabled = not enabled
 
 
 func _play_visible_audio(slot: int) -> void:
@@ -475,3 +491,55 @@ func _update_screen_layout() -> void:
 	close_button.custom_minimum_size.y = 60 if _compact else 42
 	if visible:
 		_render_spread()
+
+
+func _toggle_practice(page: Panel) -> void:
+	if motion.busy or _turning:
+		return
+	page.set_meta("practice_details", not page.get_meta("practice_details", false))
+	_render_practice(page)
+
+
+func _render_practice(page: Panel) -> void:
+	var details: bool = page.get_meta("practice_details", false)
+	var content: Control = page.get_node("Content")
+	for node_name: String in ["ExampleHeading", "ExampleLabel", "TranslationLabel"]:
+		content.get_node(node_name).visible = not details
+	var label: Label = content.get_node("DiagramLabel")
+	label.visible = details
+	content.get_node("Illustration").visible = not details
+	label.add_theme_font_size_override("font_size", 22)
+	label.text = GameManager.learning_detail(str(page.get_meta("entry_word", "")))
+	(content.get_node("PracticeButton") as Button).text = (
+		"Ver ejemplo" if details else "Ver mi práctica"
+	)
+
+
+func show_project() -> void:
+	GameManager.prepare_sharing_corner()
+	var session: GameSession = GameManager.session
+	var message: String = "Un rincón para compartir · Áak y Miis\n"
+	if session.economy.built:
+		message += "¡El rincón está construido! En la aldea puedes moverlo, guardar los muebles y crear copias gratis."
+	elif MagicEconomy.FIRST_PROJECT in session.economy.preparations:
+		message += "Preparación lista: recibiste 12 puntos una sola vez. Abre Mesa y Fuerte, y coloca una mesa fuerte en el jardín de la aldea."
+	else:
+		message += "Primero conoce y practica Mesa en la casa y Fuerte en el taller. Después prepararemos juntos el jardín."
+	message += "\nTienes %d puntos mágicos." % session.magic_points
+	$BG/Book/Project/Status.text = message
+	for word: String in MagicEconomy.FIRST_DESIGNS:
+		var button: Button = $BG/Book/Project/Table if word == "mayak" else $BG/Book/Project/Strong
+		button.text = (
+			str(VocabularyCatalog.entry(word).spanish)
+			+ (" · abierto" if word in session.economy.designs else " · 10 puntos")
+		)
+		button.disabled = not MagicEconomy.can_purchase(
+			session.economy, word, session.words_learned, session.magic_points
+		)
+	$BG/Book/Project.show()
+	$BG/Book/Project/Close.grab_focus()
+
+
+func _purchase_project_design(word: String) -> void:
+	GameManager.purchase_design(word)
+	show_project()

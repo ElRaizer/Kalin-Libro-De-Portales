@@ -156,7 +156,7 @@ func _runtime() -> void:
 			scene._show_round()
 			scene.mission_break.hide()
 			var task: ExerciseEntry = scene._current_challenge()
-			if world == 4 and round_value < 6:
+			if world == 4 and scene._is_guided_phase():
 				_check(
 					scene.modifier_buttons[task.modifier].visible,
 					"La cualidad correcta siempre queda disponible"
@@ -209,8 +209,7 @@ func _runtime() -> void:
 		"world3_explore1",
 		"world2_mission1",
 		"world3_mission1",
-		"world4_mission1",
-		"village_practice"
+		"world4_mission1"
 	]:
 		var scene: Node = await _scene(key, {"intro_done": true, "layout_seed": 817})
 		var state: Dictionary = scene.get_checkpoint_state()

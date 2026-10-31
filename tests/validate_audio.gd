@@ -332,9 +332,9 @@ func _validate_story_sounds() -> void:
 				await process_frame
 			for word: String in current.actors:
 				if word != current.target_word:
-					chapter._guess_actor(word, current.target_word)
+					chapter.interaction._guess_actor(word, current.target_word)
 					break
-			chapter._guess_actor(current.target_word, current.target_word)
+			chapter.interaction._guess_actor(current.target_word, current.target_word)
 			checked = true
 	if not checked:
 		failures.append("El Capítulo 1 debía tener un momento ADIVINAR para probar sus sonidos")

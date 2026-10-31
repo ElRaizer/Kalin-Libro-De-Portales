@@ -66,7 +66,7 @@ func _run() -> void:
 		if int(info.world) == 1:
 			expected = "world1_story%d" % (int(info.level) + 1)
 		elif int(info.world) in [2, 3]:
-			expected = "world%d_explore1" % int(info.world)
+			expected = "world%d_mission1" % int(info.world)
 		elif int(info.world) == 5:
 			expected = "world5_farewell"
 		elif info.scene_key == "world4_level1":
@@ -75,14 +75,6 @@ func _run() -> void:
 		if current_scene.scene_file_path != GameContent.SCENE_PATHS[expected]:
 			failures.append("La salida de %s no abrió %s" % [info.scene_key, expected])
 		if int(info.world) in [2, 3]:
-			current_scene._go_to_next_scene()
-			await scene_changed
-			await process_frame
-			if (
-				current_scene.scene_file_path
-				!= GameContent.SCENE_PATHS["world%d_mission1" % int(info.world)]
-			):
-				failures.append("El paseo debe abrir los encargos del mundo")
 			await _complete_delivery()
 			current_scene._go_to_next_scene()
 			await scene_changed
@@ -259,7 +251,6 @@ func _complete_farewell() -> void:
 	var portal: ExplorationSpot = farewell.get_node("Spots/Salida")
 	farewell._place_kalin(portal.position.x)
 	farewell.open_spot(portal)
-	for index: int in range(3):
-		farewell._place_page(farewell.PAGE_KEYS[index], index)
-	if farewell.placed.size() != 3:
-		failures.append("El cierre exige reunir y colocar los tres recuerdos")
+	farewell.memory_choice.choose(0)
+	if farewell.memory.is_empty():
+		failures.append("El cierre permite elegir un recuerdo personal tras la despedida")

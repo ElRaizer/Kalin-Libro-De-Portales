@@ -86,7 +86,7 @@ y `VocabularyCatalog`. Para leer copias aisladas están `learned_words()`,
 
 ## Persistencia
 
-Existe un solo formato de partida: **6**, definido en `SaveSchema.CURRENT_VERSION`.
+Existe un solo formato de partida: **9**, definido en `SaveSchema.CURRENT_VERSION`.
 Se rechazan los formatos anteriores y futuros sin convertirlos ni sobrescribirlos.
 El menú permite reiniciar explícitamente una partida rechazada. No se infieren
 niveles desde palabras ni se traducen identificadores retirados del prototipo.
@@ -101,12 +101,44 @@ Contiene datos JSON, nunca nodos o recursos. Los dos ejercicios de frases guarda
 el mismo plan: una lista de objetos `challenge` / `guided`. No hay un segundo
 formato basado en índices sueltos.
 
+En intentos nuevos, `PhraseExerciseSession` conserva una recuperación por reto y
+presenta primero únicamente las combinaciones cuyas palabras aún no se conocen.
+La cantidad de pasos depende del contenido presentado; ya no hay una cuota fija
+de doce respuestas. El orden determinista se guarda completo y no se recalcula
+al aprender palabras o reanudar. `ExerciseProgress` valida índices, cobertura y
+modalidades únicas. Los recursos personalizados del Inspector conservan sus retos.
+
+El dominio expone los límites y contadores de modalidad del plan real. Las escenas
+presentan esos cambios mediante `MissionBreak`; el paseo opcional queda entre
+episodios y regresa a la ronda pendiente, sin añadir ejercicios al plan.
+
 La navegación captura el origen antes de solicitar un cambio de escena y actualiza
 el destino de continuación sólo cuando el motor acepta la transición. El retorno
 de una visita también se conserva si la apertura falla.
 
 Las especializaciones de exploración agregan datos con `checkpoint_extension()`.
 La exploración base no conoce a `VillageDialogue`.
+
+`ExplorationRoaming` posee la entrada vertical, la marcha articulada y la ruta del
+suelo libre. La escena aporta límites y obstáculos; `VillageGround` calcula rutas
+sin nodos. La posición del pie decide la profundidad. Los checkpoints conservan
+ambos ejes y el destino pendiente. El diario detiene el desplazamiento mientras se consulta.
+
+`VillageHabitat` mantiene a Kay dentro del estanque antes de recibir un encargo.
+`VillageUseMotion` toma temporalmente su presentación durante el uso y la devuelve
+al terminar. `SpeciesActionRig` articula piezas excluyentes del arte existente:
+los pies permanecen en el suelo mientras torso y cabeza alcanzan el recipiente.
+La comida de mamíferos y aves permanece servida en un cuenco apoyado. Ma’ax
+transporta su porción con la mano; Kay recibe alimento que cae al agua. La vista
+mantiene el aroma junto a la porción. Los puntos de boca corresponden al viewBox
+de la pieza dibujada y las pruebas contrastan el pico rasterizado con la abertura
+del vaso, además de revisar las fases ampliadas en el motor.
+Las referencias transitorias a actores se liberan con su propietario.
+
+`GardenEditor` separa copias gratuitas de muebles colocados y almacenados. La vista
+previa no confirma posición ni orientación; cancelar restaura la copia provisional.
+Deshacer conserva el estado anterior a la última edición confirmada. Las reglas de
+huella, superficie y movimiento de conjuntos pertenecen a `GardenLayout`.
 
 ## Identidad y variaciones
 
@@ -160,3 +192,70 @@ Las salidas generadas tienen su propio formato determinista y se enumeran en
 nombres de archivo y límites entre dominio, aplicación, UI y persistencia.
 
 Ver [mantenimiento y validación](maintenance.md) para los comandos.
+
+## Responsabilidades de las mejoras de experiencia
+
+- `VillageMissionState` posee conocidos, entregas, borradores, apoyos y objeto
+  transportado; restaura y produce datos independientes sin acceder a nodos.
+  `VillageMission` compone los recursos y presenta los resultados.
+- `StoryQuestionPlan` prepara copias de los momentos y conserva las preguntas
+  deterministas. `StoryInteraction` posee el progreso, la presentación y la entrada
+  de conocer/adivinar/elegir; expone eventos y snapshots. `StoryScene` conserva los
+  momentos, el texto y la navegación; la cinemática permanece en `StoryAnimator`.
+- `LearningAttempt` posee orientación, apoyo de contenido y evidencia por palabra;
+  `LearningProgress` calcula los contadores. `GameSession` confirma resultados.
+- `SpellLaboratory` presenta práctica opcional de contenido conocido; conserva su
+  propia pausa y foco. No modifica encargos ni acredita recuerdo.
+- `VillageGathering` representa juntos los tres resultados con el arte canónico.
+  `gathering_seen` se confirma al cerrar; restaurar no duplica resultados educativos.
+- `MeaningIllustration.set_world_object()` es la API pública de representación.
+  La profundidad de Kalin pertenece a la escena de exploración, no al animador.
+
+El formato 9 retira `pages`/`assembly_open` y conserva `memory`/`memory_open` en
+la despedida. El recuerdo es una copia JSON validada de un momento vivido, sin
+puntuación ni evidencia educativa. `VillageMemory` valida el dato y prepara opciones
+con las visitas realizadas; `MemoryChoice` presenta la preferencia y `MemoryMoment`
+representa la misma imagen al elegir y al regresar. `HomecomingMemory` escucha el
+evento público `beat_presented` sólo en la cinemática de regreso. Los formatos
+anteriores se rechazan y requieren reinicio explícito, sin conversión.
+
+La entrega coloca el objeto en su lugar funcional y registra el uso una sola vez.
+Restaurar repone sus datos e imagen. El acomodo libre pertenece al jardín; las
+misiones no añaden elecciones de ubicación ni barras de ajuste obligatorias.
+`VisualCatalog` conserva las poses editables `activity_look`, `activity_reach` y
+`activity_consume` de cada animal. `VillageUseMotion` compone su secuencia, porción,
+apoyos y profundidad; el trabajo vive y se pausa con el resultado del mundo.
+
+
+## Aldea persistente y economía del formato 9
+
+`GameSession` posee `economy` (máximos acreditados por palabra, diseños, preparación
+y primer rincón construido) y `garden` (identidades, posiciones, orientación,
+superficies y almacén). `MagicEconomy` calcula premios 10/6/4 y compras de 10;
+`GardenLayout` valida y aplica colocaciones sin conocer nodos. Descubrir palabras
+y completar niveles no añaden los antiguos premios. Ensayar no paga puntos.
+Los 12 de preparación se confirman una vez después de practicar Mesa y Fuerte.
+Las compras iniciales quedan limitadas a esas dos entradas hasta construir el rincón.
+
+`VillageHome` compone barrios, llegada segura, lugares físicos y acceso voluntario.
+`VillageGround` calcula rutas transitables. `KalinWalker` mantiene el salto del
+recorte completo sobre un origen estable de suelo y sombra, también en dos ejes;
+el movimiento reducido elimina ese salto. `VillageMap` presenta destinos y sus
+bloqueos narrativos, conserva pausa y foco y solicita viajes a `VillageHome`.
+Los letreros inician un recorrido y activan su destino al llegar, sin otra confirmación.
+`GardenEditor` previsualiza una edición y confirma posiciones válidas; cancelar no
+mueve el objeto. La retirada conserva los muebles en almacén. `GardenObject`
+representa sus vistas y altura de superficie; la profundidad usa el apoyo del suelo.
+
+Los fondos SVG de los tres barrios pertenecen a `Arte/backgrounds/`; su terreno
+decorativo respeta el suelo transitable y la parcela. El editor agrupa copias por
+objeto base y oculta catálogo y herramientas ajenas a la acción durante la colocación.
+
+`ChallengePlanner` selecciona contenido presentado usando ocasiones, apoyo reciente
+y recencia. `ChallengeRoom` posee la tanda, borrador e intento, guardados en el
+checkpoint de la aldea. La sala no acredita contenido nuevo por cambiar una semilla.
+El libro y el ensayo conservan la marca de solución durante un reto. Las fórmulas
+de cortesía mantienen la identidad completa del catálogo.
+
+El formato 9 rechaza el 8 y cualquier otra versión sin sobrescribirlos. Requiere
+reinicio explícito; no convierte saldos ni vuelve a pagar objetivos históricos.

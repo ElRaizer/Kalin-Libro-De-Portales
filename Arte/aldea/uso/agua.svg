@@ -5,5 +5,4 @@
   <ellipse cx="120" cy="34" rx="47" ry="14" fill="#D0EDF8" />
   <ellipse cx="120" cy="34" rx="39" ry="9" fill="#8CCCF0" />
   <path d="M88 53L94 128" stroke="#F8F2DC" stroke-width="6" stroke-linecap="round" />
-  <path d="M178 51Q166 69 178 75Q190 69 178 51" fill="#4FAED1" />
 </svg>

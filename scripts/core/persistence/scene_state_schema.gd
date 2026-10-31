@@ -10,6 +10,7 @@ const NUMBERS := [
 	"dialogue_word",
 	"line",
 	"x",
+	"y",
 	"active_task",
 	"choosing",
 	"mistakes",
@@ -26,7 +27,8 @@ const FLAGS := [
 	"cards",
 	"naming_pending",
 	"workbench_open",
-	"assembly_open"
+	"memory_open",
+	"gathering_seen"
 ]
 const TEXT := [
 	"noun",
@@ -36,7 +38,8 @@ const TEXT := [
 	"active",
 	"return_scene",
 	"recall_text",
-	"board_variant"
+	"board_variant",
+	"district"
 ]
 const LISTS := [
 	"known",
@@ -53,11 +56,12 @@ const LISTS := [
 	"solved",
 	"encounter_plan",
 	"gifts",
-	"pages",
 	"residents",
 	"combination_plan",
 	"combination_tasks",
 	"combination_animals",
+	"translated",
+	"helped",
 	"basket"
 ]
 const OBJECTS := [
@@ -72,7 +76,10 @@ const OBJECTS := [
 	"scaffold",
 	"greeting_visits",
 	"portal_pool_keys",
-	"board"
+	"board",
+	"memory",
+	"challenge_room",
+	"walk_target"
 ]
 const REPLAY_KEYS := [
 	"guess_targets",
@@ -96,7 +103,7 @@ static func sanitize(value: Dictionary) -> Dictionary:
 			continue
 		if not SaveSchema.is_number(state[key]):
 			state.erase(key)
-		elif key != "x":
+		elif key not in ["x", "y"]:
 			state[key] = int(
 				clampf(
 					float(state[key]),

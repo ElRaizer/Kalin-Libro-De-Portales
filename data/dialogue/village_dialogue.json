@@ -437,7 +437,8 @@
 			"Hoy puedo detenerme a escuchar las hojas sin preocuparme por aquel encargo. Gracias, Kalin.",
 			"Si nuestros amigos preguntan por ti, les diré que tienes un lugar aquí junto al camino.",
 			"Un paseo se disfruta más con amigos. Tu ayuda me recordó por qué me gusta tanto esta aldea."
-		]
+		],
+		"purpose": "Cuidé el camino para que todos lleguen. ¡Preparemos algo para recibirlos!"
 	},
 	"Miis": {
 		"greetings": [
@@ -877,7 +878,8 @@
 			"Bajé a verte en cuanto te oí. El balcón puede esperar un ratito.",
 			"Ya me ayudaste bastante; ahora cuéntame algo de tu camino. Tengo las orejas atentas.",
 			"Cuando recuerde este día, seguro aparecerás tú entre el jardín y mi siesta."
-		]
+		],
+		"purpose": "Mis visitas ya vienen del jardín. Quiero que se sientan a gusto aquí."
 	},
 	"Kaax": {
 		"greetings": [
@@ -1317,7 +1319,8 @@
 			"El nido es cómodo, pero tener amigos cerca lo hace todavía mejor.",
 			"Si encuentras algo curioso por el camino, ven a contármelo. Me gusta escucharte desde aquí.",
 			"Me quedé pensando en lo bien que salió todo con tu ayuda. ¡Hasta ordenar se siente más ligero!"
-		]
+		],
+		"purpose": "Ordené la paja del nido. Ahora prepararé la plaza para mis visitas."
 	},
 	"Áak": {
 		"greetings": [
@@ -1757,7 +1760,8 @@
 			"No hace falta correr para llegar a tiempo de ayudar. Tú llegaste justo cuando te necesitaba.",
 			"Puedo esperar aquí junto a la rampa si quieres contarme lo que has descubierto.",
 			"Cuando vuelva a recorrer este sendero recordaré tu visita. Los amigos también dejan huellas."
-		]
+		],
+		"purpose": "Llegué despacio por mi rampa. Ayúdame a preparar un sitio para compartir."
 	},
 	"Kéej": {
 		"greetings": [
@@ -2197,7 +2201,8 @@
 			"El jardín cambia poquito a poco. Me alegra poder compartir esos cambios contigo.",
 			"Antes estaba pendiente del encargo; ahora tengo ganas de escuchar cómo te fue a ti.",
 			"Al regresar del monte me gusta encontrar amigos cerca de casa. Tú ya conoces bien este rincón."
-		]
+		],
+		"purpose": "Mis amigos del monte vienen de visita. Nos reuniremos junto al jardín."
 	},
 	"K'éek'en": {
 		"greetings": [
@@ -2637,7 +2642,8 @@
 			"Me gustaría que todos se sintieran tan bien recibidos como yo me sentí al contar contigo.",
 			"Cuando mis flores crezcan un poquito más, tendrás que volver a ver este rincón.",
 			"Me quedé con ganas de enseñarte el jardín después de tu ayuda. ¡Por aquí se ven mejor las flores!"
-		]
+		],
+		"purpose": "¡Mis flores ya están listas! Ahora quiero recibir a mis amigos en la plaza."
 	},
 	"Ma'ax": {
 		"greetings": [
@@ -3077,7 +3083,8 @@
 			"Quise darte las gracias desde la rama, pero preferí venir a decírtelo aquí.",
 			"Me gusta este rincón bajo el árbol. Después de tu ayuda se siente todavía mejor compartirlo.",
 			"Ahora te escucho yo. ¿Qué descubriste mientras andabas por la aldea?"
-		]
+		],
+		"purpose": "Bajé por mi escalera de cuerda. ¡Preparemos la reunión antes de que lleguen todos!"
 	},
 	"Kuuts": {
 		"greetings": [
@@ -3517,7 +3524,8 @@
 			"Hoy buscaré semillas sin apurarme. Tú ya me ayudaste con lo que necesitaba.",
 			"Si oyes unas hojas crujir cerca de mi casa, quizá sea yo saliendo a darte la bienvenida.",
 			"Me gusta recordar a mis amigos mientras camino entre los arbustos. Hoy seguro pensaré en ti."
-		]
+		],
+		"purpose": "Escuché pasos entre los arbustos. Mis compañeros vendrán a pasar la tarde."
 	},
 	"Báalam": {
 		"greetings": [
@@ -3957,7 +3965,8 @@
 			"Ahora puedo volver a mirar las huellas por curiosidad, sin pensar en lo que me faltaba.",
 			"Cuando quieras descansar del camino, busca mi casa de piedra. Me gustará verte llegar.",
 			"Me alegra que tu visita no terminara con el encargo. También disfruto estos ratos de conversación."
-		]
+		],
+		"purpose": "Mis amigos del monte llegarán pronto. Los recibiré junto a las piedras."
 	},
 	"T'u'ul": {
 		"greetings": [
@@ -4397,7 +4406,8 @@
 			"Me gusta que vuelvas aunque ya me hayas ayudado. Siempre hay otra hoja nueva que enseñarte.",
 			"No todos los días se recibe una ayuda así. Quiero guardar este recuerdo junto a mis paseos favoritos.",
 			"Si pasas otra vez por el jardín, saluda. Quizá esté saltando, pero para un amigo me detengo."
-		]
+		],
+		"purpose": "Ya terminé de saltar por el jardín. Quiero preparar la visita de mis amigos."
 	},
 	"Kay": {
 		"greetings": [
@@ -4837,7 +4847,8 @@
 			"El agua se llena de ondas cuando saludo. Hoy algunas son para darte las gracias otra vez.",
 			"Si descubres algo bonito en tierra, ven a contármelo. Yo te contaré lo que encuentre nadando.",
 			"Nuestra conversación llega de un lado al otro de la orilla. Me gusta que estemos tan cerca."
-		]
+		],
+		"purpose": "Me quedaré en el agua. Mis amigos de tierra vendrán a compartir desde la orilla."
 	},
 	"Ch'íich'": {
 		"greetings": [
@@ -5277,6 +5288,7 @@
 			"El nido se hace ramita a ramita. La amistad también crece con ayudas como la tuya.",
 			"Puedo dejar el vuelo para después. Ahora quiero saber cómo sigue tu aventura.",
 			"Hoy, al mirar los caminos desde arriba, buscaré el que te trae de vuelta a mi percha."
-		]
+		],
+		"purpose": "Vi llegar a nuestros amigos desde mi rama. ¡Vamos a recibirlos en la plaza!"
 	}
 }

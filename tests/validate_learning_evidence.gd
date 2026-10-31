@@ -158,12 +158,12 @@ func _sources() -> void:
 func _recall_inputs() -> void:
 	await _scene("world3_level1")
 	var level: Node = current_scene
-	level.round_index = level.challenges.size() + 3
+	level.round_index = PhraseExerciseFixture.round_for(level.round_plan, false)
 	level._show_round()
 	level.mission_break.hide()
 	var task: ExerciseEntry = level._current_challenge()
 	_check(
-		level.recall.visible and not level.target_art.visible,
+		level.recall.visible and not level.result_art.visible,
 		"El recuerdo del taller debe retirar tarjetas y dibujo de la solución"
 	)
 	level.recall.first.text = task.noun
@@ -199,17 +199,17 @@ func _recall_inputs() -> void:
 	)
 	level.recall.practice_requested.emit()
 	_check(
-		not level.recall.visible and level.target_art.visible and level._attempt.supported,
+		not level.recall.visible and not level.result_art.visible and level._attempt.supported,
 		"Volver a las tarjetas debe ser práctica con apoyo"
 	)
 	await _scene("world4_level1")
 	level = current_scene
-	level.round_index = level.challenges.size()
+	level.round_index = PhraseExerciseFixture.round_for(level.round_plan, false)
 	level._show_round()
 	level.mission_break.hide()
 	task = level._current_challenge()
 	_check(
-		level.recall.visible and not level.visual_clue.visible,
+		level.recall.visible and not level.result_art.visible,
 		"Las peticiones de recuerdo no deben dar dibujos de solución"
 	)
 	level.recall.first.text = task.food
@@ -347,6 +347,12 @@ func _mission() -> void:
 				"Las entregas y los objetos colocados se conservan al continuar"
 			)
 	await _capture("04_aldea_resuelta")
+	_check(mission.gathering.visible, "Los tres encargos culminan en la celebración conjunta")
+	mission.gathering.close_button.pressed.emit()
+	_check(
+		mission.gathering_seen and mission._can_walk(),
+		"Cerrar la celebración permite continuar la misión"
+	)
 	var goal: ExplorationSpot = mission.get_node("Spots/Salida") as ExplorationSpot
 	mission._place_kalin(goal.position.x)
 	mission.open_spot(goal)

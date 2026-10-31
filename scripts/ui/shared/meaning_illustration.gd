@@ -52,26 +52,30 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 func show_meaning(maya_word: String, modifier: String = "") -> void:
+	picture.show()
 	word = maya_word
 	quality = modifier
 	picture.texture = catalog.texture_for(word)
 	reference.texture = picture.texture
 	quality_badge.texture = null
-	var contexts: Dictionary = {
-		"Jats'uts": "fx_decoracion", "ki'": "fx_aroma", "chich": "prop_peso"
-	}
+	var contexts: Dictionary = {"Jats'uts": "fx_decoracion", "ki'": "fx_aroma"}
 	if quality in contexts:
 		quality_badge.texture = catalog.texture_for(contexts[quality])
+	_layout_art()
+
+
+func set_world_object(enabled: bool) -> void:
+	world_object = enabled
 	_layout_art()
 
 
 func _layout_art() -> void:
 	if not is_instance_valid(picture):
 		return
-	var comparison: bool = quality in ["mejen", "nojoch"]
+
 	world_front.hide()
 	world_mat.hide()
-	if world_object:
+	if word in CombinationCatalog.BASICS:
 		reference.hide()
 		quality_badge.hide()
 		var factor: float = 0.76 if quality == "mejen" else (1.2 if quality == "nojoch" else 1.0)
@@ -124,30 +128,10 @@ func _layout_art() -> void:
 			quality_badge.size = Vector2(width * 0.42, width * 0.32)
 			quality_badge.position = picture.position + Vector2(width * 0.63, -width * 0.04)
 		return
-	reference.visible = comparison
-	quality_badge.visible = quality_badge.texture != null
-	if comparison:
-		# Los dos objetos conservan proporción y se apoyan en la misma base.
-		var ratio: float = 4.0 / 3.0
-		if picture.texture:
-			ratio = float(picture.texture.get_width()) / picture.texture.get_height()
-		var width: float = size.x * 0.64 * (0.55 if quality == "mejen" else 1.0)
-		picture.size = Vector2(width, width / ratio)
-		if picture.size.y > size.y:
-			picture.size *= size.y / picture.size.y
-		picture.position = Vector2(size.x * 0.36, size.y - picture.size.y)
-		reference.size = Vector2(size.x * 0.32, size.x * 0.32 / ratio)
-		reference.position = Vector2(0, size.y - reference.size.y)
-	else:
-		picture.position = Vector2.ZERO
-		picture.size = size
-	if quality_badge.visible:
-		picture.size = size * Vector2(0.94, 0.85)
-		picture.position = Vector2(0, size.y * 0.15)
-		quality_badge.size = size * Vector2(0.44, 0.44)
-		quality_badge.position = size * Vector2(0.48, 0.02)
-		if quality == "chich":
-			quality_badge.position = size * Vector2(0.26, 0.24)
+	reference.hide()
+	quality_badge.hide()
+	picture.position = Vector2.ZERO
+	picture.size = size
 
 
 func picture_rect() -> Rect2:

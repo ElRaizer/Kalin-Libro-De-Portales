@@ -69,6 +69,12 @@ theme_override_font_sizes/font_size = 15
 text = "0 entradas recuperadas"
 vertical_alignment = 1
 
+[node name="ProjectButton" type="Button" parent="BG/Book/Header"]
+layout_mode = 2
+text = "Mi proyecto"
+theme_type_variation = &"KalinSecondaryButton"
+theme_override_font_sizes/font_size = 20
+
 [node name="CloseButton" type="Button" parent="BG/Book"]
 layout_mode = 0
 offset_left = 1090.0
@@ -185,6 +191,12 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 visible = false
+
+[node name="PracticeButton" type="Button" parent="BG/Book/Pages/LeftPage/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 36)
+theme_type_variation = &"KalinSecondaryButton"
+text = "Ver mi práctica"
 
 [node name="AudioButton" type="Button" parent="BG/Book/Pages/LeftPage/Content"]
 custom_minimum_size = Vector2(0, 40)
@@ -306,6 +318,12 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 visible = false
+
+[node name="PracticeButton" type="Button" parent="BG/Book/Pages/RightPage/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 36)
+theme_type_variation = &"KalinSecondaryButton"
+text = "Ver mi práctica"
 
 [node name="AudioButton" type="Button" parent="BG/Book/Pages/RightPage/Content"]
 custom_minimum_size = Vector2(0, 40)
@@ -527,6 +545,12 @@ visible = false
 
 theme_override_colors/font_color = Color(0.23, 0.14, 0.08, 1)
 
+[node name="PracticeButton" type="Button" parent="BG/Book/CompactPage/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 36)
+theme_type_variation = &"KalinSecondaryButton"
+text = "Ver mi práctica"
+
 [node name="AudioButton" type="Button" parent="BG/Book/CompactPage/Content"]
 offset_left = 340.0
 offset_top = 354.0
@@ -539,3 +563,44 @@ theme_override_font_sizes/font_size = 26
 visible = false
 
 theme_override_colors/font_color = Color(0.23, 0.14, 0.08, 1)
+
+[node name="Project" type="Panel" parent="BG/Book"]
+visible = false
+offset_left = 190.0
+offset_top = 140.0
+offset_right = 1000.0
+offset_bottom = 554.0
+theme_type_variation = &"KalinCreamPanel"
+
+[node name="Status" type="Label" parent="BG/Book/Project"]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 786.0
+offset_bottom = 206.0
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.08, 0.3, 0.28, 1)
+
+[node name="Table" type="Button" parent="BG/Book/Project"]
+offset_left = 24.0
+offset_top = 220.0
+offset_right = 390.0
+offset_bottom = 280.0
+text = "Mesa · 10 puntos"
+theme_type_variation = &"KalinPrimaryButton"
+
+[node name="Strong" type="Button" parent="BG/Book/Project"]
+offset_left = 410.0
+offset_top = 220.0
+offset_right = 786.0
+offset_bottom = 280.0
+text = "Fuerte · 10 puntos"
+theme_type_variation = &"KalinPrimaryButton"
+
+[node name="Close" type="Button" parent="BG/Book/Project"]
+offset_left = 24.0
+offset_top = 330.0
+offset_right = 786.0
+offset_bottom = 390.0
+text = "Volver a las palabras"
+theme_type_variation = &"KalinSecondaryButton"

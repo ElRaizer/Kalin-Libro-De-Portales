@@ -66,7 +66,6 @@ var _mistakes: int:
 	set(value):
 		_exercise.attempt.mistakes = value
 var guide: LearningGuide
-var target_art: MeaningIllustration
 @onready var result_art: MeaningIllustration = $UI/FeedbackPanel/ResultArt
 @onready var mission_progress: MissionProgress = $UI/MissionProgress
 @onready var mission_break: MissionBreak = $UI/MissionBreak
@@ -130,13 +129,13 @@ func _ready() -> void:
 		push_error("Configuración incompleta: " + "; ".join(issues))
 		return
 	_setup_drop_slots()
-	recall.set_workspace("taller")
 	_build_choice_buttons()
 	_configure_keyboard_navigation()
 	cast_button.pressed.connect(_on_cast_pressed)
 	recall.submitted.connect(_on_cast_pressed)
 	recall.practice_requested.connect(_practice_with_cards)
-	recall.support_used.connect(mark_learning_help)
+	recall.support_used.connect(_on_recall_support)
+	ExerciseRecallFlow.bind_support(recall, _attempt)
 	recall.answer_changed.connect(_on_scaffold_changed)
 	recall.first.text_changed.connect(_on_recall_changed)
 	recall.second.text_changed.connect(_on_recall_changed)
@@ -146,11 +145,14 @@ func _ready() -> void:
 	completion.replay_pressed.connect(_on_replay_pressed)
 	completion.menu_pressed.connect(_on_menu_pressed)
 	guide = LearningGuide.install(self, $UI/TopBar/Bar, _show_help)
-	target_art = $UI/RequestPanel/Content/TargetArt
 	mission_break.continued.connect(
 		func():
-			_refresh_step()
-			guide.watch_action(noun_slot)
+			if recall.visible:
+				recall.first.grab_focus()
+				guide.watch_action(recall)
+			else:
+				_refresh_step()
+				guide.watch_action(noun_slot)
 	)
 	var state: Dictionary = GameManager.get_scene_state(self)
 	_exercise.restore_attempt(state)
@@ -185,7 +187,15 @@ func _ready() -> void:
 
 
 func _build_round_plan(state: Dictionary = {}) -> void:
-	_exercise.build_plan(challenges.size(), state)
+	var presented: Array[bool] = []
+	for challenge: ExerciseEntry in challenges:
+		presented.append(
+			(
+				GameManager.has_learned_word(challenge.noun)
+				and GameManager.has_learned_word(challenge.adjective)
+			)
+		)
+	_exercise.build_plan(challenges.size(), state, presented)
 
 
 func _build_choice_buttons() -> void:
@@ -236,9 +246,7 @@ func _show_round() -> void:
 		"Práctica con tarjetas" if _practice_fallback else ("Práctica" if guided else "Recuerdo")
 	)
 	request_label.text = "Ayuda a %s" % challenge.animal
-	target_art.show_meaning(challenge.noun, challenge.adjective)
-	target_art.visible = guided or _practice_fallback
-	target_badge.text = challenge.translation
+	target_badge.text = "Necesito:\n" + challenge.translation
 	instruction_label.text = ""
 	translation_label.text = ""
 	_update_slots()
@@ -264,11 +272,12 @@ func _show_round() -> void:
 		cast_button.disabled = false
 	mission_progress.update_progress(round_index, round_plan.size(), _phase_caption())
 	progress_label.text = (
-		"%s %d / %d"
+		"Episodio %d · %s %d / %d"
 		% [
+			_exercise.episode_number(),
 			"Aprende" if guided else "Repasa",
-			round_index % challenges.size() + 1,
-			challenges.size()
+			_exercise.phase_position(),
+			_exercise.phase_size()
 		]
 	)
 	PHRASE_BUILDER.focus_first_visible(noun_grid)
@@ -292,14 +301,19 @@ func _phase_caption() -> String:
 
 
 func _show_block() -> void:
-	if round_index > 0 and round_index % 3 == 0 and round_index not in _blocks_seen:
+	if _exercise.is_phase_start() and round_index not in _blocks_seen:
 		_blocks_seen.append(round_index)
 		guide.stop()
 		var recent: ExerciseEntry = challenges[int(round_plan[round_index - 1].challenge)]
-		mission_break.show_block(
-			"¡Otro objeto a su medida!", "tamano", recent.noun, recent.adjective, recent.animal
+		mission_break.show_episode(
+			_exercise.episode_number(),
+			_is_guided_phase(),
+			"tamano",
+			recent.noun,
+			recent.adjective,
+			recent.animal
 		)
-		if round_index == challenges.size():
+		if _is_guided_phase():
 			mission_break.offer_walk("world3_explore1", "world3_level1")
 
 
@@ -323,7 +337,7 @@ func _is_guided_phase() -> bool:
 
 func _update_choice_labels() -> void:
 	var guided: bool = _is_guided_phase()
-	var bridge: bool = not guided and round_index < challenges.size() + 3
+	var bridge: bool = not guided and _exercise.episode_number() == 1
 	for noun: ExerciseEntry in nouns:
 		var button: Button = noun_buttons[noun.maya]
 		button.text = (
@@ -369,12 +383,8 @@ func _select_adjective(word: String) -> void:
 
 
 func _celebrate_selection(slot: Control) -> void:
-	if not selected_noun.is_empty():
-		result_art.show()
-		result_art.show_meaning(selected_noun, selected_adjective)
-		feedback_label.offset_left = maxf(
-			_feedback_left, result_art.position.x + result_art.size.x + 9
-		)
+	result_art.hide()
+	feedback_label.offset_left = _feedback_left
 	PHRASE_BUILDER.clear_mark(slot)
 	PHRASE_BUILDER.celebrate(
 		slot,
@@ -419,7 +429,12 @@ func _on_cast_pressed() -> void:
 	if recall.visible and not recall.ready_to_submit():
 		return
 	var answers: Array = recall.values() if recall.visible else [selected_noun, selected_adjective]
-	if not _exercise.submit(answers, [challenge.noun, challenge.adjective], recall.visible):
+	if not _exercise.submit(
+		answers,
+		[challenge.noun, challenge.adjective],
+		recall.visible,
+		ExerciseRecallFlow.phase(recall, _is_guided_phase())
+	):
 		_show_incorrect_feedback(challenge)
 		return
 	AudioManager.play_sfx("acierto")
@@ -431,7 +446,8 @@ func _on_cast_pressed() -> void:
 		ExerciseRecallFlow.phase(recall, _is_guided_phase()),
 		_attempt.context,
 		_attempt.supported,
-		_attempt.mistakes
+		_attempt.mistakes,
+		_attempt.evidence([challenge.noun, challenge.adjective])
 	)
 	GameManager.mark_tutorial_seen("phrases")
 	_render_success(true)
@@ -441,9 +457,8 @@ func _show_incorrect_feedback(challenge: ExerciseEntry) -> void:
 	AudioManager.play_sfx("error_suave")
 	_exercise.miss()
 	guide.stop()
-	result_art.show()
-	result_art.show_meaning(selected_noun, selected_adjective)
-	feedback_label.offset_left = maxf(_feedback_left, result_art.position.x + result_art.size.x + 9)
+	result_art.hide()
+	feedback_label.offset_left = _feedback_left
 	CharacterReaction.play(animal_sprite, false)
 	var noun_ok: bool = selected_noun == str(challenge.noun)
 	var adjective_ok: bool = selected_adjective == str(challenge.adjective)
@@ -506,7 +521,7 @@ func _on_menu_pressed() -> void:
 
 
 func _on_next_level_pressed() -> void:
-	GameManager.start_walk("world3_explore1", "world3_mission1")
+	GameManager.go_to_scene("world3_mission1")
 
 
 func _on_book_pressed() -> void:
@@ -564,11 +579,13 @@ func _show_help() -> void:
 		return
 	if _resolving:
 		return
-	mark_learning_help()
 	if recall.visible:
+		_attempt.guidance = true
+		GameManager.checkpoint(self)
 		recall.explain_support()
 		guide.highlight(recall)
 		return
+	mark_learning_help()
 	var challenge: ExerciseEntry = _current_challenge()
 	var needs_noun: bool = selected_noun != challenge.noun
 	var grid: Control = noun_grid if needs_noun else adjective_grid
@@ -609,9 +626,14 @@ func get_checkpoint_state() -> Dictionary:
 	return state.duplicate(true)
 
 
+func _on_recall_support() -> void:
+	_attempt.supported = true
+	GameManager.checkpoint(self)
+
+
 func mark_learning_help() -> void:
 	if not _resolving:
-		_attempt.supported = true
+		_attempt.use_content_help()
 		GameManager.checkpoint(self)
 
 
@@ -621,7 +643,6 @@ func _practice_with_cards() -> void:
 	ExerciseRecallFlow.expand_for_recall(choices_panel, spell_panel, recall, false)
 	recall.hide()
 	$UI/ChoicesPanel/Content.show()
-	target_art.show()
 	_update_choice_labels()
 	_refresh_step()
 	phase_label.text = "Práctica con tarjetas"

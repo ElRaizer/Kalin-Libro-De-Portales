@@ -1,19 +1,20 @@
 [gd_scene format=3 uid="uid://d2rruddd7xe0j"]
 
 [ext_resource type="PackedScene" path="res://scenes/worlds/world1/grid_path_level_base.tscn" id="1_base"]
-[ext_resource type="Script" path="res://scripts/worlds/world1/obstacle_memory_paths.gd" id="2_script"]
-[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_level_monte.svg" id="3_bg"]
-[ext_resource type="Script" path="res://scripts/features/grid_paths/grid_word_data.gd" id="4_word"]
-[ext_resource type="Texture2D" path="res://Arte/sprites/animal_baalam.svg" id="5_baalam"]
-[ext_resource type="Texture2D" path="res://Arte/sprites/animal_kuuts.svg" id="6_kuuts"]
-[ext_resource type="Texture2D" path="res://Arte/sprites/animal_tuul.svg" id="7_tuul"]
-[ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="editor_8"]
+[ext_resource type="Script" uid="uid://ucencs5cmj0i" path="res://scripts/worlds/world1/obstacle_memory_paths.gd" id="2_script"]
+[ext_resource type="Texture2D" uid="uid://l6c2nufcba36" path="res://Arte/backgrounds/bg_level_monte.svg" id="3_bg"]
+[ext_resource type="Script" uid="uid://kfbwe7mv5uhc" path="res://scripts/features/grid_paths/grid_word_data.gd" id="4_word"]
+[ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="editor_8"]
+[ext_resource type="Texture2D" uid="uid://d2f8hj07l54pc" path="res://Arte/sprites/animal_baalam.svg" id="saved_4_8dloh"]
+[ext_resource type="Texture2D" uid="uid://kuo4lhc2uowd" path="res://Arte/sprites/animal_kuuts.svg" id="saved_5_qdlen"]
+[ext_resource type="Texture2D" uid="uid://br3jmwjyekrda" path="res://Arte/sprites/animal_tuul.svg" id="saved_6_gnlsh"]
+
 [ext_resource type="Texture2D" path="res://Arte/tiles/tile_empty.svg" id="saved_1_m8dm8"]
+
 [ext_resource type="Texture2D" path="res://Arte/tiles/tile_obstacle.svg" id="saved_2_v048i"]
+
 [ext_resource type="Texture2D" path="res://Arte/ilustraciones/ui_casa.svg" id="saved_3_wyb2i"]
-[ext_resource type="Texture2D" path="res://Arte/sprites/animal_baalam.svg" id="saved_4_8dloh"]
-[ext_resource type="Texture2D" path="res://Arte/sprites/animal_kuuts.svg" id="saved_5_qdlen"]
-[ext_resource type="Texture2D" path="res://Arte/sprites/animal_tuul.svg" id="saved_6_gnlsh"]
+
 [ext_resource type="StyleBox" path="res://themes/grid_cursor.tres" id="saved_7_w08fl"]
 
 [sub_resource type="Resource" id="Word_baalam"]
@@ -22,7 +23,7 @@ maya_word = "Báalam"
 spanish_word = "Jaguar"
 phrase = "In k'aaba'e' Báalam"
 explanation = "Me llamo Jaguar — en maya: Báalam"
-sprite = ExtResource("5_baalam")
+sprite = ExtResource("saved_4_8dloh")
 destination_text = "Báalam"
 color = Color(0.8, 0.55, 0.12, 1)
 start_cell = Vector2i(0, 1)
@@ -31,10 +32,10 @@ destination_cell = Vector2i(11, 1)
 [sub_resource type="Resource" id="Word_kuuts"]
 script = ExtResource("4_word")
 maya_word = "Kuuts"
-spanish_word = "Pavo de monte"
+spanish_word = "Pavo"
 phrase = "In k'aaba'e' Kuuts"
-explanation = "Me llamo Pavo de monte — en maya: Kuuts"
-sprite = ExtResource("6_kuuts")
+explanation = "Me llamo Pavo — en maya: Kuuts"
+sprite = ExtResource("saved_5_qdlen")
 destination_text = "Kuuts"
 color = Color(0.38, 0.28, 0.55, 1)
 start_cell = Vector2i(0, 3)
@@ -46,7 +47,7 @@ maya_word = "T'u'ul"
 spanish_word = "Conejo"
 phrase = "In k'aaba'e' T'u'ul"
 explanation = "Me llamo Conejo — en maya: T'u'ul"
-sprite = ExtResource("7_tuul")
+sprite = ExtResource("saved_6_gnlsh")
 destination_text = "T'u'ul"
 color = Color(0.3, 0.55, 0.45, 1)
 start_cell = Vector2i(0, 5)
@@ -124,7 +125,7 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[node name="Level3" instance=ExtResource("1_base")]
+[node name="Level3" unique_id=783519832 instance=ExtResource("1_base")]
 script = ExtResource("2_script")
 level_number = 3
 next_scene_key = "world1_story4"
@@ -141,11 +142,31 @@ texture = ExtResource("3_bg")
 obstacles = Array[Vector2i]([Vector2i(2, 1), Vector2i(5, 1), Vector2i(8, 1), Vector2i(2, 3), Vector2i(7, 4), Vector2i(9, 3), Vector2i(3, 5), Vector2i(6, 5), Vector2i(9, 5), Vector2i(4, 0), Vector2i(7, 2), Vector2i(4, 6)])
 words = Array[ExtResource("4_word")]([SubResource("Word_baalam"), SubResource("Word_kuuts"), SubResource("Word_tuul")])
 
-[node name="PreviewButton" type="Button" parent="UI"]
-offset_left = 24
-offset_top = 150
-offset_right = 188
-offset_bottom = 204
+[node name="InstrPanel" parent="UI" index="1"]
+offset_left = 438.0
+offset_top = 640.0
+offset_right = 998.0
+offset_bottom = 708.0
+
+[node name="ArrivalButton" parent="UI" index="4"]
+offset_left = 1024.0
+offset_top = 646.0
+offset_right = 1256.0
+offset_bottom = 704.0
+
+[node name="MissionProgress" parent="UI" index="5"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 28.0
+offset_top = 647.0
+offset_right = 418.0
+offset_bottom = 705.0
+
+[node name="PreviewButton" type="Button" parent="UI" index="7" unique_id=1926825164]
+offset_left = 24.0
+offset_top = 150.0
+offset_right = 188.0
+offset_bottom = 204.0
 theme = ExtResource("editor_8")
 theme_type_variation = &"KalinPrimaryButton"
 text = "Listo →"

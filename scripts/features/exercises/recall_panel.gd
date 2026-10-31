@@ -4,6 +4,7 @@ class_name RecallPanel
 signal submitted
 signal practice_requested
 signal support_used
+signal word_support_used(word: String, level: int)
 signal answer_changed
 @export var external_submit: bool = false
 @export var preferred_size: Vector2 = Vector2.ZERO
@@ -22,7 +23,6 @@ var _selected: Vector2i = Vector2i(-1, -1)
 var _block_width: float = 92.0
 var _showing_result: bool = false
 var _empty_style: StyleBoxFlat
-var _workspace_kind: String = ""
 
 @onready var first: LineEdit = $Margin/Content/Fields/First/Input
 @onready var second: LineEdit = $Margin/Content/Fields/Second/Input
@@ -32,8 +32,6 @@ var _active: LineEdit
 
 
 func _ready() -> void:
-	$Margin/Content/Workspace.panel = self
-	answer_changed.connect(_refresh_workspace)
 	_empty_style = StyleBoxFlat.new()
 	_empty_style.bg_color = Color("ede1bd")
 	_empty_style.border_color = Color("7b6b48")
@@ -51,13 +49,11 @@ func _ready() -> void:
 	second.focus_entered.connect(func(): _active = second)
 	first.text_changed.connect(
 		func(_value: String):
-			_refresh_workspace()
 			if not _setting_up:
 				answer_changed.emit()
 	)
 	second.text_changed.connect(
 		func(_value: String):
-			_refresh_workspace()
 			if not _setting_up:
 				answer_changed.emit()
 	)
@@ -117,7 +113,6 @@ func configure(labels: Array, answers: Array = [], initial_mode: int = Mode.WRIT
 	show()
 	call_deferred("_focus_first")
 	call_deferred("_settle_size")
-	call_deferred("_refresh_workspace")
 
 
 func apply_compact(enabled: bool) -> void:
@@ -127,26 +122,10 @@ func apply_compact(enabled: bool) -> void:
 		button.add_theme_font_size_override("font_size", 26 if enabled else 20)
 	$Margin/Content/Actions/Practice.custom_minimum_size.y = 56 if enabled else 40
 	$Margin/Content/Actions/Submit.custom_minimum_size.y = 56 if enabled else 40
-	$Margin/Content/Workspace.custom_minimum_size.y = 158 if enabled else 188
-
-
-func set_workspace(kind: String) -> void:
-	_workspace_kind = kind
-	$Margin/Content/Workspace.kind = kind
-	_refresh_workspace()
-
-
-func _refresh_workspace() -> void:
-	if not is_inside_tree():
-		return
-	var workspace: Control = $Margin/Content/Workspace as Control
-	workspace.visible = (
-		not _workspace_kind.is_empty() and mode != Mode.BLOCKS and not _showing_result
-	)
-	workspace.refresh()
 
 
 func set_mode(value: int, announce: bool = true) -> void:
+	var previous: Array[String] = values() if is_node_ready() else []
 	mode = clampi(value, Mode.WRITE, Mode.BLOCKS)
 	first.clear()
 	second.clear()
@@ -183,10 +162,15 @@ func set_mode(value: int, announce: bool = true) -> void:
 		_build_fragments()
 	if announce:
 		if mode != Mode.WRITE:
+			for index: int in range(expected.size()):
+				if (
+					index >= previous.size()
+					or not WordMatcher.match_word(previous[index], expected[index]).correct
+				):
+					word_support_used.emit(expected[index], mode)
 			support_used.emit()
 		answer_changed.emit()
 	_active = first
-	_refresh_workspace()
 	call_deferred("_focus_first")
 	call_deferred("_settle_size")
 

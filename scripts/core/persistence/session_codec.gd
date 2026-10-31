@@ -6,11 +6,13 @@ class_name SessionCodec
 static func decode(data: Dictionary) -> Dictionary:
 	var state: Dictionary = {
 		"magic_points": int(data.get("magic_points", 0)),
+		"economy": data.get("economy", MagicEconomy.empty_state()).duplicate(true),
+		"garden": data.get("garden", GardenLayout.empty_state()).duplicate(true),
 		"completed_levels":
 		SaveSchema.completed_levels(data.get("completed_levels", []), GameContent.LEVEL_ORDER),
 		"resume_scene_key": _scene(data.get("resume_scene_key", ""), ["main_menu"]),
 		"practice_return_key":
-		_scene(data.get("practice_return_key", ""), ["main_menu", "village_practice"]),
+		_scene(data.get("practice_return_key", ""), ["main_menu", "village_home"]),
 		"scene_states": {},
 		"tutorials_seen": [],
 		"words_learned": {},
@@ -18,6 +20,12 @@ static func decode(data: Dictionary) -> Dictionary:
 		"learning_clock": mini(int(data.get("learning_clock", 0)), 1000000),
 	}
 	var loaded_states: Dictionary = data.get("scene_states", {})
+	for word: String in state.economy.awards:
+		state.economy.awards[word] = int(state.economy.awards[word])
+	state.garden.next_id = int(state.garden.next_id)
+	for object: Dictionary in state.garden.objects:
+		for field: String in ["id", "orientation", "support"]:
+			object[field] = int(object[field])
 	for key: String in loaded_states:
 		if key in GameContent.SCENE_PATHS and loaded_states[key] is Dictionary:
 			state.scene_states[key] = SceneStateSchema.sanitize(loaded_states[key])

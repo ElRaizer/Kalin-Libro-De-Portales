@@ -3,7 +3,13 @@
 
 [resource]
 script = ExtResource("script")
+recall_height = 384.0
+single_recall_height = 272.0
+writing_height = 268.0
+single_writing_height = 190.0
 rectangles = {
+NodePath("UI/ChoicesPanel"): Rect2(488, 86, 768, 352),
+NodePath("UI/SpellPanel"): Rect2(488, 450, 768, 92),
 NodePath("UI/CastButton"): Rect2(980, 632, 276, 72),
 NodePath("UI/ServeButton"): Rect2(980, 632, 276, 72),
 NodePath("UI/NextButton"): Rect2(980, 632, 276, 72),

@@ -78,29 +78,31 @@ theme = ExtResource("6_theme")
 theme_type_variation = &"KalinRequestPanel"
 
 [node name="WordIcon" type="TextureRect" parent="UI/DialoguePanel"]
-offset_left = 10.0
-offset_top = 10.0
-offset_right = 98.0
-offset_bottom = 98.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 108.0
+offset_bottom = 108.0
 expand_mode = 1
 stretch_mode = 6
 
 [node name="VBox" type="VBoxContainer" parent="UI/DialoguePanel"]
-offset_left = 108.0
-offset_top = 14.0
+offset_left = 132.0
+offset_top = 20.0
 offset_right = 800.0
-offset_bottom = 178.0
+offset_bottom = 104.0
 theme_override_constants/separation = 10
 
 [node name="Phrase" type="Label" parent="UI/DialoguePanel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.08, 0.08, 0.45, 1)
 theme_override_font_sizes/font_size = 28
+autowrap_mode = 3
 
 [node name="Hint" type="Label" parent="UI/DialoguePanel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
 theme_override_font_sizes/font_size = 18
+autowrap_mode = 3
 
 [node name="SkipLbl" type="Label" parent="UI/DialoguePanel/VBox"]
 layout_mode = 2
@@ -118,10 +120,10 @@ visible = false
 [node name="LearningGuide" parent="." instance=ExtResource("editor_7")]
 
 [node name="ContinueButton" type="Button" parent="UI/DialoguePanel"]
-offset_left = 794.0
-offset_top = 411.0
-offset_right = 1026.0
-offset_bottom = 469.0
+offset_left = 568.0
+offset_top = 126.0
+offset_right = 800.0
+offset_bottom = 184.0
 theme = ExtResource("6_theme")
 theme_type_variation = &"KalinPrimaryButton"
 text = "Continuar →"

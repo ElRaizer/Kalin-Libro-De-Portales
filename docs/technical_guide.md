@@ -52,6 +52,12 @@ expresiones se asignan en `data/visual_catalog.tres`.
 | `kalin_derecha` | `→`, `D` |
 | `kalin_interactuar` | `E`, `Espacio`, `Enter`, `Enter` del teclado numérico |
 
+En la aldea y las misiones con suelo libre, `↑`/`W` y `↓`/`S` controlan la
+profundidad. Un clic calcula una ruta alrededor de muebles y estanques. El diario
+«Encargos y lugares» conserva los accesos directos por teclado. Decorar cambia a
+un modo explícito: flechas mueven la vista previa, Enter confirma y Escape cancela
+o sale. Las orientaciones de sillas y mesas usan vistas SVG distintas, sin girar el dibujo plano.
+
 ## Estructura y responsabilidades
 
 La estructura vigente y los contratos de cada sistema están en
@@ -86,8 +92,8 @@ El orden oficial vive en `GameContent.LEVEL_ORDER`:
 1. Mundo 1, niveles 1–4: caminos de animales.
 2. Mundo 2, nivel 1: lanzamiento del hechizo correcto.
 3. Mundo 3, nivel 1: adjetivos.
-4. Mundo 4, nivel 1: *In k'a'at* en fases guiada y de recuerdo.
-5. Mundo 4, nivel 2: números del uno al cinco (ver [Las piedras que cuentan](#las-piedras-que-cuentan)).
+4. Mundo 4, nivel 1: *In k'a'at* en episodios de práctica y recuerdo.
+5. Mundo 4, nivel 2: números mayas del 1 al 50 (ver [Las piedras que cuentan](#las-piedras-que-cuentan)).
 6. Mundo 5, nivel 1: recapitulación, cortesía y portal de regreso.
 
 Cada nivel debe llamar `GameManager.complete_level(mundo, nivel)` con su identidad real. **Continuar** usa `resume_scene_key` y el checkpoint de la escena. Si la sesión actual no tiene checkpoint, consulta el primer elemento incompleto de `LEVEL_ORDER`.
@@ -142,10 +148,10 @@ Cada `StoryBeat` define:
 La revisión visual incorpora también `kind = EXPLORAR`, `visual_scene` (vacío,
 `camino`, `casa`, `tamano`, `hambre` o `portal`) y `visual_solved`. En EXPLORAR,
 la escena representa el problema automáticamente en un bucle continuo; Continuar
-está disponible sin tocar la animación. Los
-checkpoints narrativos guardan `revision = 2` y migran las posiciones de los
-capítulos abreviados. `PauseMenu` es el autoload que gestiona `Esc` sin saltar
-capítulos. Ver [REVISION_UX_VISUAL.md](learning_and_missions.md) para los componentes
+está disponible sin tocar la animación. Los checkpoints narrativos conservan el
+momento, el plan de preguntas y el estado de la interacción en el formato vigente,
+sin migrar posiciones de capítulos anteriores. `PauseMenu` es el autoload que
+gestiona `Esc` sin saltar capítulos. Ver [Aprendizaje y misiones](learning_and_missions.md) para los componentes
 compartidos de presentación y ayuda.
 
 | Propiedad | Uso |
@@ -310,9 +316,15 @@ El progreso se guarda automáticamente como `user://kalin_save.json`. Incluye:
 - identificadores `w<numero>_l<numero>` de los niveles completados;
 - escena pendiente, estado de cada escena y tutoriales ya practicados.
 
-**Volver a empezar** pide confirmación antes de eliminar la partida. `SaveSchema.CURRENT_VERSION` fija el único formato admitido (**6**). Los formatos anteriores o futuros se rechazan sin sobrescribir el archivo; el menú permite reiniciarlo. Un archivo dañado puede recuperar el respaldo del formato vigente. No hay migraciones ni inferencia de niveles desde vocabulario.
+**Volver a empezar** pide confirmación antes de eliminar la partida. `SaveSchema.CURRENT_VERSION` fija el único formato admitido (**9**). Los formatos anteriores o futuros se rechazan sin sobrescribir el archivo; el menú permite reiniciarlo. Un archivo dañado puede recuperar el respaldo del formato vigente. No hay migraciones ni inferencia de niveles desde vocabulario.
 
 Para una escena nueva, implementar `get_checkpoint_state() -> Dictionary` y restaurar con `GameManager.get_scene_state(self)`. Guardar tras acciones completas mediante `GameManager.checkpoint(self)`. La navegación y el cierre de ventana capturan también el estado actual. Usar `GameManager.replay_scene()` para repetir desde el principio sin borrar los logros. El libro usa `PROCESS_MODE_ALWAYS` mientras pausa el árbol; los temporizadores de un ejercicio deben respetar esa pausa.
+
+Taller y Comida usan `PhraseExerciseSession`: cada episodio nuevo presenta hasta
+tres retos y luego pide su recuerdo. La cantidad de rondas sigue siendo dos por
+reto. El checkpoint guarda el plan completo `challenge` / `guided`; no se deben
+inferir modalidades a partir de la mitad del nivel ni reordenar un plan ya iniciado.
+Los límites de modalidad y el contador del episodio se consultan al dominio.
 
 ## Libro y pronunciaciones pendientes
 
@@ -365,7 +377,16 @@ aldea lleva al Capítulo 1.
 Los perfiles de `data/layouts/` ajustan rectángulos y tipografía al modo compacto
 sin sustituir los nodos guardados en las escenas. El componente `ScreenLayout`
 permite activar `preview_compact` al ejecutar para comprobar esta composición.
+La tarjeta de los animales hereda su distribución de `grid_path_level_base.tscn`:
+ilustración a la izquierda, frase y traducción a la derecha, y Continuar debajo.
+El rectángulo compacto de ese botón en `data/layouts/grid.tres` es relativo a la
+tarjeta. `validate_grid_dialogue_layout` comprueba las zonas después de escribir
+cada nombre y al alternar los perfiles; admite capturas mediante el ejecutor.
 `RecallPanel` usa una plantilla `recall_fragment.tscn` para los bloques variables.
+
+Los controles creados después de montar una interfaz se registran mediante
+`ScreenLayout.register_controls(contenedor)`. Así las fichas y los botones dinámicos
+reciben la tipografía y el tamaño mínimo del mismo perfil, conservando su base de escritorio.
 
 Los encargos tempranos heredan `mision_encargos_aldea.tscn`: se editan seis recursos
 `VillageTask`, agrupados en tres parejas por destinatario. Los encargos comienzan
@@ -408,10 +429,9 @@ los tres encargos, independientemente del diálogo y la ruta de salida.
 
 ## Mesa de composición y habitantes
 
-`RecallPanel.set_workspace("taller")` y `set_workspace("comida")` activan
-`RecallWorkbench`. Sólo refleja lo escrito; no debe recibir las soluciones ni
-interpretar aciertos. Las tablillas permiten volver al campo con toque o teclado.
-El modo de bloques conserva su tablero independiente.
+`RecallPanel` muestra una sola representación editable de cada respuesta.
+Las tarjetas usan destinos contenidos en su franja; el resultado ilustrado aparece
+después de confirmar. El modo de bloques conserva su tablero independiente.
 
 `VillageResidents` selecciona tres destinatarios entre los doce animales presentados
 y añade tres vecinos para saludar. Instalarlo antes de `ExplorationScene._ready()`
@@ -489,10 +509,16 @@ con fondo y frente separados; utiliza adornos propios para bonita/fuerte y aroma
 para deliciosa. `VillageUseMotion` coloca al ocupante entre esas capas o al lado
 del objeto y calcula su apoyo a partir del área visible de la textura.
 
-Capas efectivas: casas 0, mueble 1, animal 2, tejido frontal 3, Kalin 4, opciones 6.
-Mantener esta relación en paseos y misiones, cuyos contenedores antes tenían
-profundidades diferentes. Kay usa la orilla con el mueble al lado. `WorldMat` apoya
-platos, alimentos y agua; `WorldFront` sólo aparece con la hamaca.
+En cada grupo, el respaldo queda detrás del animal y el tejido frontal de la
+hamaca delante. El conjunto usa la profundidad de su apoyo en el suelo para
+intercalarse con Kalin. Kay conserva su estanque. Durante el consumo terrestre,
+el recipiente y su soporte sustituyen el tapete; la porción permanece servida
+o se une a la mano de Ma’ax. `WorldMat` conserva el apoyo de los objetos mostrados
+fuera de ese gesto; `WorldFront` sólo aparece con la hamaca.
+
+Los iconos de tamaño usan una sola figura y una regla neutra, sin copias tenues
+ni señales de acierto. La figura debe coincidir con el ejemplo canónico del libro.
+Fuerte muestra el mueble reforzado, sin añadirle una piedra.
 
 `validate_village_composition.gd` revisa todas las combinaciones y el regreso desde
 JSON. Ejecutarla con `-- --capture=<carpeta absoluta>` y renderer real para revisar
@@ -515,3 +541,41 @@ resultado editorialmente. El catálogo contiene 1.332 peticiones, 888 agradecimi
 180 saludos y 120 comentarios posteriores a ayudar. Ejecutar `tools/validate.ps1` y
 revisar el atlas renderizado después de cambiar textos, cualidades o SVG. Los
 guardados pendientes anteriores no se sustituyen.
+
+## Interfaz y actividades de la aldea
+
+`Arte/ui/request_stage.svg` proporciona el globo de la petición sobre los fondos
+actuales. Taller y comida usan campos verticales y composición compacta; los perfiles
+de distribución mantienen sus posiciones por fase. El libro permite alternar el
+ejemplo y **Ver mi práctica** sin depender de tooltips.
+
+`VillageWalk.interpret_requests` activa las fichas mayas y la traducción opcional.
+Las respuestas conservan significado e ilustración. Las fichas representan contenido
+canónico conocido, sin añadir ni validar una gramática nueva.
+
+El acceso **Mi aldea** lleva al espacio persistente. La mesa de trazos del taller
+permite experimentar con combinaciones aprendidas. `gathering_title` configura
+la celebración conjunta de cada misión. El SVG
+`Arte/ui/village_gathering.svg` y los tres personajes reutilizan el arte plano del
+juego. Cerrar confirma `gathering_seen`; reanudar una celebración pendiente puede
+volver a mostrarla, sin acreditar de nuevo las entregas. La recepción se anima sólo
+al entregar; restaurar carga directamente las poses de uso.
+
+## Autoría de la continuación
+
+`mission_kind` en la misión selecciona `home`, `party` o `meal` para sus objetivos.
+Los objetos se colocan al entregar y se utilizan sin otro menú obligatorio.
+Los SVG de plaza,
+mesa compartida y poses viven en `Arte/`; los recursos de ejercicio y las fichas
+mayas conservan su identidad. Los motivos de interpretación se editan en `purpose`
+de `data/dialogue/village_dialogue.json` y se regeneran con el generador existente.
+No deben contener la traducción exacta de un pedido que se evalúa por interpretación.
+
+Los perfiles de Taller y Comida distinguen altura de escritura y de reconstrucción;
+`ScreenLayout` aplica la base y `ExerciseRecallFlow` la modalidad. `RecallWorkbench`
+ya no existe. `StoryInteraction` recibe los controles editables de la escena y posee
+su progreso; sus APIs públicas gestionan entrada, bloqueo, foco y reanudación. No
+se reubican los nodos de autoría ni se duplican las preguntas de `StoryQuestionPlan`.
+
+El formato 9 requiere reiniciar explícitamente las partidas de otro formato. Se
+conservan escritura temporal y respaldo, sin migraciones ni acreditación al reanudar.
