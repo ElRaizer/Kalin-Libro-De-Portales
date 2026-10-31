@@ -1,62 +1,49 @@
 extends RefCounted
 class_name CountingSession
 
-## Estado y reglas del tianguis de los números. Recibe datos de autor y devuelve
-## resultados; no conoce nodos, autoloads ni archivos. El checkpoint se valida
-## campo por campo y una ronda sólo se da por resuelta si su respuesta lo está.
+## Estado y reglas de «Las piedras que cuentan». Recibe la configuración y
+## devuelve resultados; no conoce nodos, autoloads ni archivos. Los números de
+## la partida salen de la semilla guardada, así que reanudar pide los mismos.
+## El checkpoint se valida campo por campo.
 
-## Cuántas veces aparece cada cosa en el puesto (la pedida y la otra).
-const STALL_COPIES: int = 5
+## Qué pasó al poner una pieza, para que la vista lo cuente y lo haga sonar.
+enum Placement {
+	ADDED,  ## La pieza quedó en el piso elegido.
+	MERGED,  ## Cinco puntos se juntaron en una barra.
+	CARRIED,  ## Veinte subieron como un punto al piso de arriba.
+	SHELL,  ## Se puso la concha del cero.
+	FULL,  ## La pieza ya no cabe en ese piso.
+	SHELL_TAKEN,  ## La concha sólo va en el piso de abajo vacío.
+}
+
+const MAX_MISTAKES: int = 1000
 
 var round_index: int = 0
 var waiting: bool = false
-var cards: bool = false
 var seed_value: int = 1
-var met: Array[String] = []
-var bars: int = 0
-var dots: int = 0
-## Índices del puesto que ya están en la canasta.
-var basket: Array[int] = []
-## Respuesta elegida o escrita: número con clasificador y lo contado.
-var answer: String = ""
-var item: String = ""
-var attempt: LearningAttempt = LearningAttempt.new()
+var twenties: int = 0
+var units: int = 0
+var shell: bool = false
+var active_floor: MayaNumeral.Floor = MayaNumeral.Floor.UNITS
+var mistakes: int = 0
 
 
-func restore(state: Dictionary, rounds: Array[CountingRound]) -> void:
+func restore(state: Dictionary, content: CountingSet) -> void:
 	seed_value = clampi(_int(state.get("layout_seed"), seed_value), 1, 2000000000)
-	round_index = clampi(_int(state.get("round"), 0), 0, rounds.size())
-	attempt.restore(state.get("attempt"))
-	cards = state.get("cards") is bool and state.cards
-	if round_index >= rounds.size():
+	round_index = clampi(_int(state.get("round"), 0), 0, content.round_count)
+	if round_index >= content.round_count:
 		return
-	var current: CountingRound = rounds[round_index]
-	met.clear()
-	var saved_met: Variant = state.get("met", [])
-	if saved_met is Array:
-		for word: Variant in saved_met:
-			if word is String and word in current.numbers and word not in met:
-				met.append(word)
-	bars = clampi(_int(state.get("bars"), 0), 0, MayaNumeral.MAX_BARS)
-	dots = clampi(_int(state.get("dots"), 0), 0, MayaNumeral.MAX_DOTS)
-	basket.clear()
-	var saved_basket: Variant = state.get("basket", [])
-	if saved_basket is Array:
-		for index: Variant in saved_basket:
-			if (
-				(index is int or index is float)
-				and is_finite(float(index))
-				and int(index) >= 0
-				and int(index) < STALL_COPIES * 2
-				and int(index) not in basket
-			):
-				basket.append(int(index))
-	answer = (
-		str(state.get("recall_text", "")).left(80) if state.get("recall_text") is String else ""
+	twenties = clampi(_int(state.get("twenties"), 0), 0, MayaNumeral.MAX_TWENTIES)
+	units = clampi(_int(state.get("units"), 0), 0, MayaNumeral.BASE - 1)
+	shell = state.get("shell") is bool and state.shell and units == 0
+	active_floor = (
+		MayaNumeral.Floor.TWENTIES
+		if _int(state.get("floor"), 0) == MayaNumeral.Floor.TWENTIES
+		else MayaNumeral.Floor.UNITS
 	)
-	item = str(state.get("noun", "")).left(80) if state.get("noun") is String else ""
-	# El indicador de espera sólo vale si la respuesta guardada es correcta.
-	waiting = state.get("waiting") is bool and state.waiting and is_solved(current)
+	mistakes = clampi(_int(state.get("mistakes"), 0), 0, MAX_MISTAKES)
+	# El indicador de espera sólo vale si la tablilla guardada es correcta.
+	waiting = state.get("waiting") is bool and state.waiting and is_solved(target(content))
 
 
 func snapshot() -> Dictionary:
@@ -64,166 +51,118 @@ func snapshot() -> Dictionary:
 		{
 			"round": round_index,
 			"waiting": waiting,
-			"cards": cards,
 			"layout_seed": seed_value,
-			"met": met.duplicate(),
-			"bars": bars,
-			"dots": dots,
-			"basket": basket.duplicate(),
-			"recall_text": answer,
-			"noun": item,
-			"attempt": attempt.snapshot()
+			"twenties": twenties,
+			"units": units,
+			"shell": shell,
+			"floor": int(active_floor),
+			"mistakes": mistakes
 		}
 		. duplicate(true)
 	)
 
 
-## Empieza una ronda nueva. Devuelve true si continúa la misma ronda guardada.
-func begin(current: CountingRound) -> bool:
-	var context: String = LearningContext.identify(
-		"counting/%s" % CountingRound.Kind.keys()[current.kind].to_lower(),
-		current.requester,
-		[current.number, current.item],
-		current.guided,
-		seed_value
-	)
-	return LearningContext.begin(attempt, context)
+## Los números de la partida, distintos entre sí y en el orden en que se piden.
+func targets(content: CountingSet) -> Array[int]:
+	var pool: Array[int] = []
+	for value: int in range(content.min_value, content.max_value + 1):
+		pool.append(value)
+	var random: RandomNumberGenerator = RandomNumberGenerator.new()
+	random.seed = hash("%d:numbers" % seed_value)
+	for index: int in range(pool.size() - 1, 0, -1):
+		var other: int = random.randi_range(0, index)
+		var swap: int = pool[index]
+		pool[index] = pool[other]
+		pool[other] = swap
+	return pool.slice(0, content.round_count)
+
+
+func target(content: CountingSet) -> int:
+	return targets(content)[round_index]
+
+
+## Animal que pide el número de esta ronda.
+func requester(content: CountingSet) -> String:
+	var random: RandomNumberGenerator = RandomNumberGenerator.new()
+	random.seed = hash("%d:%d:requester" % [seed_value, round_index])
+	return content.requesters[random.randi_range(0, content.requesters.size() - 1)]
+
+
+func is_guided(content: CountingSet) -> bool:
+	return round_index < content.guided_rounds
 
 
 func next_round() -> void:
 	round_index += 1
 	waiting = false
-	cards = false
-	met.clear()
-	bars = 0
-	dots = 0
-	basket.clear()
-	answer = ""
-	item = ""
+	mistakes = 0
+	clear_numeral()
 
 
 func is_finished(count: int) -> bool:
 	return round_index >= count
 
 
-# ─── Estela ──────────────────────────────────────────────────────────────────
-## Devuelve true si el número es nuevo en esta estela.
-func meet(current: CountingRound, word: String) -> bool:
-	if word not in current.numbers or word in met:
-		return false
-	met.append(word)
-	return true
-
-
 # ─── Construir el numeral ────────────────────────────────────────────────────
-func add_dot() -> bool:
-	var merged: bool = dots == MayaNumeral.MAX_DOTS
-	var result: Vector2i = MayaNumeral.add_dot(bars, dots)
-	bars = result.x
-	dots = result.y
-	return merged
+func select_floor(value: MayaNumeral.Floor) -> void:
+	active_floor = value
 
 
-func add_bar() -> void:
-	var result: Vector2i = MayaNumeral.add_bar(bars, dots)
-	bars = result.x
-	dots = result.y
+func add_dot() -> Placement:
+	return _add(MayaNumeral.DOT_VALUE)
+
+
+func add_bar() -> Placement:
+	return _add(MayaNumeral.BAR_VALUE)
+
+
+func add_shell() -> Placement:
+	if active_floor != MayaNumeral.Floor.UNITS or units > 0 or shell:
+		return Placement.SHELL_TAKEN
+	shell = true
+	return Placement.SHELL
 
 
 func clear_numeral() -> void:
-	bars = 0
-	dots = 0
+	twenties = 0
+	units = 0
+	shell = false
+	active_floor = MayaNumeral.Floor.UNITS
 
 
 func numeral_value() -> int:
-	return MayaNumeral.value_of(bars, dots)
+	return MayaNumeral.value_of(twenties, units)
 
 
-# ─── Tianguis ────────────────────────────────────────────────────────────────
-## Puesto barajado con la semilla de la partida: la cosa pedida y la otra.
-func stall(current: CountingRound) -> Array[String]:
-	var goods: Array[String] = []
-	for copy: int in range(STALL_COPIES):
-		goods.append(current.item)
-		goods.append(current.distractor)
-	var random: RandomNumberGenerator = RandomNumberGenerator.new()
-	random.seed = hash("%d:%d" % [seed_value, round_index])
-	for index: int in range(goods.size() - 1, 0, -1):
-		var other: int = random.randi_range(0, index)
-		var swap: String = goods[index]
-		goods[index] = goods[other]
-		goods[other] = swap
-	return goods
-
-
-func toggle_basket(index: int) -> bool:
-	if index < 0 or index >= STALL_COPIES * 2:
-		return false
-	if index in basket:
-		basket.erase(index)
-		return false
-	basket.append(index)
-	return true
-
-
-## Opciones barajadas con la semilla para que no aparezcan siempre igual.
-func shuffled_options(current: CountingRound) -> Array[String]:
-	var options: Array[String] = current.options.duplicate()
-	var random: RandomNumberGenerator = RandomNumberGenerator.new()
-	random.seed = hash("%d:%d:options" % [seed_value, round_index])
-	for index: int in range(options.size() - 1, 0, -1):
-		var other: int = random.randi_range(0, index)
-		var swap: String = options[index]
-		options[index] = options[other]
-		options[other] = swap
-	return options
-
-
-# ─── Comprobaciones ──────────────────────────────────────────────────────────
-func is_solved(current: CountingRound) -> bool:
-	match current.kind:
-		CountingRound.Kind.STELE:
-			return met.size() == current.numbers.size()
-		CountingRound.Kind.BUILD:
-			return numeral_value() == VocabularyCatalog.number_value(current.number)
-		CountingRound.Kind.MARKET:
-			return basket_result(current) == "ok"
-		CountingRound.Kind.FRIENDS:
-			return answer == current.answer
-		CountingRound.Kind.RECALL:
-			return check_written(current, answer, item).correct
-	return false
-
-
-## "ok", "other" (hay algo que no se pidió), "few" o "many".
-func basket_result(current: CountingRound) -> String:
-	var goods: Array[String] = stall(current)
-	var count: int = 0
-	for index: int in basket:
-		if goods[index] != current.item:
-			return "other"
-		count += 1
-	var wanted: int = VocabularyCatalog.number_value(current.number)
-	return "ok" if count == wanted else ("few" if count < wanted else "many")
-
-
-## Escritura: el número con su clasificador y lo contado. Omitir acentos cuenta
-## como apoyo, igual que en los demás ejercicios.
-func check_written(current: CountingRound, typed_answer: String, typed_item: String) -> Dictionary:
-	if cards:
-		return {"correct": typed_answer == current.answer, "supported": true}
-	var number_match: Dictionary = WordMatcher.match_word(typed_answer, current.answer)
-	var item_match: Dictionary = WordMatcher.match_word(typed_item, current.item)
-	return {
-		"correct": number_match.correct and item_match.correct,
-		"supported": number_match.supported or item_match.supported,
-		"number_ok": number_match.correct,
-		"item_ok": item_match.correct
-	}
+## Correcto: vale el número y, si sólo tiene veintenas, lleva la concha abajo.
+func is_solved(number: int) -> bool:
+	return numeral_value() == number and (shell or not MayaNumeral.needs_shell(number))
 
 
 func miss() -> void:
-	attempt.miss()
+	mistakes = mini(mistakes + 1, MAX_MISTAKES)
+
+
+func _add(amount: int) -> Placement:
+	if active_floor == MayaNumeral.Floor.TWENTIES:
+		if twenties + amount > MayaNumeral.MAX_TWENTIES:
+			return Placement.FULL
+		twenties += amount
+		return Placement.ADDED
+	var total: int = units + amount
+	if total >= MayaNumeral.BASE:
+		if twenties >= MayaNumeral.MAX_TWENTIES:
+			return Placement.FULL
+		twenties += 1
+		units = total - MayaNumeral.BASE
+		shell = units == 0
+		return Placement.CARRIED
+	var merged: bool = (
+		amount == MayaNumeral.DOT_VALUE and MayaNumeral.dots_of(units) == MayaNumeral.MAX_DOTS
+	)
+	units = total
+	shell = false
+	return Placement.MERGED if merged else Placement.ADDED
 
 
 static func _int(value: Variant, fallback: int) -> int:

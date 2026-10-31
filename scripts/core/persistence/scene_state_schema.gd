@@ -15,8 +15,9 @@ const NUMBERS := [
 	"choosing",
 	"mistakes",
 	"farewell_choice",
-	"bars",
-	"dots"
+	"twenties",
+	"units",
+	"floor"
 ]
 const FLAGS := [
 	"waiting",
@@ -28,7 +29,8 @@ const FLAGS := [
 	"naming_pending",
 	"workbench_open",
 	"memory_open",
-	"gathering_seen"
+	"gathering_seen",
+	"shell"
 ]
 const TEXT := [
 	"noun",
@@ -61,8 +63,7 @@ const LISTS := [
 	"combination_tasks",
 	"combination_animals",
 	"translated",
-	"helped",
-	"basket"
+	"helped"
 ]
 const OBJECTS := [
 	"attempt",

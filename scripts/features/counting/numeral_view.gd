@@ -2,8 +2,9 @@
 extends Control
 class_name NumeralView
 
-## Dibuja un numeral maya: granos de cacao (puntos) arriba y varitas (barras)
-## abajo, centrados en el control. Las texturas se eligen en el Inspector.
+## Dibuja un piso de un numeral maya: granos de cacao (puntos) arriba y varitas
+## (barras) abajo, o la concha del cero, centrados en el control. Las texturas
+## se eligen en el Inspector.
 
 @export var dot_texture: Texture2D:
 	set(value):
@@ -12,6 +13,10 @@ class_name NumeralView
 @export var bar_texture: Texture2D:
 	set(value):
 		bar_texture = value
+		queue_redraw()
+@export var shell_texture: Texture2D:
+	set(value):
+		shell_texture = value
 		queue_redraw()
 @export_range(0.3, 3.0, 0.05) var piece_scale: float = 1.0:
 	set(value):
@@ -25,6 +30,11 @@ class_name NumeralView
 	set(value):
 		dots = clampi(value, 0, MayaNumeral.MAX_DOTS)
 		queue_redraw()
+## La concha sólo se dibuja en un piso sin puntos ni barras.
+@export var shell: bool = false:
+	set(value):
+		shell = value
+		queue_redraw()
 ## Separación entre piezas, en píxeles de la textura escalada.
 @export var gap: float = 10.0:
 	set(value):
@@ -32,23 +42,24 @@ class_name NumeralView
 		queue_redraw()
 
 
-func show_value(value: int) -> void:
-	set_pieces(MayaNumeral.bars_of(value), MayaNumeral.dots_of(value))
-
-
-func set_pieces(bar_count: int, dot_count: int) -> void:
-	bars = bar_count
-	dots = dot_count
+## Muestra el valor de un piso (0 a 19); el cero con concha si se pide.
+func show_value(value: int, with_shell: bool = false) -> void:
+	bars = MayaNumeral.bars_of(value)
+	dots = MayaNumeral.dots_of(value)
+	shell = with_shell and value == 0
 
 
 func _draw() -> void:
+	if bars == 0 and dots == 0:
+		if shell and shell_texture != null:
+			var shell_size: Vector2 = shell_texture.get_size() * piece_scale
+			draw_texture_rect(shell_texture, Rect2((size - shell_size) * 0.5, shell_size), false)
+		return
 	if dot_texture == null or bar_texture == null:
 		return
 	var dot_size: Vector2 = dot_texture.get_size() * piece_scale
 	var bar_size: Vector2 = bar_texture.get_size() * piece_scale
 	var rows: int = bars + (1 if dots > 0 else 0)
-	if rows == 0:
-		return
 	var heights: float = bars * bar_size.y + (dot_size.y if dots > 0 else 0.0)
 	var y: float = (size.y - heights - gap * (rows - 1)) * 0.5
 	if dots > 0:
