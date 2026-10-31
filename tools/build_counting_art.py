@@ -23,8 +23,6 @@ GREEN = "#5E7F3C"
 CREAM = "#F6E9C4"
 CACAO = "#5B3420"
 CACAO_LIGHT = "#8A5534"
-STONE = "#B9AE97"
-STONE_DARK = "#8E8470"
 
 
 def svg(width: int, height: int, body: list[str]) -> str:
@@ -76,13 +74,6 @@ def numeral(cx: float, cy: float, value: int, scale: float = 1.0) -> list[str]:
     return parts
 
 
-def cartouche(x: float, y: float, w: float, h: float, radius: float = 18) -> str:
-    return (
-        f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{radius}" fill="{CREAM}" stroke="{RED}" stroke-width="6"/>'
-        f'<rect x="{x + 9}" y="{y + 9}" width="{w - 18}" height="{h - 18}" rx="{radius - 6}" fill="none" stroke="{INK}" stroke-width="2" stroke-opacity=".35"/>'
-    )
-
-
 def paper_fibers(
     rng: random.Random, width: int, height: int, count: int, left: float = 0, top: float = 0
 ) -> list[str]:
@@ -98,67 +89,35 @@ def paper_fibers(
     return parts
 
 
-# ─── Ilustraciones de los números (libro y estela) ──────────────────────────
-def number_card(value: int) -> str:
-    body = [
-        f'<ellipse cx="120" cy="164" rx="92" ry="9" fill="#4A3016" fill-opacity=".14"/>',
-        cartouche(26, 10, 188, 146, 22),
-    ]
-    body += numeral(120, 70, value, 0.95 if value == 4 else 1.15)
-    # Una fila de semillas recuerda que el numeral cuenta cosas reales.
-    spacing = 22
-    start = 120 - (value - 1) * spacing / 2
-    body += [f'<circle cx="{start + index * spacing:.1f}" cy="128" r="6" fill="{OCHRE}" stroke="{INK}" stroke-width="1.5"/>' for index in range(value)]
-    return svg(240, 180, body)
+def shell(cx: float, cy: float, scale: float = 1.0) -> str:
+    """Concha del cero, como en los códices: una concha alargada con su espiral."""
+    rx, ry = 34 * scale, 20 * scale
+    left, right = cx - rx, cx + rx
+    return (
+        f'<g><path d="M{left:.1f} {cy:.1f}Q{cx:.1f} {cy - ry * 2.1:.1f} {right:.1f} {cy:.1f}Q{cx:.1f} {cy + ry * 1.5:.1f} {left:.1f} {cy:.1f}Z" fill="{CREAM}" stroke="{INK}" stroke-width="{2.5 * scale:.1f}" stroke-linejoin="round"/>'
+        f'<path d="M{left + rx * 0.35:.1f} {cy - ry * 0.15:.1f}Q{cx:.1f} {cy - ry * 1.2:.1f} {right - rx * 0.35:.1f} {cy - ry * 0.15:.1f}" stroke="{BLUE}" stroke-width="{3 * scale:.1f}" fill="none" stroke-linecap="round"/>'
+        f'<path d="M{left + rx * 0.6:.1f} {cy + ry * 0.25:.1f}Q{cx:.1f} {cy - ry * 0.35:.1f} {right - rx * 0.6:.1f} {cy + ry * 0.25:.1f}" stroke="{INK}" stroke-width="{2 * scale:.1f}" stroke-opacity=".6" fill="none" stroke-linecap="round"/>'
+        f'<circle cx="{right - rx * 0.12:.1f}" cy="{cy - ry * 0.05:.1f}" r="{4 * scale:.1f}" fill="{INK}"/></g>'
+    )
 
 
 def pieces() -> None:
     write(NUMBERS / "pieza_cacao.svg", svg(64, 48, [cacao(32, 24, 1.3)]))
     write(NUMBERS / "pieza_barra.svg", svg(176, 44, [bar(88, 22, 160, 1.4)]))
-
-
-def stele() -> str:
-    body = [
-        '<ellipse cx="170" cy="512" rx="150" ry="14" fill="#4A3016" fill-opacity=".16"/>',
-        f'<path d="M40 500V60Q40 18 90 14H250Q300 18 300 60V500Z" fill="{STONE}" stroke="{STONE_DARK}" stroke-width="8"/>',
-        f'<path d="M66 470V72Q66 42 98 40H242Q274 42 274 72V470Z" fill="#CFC5AD" stroke="{STONE_DARK}" stroke-width="4"/>',
-        f'<path d="M20 500H320V530H20Z" fill="{STONE_DARK}"/>',
-    ]
-    # Muescas de piedra y una banda superior con el sol.
-    body += [f'<path d="M{x} 470l10 -14" stroke="{STONE_DARK}" stroke-width="3" stroke-linecap="round"/>' for x in [90, 150, 210, 250]]
-    # Banda tallada al pie: pequeños cartuchos como glifos gastados.
-    for index in range(4):
-        x = 82 + index * 46
-        body.append(f'<rect x="{x}" y="430" width="38" height="28" rx="8" fill="none" stroke="{STONE_DARK}" stroke-width="3"/>')
-        body.append(f'<circle cx="{x + 12}" cy="444" r="4" fill="{STONE_DARK}"/><path d="M{x + 20} 444h10" stroke="{STONE_DARK}" stroke-width="4" stroke-linecap="round"/>')
-    body.append(f'<circle cx="170" cy="78" r="22" fill="{OCHRE}" stroke="{INK}" stroke-width="3"/>')
-    for angle in range(0, 360, 45):
-        body.append(f'<rect x="166" y="44" width="8" height="12" rx="3" fill="{OCHRE}" stroke="{INK}" stroke-width="2" transform="rotate({angle} 170 78)"/>')
-    return svg(340, 540, body)
+    write(NUMBERS / "pieza_concha.svg", svg(96, 64, [shell(48, 34, 1.25)]))
 
 
 def tablet() -> str:
+    """Tablilla de dos pisos: arriba las veintenas, abajo las unidades."""
     body = [
-        '<ellipse cx="230" cy="252" rx="200" ry="11" fill="#4A3016" fill-opacity=".14"/>',
-        f'<rect x="14" y="10" width="432" height="230" rx="26" fill="{PAPER}" stroke="{RED}" stroke-width="8"/>',
-        f'<rect x="30" y="26" width="400" height="198" rx="16" fill="{PAPER_DARK}" fill-opacity=".45" stroke="{INK}" stroke-width="2" stroke-opacity=".35"/>',
+        '<ellipse cx="210" cy="272" rx="190" ry="10" fill="#4A3016" fill-opacity=".14"/>',
+        f'<rect x="10" y="8" width="400" height="256" rx="24" fill="{PAPER}" stroke="{RED}" stroke-width="8"/>',
+        f'<rect x="26" y="22" width="368" height="74" rx="14" fill="{PAPER_DARK}" fill-opacity=".45" stroke="{INK}" stroke-width="2" stroke-opacity=".35"/>',
+        f'<rect x="26" y="118" width="368" height="132" rx="14" fill="{PAPER_DARK}" fill-opacity=".45" stroke="{INK}" stroke-width="2" stroke-opacity=".35"/>',
+        f'<path d="M14 107H406" stroke="{RED}" stroke-width="6"/>',
     ]
-    body += paper_fibers(random.Random(7), 380, 180, 24, 40, 34)
-    return svg(460, 260, body)
-
-
-def basket() -> str:
-    body = [
-        '<ellipse cx="150" cy="176" rx="120" ry="10" fill="#4A3016" fill-opacity=".16"/>',
-        f'<path d="M24 62H276L248 166Q150 182 52 166Z" fill="#C08A45" stroke="{INK}" stroke-width="4"/>',
-        f'<path d="M18 50H282V70H18Z" fill="#9C6A30" stroke="{INK}" stroke-width="4"/>',
-    ]
-    for y in [92, 118, 144]:
-        body.append(f'<path d="M36 {y}Q150 {y + 12} 264 {y}" stroke="#8A5A26" stroke-width="5" fill="none"/>')
-    for x in range(56, 260, 28):
-        body.append(f'<path d="M{x} 70L{x + 6} 164" stroke="#E2B26A" stroke-width="4" stroke-opacity=".7"/>')
-    body.append(f'<path d="M30 60H270" stroke="{BLUE}" stroke-width="5"/>')
-    return svg(300, 190, body)
+    body += paper_fibers(random.Random(7), 360, 220, 20, 30, 26)
+    return svg(420, 280, body)
 
 
 # ─── Fondo tipo códice ───────────────────────────────────────────────────────
@@ -240,14 +199,10 @@ def codex_background() -> str:
 
 
 def main() -> None:
-    for value in range(1, 6):
-        write(NUMBERS / f"numero_{value}.svg", number_card(value))
     pieces()
-    write(NUMBERS / "estela.svg", stele())
     write(NUMBERS / "tablilla.svg", tablet())
-    write(NUMBERS / "canasta.svg", basket())
     write(BACKGROUNDS / "bg_codice_tianguis.svg", codex_background())
-    print("Generado el arte de los números: 10 SVG y el fondo de códice.")
+    print("Generado el arte de los números: 4 SVG y el fondo de códice.")
 
 
 if __name__ == "__main__":

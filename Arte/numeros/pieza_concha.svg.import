@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dcs6dd3iq2ro8"
-path="res://.godot/imported/numero_1.svg-46bd5a4f614c8ceb412bb84c6e272d02.ctex"
+uid="uid://diukm51ja7feg"
+path="res://.godot/imported/pieza_concha.svg-680df4bf1263469aa03fc116b38e1728.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Arte/numeros/numero_1.svg"
-dest_files=["res://.godot/imported/numero_1.svg-46bd5a4f614c8ceb412bb84c6e272d02.ctex"]
+source_file="res://Arte/numeros/pieza_concha.svg"
+dest_files=["res://.godot/imported/pieza_concha.svg-680df4bf1263469aa03fc116b38e1728.ctex"]
 
 [params]
 
