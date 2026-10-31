@@ -33,7 +33,6 @@ El catálogo contiene **31 entradas: 30 activas y 1 reservada**. Las activas son
 | Mundo 2 · La Casa Maya; paseo La casa cobra vida | `mayak`, `lak`, `k'áan`, `k'áanche'`, `janal`; uso de objetos según necesidades expresadas en español. |
 | Mundo 3 · Hechizos de Adjetivos; paseo Una aldea a su medida | `mejen`, `nojoch`, `Jats'uts`, `ki'`, `chich`; objeto y cualidad. |
 | Mundo 4 · Yo Quiero | `In k'a'at`; `ja'`, `ja'as`, `ich`, `K'úum`, reutilización de `janal`; cualidades opcionales. |
-| Mundo 4 · Las piedras que cuentan | `jun`, `ka'a`, `óox`, `kan`, `jo'o`; numeración de puntos y barras; clasificadores `-p'éel` (cosas) y `-túul` (animales). |
 | Misión Los encargos de la aldea; práctica Una visita a tus amigos | Seis encargos posibles, tres por visita; combina objetos o alimentos con cualidades. |
 | Mundo 5 · Portal; despedida y epílogo | Presentación, objeto, cualidad, petición y las cuatro cortesías. Incluye distractores con otras estructuras. |
 | Libro de Hechizos | Repite las 30 entradas activas, su significado y su ejemplo; no añade otro vocabulario. |
@@ -111,21 +110,7 @@ Origen: [catálogo](../scripts/core/content/game_content.gd), [ejercicios del po
 | C03 | `Ka xi'ik tech jats'uts` | Que te vaya bien | Confirmar enunciado completo, naturalidad y a quién se puede dirigir este deseo de buen camino. |
 | C04 | `Tak ti' uláak' k'iin` | Adiós, nos vemos | Confirmar si corresponde a adiós, nos vemos, hasta otro día u otra despedida; fijar traducción y contexto. |
 
-### 2.6. Números del uno al cinco
-
-Origen: [catálogo](../scripts/core/content/game_content.gd) y [contenido del tianguis](../data/exercises/world4_counting.tres). Agregados el 28 de octubre de 2026. La fuente provisional es secundaria ([Omniglot](https://www.omniglot.com/language/numbers/yucatecmaya.htm)) porque el diccionario web de la UADY no respondía ese día; los clasificadores siguen el estudio de [Historical Syntax](https://historicalsyntax.org/hs/index.php/hs/article/view/219). **Todo el bloque está pendiente de cotejo con la UADY y con hablantes.**
-
-| ID | Maya del juego | Español del juego | Duda para revisar |
-|---|---|---|---|
-| NU01 | `jun` | Uno | Confirmar grafía y la forma que toma con clasificador (`juntúul`, `junp'éel`). |
-| NU02 | `ka'a` | Dos | Las fuentes registran `ka'` y `ka'a`; fijar la forma aislada y la que se une al clasificador (`ka'atúul`, `ka'ap'éel`). |
-| NU03 | `óox` | Tres | Confirmar vocal larga y tono. |
-| NU04 | `kan` | Cuatro | Confirmar grafía. |
-| NU05 | `jo'o` | Cinco | Las fuentes registran `jo'` y `jo'o`; fijar la forma aislada y con clasificador. |
-
-Algunas fuentes señalan que muchos hablantes cuentan en español y usan los números mayas sólo hasta cuatro o cinco; por eso el nivel enseña del uno al cinco. Los numerales de puntos y barras se presentan como escritura de los antiguos mayas, no como forma oral.
-
-### 2.7. Expresión narrativa fuera del catálogo
+### 2.6. Expresión narrativa fuera del catálogo
 
 | ID | Forma visible | Español que ofrece el juego | Dónde aparece y qué revisar |
 |---|---|---|---|
@@ -183,27 +168,6 @@ Origen: [catálogo](../scripts/core/content/game_content.gd), [ejercicios del mu
 | PE05 | `In k'a'at ja'as mejen` | Quiero un plátano pequeño | Ejercicio |
 | PE06 | `In k'a'at K'úum nojoch` | Quiero una calabaza grande | Ejercicio |
 | PE07 | `In k'a'at janal` | Quiero comida | Ejercicio |
-
-### 3.3.1. Contar: número + clasificador
-
-Intención del juego: `-p'éel` cuenta cosas y `-túul` cuenta animales. Las frases completas se guardan como texto revisable; el código no construye la morfología. Origen: [contenido del tianguis](../data/exercises/world4_counting.tres) y [El tianguis](../scenes/worlds/world4/historia_tianguis.tscn).
-
-| ID | Frase exacta | Traducción del juego | Uso |
-|---|---|---|---|
-| CU01 | `Juntúul Peek'` | Un perro | Libro de Hechizos |
-| CU02 | `Ka'ap'éel lak` | Dos platos | Libro de Hechizos |
-| CU03 | `Óoxp'éel ja'as` | Tres plátanos | Libro de Hechizos |
-| CU04 | `Kantúul Miis` | Cuatro gatos | Libro de Hechizos; ejercicio |
-| CU05 | `Jo'op'éel K'úum` | Cinco calabazas | Libro de Hechizos |
-| CU06 | `In k'a'at ka'ap'éel ja'as` | Quiero dos plátanos | Tianguis |
-| CU07 | `In k'a'at óoxp'éel ich` | Quiero tres frutas | Tianguis |
-| CU08 | `In k'a'at jo'op'éel K'úum` | Quiero cinco calabazas | Tianguis |
-| CU09 | `Ka'atúul Peek'` | Dos perros | ¿Cuántos? |
-| CU10 | `Óoxp'éel lak` | Tres platos | Recuerdo escrito |
-| CU11 | `Juntúul Kaax` | Una gallina | Recuerdo escrito |
-| CU12 | `Jo'op'éel mayak` | Cinco mesas | Recuerdo escrito |
-
-Distractores visibles en las opciones: `kanp'éel`, `óoxtúul`, `jo'otúul`, `ka'ap'éel`, `junp'éel`, `ka'atúul`, `kantúul`. Revisar si el nombre del animal se pluraliza después del número y si `Miis`, `Peek'` y `Kaax`, que también son nombres de los personajes, funcionan aquí como sustantivos comunes.
 
 ### 3.4. Los seis encargos de la aldea
 
@@ -335,8 +299,7 @@ Estas filas explican dudas que ya motivaron cambios. No se deben enseñar como s
 2. **Tamaño y orden:** confirmar `mejen` para un solo objeto y cómo decir de manera natural mesa grande, hamaca pequeña, plátano pequeño y calabaza grande. Acordar si las fichas `objeto · cualidad` son una representación didáctica adecuada.
 3. **Sentido e ilustración:** revisar `lak` (plato/plato de barro), `ich` (fruta genérica), `mayak` (mesa), `chich` (resistencia), `Kuuts` (pavo de monte), y hamaca frente a cama.
 4. **Enunciados completos:** validar todas las presentaciones, las siete peticiones distintas, las cuatro cortesías y los distractores; la validación de una palabra aislada no valida su combinación.
-5. **Números:** fijar `ka'`/`ka'a` y `jo'`/`jo'o`, la unión con `-túul` y `-p'éel`, y si conviene enseñar números mayores que cinco.
-6. **Escritura y sonido:** resolver las variantes históricas, `Sak Beh`, vocales largas, tonos, apóstrofos y pronunciación; fijar también la variedad o comunidad de referencia.
+5. **Escritura y sonido:** resolver las variantes históricas, `Sak Beh`, vocales largas, tonos, apóstrofos y pronunciación; fijar también la variedad o comunidad de referencia.
 
 ## 6. Todas las combinaciones permitidas por los controles
 

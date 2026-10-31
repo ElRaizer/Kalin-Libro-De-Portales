@@ -23,7 +23,7 @@ scripts/
     grid_paths/          Reglas, presentación y autoría del tablero
     story/               Momentos e interpretación de historia
     exploration/         Recorrido e interacción general
-    counting/            Numeración maya, tianguis y rondas de conteo
+    counting/            Numeración maya de dos pisos y rondas del tianguis
     exercises/           Ejercicios, respuestas y controles de construcción
       domain/            Sesión compartida de frases
     village/             Encargos, habitantes, paseos y despedida
@@ -71,7 +71,7 @@ descubre todas las suites `validate_*.gd` recursivamente.
 | `GridBoard` | Entrada y coordinación de presentación | Traduce eventos de las reglas a señales y efectos del tablero |
 | `PhraseExerciseSession` | Ronda, plan, respuestas, intento y transiciones de mundos 3 y 4 | No conoce controles, GameManager ni archivos |
 | `RecallPanel` | Edición de respuestas, apoyos y bloques | Expone consultas de estado y restauración; los consumidores no consultan banderas privadas |
-| `CountingSession` | Rondas, tablilla, canasta e intento del nivel de números | Recibe `CountingRound`; no conoce nodos, autoloads ni archivos. Reglas de puntos y barras en `MayaNumeral` |
+| `CountingSession` | Números sorteados, tablilla y errores del nivel de números | Recibe `CountingSet`; no conoce nodos, autoloads ni archivos. Sortea con la semilla guardada. Reglas de puntos, barras, concha y veintenas en `MayaNumeral` |
 | `AudioManager` | Música y ambiente por escena, efectos por nombre y volumen persistente | Lee `AudioCatalog`; no decide reglas de juego. Ver [Música y efectos](audio.md) |
 | `ScreenLayout` | Base de distribución y perfil compacto | Reaplica la transformación de fase sobre esa base; los controladores no fijan coordenadas del panel |
 

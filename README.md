@@ -69,7 +69,7 @@ Cada **mundo** representa una mecánica. Los **niveles** de un mismo mundo reuti
 | 2 | 1 | La Casa Maya | Selección del hechizo correcto para objetos del hogar |
 | 3 | 1 | Hechizos de Adjetivos | Construcción de frases con sustantivo y adjetivo en dos fases |
 | 4 | 1 | Yo Quiero | Estructura *In k'a'at* y alimentos |
-| 4 | 2 | Las Piedras que Cuentan | Números del uno al cinco, numeración de puntos y barras y clasificadores `-p'éel` / `-túul` |
+| 4 | 2 | Las Piedras que Cuentan | Numeración maya de puntos, barras y concha: números sorteados del 1 al 50 |
 | 5 | 1 | El Portal de Regreso | Recapitulación, cortesía y despedida |
 
 El orden de progreso es Mundo 1 completo → Mundo 2 → Mundo 3 → Mundo 4 → Mundo 5. El último mundo recupera los fragmentos finales del libro y cierra la aventura con el portal de regreso.
@@ -147,20 +147,21 @@ La exploración se puede saltar con **Saltar exploración**. `Esc` abre la pausa
 
 ### Las piedras que cuentan
 
-Después de la comida, la aldea arma un tianguis para agradecerle a Kalin. Áak le
-enseña una estela con los números de los antiguos mayas: un punto vale uno y una
-barra vale cinco. El nivel tiene cinco fases:
+Después de la comida, la aldea arma un tianguis para agradecerle a Kalin. Los
+animales piden números y Kalin los escribe como los antiguos mayas, con clics
+sobre una tablilla de dos pisos:
 
-1. **Conocer:** tocar cada numeral de la estela (jun, ka'a, óox, kan, jo'o).
-2. **Construir:** formar el número sobre una tablilla con granos de cacao y varitas.
-3. **Tianguis:** un amigo pide «In k'a'at óoxp'éel ich» y se llena la canasta.
-4. **¿Cuántos?:** contar a los amigos que llegan; los animales se cuentan con `-túul`.
-5. **Recuerdo:** escribir el número con su clasificador y lo contado.
+- **Grano de cacao** (punto) vale 1 y **varita** (barra) vale 5; cinco granos se
+  juntan solos en una varita.
+- El **piso de arriba** cuenta veintenas: veinte abajo suben como un grano arriba.
+- La **concha** es el cero: se pone abajo cuando el número sólo tiene veintenas
+  (20, 40).
 
-Los números aparecen en la pestaña **Números** del Libro de Hechizos, ilustrados
-con puntos y barras. El arte toma como referencia los códices mayas: papel amate,
-líneas rojas y azul maya. Las formas y los clasificadores siguen pendientes de
-revisión con hablantes (ver [vocabulario](docs/vocabulary.md)).
+Cada partida sortea ocho números distintos del 1 al 50, así que el nivel cambia
+cada vez que se juega; al continuar una partida se piden los mismos. Las dos
+primeras rondas muestran cómo se reparte el número entre los pisos. El nivel no
+agrega palabras al Libro de Hechizos. El arte toma como referencia los códices
+mayas: papel amate, líneas rojas y azul maya.
 
 ### Exploraciones con vocabulario
 

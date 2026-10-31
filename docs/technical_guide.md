@@ -115,24 +115,22 @@ Va después de la comida: `world4_level1` → capítulo **El tianguis** (`world4
 
 | Pieza | Responsabilidad |
 |---|---|
-| `MayaNumeral` (`scripts/features/counting/`) | Reglas puras de puntos y barras: un punto vale 1, una barra 5 y cinco puntos se reúnen en una barra. |
-| `CountingSession` | Ronda, tablilla, canasta, respuesta, intento y checkpoint validado. Sin nodos ni autoloads. |
-| `CountingRound` / `CountingSet` | Contenido de autor en `data/exercises/world4_counting.tres`; se edita en el Inspector y avisa si falta algo. |
-| `NumeralView` | Dibuja un numeral con las texturas de cacao y varita elegidas en el Inspector. |
-| `counting_exercise.gd` (`scripts/worlds/world4/`) | Presenta cada fase y conecta la entrada; usa `RecallPanel`, `LearningGuide` y `MissionProgress`. |
+| `MayaNumeral` (`scripts/features/counting/`) | Reglas puras de la numeración de dos pisos: punto 1, barra 5, base 20 (veintenas arriba) y concha del cero cuando un número sólo tiene veintenas. |
+| `CountingSession` | Números sorteados con la semilla, tablilla (`twenties`, `units`, `shell`, piso elegido), errores y checkpoint validado. Sin nodos ni autoloads. |
+| `CountingSet` | Configuración en `data/exercises/world4_counting.tres`: cantidad de rondas, rango (1 a 50), rondas guiadas y animales que piden. Avisa en el Inspector si el rango no alcanza. |
+| `NumeralView` | Dibuja un piso con las texturas de cacao, varita y concha elegidas en el Inspector. |
+| `counting_exercise.gd` (`scripts/worlds/world4/`) | Presenta la ronda, los dos pisos y las piezas; usa `LearningGuide`, `MissionProgress` y `CompletionOverlay`. |
 
-Fases de `CountingRound.kind`: `STELE` (conocer los numerales de la estela),
-`BUILD` (formar el número con granos y varitas), `MARKET` (llenar la canasta con
-la cantidad pedida; cosas con `-p'éel`), `FRIENDS` (contar animales; `-túul`) y
-`RECALL` (escribir número con clasificador y lo contado). Las frases completas son
-texto de autor: el código no construye la morfología maya. Las opciones se
-ofrecen en número par y se barajan con la semilla de la partida.
+Sólo hay una actividad: formar el número pedido con clics. Se elige un piso de la
+tablilla y se ponen granos, varitas o la concha. Cinco granos se juntan en una
+varita y veinte unidades suben como un grano al piso de arriba, dejando la concha
+si abajo no sobra nada. Un numeral es correcto cuando vale el número y, si sólo
+tiene veintenas, lleva la concha. Los números no se repiten en una partida y se
+derivan de `layout_seed`: al continuar se piden los mismos y **Repetir** sortea
+otros. El nivel no registra vocabulario ni evidencia de aprendizaje.
 
-Los números del vocabulario tienen `value` y `book_category = 6`: el Libro de
-Hechizos los muestra en la pestaña **Números**, ordenados por valor. Su
-ilustración es el numeral de puntos y barras (`Arte/numeros/`, en el catálogo
-visual). El arte se genera con `python tools/build_counting_art.py`: amate,
-líneas rojas de códice, contorno negro, azul maya y ocre, sin `rgba()`.
+El arte se genera con `python tools/build_counting_art.py`: amate, líneas rojas de
+códice, contorno negro, azul maya y ocre, sin `rgba()`.
 
 ## Capítulos de historia
 
