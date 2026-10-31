@@ -16,30 +16,36 @@ subtitle = "Mundo 4 · Las piedras que cuentan"
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
 speaker = "Peek'"
-text = "¡Kalin, pide lo que quieras del puesto!"
+text = "¡Kalin, en el tianguis todos piden números!"
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 
 [sub_resource type="Resource" id="Beat_3"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¿Y cuántos pido? ¡No sé contar en maya!"
+text = "¿Números? ¿Cómo los escribían los mayas?"
 kalin_pose = 1
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 
 [sub_resource type="Resource" id="Beat_4"]
 script = ExtResource("2_beat")
 speaker = "Áak"
-text = "Mira esta estela. Los abuelos contaban con puntos y barras."
+text = "Con granos de cacao y varitas. Un grano vale uno y una varita vale cinco."
 actors = Array[String](["Áak"])
 
 [sub_resource type="Resource" id="Beat_5"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Un punto vale uno y una barra vale cinco!"
+text = "¡Y cuando junto veinte, suben al piso de arriba!"
 actors = Array[String](["Áak", "Peek'"])
 effects = 16
+
+[sub_resource type="Resource" id="Beat_6"]
+script = ExtResource("2_beat")
+speaker = "Áak"
+text = "Si un piso queda vacío, ponemos una concha. La concha es el cero."
+actors = Array[String](["Áak", "Peek'"])
 
 [node name="HistoriaTianguis" instance=ExtResource("1_base")]
 chapter_title = "Mundo 4 · El tianguis de la aldea"
 next_scene_key = "world4_level2"
-beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5")])
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5"), SubResource("Beat_6")])

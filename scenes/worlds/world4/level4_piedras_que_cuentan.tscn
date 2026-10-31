@@ -12,15 +12,47 @@
 [ext_resource type="Script" path="res://scripts/features/spellbook/libro_hechizos.gd" id="libro_script"]
 [ext_resource type="PackedScene" path="res://scenes/ui/shared/mission_progress.tscn" id="progress"]
 [ext_resource type="PackedScene" path="res://scenes/ui/shared/learning_guide.tscn" id="guide"]
-[ext_resource type="PackedScene" path="res://scenes/features/exercises/recall_panel.tscn" id="recall_panel"]
 [ext_resource type="PackedScene" path="res://scenes/ui/shared/screen_layout.tscn" id="responsive"]
 [ext_resource type="Resource" path="res://data/layouts/counting_exercise.tres" id="layout_profile"]
 [ext_resource type="Script" path="res://scripts/features/counting/numeral_view.gd" id="numeral_script"]
 [ext_resource type="Texture2D" path="res://Arte/numeros/pieza_cacao.svg" id="cacao"]
 [ext_resource type="Texture2D" path="res://Arte/numeros/pieza_barra.svg" id="barra"]
-[ext_resource type="Texture2D" path="res://Arte/numeros/estela.svg" id="estela"]
+[ext_resource type="Texture2D" path="res://Arte/numeros/pieza_concha.svg" id="concha"]
 [ext_resource type="Texture2D" path="res://Arte/numeros/tablilla.svg" id="tablilla"]
-[ext_resource type="Texture2D" path="res://Arte/numeros/canasta.svg" id="canasta"]
+
+[sub_resource type="StyleBoxFlat" id="floor_normal"]
+bg_color = Color(1, 1, 1, 0)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="floor_hover"]
+bg_color = Color(0.83, 0.61, 0.2, 0.14)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.83, 0.61, 0.2, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="floor_selected"]
+bg_color = Color(0.31, 0.6, 0.65, 0.18)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.31, 0.6, 0.65, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="ButtonGroup" id="floors"]
+allow_unpress = false
 
 [node name="Level4Numbers" type="Node2D"]
 script = ExtResource("script")
@@ -67,18 +99,18 @@ offset_left = 18.0
 offset_top = 16.0
 offset_right = -18.0
 offset_bottom = -16.0
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 alignment = 1
 
-[node name="PhaseLabel" type="Label" parent="UI/RequestPanel/Content"]
+[node name="RoundLabel" type="Label" parent="UI/RequestPanel/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.66, 0.2, 0.16, 1)
 theme_override_font_sizes/font_size = 18
-text = "Conocer"
+text = "Número 1 de 8"
 horizontal_alignment = 1
 
 [node name="AnimalSprite" type="TextureRect" parent="UI/RequestPanel/Content"]
-custom_minimum_size = Vector2(0, 150)
+custom_minimum_size = Vector2(0, 130)
 layout_mode = 2
 expand_mode = 3
 stretch_mode = 5
@@ -90,22 +122,28 @@ theme_override_font_sizes/font_size = 24
 text = "Áak"
 horizontal_alignment = 1
 
-[node name="PhraseLabel" type="Label" parent="UI/RequestPanel/Content"]
-custom_minimum_size = Vector2(0, 64)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.13, 0.42, 0.4, 1)
-theme_override_font_sizes/font_size = 28
-text = "In k'a'at óoxp'éel ja'as"
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 3
-
-[node name="RequestLabel" type="Label" parent="UI/RequestPanel/Content"]
-custom_minimum_size = Vector2(0, 60)
+[node name="AskLabel" type="Label" parent="UI/RequestPanel/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.28, 0.2, 0.12, 1)
 theme_override_font_sizes/font_size = 18
-text = "Toca cada número tallado en la estela."
+text = "pide este número:"
+horizontal_alignment = 1
+
+[node name="TargetNumber" type="Label" parent="UI/RequestPanel/Content"]
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.13, 0.42, 0.4, 1)
+theme_override_font_sizes/font_size = 84
+text = "27"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HintLabel" type="Label" parent="UI/RequestPanel/Content"]
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.28, 0.2, 0.12, 1)
+theme_override_font_sizes/font_size = 18
+text = "27 = 1 veintena arriba y 7 (1 varita y 2 granos) abajo"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
@@ -118,365 +156,179 @@ offset_bottom = 542.0
 theme = ExtResource("theme")
 theme_type_variation = &"KalinChoicesPanel"
 
-[node name="Stele" type="Control" parent="UI/StagePanel"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="SteleArt" type="TextureRect" parent="UI/StagePanel/Stele"]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 18.0
-offset_right = 282.0
-offset_bottom = 434.0
-texture = ExtResource("estela")
-expand_mode = 1
-stretch_mode = 5
-mouse_filter = 2
-
-[node name="SteleHint" type="Label" parent="UI/StagePanel/Stele"]
-layout_mode = 0
-offset_left = 300.0
-offset_top = 30.0
-offset_right = 848.0
-offset_bottom = 90.0
-theme_override_colors/font_color = Color(0.23, 0.12, 0.06, 1)
-theme_override_font_sizes/font_size = 22
-text = "Los antiguos mayas contaban con puntos y barras. Toca cada número."
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 3
-
-[node name="Numbers" type="HBoxContainer" parent="UI/StagePanel/Stele"]
-layout_mode = 0
-offset_left = 296.0
-offset_top = 120.0
-offset_right = 852.0
-offset_bottom = 350.0
-theme_override_constants/separation = 10
-alignment = 1
-
-[node name="Number1" type="Button" parent="UI/StagePanel/Stele/Numbers"]
-custom_minimum_size = Vector2(102, 200)
-layout_mode = 2
-theme_type_variation = &"KalinNounButton"
-theme_override_font_sizes/font_size = 24
-theme_override_constants/icon_max_width = 92
-text = "?"
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
-
-[node name="Number2" type="Button" parent="UI/StagePanel/Stele/Numbers"]
-custom_minimum_size = Vector2(102, 200)
-layout_mode = 2
-theme_type_variation = &"KalinNounButton"
-theme_override_font_sizes/font_size = 24
-theme_override_constants/icon_max_width = 92
-text = "?"
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
-
-[node name="Number3" type="Button" parent="UI/StagePanel/Stele/Numbers"]
-custom_minimum_size = Vector2(102, 200)
-layout_mode = 2
-theme_type_variation = &"KalinNounButton"
-theme_override_font_sizes/font_size = 24
-theme_override_constants/icon_max_width = 92
-text = "?"
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
-
-[node name="Number4" type="Button" parent="UI/StagePanel/Stele/Numbers"]
-custom_minimum_size = Vector2(102, 200)
-layout_mode = 2
-theme_type_variation = &"KalinNounButton"
-theme_override_font_sizes/font_size = 24
-theme_override_constants/icon_max_width = 92
-text = "?"
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
-
-[node name="Number5" type="Button" parent="UI/StagePanel/Stele/Numbers"]
-custom_minimum_size = Vector2(102, 200)
-layout_mode = 2
-theme_type_variation = &"KalinNounButton"
-theme_override_font_sizes/font_size = 24
-theme_override_constants/icon_max_width = 92
-text = "?"
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
-
-[node name="Build" type="Control" parent="UI/StagePanel"]
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="TargetLabel" type="Label" parent="UI/StagePanel/Build"]
+[node name="StageHint" type="Label" parent="UI/StagePanel"]
 layout_mode = 0
 offset_left = 24.0
-offset_top = 8.0
+offset_top = 6.0
 offset_right = 844.0
-offset_bottom = 62.0
-theme_override_colors/font_color = Color(0.66, 0.2, 0.16, 1)
-theme_override_font_sizes/font_size = 36
-text = "óox · Tres"
+offset_bottom = 46.0
+theme_override_colors/font_color = Color(0.23, 0.12, 0.06, 1)
+theme_override_font_sizes/font_size = 18
+text = "Toca un piso de la tablilla y pon piezas, como en los códices mayas."
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="Tablet" type="TextureRect" parent="UI/StagePanel/Build"]
+[node name="UpperLabel" type="Label" parent="UI/StagePanel"]
 layout_mode = 0
-offset_left = 219.0
+offset_left = 16.0
 offset_top = 66.0
-offset_right = 649.0
-offset_bottom = 310.0
+offset_right = 214.0
+offset_bottom = 150.0
+theme_override_colors/font_color = Color(0.23, 0.12, 0.06, 1)
+theme_override_font_sizes/font_size = 20
+text = "Arriba
+veintenas · ×20"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="LowerLabel" type="Label" parent="UI/StagePanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 182.0
+offset_right = 214.0
+offset_bottom = 286.0
+theme_override_colors/font_color = Color(0.23, 0.12, 0.06, 1)
+theme_override_font_sizes/font_size = 20
+text = "Abajo
+unidades · ×1"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Legend" type="Label" parent="UI/StagePanel"]
+layout_mode = 0
+offset_left = 656.0
+offset_top = 62.0
+offset_right = 852.0
+offset_bottom = 322.0
+theme_override_colors/font_color = Color(0.13, 0.42, 0.4, 1)
+theme_override_font_sizes/font_size = 17
+text = "Cinco granos forman una varita.
+
+Veinte suben al piso de arriba.
+
+La concha es el cero."
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Tablet" type="TextureRect" parent="UI/StagePanel"]
+layout_mode = 0
+offset_left = 224.0
+offset_top = 50.0
+offset_right = 644.0
+offset_bottom = 330.0
 texture = ExtResource("tablilla")
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Numeral" type="Control" parent="UI/StagePanel/Build/Tablet"]
+[node name="UpperFloor" type="Button" parent="UI/StagePanel/Tablet" groups=["sin_sonido_clic"]]
+layout_mode = 0
+offset_left = 26.0
+offset_top = 22.0
+offset_right = 394.0
+offset_bottom = 96.0
+tooltip_text = "Piso de las veintenas"
+theme_override_styles/focus = SubResource("floor_hover")
+theme_override_styles/disabled = SubResource("floor_normal")
+theme_override_styles/hover_pressed = SubResource("floor_selected")
+theme_override_styles/hover = SubResource("floor_hover")
+theme_override_styles/pressed = SubResource("floor_selected")
+theme_override_styles/normal = SubResource("floor_normal")
+toggle_mode = true
+button_group = SubResource("floors")
+
+[node name="Numeral" type="Control" parent="UI/StagePanel/Tablet/UpperFloor"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 30.0
-offset_top = 24.0
-offset_right = -30.0
-offset_bottom = -30.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("numeral_script")
 dot_texture = ExtResource("cacao")
 bar_texture = ExtResource("barra")
-piece_scale = 1.1
+shell_texture = ExtResource("concha")
+piece_scale = 0.62
+gap = 6.0
 
-[node name="Pieces" type="HBoxContainer" parent="UI/StagePanel/Build"]
+[node name="LowerFloor" type="Button" parent="UI/StagePanel/Tablet" groups=["sin_sonido_clic"]]
 layout_mode = 0
-offset_left = 94.0
-offset_top = 330.0
-offset_right = 774.0
-offset_bottom = 426.0
-theme_override_constants/separation = 18
+offset_left = 26.0
+offset_top = 118.0
+offset_right = 394.0
+offset_bottom = 250.0
+tooltip_text = "Piso de las unidades"
+theme_override_styles/focus = SubResource("floor_hover")
+theme_override_styles/disabled = SubResource("floor_normal")
+theme_override_styles/hover_pressed = SubResource("floor_selected")
+theme_override_styles/hover = SubResource("floor_hover")
+theme_override_styles/pressed = SubResource("floor_selected")
+theme_override_styles/normal = SubResource("floor_normal")
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("floors")
+
+[node name="Numeral" type="Control" parent="UI/StagePanel/Tablet/LowerFloor"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("numeral_script")
+dot_texture = ExtResource("cacao")
+bar_texture = ExtResource("barra")
+shell_texture = ExtResource("concha")
+piece_scale = 0.62
+gap = 5.0
+
+[node name="Pieces" type="HBoxContainer" parent="UI/StagePanel"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 346.0
+offset_right = 844.0
+offset_bottom = 438.0
+theme_override_constants/separation = 14
 alignment = 1
 
-[node name="DotButton" type="Button" parent="UI/StagePanel/Build/Pieces"]
-custom_minimum_size = Vector2(200, 84)
+[node name="DotButton" type="Button" parent="UI/StagePanel/Pieces"]
+custom_minimum_size = Vector2(190, 84)
 layout_mode = 2
 theme_type_variation = &"KalinNounButton"
 theme_override_font_sizes/font_size = 22
+theme_override_constants/icon_max_width = 56
 text = "Grano · 1"
 icon = ExtResource("cacao")
 expand_icon = true
-theme_override_constants/icon_max_width = 64
 
-[node name="BarButton" type="Button" parent="UI/StagePanel/Build/Pieces"]
-custom_minimum_size = Vector2(200, 84)
+[node name="BarButton" type="Button" parent="UI/StagePanel/Pieces"]
+custom_minimum_size = Vector2(190, 84)
 layout_mode = 2
 theme_type_variation = &"KalinNounButton"
 theme_override_font_sizes/font_size = 22
+theme_override_constants/icon_max_width = 64
 text = "Varita · 5"
 icon = ExtResource("barra")
 expand_icon = true
-theme_override_constants/icon_max_width = 64
 
-[node name="ClearButton" type="Button" parent="UI/StagePanel/Build/Pieces"]
-custom_minimum_size = Vector2(200, 84)
+[node name="ShellButton" type="Button" parent="UI/StagePanel/Pieces"]
+custom_minimum_size = Vector2(190, 84)
+layout_mode = 2
+theme_type_variation = &"KalinNounButton"
+theme_override_font_sizes/font_size = 22
+theme_override_constants/icon_max_width = 60
+text = "Concha · 0"
+icon = ExtResource("concha")
+expand_icon = true
+
+[node name="ClearButton" type="Button" parent="UI/StagePanel/Pieces"]
+custom_minimum_size = Vector2(170, 84)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 22
 text = "Borrar"
-
-[node name="Market" type="Control" parent="UI/StagePanel"]
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="StallHint" type="Label" parent="UI/StagePanel/Market"]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 8.0
-offset_right = 544.0
-offset_bottom = 48.0
-theme_override_colors/font_color = Color(0.32, 0.22, 0.12, 1)
-theme_override_font_sizes/font_size = 19
-text = "El puesto · toca para poner o quitar"
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 3
-
-[node name="Stall" type="GridContainer" parent="UI/StagePanel/Market"]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 54.0
-offset_right = 560.0
-offset_bottom = 324.0
-theme_override_constants/h_separation = 10
-theme_override_constants/v_separation = 10
-columns = 5
-
-[node name="Basket" type="Control" parent="UI/StagePanel/Market"]
-layout_mode = 0
-offset_left = 574.0
-offset_top = 60.0
-offset_right = 854.0
-offset_bottom = 310.0
-mouse_filter = 2
-
-[node name="Art" type="TextureRect" parent="UI/StagePanel/Market/Basket"]
-layout_mode = 0
-offset_left = 0.0
-offset_top = 70.0
-offset_right = 280.0
-offset_bottom = 246.0
-texture = ExtResource("canasta")
-expand_mode = 1
-stretch_mode = 5
-mouse_filter = 2
-
-[node name="Goods" type="HFlowContainer" parent="UI/StagePanel/Market/Basket"]
-layout_mode = 0
-offset_left = 34.0
-offset_top = 76.0
-offset_right = 246.0
-offset_bottom = 182.0
-theme_override_constants/h_separation = 2
-theme_override_constants/v_separation = 2
-alignment = 1
-mouse_filter = 2
-
-[node name="BasketLabel" type="Label" parent="UI/StagePanel/Market/Basket"]
-layout_mode = 0
-offset_left = 0.0
-offset_top = 246.0
-offset_right = 280.0
-offset_bottom = 276.0
-theme_override_colors/font_color = Color(0.32, 0.22, 0.12, 1)
-theme_override_font_sizes/font_size = 18
-text = "La canasta"
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 3
-
-[node name="Friends" type="Control" parent="UI/StagePanel"]
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="FriendsHint" type="Label" parent="UI/StagePanel/Friends"]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 8.0
-offset_right = 844.0
-offset_bottom = 48.0
-theme_override_colors/font_color = Color(0.32, 0.22, 0.12, 1)
-theme_override_font_sizes/font_size = 20
-text = "¿Cuántos llegaron a la plaza?"
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 3
-
-[node name="Crowd" type="HBoxContainer" parent="UI/StagePanel/Friends"]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 56.0
-offset_right = 844.0
-offset_bottom = 226.0
-theme_override_constants/separation = 8
-alignment = 1
-mouse_filter = 2
-
-[node name="Recall" type="Control" parent="UI/StagePanel"]
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="Picture" type="HBoxContainer" parent="UI/StagePanel/Recall"]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 8.0
-offset_right = 844.0
-offset_bottom = 92.0
-theme_override_constants/separation = 6
-alignment = 1
-mouse_filter = 2
-
-[node name="RecallPanel" parent="UI/StagePanel/Recall" instance=ExtResource("recall_panel")]
-preferred_size = Vector2(852, 352)
-external_submit = true
-offset_left = 8.0
-offset_top = 96.0
-offset_right = 860.0
-offset_bottom = 448.0
-
-[node name="Options" type="GridContainer" parent="UI/StagePanel"]
-visible = false
-layout_mode = 0
-offset_left = 174.0
-offset_top = 246.0
-offset_right = 694.0
-offset_bottom = 422.0
-theme_override_constants/h_separation = 16
-theme_override_constants/v_separation = 14
-columns = 2
-
-[node name="Option1" type="Button" parent="UI/StagePanel/Options"]
-custom_minimum_size = Vector2(252, 76)
-layout_mode = 2
-theme_type_variation = &"KalinNounButton"
-theme_override_font_sizes/font_size = 28
-text = "kantúul"
-
-[node name="Option2" type="Button" parent="UI/StagePanel/Options"]
-custom_minimum_size = Vector2(252, 76)
-layout_mode = 2
-theme_type_variation = &"KalinNounButton"
-theme_override_font_sizes/font_size = 28
-text = "kantúul"
-
-[node name="Option3" type="Button" parent="UI/StagePanel/Options"]
-custom_minimum_size = Vector2(252, 76)
-layout_mode = 2
-theme_type_variation = &"KalinNounButton"
-theme_override_font_sizes/font_size = 28
-text = "kantúul"
-
-[node name="Option4" type="Button" parent="UI/StagePanel/Options"]
-custom_minimum_size = Vector2(252, 76)
-layout_mode = 2
-theme_type_variation = &"KalinNounButton"
-theme_override_font_sizes/font_size = 28
-text = "kantúul"
 
 [node name="FeedbackPanel" type="Panel" parent="UI"]
 offset_left = 388.0

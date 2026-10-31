@@ -5,9 +5,6 @@
 script = ExtResource("script")
 rectangles = {
 NodePath("UI/ActionButton"): Rect2(980, 632, 276, 72),
-NodePath("UI/MissionProgress"): Rect2(24, 632, 932, 72),
-NodePath("UI/StagePanel/Stele/SteleHint"): Rect2(24, 24, 820, 80),
-NodePath("UI/StagePanel/Stele/Numbers"): Rect2(156, 130, 556, 260)
+NodePath("UI/MissionProgress"): Rect2(24, 632, 932, 72)
 }
-hidden = Array[NodePath]([NodePath("UI/StagePanel/Stele/SteleArt")])
-font_sizes = {NodePath("UI/FeedbackPanel/FeedbackLabel"): 24, NodePath("UI/RequestPanel/Content/RequestLabel"): 22}
+font_sizes = {NodePath("UI/FeedbackPanel/FeedbackLabel"): 24, NodePath("UI/RequestPanel/Content/HintLabel"): 22, NodePath("UI/StagePanel/StageHint"): 20}
