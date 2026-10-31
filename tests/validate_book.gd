@@ -133,7 +133,7 @@ func _run() -> void:
 	book._select_category(0)
 	await _settle(book)
 	_check(
-		book.page_label.text == "Páginas 1–2 de %d" % book._entries.size(),
+		book.page_label.text == "Páginas 1–2 de 30",
 		"La numeración debe contar entradas visibles, no parejas"
 	)
 	var audio: Button = book.left_page.get_node("Content/AudioButton")
