@@ -12,6 +12,8 @@ func _run() -> void:
 	manager.use_save_repository(SaveRepository.new("user://product_improvements_validation.json"))
 	manager.reset_save()
 	manager.session.tutorials_seen.assign(["paths", "objects", "phrases", "requests"])
+	if not capture_folder.is_empty():
+		(root.get_node("DebugAnswer") as CanvasLayer).hide()
 	_model_boundaries()
 	await _word_evidence()
 	await _reading_requests()

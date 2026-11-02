@@ -27,6 +27,7 @@ func _run() -> void:
 			DirAccess.make_dir_recursive_absolute(capture_folder)
 	manager = root.get_node("GameManager")
 	manager.use_save_repository(SaveRepository.new("user://grid_dialogue_layout.json"))
+	(root.get_node("DebugAnswer") as CanvasLayer).hide()
 	for level_number: int in range(1, 5):
 		await _level(level_number)
 	if failures.is_empty():

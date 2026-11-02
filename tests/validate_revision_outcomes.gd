@@ -13,6 +13,8 @@ func _run() -> void:
 	manager.use_save_repository(SaveRepository.new("user://revision_outcomes.json"))
 	manager.reset_save()
 	manager.session.tutorials_seen.assign(["paths", "objects", "phrases", "requests"])
+	if not capture_folder.is_empty():
+		(root.get_node("DebugAnswer") as CanvasLayer).hide()
 	await _exercise_views()
 	await _quality_book_views()
 	await _shared_projects()
@@ -93,8 +95,7 @@ func _exercise_views() -> void:
 			_check(not scene.result_art.visible, "Un error no revela la creación esperada")
 			await _capture("error_%d_%s" % [world, suffix])
 			var challenge: ExerciseEntry = scene._current_challenge()
-			RecallFiller.fill(
-				scene.recall,
+			scene.recall.debug_fill(
 				(
 					[challenge.noun, challenge.adjective]
 					if world == 3
@@ -169,7 +170,7 @@ func _shared_projects() -> void:
 			_close_lines(scene)
 			scene.visit_workbench()
 			var task: VillageTask = scene.tasks[scene.task_indices[index]]
-			RecallFiller.fill(scene.recall, [task.item, task.quality])
+			scene.recall.debug_fill([task.item, task.quality])
 			scene._forge()
 			if index == 2:
 				scene = await _resume(key)
@@ -561,7 +562,7 @@ func _layout_exit_lifecycle() -> void:
 	interaction.set_text_revealing(false)
 	await process_frame
 	_check(
-		not interaction._actor_input_allowed(),
+		not interaction.debug_can_answer(),
 		"Una interacción retirada descarta su foco diferido y bloquea la entrada"
 	)
 	interaction.free()
