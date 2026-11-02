@@ -332,6 +332,30 @@ func _help_target(target: int) -> Control:
 	return action_button
 
 
+## Atajo de depuración (F4): forma el número buscado en la tablilla y lo
+## comprueba con el mismo botón que usa el jugador.
+func debug_can_answer() -> bool:
+	return (
+		OS.is_debug_build()
+		and not _navigating
+		and not _session.waiting
+		and not _session.is_finished(content.round_count)
+		and not completion.visible
+	)
+
+
+func debug_answer() -> void:
+	if not debug_can_answer():
+		return
+	var target: int = current_target()
+	_session.clear_numeral()
+	_session.twenties = MayaNumeral.twenties_of(target)
+	_session.units = MayaNumeral.units_of(target)
+	_session.shell = MayaNumeral.needs_shell(target)
+	_refresh_tablet()
+	_on_action_pressed()
+
+
 func _set_feedback(text: String, color: Color) -> void:
 	feedback_label.text = text
 	feedback_label.add_theme_color_override("font_color", color)
