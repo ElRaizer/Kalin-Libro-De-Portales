@@ -390,9 +390,8 @@ lingüística ni declararse implementado al cerrar esta etapa.
   La imagen elegida aparece junto al portal y en casa; no hay respuesta incorrecta
   ni evidencia educativa. El formato único ahora es **8** y rechaza el 7 sin
   sobrescribirlo; requiere reinicio explícito. P1 conserva su distribución de rondas.
-- P2/P3: implementados como se describe arriba. Las respuestas automáticas de
-  depuración se retiraron del juego; las pruebas completan los paneles con
-  `tests/support/recall_filler.gd`.
+- P2/P3: implementados como se describe arriba. F3 hace optativo el overlay DEBUG;
+  F4 sigue disponible y el juego normal empieza sin controles de depuración encima.
 
 El crítico independiente inspeccionó referencias, capturas reales y secuencias.
 Encontró y se corrigieron: texto sin margen, avisos bajo paneles, Kalin cubierto

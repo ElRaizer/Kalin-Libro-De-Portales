@@ -28,6 +28,7 @@ GameManager="*res://scenes/autoloads/game_manager.tscn"
 AccessibilityManager="*res://scenes/autoloads/accessibility_manager.tscn"
 PauseMenu="*res://scenes/autoloads/pause_menu.tscn"
 AudioManager="*res://scenes/autoloads/audio_manager.tscn"
+DebugAnswer="*res://scripts/autoloads/debug_answer.gd"
 ```
 
 `AudioManager` cambia la música y el ambiente de cada escena según
@@ -395,6 +396,24 @@ en `despedida_los_recuerdos.tscn`.
 Ejecutar `tools/validate.ps1` antes de integrar cambios. El detalle del recorrido,
 los contextos semánticos y el guardado vigente están en
 [docs/adventure.md](adventure.md).
+
+## Ayuda de depuración para contestar
+
+`DebugAnswer` conserva F4 para responder. F3 muestra u oculta su botón flotante;
+empieza oculto para no cubrir los controles durante el juego. Consulta los
+métodos `debug_can_answer()` y `debug_answer()` de la escena actual. Cada escena
+usa sus respuestas de contenido (incluidas las variantes barajadas), marca el
+intento como apoyado y llama al mismo envío que utiliza el jugador. No cambia
+de nivel ni adelanta el resultado. En Las piedras que cuentan forma el número
+sorteado en la tablilla y lo comprueba. `RecallPanel.debug_fill()` conserva el modo
+de escritura, completar o bloques.
+
+Para añadir ejercicios, implementar ambos métodos y bloquearlos con
+`OS.is_debug_build()`. El autoload vuelve a comprobar disponibilidad al pulsar;
+rechaza escenas en transición y la pausa, que también usa el libro. En Release
+se elimina antes de crear interfaz; en exportaciones Debug permanece activo.
+`tests/validate_debug_answer.gd` comprueba F4, botón, todas las familias de
+actividad y que estas respuestas no generen evidencia de recuerdo sin ayuda.
 
 ## Casillas y apoyos automáticos
 
