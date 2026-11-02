@@ -397,6 +397,15 @@ func _play_sfx(key: String) -> void:
 	SoundCue.play(self, key)
 
 
+func debug_can_answer() -> bool:
+	return interaction != null and interaction.debug_can_answer()
+
+
+func debug_answer() -> void:
+	if interaction != null:
+		interaction.debug_answer()
+
+
 func get_checkpoint_state() -> Dictionary:
 	var saved: Dictionary = interaction.snapshot() if interaction != null else {}
 	saved.merge(

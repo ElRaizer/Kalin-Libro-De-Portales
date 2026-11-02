@@ -26,6 +26,7 @@ GameManager="*res://scenes/autoloads/game_manager.tscn"
 AccessibilityManager="*res://scenes/autoloads/accessibility_manager.tscn"
 PauseMenu="*res://scenes/autoloads/pause_menu.tscn"
 AudioManager="*res://scenes/autoloads/audio_manager.tscn"
+DebugAnswer="*res://scripts/autoloads/debug_answer.gd"
 
 [display]
 

@@ -144,6 +144,15 @@ func _choose(index: int) -> void:
 	GameManager.checkpoint(self)
 
 
+func debug_can_answer() -> bool:
+	return OS.is_debug_build() and choices_panel.visible and choice_index >= 0
+
+
+func debug_answer() -> void:
+	if debug_can_answer():
+		_choose(_choices.find(gifts[choice_index].correct))
+
+
 func _close_choices() -> void:
 	choice_index = -1
 	choices_panel.hide()
