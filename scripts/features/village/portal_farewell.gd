@@ -93,6 +93,7 @@ func _close_spot(spot: ExplorationSpot) -> void:
 func _show_choices(index: int) -> void:
 	if index not in range(3) or index in collected:
 		return
+	guide.stop()
 	choice_index = index
 	_has_target = false
 	$UI/FarewellChoices/Request.text = gifts[index].request
@@ -184,6 +185,8 @@ func _select_memory(value: Dictionary) -> void:
 
 func _process(delta: float) -> void:
 	super._process(delta)
+	if choices_panel.visible or memory_choice.visible:
+		guide.stop()
 	$UI/ObjectivePanel.visible = not memory_choice.visible and not choices_panel.visible
 	controls_label.visible = not memory_choice.visible and not choices_panel.visible
 	if not memory_choice.visible:

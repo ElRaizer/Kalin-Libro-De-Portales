@@ -588,6 +588,7 @@ func _restore_objective() -> void:
 
 # ─── Diálogo ─────────────────────────────────────────────────────────────────
 func _start_dialogue(speaker: String, lines: Array[String], surprised: bool) -> void:
+	guide.stop()
 	_dialogue.start(speaker, lines, surprised)
 	prompt_button.hide()
 
@@ -675,6 +676,7 @@ func _finish() -> void:
 		return
 	_navigating = true
 	_completed = true
+	guide.stop()
 	if _dialogue.is_open():
 		_dialogue.close()
 	prompt_button.hide()
