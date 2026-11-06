@@ -26,6 +26,7 @@ var _destination: String = ""
 var _pending_destination: String = ""
 var _map: VillageMap
 var _map_button: Button
+var _keyboard_cue: KeyboardCue
 var _arrival_point: Vector2 = Vector2.ZERO
 const LANDSCAPES: Dictionary = {
 	"patio": preload("res://Arte/backgrounds/bg_village_patio.svg"),
@@ -69,6 +70,8 @@ func _ready() -> void:
 	add_child(_dialogue)
 	_dialogue.restore(saved, 1741)
 	_build_ui()
+	_keyboard_cue = KeyboardCue.new()
+	$UI.add_child(_keyboard_cue)
 	_map = VillageMap.new()
 	add_child(_map)
 	_map.travel_requested.connect(change_district)
@@ -226,6 +229,7 @@ func _spot(title: String) -> Vector2:
 func _process(delta: float) -> void:
 	_hint.visible = not editor.visible
 	if _changing or editor.visible or _project.visible or get_tree().paused:
+		_keyboard_cue.update_cue(walker.position, false, false, false, true, delta)
 		walker.step(Vector2.ZERO, 0, AccessibilityManager.reduced_motion)
 		return
 	var direction: Vector2 = Vector2(
@@ -268,6 +272,14 @@ func _process(delta: float) -> void:
 	_destination = closest if distance < 150 else ""
 	_action.visible = not _destination.is_empty()
 	_action.disabled = _destination.is_empty()
+	_keyboard_cue.update_cue(
+		walker.head_position(),
+		true,
+		velocity.length_squared() > 0,
+		not _destination.is_empty(),
+		true,
+		delta
+	)
 	_action.text = (
 		(
 			"Hablar con " + _destination.trim_prefix("talk:")

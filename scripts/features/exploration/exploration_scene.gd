@@ -40,6 +40,7 @@ const COLOR_NOTICE := Color("ffd27a")
 @export var free_roam: bool = false
 @export var roaming_floor: Vector2 = Vector2(420, 640)
 var _roaming: ExplorationRoaming
+var _keyboard_cue: KeyboardCue
 
 @export_category("Entrada")
 ## Diálogo opcional que aparece al empezar, antes de que Kalin pueda caminar.
@@ -105,6 +106,8 @@ var _objective_color: Color
 
 # ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
+	_keyboard_cue = KeyboardCue.new()
+	$UI.add_child(_keyboard_cue)
 	chapter_label.text = chapter_title
 	objective_label.text = objective_text
 	skip_button.pressed.connect(_finish)
@@ -200,8 +203,17 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	continue_button.visible = is_dialogue_open()
 	_time += delta
+	var previous: Vector2 = kalin.position
 	walk(Input.get_axis(&"kalin_izquierda", &"kalin_derecha"), delta)
 	_update_nearby_spot()
+	_keyboard_cue.update_cue(
+		get_viewport().get_canvas_transform() * Vector2(kalin.global_position.x, _kalin_top()),
+		_can_walk(),
+		kalin.position.distance_squared_to(previous) > 0.01,
+		_nearby_spot != null,
+		free_roam,
+		delta
+	)
 	_update_arrow()
 	_animate_animals()
 
@@ -457,7 +469,7 @@ func _update_nearby_spot() -> void:
 		)
 	if _nearby_spot == null:
 		return
-	prompt_button.text = _nearby_spot.prompt
+	prompt_button.text = interaction_prompt(_nearby_spot)
 	prompt_button.tooltip_text = "Clic o E para interactuar"
 	var anchor: Vector2 = _nearby_spot.prompt_anchor()
 	anchor.y = minf(anchor.y, _kalin_top() - PROMPT_ABOVE_KALIN)
@@ -467,7 +479,13 @@ func _update_nearby_spot() -> void:
 	)
 
 
+func interaction_prompt(spot: ExplorationSpot) -> String:
+	return spot.prompt
+
+
 func _kalin_top() -> float:
+	if _roaming != null:
+		return _roaming.walker.head_position().y
 	return kalin.global_position.y - kalin_sprite.texture.get_height() * kalin_sprite.scale.y
 
 

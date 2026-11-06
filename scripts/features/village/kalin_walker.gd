@@ -52,6 +52,13 @@ func _draw() -> void:
 	draw_ellipse_shape()
 
 
+func head_position() -> Vector2:
+	var top: Vector2 = (
+		_upper.position - Vector2(0, _upper.texture.get_height() * _upper.scale.y / 2)
+	)
+	return _body.to_global(top)
+
+
 func draw_ellipse_shape() -> void:
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, 0.2))
 	draw_circle(Vector2.ZERO, 25, Color(0.1, 0.2, 0.12, 0.2))
