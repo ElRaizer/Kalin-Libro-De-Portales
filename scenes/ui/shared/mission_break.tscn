@@ -7,6 +7,7 @@
 [ext_resource type="Theme" path="res://themes/kalin_theme.tres" id="editor_3"]
 
 [node name="MissionBreak" type="Control"]
+z_index = 100
 script = ExtResource("script")
 visible = false
 anchors_preset = 15

@@ -4,6 +4,7 @@
 [ext_resource type="Theme" uid="uid://d3cw0ebb2x17v" path="res://themes/kalin_theme.tres" id="2_theme"]
 
 [node name="CompletionOverlay" type="Control" unique_id=486031535]
+z_index = 100
 visible = false
 layout_mode = 3
 anchors_preset = 0
