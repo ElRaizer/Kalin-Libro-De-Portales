@@ -130,6 +130,16 @@ func clear_numeral() -> void:
 	active_floor = MayaNumeral.Floor.UNITS
 
 
+## Retira una pieza visible del piso elegido sin modificar el otro piso.
+func remove_piece() -> void:
+	if active_floor == MayaNumeral.Floor.TWENTIES:
+		twenties = maxi(0, twenties - 1)
+	elif units > 0:
+		units -= MayaNumeral.DOT_VALUE if MayaNumeral.dots_of(units) > 0 else MayaNumeral.BAR_VALUE
+	else:
+		shell = false
+
+
 func numeral_value() -> int:
 	return MayaNumeral.value_of(twenties, units)
 

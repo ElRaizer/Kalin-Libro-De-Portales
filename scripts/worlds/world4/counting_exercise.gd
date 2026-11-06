@@ -203,7 +203,7 @@ func _place(action: Callable) -> void:
 func _on_clear_pressed() -> void:
 	if _session.waiting:
 		return
-	_session.clear_numeral()
+	_session.remove_piece()
 	_refresh_tablet()
 	AudioManager.play_sfx("camino_borrar")
 	GameManager.checkpoint(self)
