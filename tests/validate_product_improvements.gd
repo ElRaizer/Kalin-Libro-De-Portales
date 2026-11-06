@@ -253,13 +253,10 @@ func _book_detail() -> void:
 	scene.libro.show_book(scene.get_node("UI/TopBar/Bar/BookButton"))
 	await scene.libro.motion.opened
 	var page: Panel = scene.libro.left_page
-	page.get_node("Content/PracticeButton").pressed.emit()
+	_check(not page.has_node("Content/PracticeButton"), "El detalle no ocupa la página infantil")
 	_check(
-		page.get_node("Content/DiagramLabel").visible, "El detalle se abre con un botón accesible"
-	)
-	_check(
-		page.get_node("Content/DiagramLabel").text.contains("Orientación"),
-		"El libro distingue manejo y contenido"
+		manager.learning_detail(str(page.get_meta("entry_word", ""))).contains("Orientación"),
+		"La evidencia conserva la distinción de manejo y contenido fuera de la presentación"
 	)
 	await _capture("libro_practica")
 	scene.libro.hide_book()
