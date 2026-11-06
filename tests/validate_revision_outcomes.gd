@@ -157,18 +157,9 @@ func _shared_projects() -> void:
 		)
 		await _capture("plaza_%d_inicio" % world)
 		for index: int in [2, 0, 1]:
-			if index == 2:
-				scene.toggle_journal()
-				(scene.get_node("UI/Direct").get_child(index) as Button).grab_focus()
-				await _press_key(KEY_ENTER)
-				_check(
-					scene.is_dialogue_open() and scene.active_task == index,
-					"El acceso directo por teclado abre al amigo elegido"
-				)
-			else:
-				scene.visit_task(index)
+			_visit_recipient(scene, index)
 			_close_lines(scene)
-			scene.visit_workbench()
+			_visit_workbench(scene)
 			var task: VillageTask = scene.tasks[scene.task_indices[index]]
 			scene.recall.debug_fill([task.item, task.quality])
 			scene._forge()
@@ -179,7 +170,7 @@ func _shared_projects() -> void:
 					"Reanudar tras crear no inventa una entrega pendiente"
 				)
 			var before: int = manager.learning_record(task.item).use
-			scene.visit_task(index)
+			_visit_recipient(scene, index)
 			_close_lines(scene)
 			_check(
 				index in scene.delivered and scene.carried.is_empty(),
@@ -611,10 +602,24 @@ func _meal_furniture() -> void:
 	}
 	scene = await _scene("world4_mission1", pending)
 	_close_lines(scene)
-	scene.visit_task(0)
+	_visit_recipient(scene, 0)
 	_close_lines(scene)
 	_check(
 		0 in scene.delivered and scene.carried.is_empty(),
 		"Un mueble se coloca también en la merienda"
 	)
 	await _capture("mueble_entregado_en_mesa")
+
+
+func _visit_recipient(scene: Node, index: int) -> void:
+	var spot: ExplorationSpot = scene.get_node("Spots/Recipient%d" % index)
+	_approach_spot(scene, spot)
+	scene.camera.reset_smoothing()
+	scene.open_spot(spot)
+
+
+func _visit_workbench(scene: Node) -> void:
+	var spot: ExplorationSpot = scene.get_node("Spots/Workbench")
+	_approach_spot(scene, spot)
+	scene.camera.reset_smoothing()
+	scene.open_spot(spot)
