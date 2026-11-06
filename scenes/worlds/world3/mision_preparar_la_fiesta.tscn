@@ -4,6 +4,8 @@
 [ext_resource type="Script" path="res://scripts/features/village/village_task.gd" id="task"]
 [ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_village_plaza.svg" id="background"]
 
+[ext_resource type="Texture2D" path="res://Arte/exploracion/meal_destination.svg" id="meal_exit"]
+
 [sub_resource type="Resource" id="task_0"]
 script = ExtResource("task")
 requester = "Áak"
@@ -52,6 +54,7 @@ item = "janal"
 quality = "ki'"
 success = "¡Huele delicioso! La compartiremos entre todos."
 
+
 [node name="Mision_PrepararLaFiesta" instance=ExtResource("base")]
 mission_kind = "party"
 chapter_title = "Una fiesta a la medida"
@@ -67,4 +70,5 @@ texture = ExtResource("background")
 [node name="Salida" parent="Spots"]
 prompt = "Compartir la comida"
 lines = Array[String](["¡La fiesta está lista! Vamos a compartir la comida con nuestros amigos."])
-spot_texture = null
+spot_texture = ExtResource("meal_exit")
+sprite_offset = Vector2(0, -100)
