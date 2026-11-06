@@ -50,7 +50,11 @@ static func pool(
 			task.learn = ""
 			task.correct = entry.phrase
 			task.prompt = "Ayuda a %s con su hechizo." % entry.animal
-			task.clue = entry.translation
+			task.clue = (
+				"Quiero " + entry.translation.substr(0, 1).to_lower() + entry.translation.substr(1)
+				if category == 3 and not entry.translation.to_lower().begins_with("quiero ")
+				else entry.translation
+			)
 		result.append(task)
 	# Cuatro respuestas distintas y válidas, incluida siempre la correcta.
 	for index: int in range(result.size()):
