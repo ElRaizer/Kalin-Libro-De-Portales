@@ -78,6 +78,7 @@ theme_type_variation = &"KalinSecondaryButton"
 text = "Practicar de nuevo"
 
 [node name="MenuButton" type="Button" parent="Shade/Panel/Content" unique_id=1645768831]
+theme_type_variation = &"KalinSecondaryButton"
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 text = "Volver al menú"

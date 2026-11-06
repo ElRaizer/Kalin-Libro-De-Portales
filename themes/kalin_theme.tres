@@ -336,6 +336,17 @@ corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
 [resource]
+Button/colors/font_color = Color(1, 1, 1, 1)
+Button/colors/font_disabled_color = Color(0.3, 0.21, 0.12, 1)
+Button/colors/font_hover_color = Color(1, 1, 1, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/colors/icon_disabled_color = Color(1, 1, 1, 0.85)
+Button/styles/disabled = SubResource("DisabledButton")
+Button/styles/focus = SubResource("KeyboardFocus")
+Button/styles/hover = SubResource("TealButtonHover")
+Button/styles/normal = SubResource("TealButtonNormal")
+Button/styles/pressed = SubResource("GoldButtonPressed")
+
 AcceptDialog/styles/panel = SubResource("CreamPanel")
 CheckButton/colors/font_color = Color(0.23, 0.14, 0.08, 1)
 CheckButton/colors/font_focus_color = Color(0.23, 0.14, 0.08, 1)
@@ -444,3 +455,11 @@ KalinVolumeSlider/styles/slider = SubResource("VolumeTrack")
 Window/colors/title_color = Color(1, 0.96, 0.78, 1)
 Window/constants/title_height = 32
 Window/styles/embedded_border = SubResource("DialogFrame")
+
+KalinSecondaryButton/styles/hover_pressed = SubResource("GoldButtonPressed")
+
+KalinNounButton/styles/hover_pressed = SubResource("GoldButtonPressed")
+
+KalinAdjectiveButton/styles/hover_pressed = SubResource("GoldButtonPressed")
+
+KalinPrimaryButton/styles/hover_pressed = SubResource("GoldButtonPressed")
