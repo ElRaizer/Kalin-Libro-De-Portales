@@ -69,6 +69,7 @@ func _ready() -> void:
 	_set_default_instruction()
 	_set_mouse_passthrough(dialogue)
 	dialogue.mouse_filter = Control.MOUSE_FILTER_STOP
+	continue_button.mouse_filter = Control.MOUSE_FILTER_STOP
 	continue_button.pressed.connect(_close_dialogue)
 	guide = LearningGuide.install(self, $UI/LevelHeader/Bar, _show_help)
 	# Conserva los estilos y colores de las casas guardados desde el Inspector.
