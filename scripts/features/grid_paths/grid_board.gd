@@ -411,6 +411,17 @@ func add_traveler(traveler: Control, index: int) -> void:
 	traveler.z_index = path_layer(index)
 
 
+func _input(event: InputEvent) -> void:
+	# La GUI puede consumir la suelta cuando el arrastre termina sobre un botón.
+	if (
+		not Engine.is_editor_hint()
+		and event is InputEventMouseButton
+		and event.button_index == MOUSE_BUTTON_LEFT
+		and not event.pressed
+	):
+		_stop_drawing()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if Engine.is_editor_hint() or not input_enabled:
 		return
@@ -418,8 +429,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.pressed:
 			last_cell = Vector2i(-1, -1)
 			_handle_press(_local_to_cell(to_local(event.position)))
-		else:
-			_stop_drawing()
 	elif event is InputEventMouseMotion and drawing:
 		var cell: Vector2i = _local_to_cell(to_local(event.position))
 		if cell != last_cell:
@@ -544,24 +553,20 @@ func _fill_gap(from_cell: Vector2i, to_cell: Vector2i) -> void:
 
 
 func _try_cell(cell: Vector2i) -> void:
-	if not is_valid_cell(cell):
+	if not is_valid_cell(cell) or not drawing:
 		return
-	if drawing and _try_retract_path(cell):
+	if _try_retract_path(cell):
 		return
 	match grid_state[cell.y][cell.x]:
-		Cell.EMPTY, Cell.PATH, Cell.BRIDGE:
-			_extend_path(cell)
-		Cell.WORD:
-			# Volver a la ficha inicial elimina el primer tramo del camino.
-			_try_retract_path(cell)
+		Cell.PATH:
+			if tile_owner.get(cell, -1) != active_index:
+				invalid_move.emit("Elige otra casilla libre", cell)
 		Cell.DESTINATION:
-			if tile_owner.get(cell, -1) == active_index:
-				_try_finalize_connection(cell)
-			elif drawing:
+			if tile_owner.get(cell, -1) != active_index:
 				invalid_move.emit("Busca su palabra maya", cell)
 		Cell.OBSTACLE:
-			if drawing:
-				invalid_move.emit("Rodea la roca", cell)
+			invalid_move.emit("Rodea la roca", cell)
+	_get_path_controller().try_link(cell)
 
 
 func _try_finalize_connection(destination_cell: Vector2i) -> void:

@@ -239,6 +239,37 @@ func can_step(index: int, from: Vector2i, to: Vector2i, incoming: Vector2i) -> b
 	return grid_state[to.y][to.x] == Cell.EMPTY
 
 
+## Sólo completa una conexión local inequívoca; no decide cómo rodear una roca.
+func try_link(cell: Vector2i) -> void:
+	if not drawing or active_index < 0 or not is_valid_cell(cell):
+		return
+	var index: int = active_index
+	var tip: Vector2i = words[index].start_cell if paths[index].is_empty() else paths[index].back()
+	var distance: int = absi(cell.x - tip.x) + absi(cell.y - tip.y)
+	if distance < 1 or distance > 2:
+		return
+	var candidates: Array[Array] = []
+	if distance == 1 and can_step(index, tip, cell, _incoming(index)):
+		candidates.append([cell])
+	elif distance == 2:
+		for direction: Vector2i in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+			var middle: Vector2i = tip + direction
+			if middle == words[index].destination_cell:
+				continue
+			if (
+				can_step(index, tip, middle, _incoming(index))
+				and can_step(index, middle, cell, direction)
+			):
+				candidates.append([middle, cell])
+	if candidates.size() != 1:
+		return
+	for step: Vector2i in candidates[0]:
+		if step == words[index].destination_cell:
+			try_finalize(step)
+		else:
+			extend(step)
+
+
 func clear(index: int) -> void:
 	for cell: Vector2i in paths.get(index, []):
 		if cell not in bridges:
