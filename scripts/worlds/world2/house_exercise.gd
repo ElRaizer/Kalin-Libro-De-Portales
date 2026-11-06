@@ -34,6 +34,7 @@ var guide: LearningGuide
 @onready var request_art: MeaningIllustration = $UI/RequestPanel/RequestArt
 @onready var room: Panel = $UI/Room
 var room_items: Dictionary = {}
+var _room_positions: Dictionary[String, Vector2] = {}
 @onready var mission_progress: MissionProgress = $UI/MissionProgress
 @onready var mission_break: MissionBreak = $UI/MissionBreak
 @onready var choice_preview: MeaningIllustration = $UI/FeedbackPanel/ChoicePreview
@@ -119,8 +120,20 @@ func _place_object(word: String, animate: bool) -> void:
 	art.show()
 	art.show_meaning(word)
 	room_items[word] = art
+	_room_positions[word] = art.position
+	_arrange_room()
 	if animate:
 		art.celebrate()
+
+
+func _arrange_room() -> void:
+	for word: String in ["lak", "janal"]:
+		if word not in room_items:
+			continue
+		var art: MeaningIllustration = room_items[word]
+		art.position = _room_positions[word]
+		if "mayak" not in room_items:
+			art.position.y = room.size.y - art.size.y - 30.0
 
 
 func _restore_room() -> void:

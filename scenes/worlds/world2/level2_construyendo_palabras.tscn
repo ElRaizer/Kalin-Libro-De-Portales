@@ -144,7 +144,7 @@ columns = 2
 [node name="FeedbackPanel" type="Panel" parent="UI" unique_id=1856786680]
 offset_left = 24.0
 offset_top = 570.0
-offset_right = 1034.0
+offset_right = 1254.0
 offset_bottom = 632.0
 theme = ExtResource("4_theme")
 theme_type_variation = &"KalinFeedbackPanel"
