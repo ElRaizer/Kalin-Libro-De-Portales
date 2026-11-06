@@ -431,6 +431,15 @@ func _update_recipe() -> void:
 
 func _process(delta: float) -> void:
 	super._process(delta)
+	if not carried.is_empty():
+		var anchor: Vector2 = Vector2(90, -145)
+		if _roaming != null:
+			anchor = kalin.to_local(_roaming.walker.carry_anchor())
+		var lift: float = (
+			0.0 if get_node("/root/AccessibilityManager").reduced_motion else sin(_time * 2.8) * 4.0
+		)
+		var horizontal: float = 36.0 if anchor.x >= 0 else carried_art.size.x - 36.0
+		carried_art.position = anchor - Vector2(horizontal, 108) + Vector2(0, lift)
 	$UI/Direct.visible = $UI/Journal.visible and not is_dialogue_open()
 	var world_ui: bool = not gathering.visible and not mission_panel.visible
 	$UI/ObjectivePanel.visible = world_ui
@@ -627,6 +636,9 @@ func _restore_deliveries(new_delivery: int = -1) -> void:
 
 func _update_carried() -> void:
 	carried_art.visible = not carried.is_empty()
+	carried_art.z_index = 2
+	if _roaming != null:
+		_roaming.walker.set_carrying(not carried.is_empty())
 	$UI/CarriedLabel.text = (
 		(
 			"Llevas: %s%s"

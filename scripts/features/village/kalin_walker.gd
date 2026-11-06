@@ -8,10 +8,12 @@ var _phase: float = 0.0
 var _body: Node2D
 var _depth_base: Vector2 = Vector2.ONE
 var _depth_configured: bool = false
+var _carrying: bool = false
 const STEP_LENGTH: float = 52.0
 const HOP_HEIGHT: float = 12.0
 const FRONT: Texture2D = preload("res://Arte/sprites/kalin_walk_upper.svg")
 const BACK: Texture2D = preload("res://Arte/sprites/kalin_walk_back.svg")
+const CARRY: Texture2D = preload("res://Arte/sprites/kalin_carry_upper.svg")
 
 
 func _ready() -> void:
@@ -38,7 +40,9 @@ func step(velocity: Vector2, delta: float, reduced: bool) -> void:
 	var moving: bool = velocity.length() > 0.1
 	if moving:
 		_phase += velocity.length() * delta / STEP_LENGTH * PI
-		_upper.texture = BACK if velocity.y < -absf(velocity.x) * 0.7 else FRONT
+		_upper.texture = (
+			CARRY if _carrying else (BACK if velocity.y < -absf(velocity.x) * 0.7 else FRONT)
+		)
 		if absf(velocity.x) > 1:
 			_upper.flip_h = velocity.x < 0
 	var stride: float = sin(_phase) if moving and not reduced else 0.0
@@ -48,6 +52,16 @@ func step(velocity: Vector2, delta: float, reduced: bool) -> void:
 	_left.position = Vector2(-10, -10)
 	_right.position = Vector2(10, -10)
 	z_index = int(position.y)
+
+
+func set_carrying(enabled: bool) -> void:
+	_carrying = enabled
+	_upper.texture = CARRY if enabled else FRONT
+
+
+func carry_anchor() -> Vector2:
+	var side: float = -1.0 if _upper.flip_h else 1.0
+	return _upper.to_global(Vector2(80 * side, -10))
 
 
 func _draw() -> void:
