@@ -126,7 +126,7 @@ func _word_evidence() -> void:
 			await process_frame
 			var card: Control = scene.get_node("UI/ChoicesPanel")
 			_check(
-				is_equal_approx(card.size.y, 268.0 if scene.recall.second_box.visible else 190.0),
+				is_equal_approx(card.size.y, 320.0 if scene.recall.second_box.visible else 248.0),
 				"La altura de recuerdo procede del perfil y se adapta a una o dos palabras"
 			)
 			_check(

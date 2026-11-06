@@ -164,43 +164,37 @@ layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="A" type="Button" parent="Margin/Content/Letters" unique_id=1959819176]
-visible = false
-custom_minimum_size = Vector2(48, 32)
+custom_minimum_size = Vector2(48, 44)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 text = "á"
 
 [node name="E" type="Button" parent="Margin/Content/Letters" unique_id=335734438]
-visible = false
-custom_minimum_size = Vector2(48, 32)
+custom_minimum_size = Vector2(48, 44)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 text = "é"
 
 [node name="I" type="Button" parent="Margin/Content/Letters" unique_id=697204299]
-visible = false
-custom_minimum_size = Vector2(48, 32)
+custom_minimum_size = Vector2(48, 44)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 text = "í"
 
 [node name="O" type="Button" parent="Margin/Content/Letters" unique_id=560877280]
-visible = false
-custom_minimum_size = Vector2(48, 32)
+custom_minimum_size = Vector2(48, 44)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 text = "ó"
 
 [node name="U" type="Button" parent="Margin/Content/Letters" unique_id=60773992]
-visible = false
-custom_minimum_size = Vector2(48, 32)
+custom_minimum_size = Vector2(48, 44)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 text = "ú"
 
 [node name="Glottal" type="Button" parent="Margin/Content/Letters" unique_id=80371472]
-visible = false
-custom_minimum_size = Vector2(48, 32)
+custom_minimum_size = Vector2(48, 44)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 text = "'"

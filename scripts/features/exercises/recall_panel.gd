@@ -147,6 +147,7 @@ func set_mode(value: int, announce: bool = true) -> void:
 	$Margin/Content/Modes.hide()
 	$Margin/Content/Actions/Practice.hide()
 	$Margin/Content/Blocks.visible = mode == Mode.BLOCKS
+	$Margin/Content/Letters.visible = mode != Mode.BLOCKS
 	first.visible = mode != Mode.BLOCKS
 	second.visible = mode != Mode.BLOCKS
 	for row: HFlowContainer in _slot_rows:
