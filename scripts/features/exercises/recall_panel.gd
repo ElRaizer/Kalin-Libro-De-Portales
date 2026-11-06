@@ -88,6 +88,8 @@ func _ready() -> void:
 		)
 		correction.focused.connect(func() -> void: _active = field)
 		correction.navigation_requested.connect(focus_answer)
+		correction.advance_requested.connect(_advance_cloze)
+		correction.backspace_requested.connect(_backspace_cloze)
 		_corrections.append(correction)
 		var row: HFlowContainer = HFlowContainer.new()
 		row.name = "BlockSlots"
@@ -656,6 +658,28 @@ func focus_next_answer(current: LineEdit) -> bool:
 		return false
 	fields[index + 1].grab_focus()
 	return true
+
+
+func _advance_cloze(current: LineEdit) -> void:
+	var fields: Array[LineEdit] = _editable_fields()
+	var index: int = fields.find(current)
+	if index < 0:
+		return
+	for next: int in range(index + 1, fields.size()):
+		if fields[next].text.is_empty():
+			fields[next].grab_focus()
+			return
+
+
+func _backspace_cloze(current: LineEdit) -> void:
+	var fields: Array[LineEdit] = _editable_fields()
+	var index: int = fields.find(current)
+	if index <= 0:
+		return
+	var previous: LineEdit = fields[index - 1]
+	previous.grab_focus()
+	previous.clear()
+	previous.text_changed.emit("")
 
 
 func _editable_fields() -> Array[LineEdit]:

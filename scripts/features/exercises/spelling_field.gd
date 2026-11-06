@@ -5,6 +5,8 @@ signal changed
 signal submitted
 signal focused
 signal navigation_requested
+signal advance_requested(field: LineEdit)
+signal backspace_requested(field: LineEdit)
 var correction: SpellingCorrection = SpellingCorrection.new()
 var _active: LineEdit
 var _style_source: LineEdit
@@ -66,6 +68,7 @@ func render() -> void:
 				for color: String in ["font_color", "font_placeholder_color", "caret_color"]:
 					field.add_theme_color_override(color, _style_source.get_theme_color(color))
 			field.text_changed.connect(_edited.bind(index))
+			field.gui_input.connect(_edit_input.bind(field))
 			field.text_submitted.connect(func(_text: String) -> void: submitted.emit())
 			field.focus_entered.connect(
 				func() -> void:
@@ -79,11 +82,13 @@ func _edited(text: String, index: int) -> void:
 	correction.letters[index] = text
 	changed.emit()
 	if not text.is_empty() and is_instance_valid(_active):
-		var children: Array[Node] = get_children()
-		for next: int in range(children.find(_active) + 1, children.size()):
-			if children[next] is LineEdit and children[next].text.is_empty():
-				(children[next] as LineEdit).grab_focus()
-				break
+		advance_requested.emit(_active)
+
+
+func _edit_input(event: InputEvent, field: LineEdit) -> void:
+	if event.is_action_pressed("ui_text_backspace") and field.text.is_empty():
+		field.accept_event()
+		backspace_requested.emit(field)
 
 
 func _remove(index: int) -> void:
@@ -97,7 +102,12 @@ func focus_pending() -> bool:
 	if not is_inside_tree() or not is_visible_in_tree() or is_queued_for_deletion():
 		return false
 	for child: Node in get_children():
-		if child is LineEdit and child.is_inside_tree() and not child.is_queued_for_deletion():
+		if (
+			child is LineEdit
+			and child.text.is_empty()
+			and child.is_inside_tree()
+			and not child.is_queued_for_deletion()
+		):
 			(child as LineEdit).grab_focus()
 			return true
 	for child: Node in get_children():
