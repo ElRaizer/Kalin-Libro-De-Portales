@@ -35,7 +35,14 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	var accepted: bool = false
 	if data is Dictionary:
 		accepted = StringName(data.get("kind", &"")) == StringName(accepted_kind)
+	_set_valid_hover(accepted)
 	return accepted
+
+
+func _has_point(point: Vector2) -> bool:
+	# La ficha puede cubrir el borde aunque su centro aún quede un poco fuera.
+	# La misma zona decide la recepción nativa y el resaltado.
+	return Rect2(Vector2(-6, -28), size + Vector2(12, 56)).has_point(point)
 
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
@@ -93,9 +100,9 @@ func _process(delta: float) -> void:
 		if get_node("/root/AccessibilityManager").reduced_motion
 		else fmod(_border_phase + BORDER_SPEED * delta, DOT_SPACING)
 	)
-	# Comprobar la posición en cada frame garantiza que el resaltado desaparezca
-	# incluso cuando Godot deja de llamar a _can_drop_data al salir del Control.
-	var cursor_inside: bool = get_global_rect().has_point(get_viewport().get_mouse_position())
+	# La GUI usa _has_point también para el hover y respeta los menús superpuestos.
+	# Consultarla retira el brillo al salir, incluso sin otra llamada de drop.
+	var cursor_inside: bool = get_viewport().gui_get_hovered_control() == self
 	_set_valid_hover(cursor_inside)
 	queue_redraw()
 
