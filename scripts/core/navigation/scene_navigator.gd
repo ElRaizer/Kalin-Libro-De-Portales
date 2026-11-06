@@ -30,6 +30,8 @@ func go_to_scene(key: String) -> bool:
 		push_error("GameManager: clave de escena desconocida '%s'" % key)
 		return false
 	checkpoint_current_scene()
+	var source_key: String = scene_key_for(get_tree().current_scene)
+	var replay_run: String = _replay_run(source_key)
 	var leaving_practice: bool = (
 		get_tree().current_scene != null
 		and get_tree().current_scene.scene_file_path == SCENE_PATHS.village_home
@@ -50,6 +52,12 @@ func go_to_scene(key: String) -> bool:
 		push_error("GameManager: no se pudo abrir '%s' (error %d)" % [SCENE_PATHS[key], error])
 		return false
 	_session.resume_scene_key = next_resume
+	if key not in ["main_menu", "village_home", source_key] and not replay_run.is_empty():
+		var destination: Dictionary = _session.scene_states.get(key, {})
+		if destination.get("replay_run", "") != replay_run:
+			destination = ReplayVariation.replay_state(destination)
+			destination.replay_run = replay_run
+			_session.scene_states[key] = destination
 	_save.call()
 	return true
 
@@ -104,10 +112,20 @@ func checkpoint(node: Node) -> void:
 	var key: String = scene_key_for(node)
 	if key.is_empty() or not node.has_method("get_checkpoint_state"):
 		return
-	_session.scene_states[key] = node.get_checkpoint_state().duplicate(true)
+	var replay_run: String = _replay_run(key)
+	var snapshot: Dictionary = node.get_checkpoint_state().duplicate(true)
+	if not replay_run.is_empty():
+		snapshot.replay_run = replay_run
+	_session.scene_states[key] = snapshot
 	if node == get_tree().current_scene and key != "main_menu":
 		_session.resume_scene_key = key
 	_save.call()
+
+
+func _replay_run(key: String) -> String:
+	var state: Dictionary = _session.scene_states.get(key, {})
+	var value: Variant = state.get("replay_run", "")
+	return value if value is String else ""
 
 
 ## La escritura guarda al dejar de teclear; navegar y salir siguen guardando de inmediato.
@@ -154,5 +172,6 @@ func replay_scene(key: String) -> bool:
 	if not go_to_scene(key):
 		return false
 	_session.scene_states[key] = ReplayVariation.replay_state(_session.scene_states.get(key, {}))
+	_session.scene_states[key].replay_run = "%d-%d" % [Time.get_ticks_usec(), randi()]
 	_save.call()
 	return true

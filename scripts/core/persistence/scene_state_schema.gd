@@ -41,7 +41,8 @@ const TEXT := [
 	"return_scene",
 	"recall_text",
 	"board_variant",
-	"district"
+	"district",
+	"replay_run"
 ]
 const LISTS := [
 	"known",
