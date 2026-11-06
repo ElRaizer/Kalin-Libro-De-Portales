@@ -24,6 +24,8 @@
 
 [ext_resource type="Texture2D" path="res://Arte/exploracion/prop_calabaza_kuum.svg" id="12_r"]
 
+[ext_resource type="Texture2D" path="res://Arte/backgrounds/bg_explora_milpa_front.svg" id="front"]
+
 [node name="Exploracion3" instance=ExtResource("1_r")]
 chapter_title = "Mundo 4 · Exploración — La milpa"
 next_scene_key = "world4_level1"
@@ -114,3 +116,8 @@ is_goal = true
 auto_trigger = true
 glow_position = Vector2(110, -120)
 glow_extents = Vector2(160, 50)
+
+[node name="Foreground" type="Sprite2D" parent="."]
+z_index = 5
+texture = ExtResource("front")
+centered = false
