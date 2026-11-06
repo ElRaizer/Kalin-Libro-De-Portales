@@ -6,6 +6,8 @@ var _left: Sprite2D
 var _right: Sprite2D
 var _phase: float = 0.0
 var _body: Node2D
+var _depth_base: Vector2 = Vector2.ONE
+var _depth_configured: bool = false
 const STEP_LENGTH: float = 52.0
 const HOP_HEIGHT: float = 12.0
 const FRONT: Texture2D = preload("res://Arte/sprites/kalin_walk_upper.svg")
@@ -50,6 +52,14 @@ func step(velocity: Vector2, delta: float, reduced: bool) -> void:
 
 func _draw() -> void:
 	draw_ellipse_shape()
+
+
+func apply_depth(floor_y: float, floor_range: Vector2) -> void:
+	if not _depth_configured:
+		_depth_base = scale
+		_depth_configured = true
+	var depth: float = clampf(inverse_lerp(floor_range.x, floor_range.y, floor_y), 0.0, 1.0)
+	scale = _depth_base * lerpf(0.84, 1.08, depth)
 
 
 func head_position() -> Vector2:

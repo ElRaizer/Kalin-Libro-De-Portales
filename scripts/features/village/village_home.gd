@@ -227,6 +227,9 @@ func _spot(title: String) -> Vector2:
 
 
 func _process(delta: float) -> void:
+	walker.apply_depth(
+		walker.position.y, Vector2(VillageGround.FLOOR.position.y, VillageGround.FLOOR.end.y)
+	)
 	_hint.visible = not editor.visible
 	if _changing or editor.visible or _project.visible or get_tree().paused:
 		_keyboard_cue.update_cue(walker.position, false, false, false, true, delta)
