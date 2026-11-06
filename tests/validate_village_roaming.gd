@@ -58,11 +58,14 @@ func _run() -> void:
 		await create_timer(0.7).timeout
 		scene.guide.stop()
 		check(absf(scene.kalin.position.y - 480) < 8, "Reanudar conserva la profundidad del suelo")
-		scene.toggle_journal()
+		scene._open_workbench()
 		var before: Vector2 = scene.kalin.position
 		scene.walk(1, 0.2)
-		check(scene.kalin.position == before, "Consultar lugares detiene el movimiento")
-		scene.toggle_journal()
+		check(
+			scene.kalin.position == before,
+			"Consultar los encargos en el taller detiene el movimiento"
+		)
+		scene._close_workbench()
 		for index: int in range(3):
 			var spot: Node2D = scene.get_node("Spots/Recipient%d" % index)
 			scene._place_kalin(spot.position.x - 160)

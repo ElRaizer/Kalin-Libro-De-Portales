@@ -18,6 +18,8 @@
 
 [ext_resource type="Resource" path="res://data/layouts/village_mission.tres" id="mission_layout"]
 
+[ext_resource type="PackedScene" path="res://scenes/features/village/mission_task_preview.tscn" id="task_preview"]
+
 [sub_resource type="Curve2D" id="plaza_path"]
 _data = {
 "points": PackedVector2Array(0, 0, 0, 0, 120, 600, 0, 0, 0, 0, 2400, 600)
@@ -175,13 +177,13 @@ visible = false
 offset_left = 240.0
 offset_top = 80.0
 offset_right = 1240.0
-offset_bottom = 622.0
+offset_bottom = 648.0
 theme = ExtResource("theme")
 theme_type_variation = &"KalinCreamPanel"
 
 [node name="Title" type="Label" parent="UI/MissionPanel" index="0" unique_id=413034786]
 layout_mode = 0
-offset_left = 24.0
+offset_left = 220.0
 offset_top = 12.0
 offset_right = 976.0
 offset_bottom = 50.0
@@ -190,18 +192,18 @@ theme_override_font_sizes/font_size = 26
 text = "El taller de la aldea"
 
 [node name="RecallPanel" parent="UI/MissionPanel" index="1" unique_id=298865619 instance=ExtResource("recall")]
-preferred_size = Vector2(964, 312)
+preferred_size = Vector2(762, 312)
 layout_mode = 0
-offset_left = 18.0
-offset_top = 110.0
+offset_left = 220.0
+offset_top = 136.0
 offset_right = 982.0
-offset_bottom = 422.0
+offset_bottom = 448.0
 external_submit = true
 
 [node name="Cards" type="VBoxContainer" parent="UI/MissionPanel" index="2" unique_id=1101262582]
 visible = false
 layout_mode = 0
-offset_left = 24.0
+offset_left = 220.0
 offset_top = 112.0
 offset_right = 976.0
 offset_bottom = 302.0
@@ -275,10 +277,10 @@ horizontal_alignment = 1
 
 [node name="Feedback" type="Label" parent="UI/MissionPanel" index="4" unique_id=1046917264]
 layout_mode = 0
-offset_left = 24.0
-offset_top = 426.0
+offset_left = 220.0
+offset_top = 452.0
 offset_right = 976.0
-offset_bottom = 458.0
+offset_bottom = 484.0
 theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
 theme_override_font_sizes/font_size = 19
 text = "Recuerda tu encargo."
@@ -288,18 +290,18 @@ autowrap_mode = 3
 [node name="Close" type="Button" parent="UI/MissionPanel" index="5" unique_id=855907956]
 layout_mode = 0
 offset_left = 24.0
-offset_top = 468.0
+offset_top = 494.0
 offset_right = 324.0
-offset_bottom = 528.0
+offset_bottom = 554.0
 theme_type_variation = &"KalinSecondaryButton"
 text = "Volver a caminar"
 
 [node name="Forge" type="Button" parent="UI/MissionPanel" index="6" unique_id=1120521627]
 layout_mode = 0
 offset_left = 642.0
-offset_top = 468.0
+offset_top = 494.0
 offset_right = 976.0
-offset_bottom = 528.0
+offset_bottom = 554.0
 theme_type_variation = &"KalinPrimaryButton"
 text = "Crear y llevar ✦"
 
@@ -326,81 +328,13 @@ visible = false
 
 
 [node name="RequestHint" type="Label" parent="UI/MissionPanel"]
-offset_left = 24.0
+offset_left = 220.0
 offset_top = 52.0
 offset_right = 976.0
-offset_bottom = 104.0
+offset_bottom = 124.0
 theme_override_font_sizes/font_size = 22
 theme_override_colors/font_color = Color(0.08, 0.35, 0.32, 1)
 autowrap_mode = 3
-
-[node name="JournalButton" type="Button" parent="UI"]
-offset_left = 950.0
-offset_top = 622.0
-offset_right = 1256.0
-offset_bottom = 682.0
-theme = ExtResource("theme")
-theme_type_variation = &"KalinSecondaryButton"
-text = "Mis encargos"
-
-[node name="Journal" type="Panel" parent="UI"]
-visible = false
-offset_left = 240.0
-offset_top = 90.0
-offset_right = 1240.0
-offset_bottom = 600.0
-theme = ExtResource("theme")
-theme_type_variation = &"KalinCreamPanel"
-
-[node name="Title" type="Label" parent="UI/Journal"]
-offset_left = 24.0
-offset_top = 20.0
-offset_right = 970.0
-offset_bottom = 60.0
-text = "Mis encargos · elige cuál preparar"
-theme_override_font_sizes/font_size = 30
-
-theme_override_colors/font_color = Color(0.23, 0.14, 0.08, 1)
-
-[node name="Tasks" type="VBoxContainer" parent="UI/Journal"]
-offset_left = 24.0
-offset_top = 80.0
-offset_right = 976.0
-offset_bottom = 390.0
-theme_override_constants/separation = 16
-
-[node name="Task0" type="Button" parent="UI/Journal/Tasks"]
-custom_minimum_size = Vector2(0, 90)
-layout_mode = 2
-autowrap_mode = 3
-alignment = 0
-
-theme_type_variation = &"KalinSecondaryButton"
-
-[node name="Task1" type="Button" parent="UI/Journal/Tasks"]
-custom_minimum_size = Vector2(0, 90)
-layout_mode = 2
-autowrap_mode = 3
-alignment = 0
-
-theme_type_variation = &"KalinSecondaryButton"
-
-[node name="Task2" type="Button" parent="UI/Journal/Tasks"]
-custom_minimum_size = Vector2(0, 90)
-layout_mode = 2
-autowrap_mode = 3
-alignment = 0
-
-theme_type_variation = &"KalinSecondaryButton"
-
-[node name="Close" type="Button" parent="UI/Journal"]
-offset_left = 650.0
-offset_top = 420.0
-offset_right = 976.0
-offset_bottom = 488.0
-text = "Volver a la aldea"
-
-theme_type_variation = &"KalinSecondaryButton"
 
 [node name="VillageButton" type="Button" parent="UI"]
 offset_left = 610.0
@@ -418,53 +352,12 @@ text = "Probar hechizos"
 curve = SubResource("plaza_path")
 
 
-[node name="Direct" type="HBoxContainer" parent="UI"]
-offset_left = 16.0
-offset_top = 88.0
-offset_right = 1264.0
-offset_bottom = 148.0
-theme = ExtResource("theme")
-theme_override_constants/separation = 10
-
-[node name="Task0" type="Button" parent="UI/Direct"]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 60)
-size_flags_horizontal = 3
-theme_type_variation = &"KalinSecondaryButton"
-theme_override_font_sizes/font_size = 22
-text = "Amigo 1"
-
-[node name="Task1" type="Button" parent="UI/Direct"]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 60)
-size_flags_horizontal = 3
-theme_type_variation = &"KalinSecondaryButton"
-theme_override_font_sizes/font_size = 22
-text = "Amigo 2"
-
-[node name="Task2" type="Button" parent="UI/Direct"]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 60)
-size_flags_horizontal = 3
-theme_type_variation = &"KalinSecondaryButton"
-theme_override_font_sizes/font_size = 22
-text = "Amigo 3"
-
-[node name="Create" type="Button" parent="UI/Direct"]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 60)
-size_flags_horizontal = 3
-theme_type_variation = &"KalinSecondaryButton"
-theme_override_font_sizes/font_size = 22
-text = "Crear aporte"
-
-[node name="Exit" type="Button" parent="UI/Direct"]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 60)
-size_flags_horizontal = 3
-theme_type_variation = &"KalinSecondaryButton"
-theme_override_font_sizes/font_size = 22
-text = "Continuar →"
-
 [node name="ScreenLayout" parent="."]
 profile = ExtResource("mission_layout")
+
+[node name="TaskPreview" parent="UI/MissionPanel" instance=ExtResource("task_preview")]
+visible = false
+offset_left = 220.0
+offset_top = 148.0
+offset_right = 976.0
+offset_bottom = 440.0

@@ -54,6 +54,8 @@ var drafts: Dictionary:
 var _restoring_draft: bool = false
 var _residents: Array[String] = []
 var _combination_tasks: Array[String] = []
+var _task_cards: VBoxContainer
+var _viewed_task: int = -1
 @onready var gathering: VillageGathering = $UI/VillageGathering
 @onready var mission_panel: Panel = $UI/MissionPanel
 @onready var recall: RecallPanel = $UI/MissionPanel/RecallPanel
@@ -110,10 +112,6 @@ func _ready() -> void:
 	for index: int in range(3):
 		recipients.append($Spots.get_node("Recipient%d" % index))
 	VillageResidents.install(self, recipients, _residents, _seed, true)
-	for index: int in range(3):
-		($UI/Direct.get_child(index) as Button).pressed.connect(visit_task.bind(index))
-	$UI/Direct/Create.pressed.connect(visit_workbench)
-	$UI/Direct/Exit.pressed.connect(visit_exit)
 	super._ready()
 	skip_button.hide()
 	$UI/BookButton.pressed.connect(func(): $LibroHechizos.show_book($UI/BookButton))
@@ -141,15 +139,11 @@ func _ready() -> void:
 				GameManager.checkpoint(self)
 		)
 	mission_panel.hide()
+	_build_task_cards()
 	$UI/VillageButton.text = "Mi aldea"
 	$UI/VillageButton.pressed.connect(
 		func() -> void: GameManager.visit_home(GameManager.scene_key_for(self))
 	)
-	$UI/JournalButton.text = "Encargos y lugares"
-	$UI/JournalButton.pressed.connect(toggle_journal)
-	$UI/Journal/Close.pressed.connect(toggle_journal)
-	for index: int in range(3):
-		($UI/Journal/Tasks.get_child(index) as Button).pressed.connect(_track_task.bind(index))
 	_restore_deliveries()
 	_update_carried()
 	_update_counter()
@@ -242,19 +236,13 @@ func _recall_score(task: VillageTask) -> int:
 
 
 func _can_walk() -> bool:
-	return (
-		not gathering.visible
-		and not mission_panel.visible
-		and not $UI/Journal.visible
-		and super._can_walk()
-	)
+	return not gathering.visible and not mission_panel.visible and super._can_walk()
 
 
 func open_spot(spot: ExplorationSpot) -> void:
 	if not _can_walk() or not _is_within_reach(spot):
 		return
 	if spot.name == &"Workbench":
-		$UI/Journal.hide()
 		_open_workbench()
 		return
 	if spot.is_goal and delivered.size() < 3:
@@ -265,7 +253,8 @@ func open_spot(spot: ExplorationSpot) -> void:
 		_deliver(index, spot)
 		return
 	if index >= 0:
-		active_task = index
+		if index not in delivered:
+			active_task = index
 		spot.lines.assign(
 			[
 				(
@@ -300,20 +289,28 @@ func _close_spot(spot: ExplorationSpot) -> void:
 
 
 func _open_workbench() -> void:
+	guide.stop()
+	$UI/MissionPanel/TaskPreview.hide()
 	if active_task < 0 or active_task in delivered:
-		_start_dialogue("Kalin", ["Hablaré con un amigo para saber qué necesita."], false)
-		return
-	$UI/Journal.hide()
+		for index: int in met:
+			if index not in delivered:
+				active_task = index
+				break
+	_viewed_task = active_task if active_task >= 0 and active_task not in delivered else -1
 	_has_target = false
 	mission_panel.show()
+	forge_button.show()
+	_refresh_task_cards()
+	if _viewed_task < 0:
+		_show_task_status(-1)
+		return
 	$UI/MissionPanel/Cards.hide()
 	$UI/MissionPanel/Recipe.hide()
 	_cards_mode = false
 	_restoring_draft = true
 	var task: VillageTask = tasks[task_indices[active_task]]
 	var draft: Dictionary = drafts.get(str(active_task), {})
-	_workbench_attempt = LearningAttempt.new()
-	_workbench_attempt.restore(draft.get("attempt"))
+	_workbench_attempt.restore(draft.get("attempt", {}))
 	_workbench_attempt.begin(
 		LearningContext.identify(
 			"delivery/" + GameManager.scene_key_for(self),
@@ -343,12 +340,95 @@ func _open_workbench() -> void:
 	feedback.text = (
 		"Crea el encargo y llévalo a su destinatario."
 		if carried.is_empty()
-		else "Crear otro objeto sustituye el que llevas."
+		else "Primero entrega el objeto que llevas; después podrás crear otro."
 	)
-	recall.first.grab_focus()
+	forge_button.disabled = not carried.is_empty()
 	if draft.get("cards", false) == true:
 		_show_cards()
 	GameManager.checkpoint(self)
+
+
+func _build_task_cards() -> void:
+	_task_cards = VBoxContainer.new()
+	_task_cards.name = "TaskCards"
+	_task_cards.position = Vector2(20, 75)
+	_task_cards.size = Vector2(174, 330)
+	_task_cards.add_theme_constant_override("separation", 10)
+	mission_panel.add_child(_task_cards)
+	for index: int in range(3):
+		var card: SelectionButton = SelectionButton.new()
+		card.custom_minimum_size = Vector2(174, 100)
+		card.toggle_mode = true
+		card.theme_type_variation = &"KalinSecondaryButton"
+		card.expand_icon = true
+		card.add_theme_constant_override("icon_max_width", 64)
+		card.pressed.connect(_select_task_card.bind(index))
+		_task_cards.add_child(card)
+	$ScreenLayout.register_controls(mission_panel)
+	_refresh_task_cards()
+
+
+func _refresh_task_cards() -> void:
+	if not is_instance_valid(_task_cards):
+		return
+	for index: int in range(3):
+		var card: Button = _task_cards.get_child(index) as Button
+		var task: VillageTask = tasks[task_indices[index]]
+		card.icon = GameManager.get_visual_texture(task.requester) if index in met else null
+		card.text = (
+			("✓ " if index in delivered else "") + task.requester
+			if index in met
+			else "?\nSin descubrir"
+		)
+		card.set_pressed_no_signal(index == _viewed_task)
+
+
+func _select_task_card(index: int) -> void:
+	_store_draft()
+	if index in met and index not in delivered:
+		active_task = index
+		_open_workbench()
+	else:
+		_viewed_task = index
+		_show_task_status(index)
+		_refresh_task_cards()
+
+
+func _show_task_status(index: int) -> void:
+	guide.stop()
+	recall.hide()
+	$UI/MissionPanel/Cards.hide()
+	$UI/MissionPanel/Recipe.hide()
+	forge_button.hide()
+	$UI/MissionPanel/Title.text = (
+		"Encargo entregado" if index in delivered else "Un amigo por conocer"
+	)
+	$UI/MissionPanel/RequestHint.text = (
+		tasks[task_indices[index]].success
+		if index in delivered
+		else "Habla con los habitantes para descubrir sus peticiones."
+	)
+	feedback.text = "Elige una tarjeta para consultar otro encargo."
+	($UI/MissionPanel/TaskPreview as MissionTaskPreview).show_task(
+		tasks[task_indices[index]] if index in delivered else null
+	)
+	GameManager.checkpoint(self)
+
+
+func interaction_prompt(spot: ExplorationSpot) -> String:
+	var index: int = _recipient_index(spot)
+	if index < 0:
+		return super.interaction_prompt(spot)
+	if index in delivered:
+		return "Hablar"
+	if index not in met:
+		return "Conocer encargo"
+	var task: VillageTask = tasks[task_indices[index]]
+	return (
+		"Entregar"
+		if _mission.accepts_delivery(index, task.item, task.quality)
+		else "Consultar encargo"
+	)
 
 
 func _close_workbench() -> void:
@@ -369,7 +449,12 @@ func _scaffold_changed() -> void:
 
 
 func _store_draft() -> void:
-	if active_task >= 0 and mission_panel.visible and not _restoring_draft:
+	if (
+		active_task >= 0
+		and _viewed_task == active_task
+		and mission_panel.visible
+		and not _restoring_draft
+	):
 		var values: Array = [_draft_item, _draft_quality] if _cards_mode else recall.values()
 		drafts[str(active_task)] = {
 			"item": values[0],
@@ -440,17 +525,14 @@ func _process(delta: float) -> void:
 		)
 		var horizontal: float = 36.0 if anchor.x >= 0 else carried_art.size.x - 36.0
 		carried_art.position = anchor - Vector2(horizontal, 108) + Vector2(0, lift)
-	$UI/Direct.visible = $UI/Journal.visible and not is_dialogue_open()
 	var world_ui: bool = not gathering.visible and not mission_panel.visible
 	$UI/ObjectivePanel.visible = world_ui
-	$UI/VillageButton.visible = world_ui and $UI/Journal.visible
+	$UI/VillageButton.visible = world_ui and not is_dialogue_open()
 	controls_label.hide()
-	$UI/JournalButton.visible = (world_ui and not is_dialogue_open() and not $UI/Journal.visible)
 	$UI/CarriedLabel.visible = (
 		not carried.is_empty()
 		and not is_dialogue_open()
 		and not mission_panel.visible
-		and not $UI/Journal.visible
 		and not gathering.visible
 	)
 
@@ -484,6 +566,8 @@ func debug_can_answer() -> bool:
 		and mission_panel.visible
 		and active_task >= 0
 		and active_task not in delivered
+		and _viewed_task == active_task
+		and carried.is_empty()
 	)
 
 
@@ -502,7 +586,13 @@ func debug_answer() -> void:
 
 
 func _forge() -> void:
-	if not mission_panel.visible or active_task < 0:
+	if (
+		not mission_panel.visible
+		or active_task < 0
+		or active_task in delivered
+		or _viewed_task != active_task
+		or not carried.is_empty()
+	):
 		return
 	if not _cards_mode and not recall.ready_to_submit():
 		return
@@ -658,7 +748,7 @@ func _update_counter() -> void:
 	if not is_instance_valid(counter_label):
 		return
 	counter_label.text = "Aportes a la plaza: %d / 3" % delivered.size()
-	_update_journal()
+	_refresh_task_cards()
 	objective_label.text = (
 		completion_objective
 		if delivered.size() == 3
@@ -668,49 +758,6 @@ func _update_counter() -> void:
 			"meal": "Una mesa compartida."
 		}[mission_kind]
 	)
-	for index: int in range(3):
-		var task: VillageTask = tasks[task_indices[index]]
-		($UI/Direct.get_child(index) as Button).text = (
-			("✓ " if index in delivered else "") + task.requester
-		)
-	$UI/Direct/Exit.disabled = delivered.size() < 3
-
-
-func _track_task(index: int) -> void:
-	if index not in met or index in delivered:
-		return
-	active_task = index
-	$UI/Journal.hide()
-	_show_notice(
-		"Encargo de %s. Crea el objeto en el taller." % tasks[task_indices[index]].requester
-	)
-	GameManager.checkpoint(self)
-
-
-func toggle_journal() -> void:
-	$UI/Journal.visible = not $UI/Journal.visible
-	$UI/Direct.visible = $UI/Journal.visible
-	if $UI/Journal.visible:
-		_update_journal()
-		($UI/Direct.get_child(0) as Button).grab_focus()
-	else:
-		$UI/JournalButton.grab_focus()
-
-
-func _update_journal() -> void:
-	for index: int in range(3):
-		var button: Button = $UI/Journal/Tasks.get_child(index) as Button
-		button.disabled = index not in met or index in delivered
-		var task: VillageTask = tasks[task_indices[index]]
-		button.text = (
-			"✓ %s · entregado" % task.requester
-			if index in delivered
-			else (
-				"%s: %s" % [task.requester, task.request]
-				if index in met
-				else "? Habla con este amigo"
-			)
-		)
 
 
 func _on_recall_support() -> void:
@@ -769,11 +816,6 @@ func _update_arrow() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if $UI/Journal.visible:
-		if event.is_action_pressed("ui_cancel"):
-			$UI/Journal.hide()
-			get_viewport().set_input_as_handled()
-		return
 	if mission_panel.visible:
 		if event.is_action_pressed("ui_cancel"):
 			_close_workbench()
@@ -785,9 +827,6 @@ func _unhandled_input(event: InputEvent) -> void:
 func close_transient_ui() -> bool:
 	if gathering.visible:
 		gathering.close_gathering()
-		return true
-	if $UI/Journal.visible:
-		$UI/Journal.hide()
 		return true
 	if not mission_panel.visible:
 		return false
@@ -836,35 +875,6 @@ func _show_gathering() -> void:
 func _on_gathering_closed() -> void:
 	gathering_seen = true
 	GameManager.checkpoint(self)
-
-
-## Accesos equivalentes por toque, Tab y Enter; el paseo sigue siendo opcional.
-func visit_task(index: int) -> void:
-	$UI/Journal.hide()
-	if not _can_walk() or index not in range(3):
-		return
-	var spot: ExplorationSpot = $Spots.get_node("Recipient%d" % index)
-	_place_kalin(spot.position.x - 110)
-	camera.reset_smoothing()
-	open_spot(spot)
-
-
-func visit_workbench() -> void:
-	$UI/Journal.hide()
-	if not _can_walk():
-		return
-	_place_kalin($Spots/Workbench.position.x)
-	camera.reset_smoothing()
-	_open_workbench()
-
-
-func visit_exit() -> void:
-	$UI/Journal.hide()
-	if not _can_walk() or delivered.size() < 3:
-		return
-	_place_kalin($Spots/Salida.position.x - 80)
-	camera.reset_smoothing()
-	open_spot($Spots/Salida)
 
 
 func _show_orientation() -> void:
