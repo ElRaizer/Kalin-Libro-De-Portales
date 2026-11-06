@@ -149,7 +149,7 @@ func _ready() -> void:
 	mission_break.continued.connect(
 		func():
 			if recall.visible:
-				recall.first.grab_focus()
+				recall.focus_answer()
 				guide.watch_action(recall)
 			else:
 				_refresh_step()

@@ -163,7 +163,7 @@ static func _scaffold(scaffold: Dictionary) -> Dictionary:
 			scaffold.mode = int(clampf(float(scaffold.mode), 0, 2))
 		else:
 			scaffold.erase("mode")
-	for key: String in ["slots", "history"]:
+	for key: String in ["slots", "history", "corrections"]:
 		if scaffold.has(key) and scaffold[key] is not Array:
 			scaffold.erase(key)
 	return scaffold

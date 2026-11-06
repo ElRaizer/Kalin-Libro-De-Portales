@@ -23,6 +23,8 @@ var _selected: Vector2i = Vector2i(-1, -1)
 var _block_width: float = 92.0
 var _showing_result: bool = false
 var _empty_style: StyleBoxFlat
+var _corrections: Array[SpellingField] = []
+var _syncing_corrections: bool = false
 
 @onready var first: LineEdit = $Margin/Content/Fields/First/Input
 @onready var second: LineEdit = $Margin/Content/Fields/Second/Input
@@ -43,6 +45,7 @@ func debug_fill(answers: Array) -> void:
 
 
 func _ready() -> void:
+	focus_mode = Control.FOCUS_ALL
 	_empty_style = StyleBoxFlat.new()
 	_empty_style.bg_color = Color("ede1bd")
 	_empty_style.border_color = Color("7b6b48")
@@ -60,16 +63,32 @@ func _ready() -> void:
 	second.focus_entered.connect(func(): _active = second)
 	first.text_changed.connect(
 		func(_value: String):
-			if not _setting_up:
+			_sync_external_text(0)
+			if not _setting_up and not _syncing_corrections:
 				answer_changed.emit()
 	)
 	second.text_changed.connect(
 		func(_value: String):
-			if not _setting_up:
+			_sync_external_text(1)
+			if not _setting_up and not _syncing_corrections:
 				answer_changed.emit()
 	)
 	$Margin/Content/Modes.hide()
 	for field: LineEdit in [first, second]:
+		var correction: SpellingField = SpellingField.new()
+		correction.name = "Correction"
+		correction.configure_style(field)
+		correction.hide()
+		field.get_parent().add_child(correction)
+		correction.changed.connect(_sync_corrections)
+		correction.submitted.connect(
+			func() -> void:
+				if not focus_next_answer(get_viewport().gui_get_focus_owner() as LineEdit):
+					submitted.emit()
+		)
+		correction.focused.connect(func() -> void: _active = field)
+		correction.navigation_requested.connect(focus_answer)
+		_corrections.append(correction)
 		var row: HFlowContainer = HFlowContainer.new()
 		row.name = "BlockSlots"
 		row.add_theme_constant_override("h_separation", 8)
@@ -128,6 +147,8 @@ func configure(labels: Array, answers: Array = [], initial_mode: int = Mode.WRIT
 
 func apply_compact(enabled: bool) -> void:
 	caption.visible = not enabled
+	for correction: SpellingField in _corrections:
+		correction.apply_compact(enabled)
 	for button: Button in $Margin/Content/Modes.get_children():
 		button.custom_minimum_size.y = 56 if enabled else 44
 		button.add_theme_font_size_override("font_size", 26 if enabled else 20)
@@ -147,29 +168,27 @@ func set_mode(value: int, announce: bool = true) -> void:
 	$Margin/Content/Modes.hide()
 	$Margin/Content/Actions/Practice.hide()
 	$Margin/Content/Blocks.visible = mode == Mode.BLOCKS
+	first.visible = mode == Mode.WRITE
+	second.visible = mode == Mode.WRITE
 	$Margin/Content/Letters.visible = mode != Mode.BLOCKS
-	first.visible = mode != Mode.BLOCKS
-	second.visible = mode != Mode.BLOCKS
+	for correction: SpellingField in _corrections:
+		correction.visible = mode == Mode.CLOZE
 	for row: HFlowContainer in _slot_rows:
 		row.visible = mode == Mode.BLOCKS
 	for index: int in range(3):
 		($Margin/Content/Modes.get_child(index) as Button).set_pressed_no_signal(mode == index)
 	caption.text = [
 		"Escribe la palabra en maya. Puedes pedir apoyo.",
-		"Completa las palabras que empezamos.",
+		"Completa los huecos; lo acertado se conserva.",
 		"Toca los bloques o arrástralos a los huecos."
 	][mode]
 	_used.clear()
 	_history.clear()
 	if mode == Mode.CLOZE:
 		for index: int in range(mini(expected.size(), 2)):
-			var field: LineEdit = first if index == 0 else second
-			field.text = (
-				expected[index].substr(0, maxi(1, expected[index].length() / 3))
-				if not expected[index].is_empty()
-				else ""
-			)
-			field.caret_column = field.text.length()
+			_corrections[index].correction.prepare(previous[index], expected[index])
+			_corrections[index].render()
+		_sync_corrections()
 	if mode == Mode.BLOCKS:
 		_build_fragments()
 	if announce:
@@ -189,6 +208,16 @@ func set_mode(value: int, announce: bool = true) -> void:
 
 func advance_support() -> void:
 	var previous: Array[String] = values()
+	if mode == Mode.CLOZE:
+		var improved: int = 0
+		for index: int in range(expected.size()):
+			improved += _corrections[index].correction.confirm()
+		if improved > 0:
+			for index: int in range(expected.size()):
+				_corrections[index].render()
+			_sync_corrections()
+			focus_answer()
+			return
 	if mode < Mode.BLOCKS:
 		set_mode(mode + 1)
 		# Una parte ya correcta permanece resuelta al recibir apoyo en la otra.
@@ -199,6 +228,7 @@ func advance_support() -> void:
 				else:
 					(first if index == 0 else second).text = expected[index]
 		if mode == Mode.BLOCKS:
+			_fill_locked_pieces()
 			_sync_blocks()
 	caption.text = [
 		"Escribe la palabra en maya.",
@@ -206,10 +236,24 @@ func advance_support() -> void:
 		"Ahora usa las piezas. Puedes cambiarlas de lugar o devolverlas al banco."
 	][mode]
 	answer_changed.emit()
+	focus_answer()
 
 
 func ready_to_submit() -> bool:
-	if mode == Mode.BLOCKS:
+	_sync_pending_inputs()
+	if mode == Mode.CLOZE:
+		var pending: bool = false
+		for index: int in range(expected.size()):
+			var correction: SpellingCorrection = _corrections[index].correction
+			pending = pending or correction.has_pending()
+			if correction.has_pending() and correction.has_entry():
+				return true
+		if not pending:
+			return true
+		caption.text = "Completa una parte antes de comprobar."
+		focus_answer()
+		return false
+	elif mode == Mode.BLOCKS:
 		for row: Array in _slots:
 			if -1 in row:
 				caption.text = "Faltan piezas: llena las casillas antes de confirmar."
@@ -228,7 +272,7 @@ func explain_support() -> void:
 		"Escribe lo que recuerdes. Si hace falta, aparecerá una pista."
 		if mode == Mode.WRITE
 		else (
-			"Completa las palabras que empezamos."
+			"Completa los huecos; lo acertado se conserva."
 			if mode == Mode.CLOZE
 			else "Toca una pieza y una casilla. Puedes intercambiar piezas o devolverlas al banco."
 		)
@@ -476,14 +520,26 @@ func _undo_fragment() -> void:
 
 
 func scaffold_state() -> Dictionary:
+	var corrections: Array[Dictionary] = []
+	if mode == Mode.CLOZE:
+		for index: int in range(expected.size()):
+			corrections.append(_corrections[index].correction.snapshot())
 	return {
 		"mode": mode,
+		"corrections": corrections,
 		"slots": _slots.duplicate(true),
 		"history": _history.slice(-20).duplicate(true)
 	}
 
 
 func restore_scaffold(saved: Dictionary) -> void:
+	if mode == Mode.CLOZE and saved.get("corrections") is Array:
+		for index: int in range(mini(expected.size(), saved.corrections.size())):
+			if saved.corrections[index] is Dictionary:
+				_corrections[index].correction.restore(saved.corrections[index], expected[index])
+				_corrections[index].render()
+		_sync_corrections()
+		focus_answer()
 	if mode != Mode.BLOCKS:
 		return
 	if saved.get("slots") is Array:
@@ -530,23 +586,132 @@ func show_result(word: String, quality: String, phrase: String, translation: Str
 
 
 func _focus_first() -> void:
-	if not is_inside_tree() or _showing_result:
+	if not is_inside_tree() or not is_visible_in_tree() or _showing_result:
 		return
-	if mode == Mode.BLOCKS and not _slot_rows.is_empty() and _slot_rows[0].get_child_count() > 0:
+	if mode == Mode.CLOZE:
+		for index: int in range(expected.size()):
+			if _corrections[index].focus_pending():
+				return
+		grab_focus()
+	elif mode == Mode.BLOCKS and not _slot_rows.is_empty() and _slot_rows[0].get_child_count() > 0:
 		(_slot_rows[0].get_child(0) as Button).grab_focus()
 	elif is_inside_tree() and first.is_visible_in_tree():
 		first.grab_focus()
 
 
 func values() -> Array[String]:
+	_sync_pending_inputs()
 	return [first.text.strip_edges(), second.text.strip_edges()]
+
+
+func _sync_pending_inputs() -> void:
+	if mode != Mode.CLOZE or _syncing_corrections:
+		return
+	var changed: bool = false
+	for index: int in range(expected.size()):
+		var correction: SpellingCorrection = _corrections[index].correction
+		var field: LineEdit = first if index == 0 else second
+		if correction.expected == expected[index] and field.text != correction.value():
+			correction.apply_text(field.text)
+			_corrections[index].render()
+			changed = true
+	if changed:
+		_sync_corrections()
 
 
 func _insert_letter(letter: String) -> void:
 	if not is_instance_valid(_active):
 		_active = first
+	if mode == Mode.CLOZE:
+		_corrections[0 if _active == first else 1].insert_symbol(letter)
+		return
+	if _active.has_selection():
+		var start: int = _active.get_selection_from_column()
+		_active.delete_text(start, _active.get_selection_to_column())
+		_active.caret_column = start
 	_active.insert_text_at_caret(letter)
 	_active.grab_focus()
+
+
+func focus_answer() -> void:
+	_focus_first()
+
+
+func _gui_input(event: InputEvent) -> void:
+	if has_focus() and event.is_action_pressed("ui_accept") and not _showing_result:
+		accept_event()
+		submitted.emit()
+
+
+func has_next_answer(current: LineEdit) -> bool:
+	var fields: Array[LineEdit] = _editable_fields()
+	var index: int = fields.find(current)
+	return index >= 0 and index + 1 < fields.size()
+
+
+func focus_next_answer(current: LineEdit) -> bool:
+	var fields: Array[LineEdit] = _editable_fields()
+	var index: int = fields.find(current)
+	if index < 0 or index + 1 >= fields.size():
+		return false
+	fields[index + 1].grab_focus()
+	return true
+
+
+func _editable_fields() -> Array[LineEdit]:
+	var result: Array[LineEdit] = []
+	if mode == Mode.CLOZE:
+		for correction: SpellingField in _corrections:
+			for child: Node in correction.get_children():
+				if child is LineEdit and child.is_visible_in_tree():
+					result.append(child)
+	else:
+		for field: LineEdit in [first, second]:
+			if field.is_visible_in_tree():
+				result.append(field)
+	return result
+
+
+func _sync_external_text(index: int) -> void:
+	if (
+		mode != Mode.CLOZE
+		or _syncing_corrections
+		or index >= _corrections.size()
+		or index >= expected.size()
+	):
+		return
+	_corrections[index].correction.apply_text((first if index == 0 else second).text)
+	_corrections[index].render()
+
+
+func _sync_corrections() -> void:
+	_syncing_corrections = true
+	for index: int in range(expected.size()):
+		(first if index == 0 else second).text = _corrections[index].correction.value()
+	_syncing_corrections = false
+	if not _setting_up:
+		answer_changed.emit()
+
+
+func _fill_locked_pieces() -> void:
+	for field_index: int in range(expected.size()):
+		var correction: SpellingCorrection = _corrections[field_index].correction
+		if correction.expected != expected[field_index]:
+			continue
+		var parts: PackedStringArray = split_word(expected[field_index])
+		var offset: int = 0
+		for slot_index: int in range(parts.size()):
+			var fixed: bool = true
+			for position: int in range(offset, offset + parts[slot_index].length()):
+				var token: int = correction.positions.find(position)
+				if token < 0 or not correction.locked[token]:
+					fixed = false
+			if fixed and _slots[field_index][slot_index] < 0:
+				for fragment: int in range(_fragments.size()):
+					if _fragments[fragment] == parts[slot_index] and _find_piece(fragment).x < 0:
+						_slots[field_index][slot_index] = fragment
+						break
+			offset += parts[slot_index].length() + (1 if expected[field_index].contains(" ") else 0)
 
 
 func is_preparing() -> bool:

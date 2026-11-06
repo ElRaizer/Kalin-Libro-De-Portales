@@ -184,7 +184,7 @@ func open_room(origin: Control) -> void:
 		_submit.disabled = true
 	else:
 		_submit.disabled = false
-		recall.first.grab_focus()
+		recall.focus_answer()
 	changed.emit()
 
 
