@@ -15,7 +15,7 @@ Esta guía explica cómo abrir, ejecutar y mantener el repositorio. La presentac
 3. Espera a que Godot importe los SVG y las escenas.
 4. Pulsa **F5** para ejecutar el juego completo.
 
-La escena principal es `res://scenes/ui/main_menu/main_menu.tscn`. **Jugar** abre una introducción breve, seguida del huracán y la exploración; **Continuar** recupera el punto guardado. **Saltar intro** pasa a la exploración de la isla.
+La escena principal es `res://scenes/ui/main_menu/main_menu.tscn`. **Jugar** abre una introducción breve, seguida del huracán y la exploración; **Continuar** recupera el punto guardado. **Saltar intro** sólo aparece al repetir una introducción terminada y continúa con el huracán.
 
 ## Configuración esencial
 
@@ -54,8 +54,9 @@ expresiones se asignan en `data/visual_catalog.tres`.
 | `kalin_interactuar` | `E`, `Espacio`, `Enter`, `Enter` del teclado numérico |
 
 En la aldea y las misiones con suelo libre, `↑`/`W` y `↓`/`S` controlan la
-profundidad. Un clic calcula una ruta alrededor de muebles y estanques. El diario
-«Encargos y lugares» conserva los accesos directos por teclado. Decorar cambia a
+profundidad. Un clic calcula una ruta alrededor de muebles y estanques. Los encargos
+se consultan en las tarjetas del taller; los habitantes y letreros conservan su
+botón de interacción por teclado. Decorar cambia a
 un modo explícito: flechas mueven la vista previa, Enter confirma y Escape cancela
 o sale. Las orientaciones de sillas y mesas usan vistas SVG distintas, sin girar el dibujo plano.
 
@@ -361,7 +362,7 @@ entrada detiene a Kalin, el tronco no deja pasar hasta examinarlo y llegar a la
 aldea lleva al Capítulo 1.
 
 1. Abrir el proyecto con Godot 4.6 y comprobar que no existan errores de análisis.
-2. Ejecutar la introducción y probar **Saltar intro**.
+2. Completar la introducción y comprobar que **Saltar intro** sólo aparece al repetirla.
 3. Recorrer la exploración de la orilla con teclado y con clic, y comprobar que termina en el Capítulo 1.
 4. Completar al menos un nivel de cada mundo.
 5. Volver al menú entre niveles y comprobar **Continuar**.
@@ -417,8 +418,13 @@ actividad y que estas respuestas no generen evidencia de recuerdo sin ayuda.
 
 ## Casillas y apoyos automáticos
 
-`RecallPanel.advance_support()` conserva las partes correctas y avanza escritura →
-completar → bloques. `ready_to_submit()` evita evaluar campos vacíos o piezas pendientes.
+`RecallPanel.advance_support()` pasa de escritura a huecos que conservan lo acertado.
+`SpellingCorrection` alinea letras, omisiones y sobrantes; `SpellingField` presenta sólo
+las partes editables. Cada comprobación que corrige al menos una parte mantiene
+los huecos; sin progreso nuevo pasa a bloques. El foco vuelve a la primera parte
+pendiente. `scaffold.corrections` conserva valores, posiciones y partes protegidas,
+validados contra la respuesta actual. `ready_to_submit()` evita evaluar respuestas
+completamente vacías o bloques incompletos.
 Los controladores llaman estos métodos en su validación habitual; no hay cambio de
 modalidad accesible al jugador. Las tarjetas de presentación inicial se mantienen.
 
@@ -491,7 +497,7 @@ peticiones pueden combinarse con cualquiera de los dos agradecimientos. Consulta
 el encargo otra vez, fallar una respuesta o reanudar no vuelve a elegir sus textos.
 Ambos se reconstruyen desde la semilla guardada; los bancos son configuración y no
 añaden campos al formato de partida ni cambian la respuesta esperada del encargo.
-No modificar el texto desde el diálogo o el diario: ambos leen el mismo `VillageTask`.
+No modificar el texto desde el diálogo o las tarjetas del taller: ambos leen el mismo `VillageTask`.
 Para añadir un pedido, cubrirlo para todos los habitantes y ejecutar
 `validate_village_dialogue.gd`; la prueba detecta combinaciones sin personalizar.
 
@@ -563,8 +569,7 @@ guardados pendientes anteriores no se sustituyen.
 
 `Arte/ui/request_stage.svg` proporciona el globo de la petición sobre los fondos
 actuales. Taller y comida usan campos verticales y composición compacta; los perfiles
-de distribución mantienen sus posiciones por fase. El libro permite alternar el
-ejemplo y **Ver mi práctica** sin depender de tooltips.
+de distribución mantienen sus posiciones por fase. El libro mantiene el ejemplo, sellos ilustrados en sus bordes y pronunciación circular. El detalle de práctica se conserva en el registro, sin un botón dentro de las páginas infantiles.
 
 `VillageWalk.interpret_requests` activa las fichas mayas y la traducción opcional.
 Las respuestas conservan significado e ilustración. Las fichas representan contenido
@@ -596,3 +601,35 @@ se reubican los nodos de autoría ni se duplican las preguntas de `StoryQuestion
 
 El formato 9 requiere reiniciar explícitamente las partidas de otro formato. Se
 conservan escritura temporal y respaldo, sin migraciones ni acreditación al reanudar.
+
+## Pulido de interacción y capas
+
+Los botones creados durante la partida heredan el tema compartido. `SelectionButton`
+distingue el marrón de la presión física del dorado de selección; las tarjetas de
+palabras y de encargos utilizan el mismo contrato. `QualityCue` proporciona símbolos
+neutros de cualidades para las opciones, sin cambiar los ejemplos del libro.
+
+Los huecos avanzan a la siguiente casilla vacía, incluso entre palabras. Retroceso
+desde una casilla vacía borra la anterior editable. `RecallPanel` coordina ese foco;
+`SpellingField` conserva la edición de cada palabra. La recepción y el resaltado de
+`WordDropSlot` comparten una tolerancia de 6 píxeles laterales y 28 verticales.
+
+`MeaningIllustration` ajusta todas sus capas al rectángulo de las tarjetas. Los
+objetos de escenario activan `world_object` para conservar sus dimensiones físicas.
+`MissionTaskPreview` reutiliza las poses de uso al consultar un encargo entregado;
+los desconocidos muestran una interrogación sin revelar su habitante ni su pedido.
+La pose de transporte de `KalinWalker` expone `carry_anchor()` para mantener el objeto
+sobre su mano, delante del cuerpo. La milpa separa su primera fila de maíces en
+`bg_explora_milpa_front.svg`; esta capa comparte coordenadas con el terreno.
+
+En la tablilla, **Borrar** retira un grano, o una varita si no quedan granos, del piso
+seleccionado. El otro piso y la selección se conservan. `clear_numeral()` sigue
+reservado para iniciar una ronda. El portal presenta «Quiero…» cuando espera
+`In k'a'at…`, conservando las descripciones simples en las demás preguntas.
+
+Los saltos de introducción, historia y exploración requieren una visita terminada.
+El checkpoint usa `complete` y la repetición conserva ese dato en
+`previous_variation`; guardar y reanudar no habilita saltos de escenas desconocidas.
+Las ayudas de `LearningGuide` se retiran al actuar, abrir respuestas o pausar el
+juego. La suite `validate_playtest_polish` cubre estos comportamientos y admite
+capturas con el ejecutor aislado.

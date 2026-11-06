@@ -19,7 +19,7 @@ Abrir el libro, recibir pistas de contenido, ver las tarjetas, necesitar correcc
 
 ## Actualización del 24 de octubre
 
-Cada ronda de recuerdo empieza por escribir. Un primer fallo activa **Completar** y un segundo activa **Bloques**, sin selector manual. Se conserva cada parte correcta de una frase; los campos vacíos y los tableros incompletos no cuentan como errores. Completar y Bloques se registran como reconstrucción apoyada; la escritura acertada a la primera se contabiliza por separado. Los contextos usan actividad, destinatario y contenido en lugar de posición de ronda. El formato vigente conserva las evidencias por contexto semántico, sin convertir datos de sistemas retirados. Ver [docs/adventure.md](adventure.md) para el recorrido, el guardado de posiciones y las verificaciones.
+Cada ronda de recuerdo empieza por escribir. Un primer fallo activa **Completar** con huecos sólo en las partes pendientes. Cada respuesta que corrige al menos una parte conserva los huecos y protege lo nuevo acertado; si no corrige ninguna, activa **Bloques**, sin selector manual. Se conserva cada parte correcta de una frase; los campos vacíos y los tableros incompletos no cuentan como errores. Completar y Bloques se registran como reconstrucción apoyada; la escritura acertada a la primera se contabiliza por separado. Los contextos usan actividad, destinatario y contenido en lugar de posición de ronda. El formato vigente conserva las evidencias por contexto semántico, sin convertir datos de sistemas retirados. Ver [docs/adventure.md](adventure.md) para el recorrido, el guardado de posiciones y las verificaciones.
 
 ## Cambios por actividad
 
@@ -37,7 +37,7 @@ completo queda guardado; aprender durante la actividad no elimina sus pasos.
 La salida final conduce directamente a la misión del capítulo, sin acumular otro
 paseo equivalente. Las visitas intermedias siguen siendo opcionales.
 
-Las respuestas admiten mayúsculas y apóstrofos tipográficos. Si solo faltan acentos, se permite continuar mostrando la grafía canónica, pero el intento se considera apoyado. Los apóstrofos no se eliminan. Las teclas adicionales de vocales acentuadas y cierre glotal permanecen ocultas por decisión del autor, pendientes de consulta con el profesor; se conserva la entrada mediante teclado.
+Las respuestas admiten mayúsculas y apóstrofos tipográficos. Si solo faltan acentos, se permite continuar mostrando la grafía canónica, pero el intento se considera apoyado. Los apóstrofos no se eliminan. Las teclas de vocales acentuadas y apóstrofo están visibles. Insertan el carácter elegido sin revelar respuestas y devuelven el foco a la parte activa.
 
 ## Misión: Los encargos de la aldea
 
@@ -46,7 +46,7 @@ La historia 8 conduce a `world4_mission1`, antes del portal. También puede abri
 1. Kalin elige a quién ayudar. Puede caminar o usar los accesos directos con toque o teclado.
 2. El taller permite crear un objeto o alimento y una cualidad opcional.
 3. Kalin lleva la creación confirmada a la plaza común.
-4. Casa permite elegir dónde colocar; Fiesta, ajustar el acomodo con una barra; Comida, servir al destinatario.
+4. Entregar coloca el objeto en su lugar funcional. Hablar con alguien ya atendido conserva el encargo pendiente; la mesa permite consultar sus tres tarjetas y conserva borradores separados. No se puede sustituir el objeto transportado creando otro.
 5. Los objetos entregados quedan junto a sus destinatarios y, tras tres encargos, se puede seguir al portal.
 
 Las plantillas de autor conservan seis huecos; cada visita nueva selecciona tres necesidades del catálogo permitido para su capítulo, con objetos distintos y un destinatario por necesidad. Se da prioridad a vocabulario con menos recuerdos registrados; los empates y las posiciones de los personajes varían con una semilla guardada. No se cambia el encargo a mitad del intento.
@@ -75,8 +75,8 @@ Saludar a los vecinos adicionales no acredita recuerdo ni añade encargos obliga
 
 ## Evidencia diferenciada del formato 9
 
-**Ver mi práctica** abre un detalle dentro de cada página, mediante toque o teclado.
-Muestra reconocimiento, reconstrucción, escritura independiente, usos en entregas,
+La evidencia detallada se conserva en el registro de aprendizaje, fuera de las páginas de consulta infantil. El libro muestra ejemplos y utiliza sellos laterales para pasar de página y un botón circular de pronunciación.
+El registro distingue reconocimiento, reconstrucción, escritura independiente, usos en entregas,
 orientación de controles, correcciones de grafía, apoyo, errores y experimentación.
 Estos contadores describen resultados del juego y no certifican retención diferida.
 

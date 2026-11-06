@@ -45,12 +45,11 @@ La [revisión visual](docs/learning_and_missions.md) añade una introducción m�
 peticiones y tarjetas grandes, pistas graduales, bloques de tres peticiones en
 taller y comida, reacciones visuales a las elecciones y cinco situaciones
 narrativas que se animan solas en ciclos continuos. El libro tiene pestañas ilustradas y `Esc`
-abre la pausa. Las pruebas y capturas verifican la implementación; la prueba
-con niños sigue pendiente.
+abre la pausa. Las pruebas y capturas verifican la implementación; el testeo exploratorio de InnovaFest con jóvenes y adultos aportó observaciones de usabilidad. La prueba con el público infantil sigue pendiente.
 
 ## Aprendizaje y misión de encargos
 
-Las páginas cuentan descubrimientos. El libro distingue además práctica, primer recuerdo y recuperaciones sin ayuda en situaciones separadas. Las rondas de recuerdo comienzan por escribir sin dibujos de solución. Un primer error activa completar la palabra y un segundo error activa los bloques, sin selector de modalidad. Las partes correctas de una frase se conservan. Consultar el libro, recibir pistas o corregir errores se registra como práctica apoyada. Los apoyos y las posiciones de las piezas se guardan por intento.
+Las páginas cuentan descubrimientos. El libro distingue además práctica, primer recuerdo y recuperaciones sin ayuda en situaciones separadas. Las rondas de recuerdo comienzan por escribir sin dibujos de solución. Un primer error muestra huecos conservando lo acertado. Si se corrige al menos una parte, se mantienen los huecos; si no hay ninguna corrección nueva, aparecen los bloques, sin selector de modalidad. Las partes correctas de una frase se conservan. Consultar el libro, recibir pistas o corregir errores se registra como práctica apoyada. Los apoyos y las posiciones de las piezas se guardan por intento.
 
 Tras la casa y el taller hay encargos para preparar rincones y una fiesta. Tras la historia del portal, **Los encargos de la aldea** permite caminar, recibir peticiones, crear objetos, transportarlos y entregarlos a sus destinatarios. Cada visita selecciona tres necesidades distintas del catálogo permitido para su capítulo y prioriza palabras con menos evidencia de recuerdo. Las 28 combinaciones válidas de objeto y cualidad varían entre partidas, junto con sus destinatarios; se conservan al continuar. También se puede abrir `scenes/worlds/world4/mision_encargos_aldea.tscn` con F6.
 
@@ -258,9 +257,7 @@ estado y criterios de aceptación. Taller y comida conservan el arte SVG y prese
 una petición estable con campos de respuesta verticales. Los paseos permiten
 interpretar fichas conocidas y consultar su traducción. **Mi aldea** ofrece barrios,
 jardín con almacén, mesa de trazos y sala de retos opcional. Las entregas muestran
-el uso del objeto y una celebración conjunta, sin otro menú obligatorio de acomodo. El libro incluye
-**Ver mi práctica**, con evidencia diferenciada y orientación de controles separada
-de pistas de contenido. El formato 9 requiere reiniciar partidas de otros formatos
+el uso del objeto y una celebración conjunta, sin otro menú obligatorio de acomodo. El libro utiliza sellos laterales y pronunciación circular; la evidencia diferenciada permanece en el registro de aprendizaje, con orientación de controles separada de pistas de contenido. El formato 9 requiere reiniciar partidas de otros formatos
 desde el menú; no se borran automáticamente.
 
 ## Trabajo pendiente

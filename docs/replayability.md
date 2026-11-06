@@ -35,15 +35,20 @@ corta, el primer hechizo del taller conserva su ejemplo y comida empieza sin tam
 Cada intento guarda su semilla y sus decisiones concretas: preguntas, planes,
 variante del tablero, necesidades y páginas del portal. Consultar el libro,
 abrir el menú o continuar desde JSON conserva el reto pendiente. El botón
-**Repetir** inicia otro intento y evita reutilizar inmediatamente la misma
+**Repetir** inicia otro intento y propaga un identificador de recorrido por los
+capítulos y niveles siguientes. El checkpoint conserva ese recorrido; volver
+del menú no reinicia el intento pendiente. Los logros generales se mantienen.
+También evita reutilizar inmediatamente la misma
 pregunta de animal, variante de tablero, orden de práctica o selección del portal.
 Reiniciar completamente la partida borra también esta referencia anterior.
 
 ## Tableros: catálogo de 48 variantes
 
 Hay doce geometrías por nivel. No se colocan rocas al azar durante la partida.
-Cada variante incluye un testigo con tres rutas completas, adyacentes y sin
-casillas compartidas, incluidos orígenes y destinos. El juego comprueba ese
+Cada variante incluye un testigo con tres rutas completas y adyacentes. Sólo
+los puentes del último nivel admiten compartir casilla: horizontal por arriba,
+vertical por debajo, sin giros y sin compartir piso. Orígenes, destinos y las
+demás casillas no se comparten. El juego comprueba ese
 testigo antes de aplicar el diseño. Los nodos visuales guardados se recolocan;
 no se generan nodos del tablero durante la partida.
 
@@ -60,6 +65,10 @@ no se generan nodos del tablero durante la partida.
 Estos son criterios geométricos de dificultad comparable. La dificultad percibida
 y la comprensión de las variantes quedan pendientes de pruebas con el público
 objetivo. Los retos de observar rocas y recordar destinos siguen funcionando.
+
+Si una variante guardada ya no pertenece al catálogo vigente, se reinicia sólo
+ese tablero antes de restaurar rutas o indicadores de finalización. El aprendizaje
+y los logros generales se conservan; no se aplican caminos a otra geometría.
 
 El catálogo vive en `scripts/features/grid_paths/data/grid_variant_catalog.gd`, que se incluye mediante
 las dependencias normales de Godot al exportar. Se regenera de forma determinista:
