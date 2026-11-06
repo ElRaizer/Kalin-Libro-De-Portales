@@ -121,7 +121,9 @@ func _complete_paths() -> void:
 		level._toggle_preview()
 	var routes: Dictionary = _find_routes(board)
 	if routes.is_empty():
-		failures.append("El tablero no tiene tres rutas sin cruces: " + level.scene_file_path)
+		failures.append(
+			"El tablero no tiene tres rutas con pisos independientes: " + level.scene_file_path
+		)
 		return
 	for index: int in range(board.words.size()):
 		board._handle_press(board.words[index].start_cell)
@@ -174,8 +176,13 @@ func _find_routes(board: GridBoard) -> Dictionary:
 				if route.is_empty():
 					break
 				routes[index] = route
+				var previous: Vector2i = board.words[index].start_cell
 				for cell: Vector2i in route:
-					blocked[cell] = true
+					var identity: Variant = cell
+					if cell in board.bridges:
+						identity = Vector3i(cell.x, cell.y, 0 if cell.y == previous.y else 1)
+					blocked[identity] = true
+					previous = cell
 			if routes.size() == board.words.size():
 				return routes
 		directions.append(directions.pop_front())
@@ -189,23 +196,37 @@ func _bfs(
 	blocked: Dictionary,
 	directions: Array[Vector2i]
 ) -> Array[Vector2i]:
-	var queue: Array[Vector2i] = [start]
-	var parents: Dictionary = {start: start}
+	var origin: Vector4i = Vector4i(start.x, start.y, 0, 0)
+	var queue: Array[Vector4i] = [origin]
+	var parents: Dictionary = {origin: origin}
 	var cursor: int = 0
 	while cursor < queue.size():
-		var cell: Vector2i = queue[cursor]
+		var current: Vector4i = queue[cursor]
+		var cell: Vector2i = Vector2i(current.x, current.y)
 		cursor += 1
 		if cell == target:
 			var route: Array[Vector2i] = []
-			while cell != start:
-				route.push_front(cell)
-				cell = parents[cell]
+			while current != origin:
+				route.push_front(Vector2i(current.x, current.y))
+				current = parents[current]
 			return route
 		for direction: Vector2i in directions:
+			if cell in board.bridges and direction != Vector2i(current.z, current.w):
+				continue
 			var next: Vector2i = cell + direction
-			if board.is_valid_cell(next) and next not in blocked and next not in parents:
-				parents[next] = cell
-				queue.append(next)
+			var axis: Vector2i = direction if next in board.bridges else Vector2i.ZERO
+			var key: Vector4i = Vector4i(next.x, next.y, axis.x, axis.y)
+			var identity: Variant = next
+			if next in board.bridges:
+				identity = Vector3i(next.x, next.y, 0 if direction.y == 0 else 1)
+			if (
+				board.is_valid_cell(next)
+				and next not in blocked
+				and identity not in blocked
+				and key not in parents
+			):
+				parents[key] = current
+				queue.append(key)
 	return []
 
 

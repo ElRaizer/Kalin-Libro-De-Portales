@@ -30,16 +30,37 @@ def validate(data):
             if len(layout["solution"]) != 3 or len(layout["starts"]) != 3 or len(layout["goals"]) != 3:
                 raise ValueError("Cada tablero necesita tres parejas y sus testigos.")
             lengths, corners = [], []
+            bridges = set(map(tuple, layout.get("bridges", [])))
+            if len(bridges) != len(layout.get("bridges", [])) or bridges & occupied:
+                raise ValueError("Puentes duplicados o sobre obstáculos.")
+            lanes = set()
             for index, route in enumerate(layout["solution"]):
                 if len(route) < 2 or route[0] != layout["starts"][index] or route[-1] != layout["goals"][index]:
                     raise ValueError("El testigo no une la pareja correspondiente.")
                 lengths.append(len(route) - 1)
                 corners.append(turns(route))
-                for point in route:
+                visited = set()
+                for offset, point in enumerate(route):
                     cell = tuple(point)
-                    if cell in occupied:
+                    if cell in visited:
+                        raise ValueError("Un camino se cruza consigo mismo.")
+                    visited.add(cell)
+                    if cell in bridges:
+                        if offset == 0 or offset == len(route) - 1:
+                            raise ValueError("Un puente no puede ser origen o destino.")
+                        before, after = route[offset - 1], route[offset + 1]
+                        if (point[0] - before[0], point[1] - before[1]) != (after[0] - point[0], after[1] - point[1]):
+                            raise ValueError("El puente sólo permite cruzar recto.")
+                        lane = (cell, point[1] == before[1])
+                        if lane in lanes:
+                            raise ValueError("Dos caminos ocupan el mismo piso del puente.")
+                        lanes.add(lane)
+                    elif cell in occupied:
                         raise ValueError("El testigo cruza otro camino o un obstáculo.")
-                    occupied.add(cell)
+                    else:
+                        occupied.add(cell)
+            if any(not (0 <= x < width and 0 <= y < height) for x, y in bridges):
+                raise ValueError("Hay puentes fuera del tablero.")
             if any(not (0 <= x < width and 0 <= y < height) for x, y in occupied):
                 raise ValueError("Hay celdas fuera del tablero.")
             if layout["metrics"] != {"lengths": lengths, "turns": corners}:

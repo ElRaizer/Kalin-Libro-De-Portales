@@ -6,6 +6,7 @@ const CONFIG_VALIDATOR = preload("res://scripts/features/grid_paths/grid_board_v
 const BOARD_RENDERER = preload("res://scripts/features/grid_paths/grid_board_renderer.gd")
 const OBSTACLE_HINTS = preload("res://scripts/features/grid_paths/grid_obstacle_hints.gd")
 const PATH_CONTROLLER = preload("res://scripts/features/grid_paths/grid_path_controller.gd")
+const BRIDGE_ART: Texture2D = preload("res://Arte/tiles/tile_bridge.svg")
 
 ## Componente reutilizable para previsualizar un tablero de caminos en Godot.
 ## Sus propiedades se editan en el Inspector de cada instancia de GridBoard.
@@ -93,6 +94,11 @@ const Cell = GridPathController.Cell
 @export var obstacles: Array[Vector2i] = []:
 	set(value):
 		obstacles = value
+		_schedule_rebuild()
+
+@export var bridges: Array[Vector2i] = []:
+	set(value):
+		bridges = value
 		_schedule_rebuild()
 
 @export var words: Array[GridWordData] = []:
@@ -183,6 +189,7 @@ const ALL_OBSTACLES_FADE_SECONDS := 0.45
 
 
 func _ready() -> void:
+	$Bridges.draw.connect(_draw_bridges)
 	add_to_group(&"keyboard_focus_visual")
 	selection_ring.visible = false
 	if Engine.is_editor_hint():
@@ -203,7 +210,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 ## editor como desde las pruebas automatizadas.
 func get_configuration_issues() -> PackedStringArray:
 	var issues: PackedStringArray = CONFIG_VALIDATOR.validate(
-		columns, rows, empty_tile, obstacle_tile, obstacles, words
+		columns, rows, empty_tile, obstacle_tile, obstacles, words, bridges
 	)
 	var saved_preview: Node = get_node_or_null("Preview")
 	if saved_preview == null:
@@ -237,6 +244,8 @@ func rebuild_preview() -> void:
 		return
 	_rebuild_queued = false
 	_get_renderer().rebuild_preview()
+	if is_node_ready():
+		$Bridges.queue_redraw()
 	if Engine.is_editor_hint() and is_inside_tree():
 		update_configuration_warnings()
 
@@ -261,7 +270,6 @@ func _get_path_controller() -> GridPathController:
 		_path_controller.cell_erased.connect(_reset_tile)
 		_path_controller.path_reset.connect(_on_path_reset)
 		_path_controller.path_completed.connect(_on_path_completed)
-		_path_controller.invalid_move.connect(invalid_move.emit)
 	return _path_controller
 
 
@@ -270,7 +278,12 @@ func get_hint_path(index: int, max_steps: int = 0) -> Array[Vector2i]:
 
 
 ## Recoloca los nodos guardados; no genera escena ni modifica recursos compartidos.
-func apply_layout(starts: Array[Vector2i], goals: Array[Vector2i], rocks: Array[Vector2i]) -> void:
+func apply_layout(
+	starts: Array[Vector2i],
+	goals: Array[Vector2i],
+	rocks: Array[Vector2i],
+	crossings: Array[Vector2i] = []
+) -> void:
 	var session_words: Array[GridWordData] = []
 	for index: int in range(words.size()):
 		var word: GridWordData = words[index].duplicate() as GridWordData
@@ -279,6 +292,7 @@ func apply_layout(starts: Array[Vector2i], goals: Array[Vector2i], rocks: Array[
 		session_words.append(word)
 	words = session_words
 	obstacles = rocks.duplicate()
+	bridges = crossings.duplicate()
 	_setup_game_state()
 	for cell: Vector2i in tile_rects:
 		(tile_rects[cell] as TextureRect).texture = (
@@ -293,6 +307,7 @@ func apply_layout(starts: Array[Vector2i], goals: Array[Vector2i], rocks: Array[
 		)
 	_update_keyboard_cursor()
 	_refresh_all_path_visuals()
+	$Bridges.queue_redraw()
 
 
 ## Inicializa el estado jugable con las propiedades editadas en el Inspector.
@@ -377,7 +392,23 @@ func _watch_word_changes() -> void:
 
 
 func _setup_game_state() -> void:
-	_get_path_controller().configure(columns, rows, words, obstacles)
+	_get_path_controller().configure(columns, rows, words, obstacles, bridges)
+
+
+func _draw_bridges() -> void:
+	for cell: Vector2i in bridges:
+		$Bridges.draw_texture_rect(
+			BRIDGE_ART, Rect2(cell_to_local_position(cell), Vector2.ONE * tile_size), false
+		)
+
+
+func path_layer(index: int) -> int:
+	return _get_path_controller().bridge_layer(index)
+
+
+func add_traveler(traveler: Control, index: int) -> void:
+	preview_root.add_child(traveler)
+	traveler.z_index = path_layer(index)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -479,9 +510,11 @@ func _handle_press(cell: Vector2i) -> void:
 			if tutorial_only_index >= 0 and index != tutorial_only_index:
 				return
 			_get_path_controller().start(index)
-		Cell.EMPTY:
+		Cell.EMPTY, Cell.BRIDGE:
 			if drawing:
 				_extend_path(cell)
+			elif cell in bridges:
+				_try_resume_path(cell)
 		Cell.PATH:
 			if drawing:
 				_extend_path(cell)
@@ -516,7 +549,7 @@ func _try_cell(cell: Vector2i) -> void:
 	if drawing and _try_retract_path(cell):
 		return
 	match grid_state[cell.y][cell.x]:
-		Cell.EMPTY, Cell.PATH:
+		Cell.EMPTY, Cell.PATH, Cell.BRIDGE:
 			_extend_path(cell)
 		Cell.WORD:
 			# Volver a la ficha inicial elimina el primer tramo del camino.
@@ -578,10 +611,6 @@ func _local_to_cell(actual_position: Vector2) -> Vector2i:
 		floori((actual_position.x - grid_origin.x) / tile_size),
 		floori((actual_position.y - grid_origin.y) / tile_size)
 	)
-
-
-func _are_adjacent(first: Vector2i, second: Vector2i) -> bool:
-	return GridPathController.are_adjacent(first, second)
 
 
 func _set_tile_color(cell: Vector2i, color: Color) -> void:
@@ -646,7 +675,7 @@ func restore_path_state(state: Dictionary) -> void:
 	# JSON decodifica los números como float; Array.has no equipara sus tipos.
 	var restored_connections: Array[int] = []
 	for value: Variant in saved_connected:
-		if (value is int or value is float) and value == int(value):
+		if SaveSchema.is_number(value) and value == floor(float(value)):
 			restored_connections.append(int(value))
 	for index: int in range(words.size()):
 		var saved: Variant = saved_paths.get(str(index), [])
@@ -657,21 +686,27 @@ func restore_path_state(state: Dictionary) -> void:
 			if (
 				pair is not Array
 				or pair.size() != 2
-				or not (pair[0] is float or pair[0] is int)
-				or not (pair[1] is float or pair[1] is int)
+				or not SaveSchema.is_number(pair[0])
+				or not SaveSchema.is_number(pair[1])
+				or float(pair[0]) != floor(float(pair[0]))
+				or float(pair[1]) != floor(float(pair[1]))
 			):
 				break
 			var cell: Vector2i = Vector2i(int(pair[0]), int(pair[1]))
-			if not is_valid_cell(cell) or grid_state[cell.y][cell.x] != Cell.EMPTY:
+			if (
+				not is_valid_cell(cell)
+				or grid_state[cell.y][cell.x] not in [Cell.EMPTY, Cell.BRIDGE]
+			):
 				break
 			var before: int = paths[index].size()
 			_extend_path(cell)
 			if paths[index].size() == before:
 				break
-		var tip: Vector2i = (
-			words[index].start_cell if paths[index].is_empty() else paths[index].back()
-		)
-		if index in restored_connections and _are_adjacent(tip, words[index].destination_cell):
+		if (
+			index in restored_connections
+			and paths[index].size() == saved.size()
+			and _get_path_controller().can_finish(index)
+		):
 			connected.append(index)
 	active_index = -1
 	drawing = false

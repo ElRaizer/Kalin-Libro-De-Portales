@@ -91,6 +91,15 @@ func _ready() -> void:
 	_name_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
 	if vary_board:
 		_board_variant = GridReplayLayouts.configure(grid_board, level_number, state, _name_seed)
+		if (
+			not _board_variant.is_empty()
+			and state.has("board_variant")
+			and state.board_variant != _board_variant
+		):
+			# Un checkpoint de otra geometría no puede acreditar las rutas de ésta.
+			state = ReplayVariation.replay_state(state)
+			_attempt.restore({})
+			_saved_scaffold = {}
 	_saved_name_text = (
 		str(state.get("recall_text", "")) if bool(state.get("naming_pending", false)) else ""
 	)
@@ -246,7 +255,7 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 	walker.pivot_offset = Vector2(walker.size.x * 0.5, walker.size.y)
 	walker.position = grid_board.cell_to_local_position(word.start_cell)
 	walker.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	$UI.add_child(walker)
+	grid_board.add_traveler(walker, word_index)
 	var route: Array = grid_board.paths[word_index].duplicate()
 	route.append(word.destination_cell)
 	var walk: Tween = walker.create_tween()

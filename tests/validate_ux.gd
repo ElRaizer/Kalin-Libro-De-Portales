@@ -113,7 +113,7 @@ func _paths() -> void:
 	for column: int in range(1, board.words[0].destination_cell.x + 1):
 		board._try_cell(Vector2i(column, 1))
 	await create_timer(0.15).timeout
-	var walker: TextureRect = level.get_node("UI/ArrivingAnimal") as TextureRect
+	var walker: TextureRect = board.preview_root.get_node("ArrivingAnimal") as TextureRect
 	var start: Vector2 = board.cell_to_local_position(board.words[0].start_cell)
 	_check(
 		level._arrival_animating and not level.dialogue.visible,
@@ -187,7 +187,7 @@ func _wait_for_arrival(level: Node) -> void:
 		await process_frame
 	_check(not level._arrival_animating, "El animal debe terminar su recorrido y aterrizar")
 	_check(
-		level.get_node_or_null("UI/ArrivingAnimal") == null,
+		level.grid_board.preview_root.get_node_or_null("ArrivingAnimal") == null,
 		"La llegada debe retirar el animal animado al mostrar el de la casa"
 	)
 

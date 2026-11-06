@@ -9,13 +9,26 @@ static func cells(raw: Array) -> Array[Vector2i]:
 	return result
 
 
-## El testigo debe resolver simultáneamente todas las parejas, sin cruces.
+## El testigo resuelve las parejas; sólo los dos pisos de un puente pueden compartir celda.
 static func has_solution(layout: Dictionary, columns: int, rows: int) -> bool:
 	var occupied: Dictionary = {}
+	var crossings: Array[Vector2i] = cells(layout.get("bridges", []))
 	for cell: Vector2i in cells(layout.obstacles):
 		if cell.x < 0 or cell.x >= columns or cell.y < 0 or cell.y >= rows or occupied.has(cell):
 			return false
 		occupied[cell] = true
+	var seen_bridges: Array[Vector2i] = []
+	for cell: Vector2i in crossings:
+		if (
+			cell.x < 0
+			or cell.x >= columns
+			or cell.y < 0
+			or cell.y >= rows
+			or cell in seen_bridges
+			or occupied.has(cell)
+		):
+			return false
+		seen_bridges.append(cell)
 	if (
 		layout.starts.size() != layout.goals.size()
 		or layout.solution.size() != layout.starts.size()
@@ -31,19 +44,29 @@ static func has_solution(layout: Dictionary, columns: int, rows: int) -> bool:
 			return false
 		for cursor: int in range(route.size()):
 			var cell: Vector2i = route[cursor]
+			var identity: Variant = cell
+			if cell in crossings:
+				if (
+					cursor == 0
+					or cursor == route.size() - 1
+					or route[cursor + 1] - cell != cell - route[cursor - 1]
+				):
+					return false
+				identity = Vector3i(cell.x, cell.y, 0 if cell.y == route[cursor - 1].y else 1)
 			if (
 				cell.x < 0
 				or cell.x >= columns
 				or cell.y < 0
 				or cell.y >= rows
 				or occupied.has(cell)
+				or occupied.has(identity)
 			):
 				return false
 			if cursor > 0:
 				var step: Vector2i = cell - route[cursor - 1]
 				if absi(step.x) + absi(step.y) != 1:
 					return false
-			occupied[cell] = true
+			occupied[identity] = true
 	return true
 
 
@@ -52,7 +75,7 @@ static func configure(board: GridBoard, level: int, state: Dictionary, seed_valu
 	if source.is_empty() or board.columns != 12 or board.rows != 7 or board.words.size() != 3:
 		return ""
 	# Un tablero personalizado en el Inspector conserva las decisiones de autor.
-	if cells(source.base.obstacles) != board.obstacles:
+	if cells(source.base.obstacles) != board.obstacles or not board.bridges.is_empty():
 		return ""
 	for index: int in range(board.words.size()):
 		if (
@@ -74,5 +97,10 @@ static func configure(board: GridBoard, level: int, state: Dictionary, seed_valu
 	var layout: Dictionary = source.variants[chosen]
 	if not has_solution(layout, board.columns, board.rows):
 		return ""
-	board.apply_layout(cells(layout.starts), cells(layout.goals), cells(layout.obstacles))
+	board.apply_layout(
+		cells(layout.starts),
+		cells(layout.goals),
+		cells(layout.obstacles),
+		cells(layout.get("bridges", []))
+	)
 	return str(layout.id)

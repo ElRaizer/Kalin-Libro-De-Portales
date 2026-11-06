@@ -236,6 +236,7 @@ func refresh_path_line(index: int) -> void:
 		return
 	var line: Line2D = board.path_lines.get(index) as Line2D
 	line.show()
+	line.z_index = board.path_layer(index)
 	line.width = board.path_line_width
 	line.default_color = board.words[index].color
 	line.clear_points()
@@ -261,6 +262,7 @@ func _refresh_path_tip(index: int, cell: Vector2i) -> void:
 		return
 	var tip: Polygon2D = board.path_tips.get(index) as Polygon2D
 	tip.show()
+	tip.z_index = board.path_layer(index)
 	var radius: float = board.path_line_width * board.path_tip_scale * 0.5
 	var circle_points: PackedVector2Array = PackedVector2Array()
 	for point_index: int in range(24):

@@ -12,7 +12,8 @@ static func validate(
 	empty_tile: Texture2D,
 	obstacle_tile: Texture2D,
 	obstacles: Array[Vector2i],
-	words: Array[GridWordData]
+	words: Array[GridWordData],
+	bridges: Array[Vector2i] = []
 ) -> PackedStringArray:
 	var issues: PackedStringArray = []
 	if empty_tile == null:
@@ -61,6 +62,8 @@ static func validate(
 		)
 		if word.start_cell == word.destination_cell:
 			issues.append("'%s' empieza y termina en la misma celda." % word.maya_word)
+	for bridge: Vector2i in bridges:
+		_validate_word_cell(bridge, "puente", columns, rows, occupied_cells, issues)
 	return issues
 
 
