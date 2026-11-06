@@ -351,7 +351,7 @@ func _update_choice_labels() -> void:
 			if bridge
 			else adjective.maya
 		)
-		button.icon = GameManager.get_visual_texture(adjective.maya) if guided else null
+		button.icon = QualityCue.texture_for(adjective.maya) if guided else null
 
 
 func _select_noun(word: String) -> void:
