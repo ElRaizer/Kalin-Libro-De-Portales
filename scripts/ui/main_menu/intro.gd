@@ -13,6 +13,7 @@ var panel_index: int = 0
 var is_animating: bool = false
 var text_revealed: bool = false
 var full_text: String = ""
+var _completed: bool = false
 @onready var continue_button: Button = $UI/ContinueButton
 var _kalin_alpha: float
 var _dialogue_alpha: float
@@ -42,6 +43,9 @@ func _ready() -> void:
 	_dialogue_alpha = dialogue_box.modulate.a
 	$UI/MenuButton.pressed.connect(_on_menu_pressed)
 	skip_btn.pressed.connect(_on_skip)
+	var state: Dictionary = GameManager.get_scene_state(self)
+	_completed = state.get("complete", false) == true
+	skip_btn.visible = ReplayVariation.can_skip(state)
 	typewriter_timer.timeout.connect(_typewriter_tick)
 	_show_panel(
 		clampi(int(GameManager.get_scene_state(self).get("panel", 0)), 0, panels.size() - 1)
@@ -169,17 +173,19 @@ func _on_menu_pressed() -> void:
 
 
 func _on_skip() -> void:
-	GameManager.go_to_scene("world1_explore1")
+	if skip_btn.visible:
+		_go_to_level1()
 
 
 func _go_to_level1() -> void:
+	_completed = true
 	# La intro continúa con la cinemática de la noche del huracán y luego con el
 	# primer capítulo de historia del Mundo 1.
 	GameManager.go_to_scene("world1_cine1")
 
 
 func get_checkpoint_state() -> Dictionary:
-	return {"panel": panel_index}.duplicate(true)
+	return {"panel": panel_index, "complete": _completed}.duplicate(true)
 
 
 func get_configuration_issues() -> PackedStringArray:

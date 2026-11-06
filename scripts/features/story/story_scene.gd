@@ -38,6 +38,7 @@ var beat_index: int = -1
 var interaction: StoryInteraction = StoryInteraction.new()
 var _narrative_ready: bool = false
 var _navigating: bool = false
+var _completed: bool = false
 var _layout_seed: int = 1
 var _guess_targets: Dictionary = {}
 var _text_tween: Tween
@@ -84,7 +85,7 @@ func _ready() -> void:
 		push_error("Configuración del capítulo: " + "; ".join(issues))
 		return
 	chapter_label.text = chapter_title
-	skip_button.pressed.connect(_finish_story)
+	skip_button.pressed.connect(_skip_story)
 	word_bubble.visible = false
 	celebration.visible = false
 	auto_timer.timeout.connect(_on_auto_timer_timeout)
@@ -111,6 +112,8 @@ func _ready() -> void:
 	$UI/MenuButton.pressed.connect(_on_menu_pressed)
 	_start_kalin_idle()
 	var state: Dictionary = GameManager.get_scene_state(self)
+	_completed = state.get("complete", false) == true
+	skip_button.visible = ReplayVariation.can_skip(state)
 	interaction.setup(actors_root, choices_box, word_bubble, guide, continue_button)
 	interaction.entry_distance = entry_distance
 	interaction.entry_stagger = entry_stagger
@@ -376,9 +379,15 @@ func _finish_story() -> void:
 	if _navigating:
 		return
 	_navigating = true
+	_completed = true
 	interaction.set_navigation_locked(true)
 	auto_timer.stop()
 	GameManager.go_to_scene(next_scene_key)
+
+
+func _skip_story() -> void:
+	if skip_button.visible:
+		_finish_story()
 
 
 func _on_continue_pressed() -> void:
@@ -410,6 +419,7 @@ func get_checkpoint_state() -> Dictionary:
 	var saved: Dictionary = interaction.snapshot() if interaction != null else {}
 	saved.merge(
 		{
+			"complete": _completed,
 			"beat": maxi(beat_index, 0),
 			"layout_seed": _layout_seed,
 			"guess_targets": _guess_targets.duplicate(),

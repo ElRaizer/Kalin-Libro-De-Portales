@@ -84,6 +84,7 @@ const OBJECTS := [
 	"walk_target"
 ]
 const REPLAY_KEYS := [
+	"complete",
 	"guess_targets",
 	"board_variant",
 	"plan",
@@ -176,4 +177,10 @@ static func replay_state(value: Dictionary) -> Dictionary:
 	for key: String in REPLAY_KEYS:
 		if state.has(key):
 			previous[key] = state[key]
+	var prior: Variant = state.get("previous_variation", {})
+	if (
+		state.get("complete", false) == true
+		or (prior is Dictionary and prior.get("complete") == true)
+	):
+		previous.complete = true
 	return {"previous_variation": previous}.duplicate(true)

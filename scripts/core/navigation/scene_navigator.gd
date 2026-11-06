@@ -114,6 +114,9 @@ func checkpoint(node: Node) -> void:
 		return
 	var replay_run: String = _replay_run(key)
 	var snapshot: Dictionary = node.get_checkpoint_state().duplicate(true)
+	var prior: Dictionary = _session.scene_states.get(key, {})
+	if prior.get("previous_variation") is Dictionary:
+		snapshot.previous_variation = prior.previous_variation.duplicate(true)
 	if not replay_run.is_empty():
 		snapshot.replay_run = replay_run
 	_session.scene_states[key] = snapshot

@@ -68,6 +68,7 @@ var _nearby_spot: ExplorationSpot
 var _active_spot: ExplorationSpot
 var _resolving: bool = false
 var _navigating: bool = false
+var _completed: bool = false
 var _walk_phase: float = 0.0
 var _time: float = 0.0
 var _animal_bases: Dictionary = {}  # Sprite2D -> posición en reposo
@@ -110,7 +111,7 @@ func _ready() -> void:
 	$UI.add_child(_keyboard_cue)
 	chapter_label.text = chapter_title
 	objective_label.text = objective_text
-	skip_button.pressed.connect(_finish)
+	skip_button.pressed.connect(_skip_exploration)
 	prompt_button.pressed.connect(_on_prompt_pressed)
 	dialogue_box.hide()
 	_objective_color = objective_label.get_theme_color("font_color")
@@ -145,6 +146,8 @@ func _ready() -> void:
 	$UI/HelpButton.pressed.connect(_show_help)
 	$UI/MenuButton.pressed.connect(_on_menu_pressed)
 	var state: Dictionary = GameManager.get_scene_state(self)
+	_completed = state.get("complete", false) == true
+	skip_button.visible = ReplayVariation.can_skip(state)
 	var examined: Variant = state.get("examined", [])
 	for spot: ExplorationSpot in spots:
 		if examined is Array and str(spot.name) in examined:
@@ -671,12 +674,18 @@ func _finish() -> void:
 	if _navigating:
 		return
 	_navigating = true
+	_completed = true
 	if _dialogue.is_open():
 		_dialogue.close()
 	prompt_button.hide()
 	var tween: Tween = create_tween()
 	tween.tween_property(fade, "modulate:a", 1.0, FADE_SECONDS)
 	tween.tween_callback(_go_to_next_scene)
+
+
+func _skip_exploration() -> void:
+	if skip_button.visible:
+		_finish()
 
 
 func _go_to_next_scene() -> void:
@@ -720,6 +729,7 @@ func get_checkpoint_state() -> Dictionary:
 		if spot.examined:
 			examined.append(str(spot.name))
 	var state: Dictionary = {
+		"complete": _completed,
 		"x": kalin.position.x,
 		"examined": examined,
 		"intro_done": _intro_done,
