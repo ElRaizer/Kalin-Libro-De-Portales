@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <g fill="none" stroke="#458f83" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M550 316 Q575 298 600 315 Q624 334 650 312"/>
+    <path d="M577 276 L598 256 L619 277 M582 273 V297 H614 V273" fill="#d6ba83"/>
+    <path d="M621 268 L640 250 L659 269 M626 265 V289 H654 V265" fill="#d6ba83"/>
+    <path d="M591 296 V282 H602 V297 M635 289 V276 H645 V290"/>
+    <path d="M561 286 Q556 270 566 264 M564 278 Q575 265 580 270"/>
+  </g>
+  <!-- El mismo libro descansa ahora sobre el escritorio. -->
+  <g transform="translate(606 395) skewX(12)">
+    <rect x="0" y="5" width="64" height="22" rx="3" fill="#102e5a"/>
+    <path d="M5 22 H61 V25 H5 Z" fill="#e9d9ad"/>
+    <rect width="64" height="22" rx="3" fill="#2060a0" stroke="#153b70" stroke-width="2"/>
+    <path d="M7 0 V22" stroke="#102e5a" stroke-width="5"/>
+    <ellipse cx="36" cy="11" rx="12" ry="7" fill="none" stroke="#ffd050" stroke-width="2"/>
+    <path d="M36 5 V17 M26 11 H46" stroke="#ffd050" stroke-width="1.5"/>
+  </g>
+</svg>

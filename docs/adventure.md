@@ -5,19 +5,29 @@
 El portal lleva a Kalin desde su cuarto hasta una isla durante un huracán. Sólo
 la tormenta dispersa las páginas y apaga sus palabras; también daña los caminos y
 los hogares. Kalin conserva la cubierta y recoge una primera página en la orilla.
-Las demás se reúnen y recuperan sus palabras al comprenderlas y ayudar a los vecinos.
+Los vecinos encuentran hojas físicas al reabrir los senderos; en el reencuentro
+reúnen también las que aún están apagadas. Comprender y usar sus palabras devuelve
+la tinta y la luz. El libro conserva los caminos vividos, incluido el de vuelta;
+Miis propone esa posibilidad al observar la marca de la cubierta, antes de que
+Kalin pueda comprobarla. Las páginas no aparecen como pago de un encargo.
 Su magia básica puede apartar una palmera, pero crear objetos y darles cualidades
 requiere las palabras del libro. Son reglas de esta ficción, no afirmaciones sobre
 las prácticas culturales o la lengua maya.
 
-Kalin primero busca volver a casa, después extraña su cuarto mientras descubre un
-lugar entre sus amigos y al final vacila antes de despedirse. Peek' comparte el
-cuidado de los caminos; Miis abre su rincón a las visitas; Kaax organiza y acepta
-ayuda; Áak acompaña con calma. Los habitantes aportan conocimiento, trabajo y
-semillas para compartir: el regreso se consigue con su ayuda recíproca.
+Kalin deja un dibujo de casa sin terminar antes de cruzar por curiosidad. Primero
+busca regresar, decide abrir el camino con los vecinos y después extraña su cuarto
+mientras encuentra un lugar entre sus amigos. Al final vacila antes de despedirse.
+Peek' confía el cuidado de los caminos a otros para acompañarlo; Miis invita a su
+rincón; Kaax pide ayuda; Áak observa el espacio que necesitan dos platos. Los
+habitantes aportan conocimiento, trabajo y semillas: el regreso se consigue con
+su ayuda recíproca.
 
-El reencuentro tras reparar los caminos, la preparación de un lugar común, la comida
-y el tianguis cumplen funciones sucesivas. Contar registra las semillas del reparto;
+El reencuentro tras reparar los caminos recupera las visitas; la casa ofrece
+refugio; las cualidades permiten que todos tengan sitio; la comida necesita
+escuchar peticiones y el tianguis organiza el reparto. El último encargo,
+**Un lugar para volver**, nace del deseo de Kalin de dejar un espacio para las
+reuniones futuras. El portal primero señala un camino, después abre el paso al
+reunir lo aprendido y sólo se cruza tras la despedida. Contar registra las semillas;
 al confirmar una cantidad, una bandeja muestra el resultado. No cambia los números,
 la tablilla ni la evidencia educativa. Reanudar muestra la cantidad confirmada sin
 volver a animar su llegada ni registrar otro reparto.
@@ -27,14 +37,25 @@ permite elegir qué expresión conocida comunicar, con traducción visible, sin 
 segunda respuesta obligatoria. Cuenta como práctica apoyada. Cada amigo sólo evoca
 una entrega concreta si su destinatario y objeto constan en las misiones guardadas;
 si no hay una entrega suya, utiliza el texto narrativo de autor. El recuerdo personal
-elegido vuelve a aparecer al llegar al cuarto. Kalin regresa por el portal y reconoce
-algo vivido; el cierre no presenta la aventura como un sueño.
+elegido vuelve a aparecer al llegar al cuarto. Después, Kalin añade al dibujo de
+casa un camino hacia la aldea y deja el único libro sobre el escritorio. La imagen
+se reconstruye al reanudar sin repetir su llegada ni añadir evidencia educativa.
+El regreso reconoce algo vivido; el cierre no presenta la aventura como un sueño.
 
 Las cinemáticas esperan **Continuar** de manera predeterminada. **A tu ritmo**
 permite activar su avance automático; cambiar esa preferencia conserva el momento
 actual. La preferencia vive con los ajustes de comodidad, fuera de la partida.
-Las nuevas poses de proteger el libro, pensar en casa y despedirse, y la página
-protagonista que pierde o recupera su luz, mantienen el estilo de recortes.
+Las poses de proteger el libro, pensar en casa y despedirse mantienen el estilo de
+recortes. Kalin intenta retener la hoja que arranca el viento; sostiene el libro
+con la mirada baja al extrañar casa; vacila durante la frase de despedida y saluda
+después. Antes del cruce da pasos y mira atrás. La mesa se ensancha sobre el mismo
+suelo y Áak baja el segundo plato desde su mano al nuevo espacio. Al restaurar,
+la transformación ya presentada queda resuelta; el movimiento reducido conserva
+el resultado y la pausa detiene el trabajo de presentación.
+
+Los puntos del jardín guardan diseños para construir copias libremente. No compran
+el conocimiento de las palabras ni condicionan la magia de la campaña. La
+despedida utiliza el sonido de pasar página, sin anunciar una respuesta correcta.
 
 Se conserva el orden de escenas, los índices de momentos y el formato de partida 9.
 Los apartados fechados siguientes describen ampliaciones anteriores; este apartado

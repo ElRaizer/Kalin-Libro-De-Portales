@@ -118,6 +118,18 @@
   <rect x="164" y="272" width="20" height="85" rx="2" fill="#401828"/>
   <rect x="188" y="275" width="16" height="82" rx="2" fill="#1A3868"/>
 
+  <!-- El dibujo pendiente permanece en casa durante toda la aventura. -->
+  <g id="home-drawing" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M424 166 L690 174 L682 370 L420 362 Z" fill="#e9d9ad" stroke="#99734b" stroke-width="4"/>
+    <path d="M436 180 L677 187 L671 354 L432 347 Z" fill="#f5e8c4"/>
+    <path d="M452 251 L494 216 L536 253 M460 247 V290 H528 V247" fill="#dbc89a" stroke="#75634c" stroke-width="4"/>
+    <path d="M484 289 V265 H503 V290 M464 258 H477 V271 H464 Z M510 258 H523 V271 H510 Z" fill="#a6c9ba" stroke="#75634c" stroke-width="3"/>
+    <path d="M495 293 Q489 313 524 319 Q539 322 550 316" fill="none" stroke="#99734b" stroke-width="4"/>
+    <path d="M557 313 L568 310 M575 309 L585 310" fill="none" stroke="#99734b" stroke-width="3" opacity=".45"/>
+    <path d="M445 202 L456 198 M540 205 L551 210" stroke="#bb9e6a" stroke-width="2"/>
+    <circle cx="555" cy="173" r="5" fill="#c58a3c"/>
+  </g>
+
   <!-- Desk (center-left area) -->
   <!-- Desk top -->
   <rect x="280" y="420" width="580" height="28" rx="6" fill="#3A2010"/>

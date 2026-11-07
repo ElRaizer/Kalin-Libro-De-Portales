@@ -38,7 +38,7 @@ options = Array[String](["In k'a'at ja'", "In k'aaba'e' ja'", "Ti' yaan jun ja'"
 [sub_resource type="Resource" id="challenges_5"]
 script = ExtResource("entry")
 section = "SALUDO"
-prompt = "Saluda al guardián."
+prompt = "Saluda a Peek', que te acompaña hasta el portal."
 clue = "Buenos días"
 correct = "Bix a beel"
 options = Array[String](["Bix a beel", "Yuum bo'otik", "Tak ti' uláak' k'iin", "Ka xi'ik tech jats'uts"])

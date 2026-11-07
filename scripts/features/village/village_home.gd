@@ -407,16 +407,16 @@ func show_project() -> void:
 	var message: Label = _label(_project_content, "", Vector2.ZERO, Vector2(700, 100))
 	message.custom_minimum_size = Vector2(700, 110)
 	message.text = (
-		"Queremos reunirnos en el patio. Primero conoce y practica Mesa y Fuerte en la aventura."
+		"Queremos reunirnos en el patio. Practica Mesa y Fuerte; después podrás guardar sus diseños para tu jardín."
 		if not ready
 		else (
-			"La preparación aportó 12 puntos. Abre Mesa y Fuerte, y coloca una mesa fuerte en el jardín. Saldo: %d."
+			"Ya sabes crear con estas palabras. Guarda los diseños Mesa y Fuerte para construir en tu jardín. La preparación aportó 12 puntos. Saldo: %d."
 			% session.magic_points
 		)
 	)
 	if session.economy.built:
 		message.text = (
-			"¡Nuestro rincón está listo! Puedes acomodarlo, guardar los muebles y crear copias gratis. Saldo: %d."
+			"¡Nuestro rincón está listo! Los diseños guardados permiten crear copias gratis en tu jardín. Saldo: %d."
 			% session.magic_points
 		)
 	for word: String in MagicEconomy.design_words():
@@ -428,7 +428,11 @@ func show_project() -> void:
 		var button: Button = _button(
 			_project_content,
 			(
-				("Abierto · " if word in session.economy.designs else "Abrir · 10 puntos · ")
+				(
+					"Diseño guardado · "
+					if word in session.economy.designs
+					else "Diseño · 10 puntos · "
+				)
 				+ str(VocabularyCatalog.entry(word).spanish)
 			),
 			Vector2.ZERO,

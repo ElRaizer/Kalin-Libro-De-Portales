@@ -7,6 +7,14 @@ Conserva la campaña, el vocabulario y el formato de partida. La continuidad act
 está en [Aventura](adventure.md#continuidad-narrativa-vigente); los apartados de
 octubre siguientes conservan el contexto de las decisiones anteriores.
 
+La integración de noviembre hace explícitas las hojas recuperadas por los vecinos,
+vincula el regreso con un dibujo pendiente de casa y distingue refugio, adaptación,
+reparto y legado. La actuación incluye intento de retener la página, nostalgia,
+vacilación, saludo y mirada atrás al cruzar. La mesa se ensancha y recibe el plato
+desde la mano de Áak. El dibujo final y la mesa resuelta se reconstruyen al reanudar
+sin añadir progreso. Continúan pendientes la revisión con hablantes, las voces
+grabadas y la observación con niños; la validación técnica no las sustituye.
+
 Especificación acordada el 27 de octubre de 2026. Este documento registra el
 alcance, orden, aceptación y trabajo pendiente; Arquitectura, Mantenimiento y la
 guía técnica siguen definiendo los contratos vigentes.

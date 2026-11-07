@@ -21,7 +21,7 @@ auto_advance = 1.8
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Una ráfaga arrancó las páginas. El viento las dispersó y sus palabras dejaron de brillar."
+text = "Una ráfaga arrancó las páginas. Kalin intentó sujetarlas, pero el viento las dispersó y apagó sus palabras."
 kalin_motion = 6
 page_motion = 1
 effects = 11
@@ -31,7 +31,7 @@ auto_advance = 1.8
 [sub_resource type="Resource" id="Beat_3"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "La tormenta también rompió los caminos de la isla. El portal se cerró detrás de Kalin."
+text = "El sendero de luz se borró del libro. El portal se cerró y la tormenta rompió los caminos de la isla."
 kalin_motion = 6
 effects = 3
 screen_shake = true

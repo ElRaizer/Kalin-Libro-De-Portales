@@ -151,6 +151,27 @@ Inspector. `page_motion` (`NONE`, `SCATTER`, `RECOVER`) configura la página
 protagonista; `page_word` debe pertenecer al contenido ya vivido en ese momento.
 La transformación de la mesa muestra el espacio que necesitan dos platos.
 
+La despedida comienza con el libro abrazado y después levanta la mano. Para
+mantener la vacilación durante todo un diálogo, asigna
+`Arte/sprites/kalin_farewell_hesitate.svg` a `gesture_texture`; la frase sobre la
+dificultad de partir ya lo configura así. `CRUZA` incluye pasos, una mirada atrás y
+desaparición al atravesar la luz, conservando la escala relativa del Inspector.
+`THINK_HOME` utiliza una mirada baja y el libro entre los brazos. El último momento
+del regreso personaliza ese gesto con `kalin_home_rest.svg`, sin libro: el único
+ejemplar queda visible en el escritorio junto al dibujo terminado.
+
+La mesa compartida crece en ancho sobre el mismo apoyo. El `TableArm` editable de
+la viñeta une la mano de Áak con el segundo plato; la colocación empieza después
+de ampliar la mesa. `StoryScene` solicita `finish_reveal()` al restaurar un momento
+guardado. El resultado accesible es estable y no vuelve a representar la entrega.
+
+El dibujo sin terminar pertenece al fondo del cuarto compartido por introducción
+y regreso. `HomecomingMemory.completed_drawing` recibe desde la escena la capa
+transparente con el camino hacia la aldea y el libro sobre el escritorio. Sólo
+aparece en `drawing_beat`; reanudar muestra su estado final, sin nuevos campos de
+partida ni evidencia de aprendizaje. El recuerdo elegido se conserva en los
+momentos anteriores y deja libre el dibujo al cerrar.
+
 Las cinemáticas esperan al lector de forma predeterminada. **A tu ritmo → Avanzar
 cinemáticas al pulsar** conserva esa preferencia fuera del guardado. Desactivarla
 habilita `auto_advance`, que espera la escritura del texto y el intervalo de autor.
@@ -195,9 +216,9 @@ Cuando `background` cambia, el fondo nuevo entra con un fundido.
 
 Los capítulos 6 a 9 viven en `scenes/worlds/world2/` a `scenes/worlds/world5/` y usan a los
 seis animales de la aldea que también aparecen en los mundos 2, 3 y 4, con sus
-mismas peticiones. El capítulo 9 es el epílogo: se abre desde **Cerrar la
-aventura** al terminar el Mundo 5 y continúa con la cinemática de regreso a
-casa, que termina en el menú principal.
+mismas peticiones. Tras completar el Mundo 5, **Preparar mi despedida** abre el
+paseo para hablar con los amigos y elegir un recuerdo. Después se presenta el
+capítulo 9 y la cinemática de regreso a casa, que termina en el menú principal.
 
 Los animales se identifican por su palabra maya. La ilustración, la frase
 *In k'aaba'e' ___* y su traducción se leen de `GameManager`, así que un

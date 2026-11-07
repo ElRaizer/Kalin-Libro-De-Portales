@@ -7,7 +7,7 @@
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Los caminos volvieron a unir la aldea. Los vecinos se reunieron para reconocerse y celebrar."
+text = "Los senderos volvieron a unir la aldea. Los vecinos llegaron con las hojas que habían encontrado."
 background = ExtResource("3_bg_isla")
 actors = Array[String](["Peek'", "Kéej", "Báalam", "Kay"])
 effects = 16
@@ -45,7 +45,7 @@ effects = 16
 [sub_resource type="Resource" id="Beat_5"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "Las páginas de los animales vuelven a tener palabras. ¡Ya conozco a todos nuestros amigos!"
+text = "Las páginas de los animales recuperaron su tinta. Otras siguen apagadas, pero el libro ya guarda nuestros encuentros."
 kalin_pose = 1
 actors = Array[String](["Kaax", "Ma'ax", "Kuuts", "Áak"])
 celebrate_page = true
@@ -65,7 +65,7 @@ visual_scene = "casa"
 [sub_resource type="Resource" id="Beat_7"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "Ustedes me enseñan los nombres; yo probaré a crear lo que nos falta."
+text = "También quiero seguir buscando mi camino. Antes, hagamos un refugio: ustedes me enseñan los nombres y yo crearé los muebles."
 actors = Array[String](["Peek'", "Miis", "Kaax"])
 mood = 2
 

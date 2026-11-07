@@ -45,7 +45,7 @@ spot_texture = ExtResource("3_concha")
 [node name="Pagina" parent="Spots" index="1" unique_id=318250681 instance=ExtResource("2_spot")]
 position = Vector2(900, 618)
 prompt = "Recoger"
-lines = Array[String](["¡Una página de mi libro! Está en blanco. La guardaré y buscaré sus palabras."])
+lines = Array[String](["¡Una página de mi libro! Su tinta se apagó. La guardaré y buscaré cómo devolverle sus palabras."])
 surprised = true
 reaction = 2
 spot_texture = ExtResource("4_pagina")

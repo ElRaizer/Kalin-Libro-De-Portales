@@ -231,6 +231,13 @@ representa la misma imagen al elegir y al regresar. `HomecomingMemory` escucha e
 evento público `beat_presented` sólo en la cinemática de regreso. Los formatos
 anteriores se rechazan y requieren reinicio explícito, sin conversión.
 
+`HomecomingMemory` también presenta el camino añadido al dibujo de casa y el
+libro sobre el escritorio en el último momento. La escena le proporciona la vista
+`completed_drawing`; reconstruye su visibilidad desde el momento narrativo, sin
+otro campo persistido. Su transición respeta pausa, movimiento reducido y opacidad
+de autor. `StoryVignette.finish_reveal()` reconstruye el resultado de la mesa al
+restaurar una historia; el plato se mantiene servido sin repetir la transformación.
+
 `VillageMemory.delivered_moments()` valida destinatarios, combinaciones y marcadores
 de entrega antes de producir recuerdos; `for_animal()` consulta los vividos por un
 habitante. `PortalFarewell` los presenta con un texto de autor como alternativa

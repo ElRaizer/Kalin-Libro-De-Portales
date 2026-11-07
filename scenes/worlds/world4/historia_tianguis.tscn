@@ -6,7 +6,7 @@
 
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
-text = "Después de comer, los vecinos abrieron un tianguis. También tenían algo que compartir con Kalin."
+text = "Después de comer, los vecinos llevaron semillas al tianguis. Esta vez organizarían las porciones para llevar a casa."
 background = ExtResource("3_bg_tianguis")
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 mood = 1
@@ -16,7 +16,7 @@ subtitle = "Mundo 4 · Las piedras que cuentan"
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
 speaker = "Peek'"
-text = "Trajimos semillas para compartir. Ayúdanos a contar las porciones que preparará cada vecino."
+text = "Mis amigos trajeron semillas y yo, las bandejas. Contemos las porciones que preparará cada vecino."
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 
 [sub_resource type="Resource" id="Beat_3"]
@@ -42,7 +42,7 @@ effects = 16
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
 speaker = "Áak"
-text = "La concha representa el cero en un piso vacío. Contemos con calma para preparar cada porción."
+text = "La concha representa el cero en un piso vacío. Observemos con calma: así cada porción tendrá lo que pide su vecino."
 actors = Array[String](["Áak", "Peek'"])
 
 [node name="HistoriaTianguis" instance=ExtResource("1_base")]

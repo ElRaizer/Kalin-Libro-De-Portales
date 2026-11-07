@@ -7,7 +7,7 @@
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "La casa volvió a llenarse de vida. Los vecinos ya tenían dónde descansar y reunirse."
+text = "La casa volvió a ser un refugio. Otros cuidaron el sendero por Peek', mientras Miis probaba dónde descansar."
 background = ExtResource("4_bg_casa")
 actors = Array[String](["Miis", "Kaax", "Peek'", "Áak"])
 effects = 16
@@ -17,7 +17,7 @@ visual_solved = true
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "Extraño mi cuarto. Aquí también me están haciendo un lugar... y las palabras vuelven al libro."
+text = "Extraño mi cuarto y el dibujo que dejé sin terminar. Aquí también me hacen un lugar... y las palabras recuperan su luz."
 actors = Array[String](["Miis", "Kaax", "Peek'", "Áak"])
 celebrate_page = true
 kalin_motion = 7
@@ -30,7 +30,7 @@ page_word = "mayak"
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
 speaker = "Áak"
-text = "Ven, siéntate conmigo. Mi mesa es pequeña; quiero que también haya sitio para nuestros amigos."
+text = "Miremos con calma: mi mesa es pequeña. Aquí cabe un plato... pero quiero sentarme con nuestros amigos."
 actors = Array[String](["Peek'", "Áak"])
 kind = 4
 visual_scene = "tamano"
@@ -38,7 +38,7 @@ visual_scene = "tamano"
 [sub_resource type="Resource" id="Beat_7"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "Entonces hagamos sitio. ¿Qué palabra necesita la mesa para crecer?"
+text = "Quiero seguir mi camino, pero no dejar a nadie sin sitio. Probemos qué palabra hace crecer la mesa."
 actors = Array[String](["Peek'", "Áak"])
 
 [sub_resource type="Resource" id="Beat_8"]
@@ -63,13 +63,13 @@ visual_solved = true
 [sub_resource type="Resource" id="Beat_10"]
 script = ExtResource("2_beat")
 speaker = "Miis"
-text = "Me gusta la calma, pero hoy abriré mi rincón. También hay un sitio para ti, Kalin."
+text = "Me gusta la calma de mi rincón. Hoy los invito a compartirla: también hay sitio para ti, Kalin."
 actors = Array[String](["Áak", "K'éek'en", "Kéej", "Miis"])
 
 [sub_resource type="Resource" id="Beat_11"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Cada vecino necesita algo distinto. Juntos prepararán un lugar para compartir."
+text = "Ya tenían refugio. Ahora escucharían lo que necesitaba cada vecino para que todos pudieran participar."
 actors = Array[String](["Áak", "K'éek'en", "Kéej", "Miis"])
 effects = 16
 title = "Mundo 3"

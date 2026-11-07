@@ -25,7 +25,7 @@ visual_solved = true
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Kaax dejó de correr de un lado a otro: necesitaba ayuda para compartir la comida."
+text = "Kaax dejó de correr. No podía preparar toda la comida sola, así que pidió ayuda y escuchó a sus amigos."
 actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
 screen_shake = false
 kind = 4
@@ -41,7 +41,7 @@ actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
 script = ExtResource("2_beat")
 kind = 3
 speaker = "Peek'"
-text = "Después de revisar los senderos tengo sed. In k'a'at ja'. Busquemos agua: ja'."
+text = "Hoy mis amigos cuidan el sendero. Yo traeré agua para todos: In k'a'at ja'. Busquemos agua: ja'."
 actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
 target_word = "ja'"
 options = Array[String](["janal", "ja'", "ja'as", "K'úum"])
@@ -61,7 +61,7 @@ actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
 [sub_resource type="Resource" id="Beat_11"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Kaax preparó los platos y los amigos fueron juntos a buscar lo que faltaba para la comida."
+text = "Kaax repartió las tareas. Mientras ella preparaba los platos, sus amigos fueron a buscar lo que faltaba."
 background = ExtResource("5_bg_milpa")
 actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
 kalin_motion = 1

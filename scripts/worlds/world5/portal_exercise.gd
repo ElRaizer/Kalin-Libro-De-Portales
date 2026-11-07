@@ -153,8 +153,8 @@ func _show_challenge() -> void:
 	challenge_art.show_meaning(word, quality)
 	feedback_label.text = "Elige el hechizo."
 	feedback_label.add_theme_color_override("font_color", _feedback_color)
-	progress_label.text = "%d / %d páginas" % [challenge_index, challenges.size()]
-	portal_label.text = "El portal está despertando"
+	progress_label.text = "%d / %d pasos hacia casa" % [challenge_index, challenges.size()]
+	portal_label.text = "El libro traza el camino a casa"
 	_build_options(challenge.options)
 	challenge_art.visible = challenge_index >= 4 or _practice_fallback
 	if challenge_index < 4 and not _practice_fallback:
@@ -311,7 +311,7 @@ func _on_menu_pressed() -> void:
 	GameManager.go_to_scene("main_menu")
 
 
-## "Cerrar la aventura" abre el epílogo con la despedida de los animales.
+## El paso ya está abierto: el jugador prepara su despedida antes de cruzar.
 func _on_epilogue_pressed() -> void:
 	_resolving = true
 	GameManager.go_to_scene("world5_farewell")
@@ -350,7 +350,7 @@ func _render_success(animate: bool) -> void:
 		challenges.size(),
 		"El portal · %d / %d" % [challenge_index + 1, challenges.size()]
 	)
-	progress_label.text = "%d / %d páginas" % [challenge_index + 1, challenges.size()]
+	progress_label.text = "%d / %d pasos hacia casa" % [challenge_index + 1, challenges.size()]
 	create_tween().tween_property(
 		portal_glow, "color:a", minf(0.16 + 0.06 * (challenge_index + 1), 0.62), 0.5
 	)

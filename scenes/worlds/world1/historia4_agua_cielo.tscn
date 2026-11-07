@@ -8,7 +8,7 @@
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Kuuts"
-text = "¡Recordaste todas las rocas! Los guardianes te damos las gracias."
+text = "¡Podemos recorrer el monte! Entre las rocas encontramos más hojas de tu libro."
 background = ExtResource("4_bg_monte")
 actors = Array[String](["Báalam", "Kuuts", "T'u'ul", "Peek'"])
 
@@ -24,7 +24,7 @@ target_word = "Báalam"
 [sub_resource type="Resource" id="Beat_3"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Una página más! Cada nombre guarda un encuentro de nuestro viaje."
+text = "Las hojas del monte recuperan sus nombres. Cada palabra guarda un encuentro y enciende parte del camino."
 actors = Array[String](["Báalam", "Kuuts", "T'u'ul", "Peek'"])
 celebrate_page = true
 page_motion = 2

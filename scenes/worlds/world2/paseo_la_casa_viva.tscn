@@ -120,7 +120,7 @@ choices = Array[ExtResource("entry")]([SubResource("choice2_0"), SubResource("ch
 encounters = Array[ExtResource("encounter")]([SubResource("encounter0"), SubResource("encounter1"), SubResource("encounter2")])
 chapter_title = "La casa cobra vida"
 next_scene_key = "world2_story1"
-intro_lines = Array[String](["Antes de seguir, visitaré a mis amigos. Puedo probar mis palabras o continuar por el sendero."])
+intro_lines = Array[String](["Visitaré sus rincones para ver cómo usan los muebles. Puedo probar mis palabras o seguir por el sendero."])
 
 [node name="Visit0" parent="Spots" index="0"]
 spot_texture = ExtResource("actor0")

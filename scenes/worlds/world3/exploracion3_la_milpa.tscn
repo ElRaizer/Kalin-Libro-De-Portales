@@ -32,7 +32,7 @@ next_scene_key = "world4_level1"
 footstep_surface = "pasto"
 objective_text = "Recorre la milpa hasta tus amigos →"
 intro_speaker = "Kalin"
-intro_lines = Array[String](["¡Cuánto maíz! Buscaré lo que piden mis amigos."])
+intro_lines = Array[String](["Kaax preparará los platos; nosotros buscaremos los alimentos. ¡Cada quien aporta algo a la comida!"])
 
 [node name="Imagen" parent="Cielo" index="0"]
 texture = ExtResource("3_r")
@@ -60,7 +60,7 @@ offset = Vector2(0, -58)
 
 [node name="Cantaro" parent="Spots" index="0" instance=ExtResource("2_r")]
 position = Vector2(650, 634)
-lines = Array[String](["Un cántaro con agua fresca. ¡Peek' tiene sed!"])
+lines = Array[String](["Un cántaro con agua fresca. Peek' ayudará a llevarla para todos."])
 vocabulary_word = "ja'"
 spot_texture = ExtResource("8_r")
 sprite_offset = Vector2(0, -82)
@@ -109,7 +109,7 @@ glow_extents = Vector2(100, 40)
 [node name="Amigos" parent="Spots" index="5" instance=ExtResource("2_r")]
 position = Vector2(3330, 580)
 prompt = "Llevar la comida"
-lines = Array[String](["¡Ahí están mis amigos, con mucha hambre!"])
+lines = Array[String](["¡Ahí están! Escucharé qué quiere cada amigo para repartir la comida."])
 surprised = true
 reach_radius = 170
 is_goal = true

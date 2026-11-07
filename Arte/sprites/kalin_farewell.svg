@@ -109,21 +109,21 @@
   <ellipse cx="83"  cy="96" rx="12" ry="13" fill="white"/>
   <ellipse cx="117" cy="96" rx="12" ry="13" fill="white"/>
   <!-- Irises (warm dark brown) -->
-  <ellipse cx="84"  cy="97" rx="8"  ry="9"  fill="#2C1808"/>
-  <ellipse cx="118" cy="97" rx="8"  ry="9"  fill="#2C1808"/>
+  <ellipse cx="86"  cy="97" rx="8"  ry="9"  fill="#2C1808"/>
+  <ellipse cx="120" cy="97" rx="8"  ry="9"  fill="#2C1808"/>
   <!-- Pupils -->
-  <ellipse cx="85"  cy="98" rx="5"  ry="6"  fill="#0A0604"/>
-  <ellipse cx="119" cy="98" rx="5"  ry="6"  fill="#0A0604"/>
+  <ellipse cx="87"  cy="98" rx="5"  ry="6"  fill="#0A0604"/>
+  <ellipse cx="121" cy="98" rx="5"  ry="6"  fill="#0A0604"/>
   <!-- Eye shine -->
-  <circle cx="88"  cy="93" r="3" fill="white"/>
-  <circle cx="122" cy="93" r="3" fill="white"/>
+  <circle cx="90"  cy="93" r="3" fill="white"/>
+  <circle cx="124" cy="93" r="3" fill="white"/>
   <!-- Lower eyelid line -->
   <path d="M74 102 Q83 107 92 102"  stroke="#9A6030" stroke-width="1" fill="none" opacity="0.5"/>
   <path d="M108 102 Q117 107 126 102" stroke="#9A6030" stroke-width="1" fill="none" opacity="0.5"/>
 
   <!-- Eyebrows (determined) -->
-  <path d="M 73 82 Q 83 78 94 82"  stroke="#180E06" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <path d="M 106 82 Q 117 78 127 82" stroke="#180E06" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M 73 84 Q 83 79 94 80"  stroke="#180E06" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M 106 80 Q 117 79 127 84" stroke="#180E06" stroke-width="3" fill="none" stroke-linecap="round"/>
 
   <!-- Nose -->
   <path d="M 96 110 Q 100 116 104 110" stroke="#9A5828" stroke-width="2" fill="none" opacity="0.5"/>
@@ -131,7 +131,7 @@
   <circle cx="106" cy="112" r="2.5" fill="#9A5828" opacity="0.35"/>
 
   <!-- Mouth (determined smile) -->
-  <path d="M 89 122 Q 100 128 112 121" stroke="#8B4513" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M 89 124 Q 100 126 112 123" stroke="#8B4513" stroke-width="2.5" fill="none" stroke-linecap="round"/>
   <!-- Lower lip -->
   <path d="M 90 126 Q 100 130 110 126" stroke="#C07040" stroke-width="1" fill="none" opacity="0.4"/>
 

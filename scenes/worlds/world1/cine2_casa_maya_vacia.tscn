@@ -51,7 +51,7 @@ auto_advance = 1.8
 
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
-text = "Miis hizo espacio y Kaax reunió a los vecinos. Kalin abrió el libro para empezar juntos."
+text = "Miis abrió su rincón a las visitas. Kaax reunió a los vecinos y Kalin abrió el libro: prepararían su refugio juntos."
 actors = Array[String](["Peek'", "Miis", "Kaax"])
 effects = 24
 flash = true

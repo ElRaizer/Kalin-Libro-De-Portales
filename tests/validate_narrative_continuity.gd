@@ -17,6 +17,8 @@ func _run() -> void:
 	_memories_only_from_deliveries()
 	await _expressive_farewell()
 	await _cinematic_reading()
+	await _shared_table_resume()
+	await _homecoming_drawing()
 	await _comfort_layouts()
 	for key: String in previous_preferences:
 		preferences.set_preference(key, previous_preferences[key])
@@ -198,6 +200,74 @@ func _cinematic_reading() -> void:
 	_check(
 		story.beat_index == initial + 1, "El botón Continuar sigue avanzando al leer manualmente"
 	)
+
+
+func _shared_table_resume() -> void:
+	var story: Node = await _scene("world2_story1", {"beat": 5})
+	var plate: TextureRect = story.vignette.get_node("PlaceSetting1")
+	_check(
+		story.vignette.prop.get_rect().encloses(plate.get_rect()),
+		"Reanudar la mesa compartida conserva el plato sobre el espacio ya creado"
+	)
+	story = await _resume("world2_story1")
+	plate = story.vignette.get_node("PlaceSetting1")
+	_check(
+		story.beat_index == 5 and story.vignette.prop.get_rect().encloses(plate.get_rect()),
+		"Guardar y cargar el resultado conserva la transformación terminada"
+	)
+
+
+func _homecoming_drawing() -> void:
+	var preferences: Node = root.get_node("AccessibilityManager")
+	preferences.set_preference("instant_text", true)
+	preferences.set_preference("manual_cinematics", true)
+	manager.session.scene_states["world5_farewell"] = {
+		"gifts": [0, 1, 2],
+		"memory":
+		{
+			"kind": "home",
+			"title": "Nuestro rincón",
+			"animal": "Miis",
+			"item": "mayak",
+			"quality": ""
+		}
+	}
+	var evidence: Dictionary = manager.session.learning_progress.duplicate(true)
+	for window_size: Vector2i in [Vector2i(1280, 720), Vector2i(640, 360)]:
+		root.size = window_size
+		preferences.set_preference("reduced_motion", false)
+		var story: Node = await _scene("world5_cine1", {"beat": 4})
+		story._complete_text()
+		var homecoming: Node = story.get_node("HomecomingMemory")
+		var drawing: TextureRect = homecoming.completed_drawing
+		_check(not drawing.visible, "El recuerdo aparece antes de completar el dibujo de casa")
+		_check(homecoming.moment.visible, "El recuerdo elegido sigue visible al reconocerlo")
+		story._on_continue_pressed()
+		_check(drawing.visible, "El camino al dibujo se añade al cerrar el viaje")
+		_check(not homecoming.moment.visible, "El recuerdo deja espacio al dibujo en el cierre")
+		await create_timer(0.15).timeout
+		paused = true
+		var alpha: float = drawing.modulate.a
+		await create_timer(0.15, true).timeout
+		_check(is_equal_approx(drawing.modulate.a, alpha), "El dibujo se pausa con la historia")
+		paused = false
+		preferences.set_preference("reduced_motion", true)
+		_check(is_equal_approx(drawing.modulate.a, 1.0), "Reducir movimiento completa la imagen")
+		story = await _resume("world5_cine1")
+		homecoming = story.get_node("HomecomingMemory")
+		drawing = homecoming.completed_drawing
+		_check(
+			story.beat_index == 5 and drawing.visible and is_equal_approx(drawing.modulate.a, 1.0),
+			"Reanudar el final conserva el camino dibujado sin repetir su aparición"
+		)
+		_check(homecoming._drawing_tween == null, "La imagen restaurada no programa otra llegada")
+		_check(
+			manager.session.learning_progress == evidence,
+			"Completar y reanudar el dibujo no añade evidencia educativa"
+		)
+		story._complete_text()
+		await _capture("dibujo_de_regreso_%d" % window_size.x)
+	root.size = Vector2i(1280, 720)
 
 
 func _comfort_layouts() -> void:

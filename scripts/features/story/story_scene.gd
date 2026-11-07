@@ -132,6 +132,8 @@ func _ready() -> void:
 			_apply_mood(beats[index].mood)
 	beat_index = saved_beat - 1
 	_next_beat()
+	if state.has("beat"):
+		vignette.finish_reveal()
 	interaction.restore_beat(state)
 
 

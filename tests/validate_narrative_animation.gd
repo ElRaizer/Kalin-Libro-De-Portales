@@ -17,6 +17,8 @@ func _run() -> void:
 	preferences.manual_cinematics = true
 	preferences.instant_text = true
 	await _gesture_lifecycle()
+	await _emotional_sequence()
+	await _portal_crossing()
 	await _page_lifecycle()
 	await _table_transformation()
 	await _reading_layouts()
@@ -86,6 +88,89 @@ func _page_lifecycle() -> void:
 	root.get_node("AccessibilityManager").set_preference("reduced_motion", false)
 
 
+func _emotional_sequence() -> void:
+	var story: Node = await _scene("world5_story1", {"beat": 1})
+	var animator: StoryAnimator = story._animator
+	_check(
+		story.kalin.texture.resource_path.ends_with("kalin_farewell_hesitate.svg"),
+		"Despedirse comienza con el libro entre los brazos, antes de levantar la mano"
+	)
+	animator._kalin_motion_tween.custom_step(0.5)
+	_check(
+		story.kalin.texture.resource_path.ends_with("kalin_farewell_hesitate.svg"),
+		"La vacilación conserva un tiempo de lectura antes del saludo"
+	)
+	animator._kalin_motion_tween.custom_step(0.7)
+	_check(
+		story.kalin.texture.resource_path.ends_with("kalin_farewell_hesitate.svg"),
+		"La frase sobre lo difícil de despedirse conserva la expresión contenida hasta el final"
+	)
+	story = await _scene("world5_story1", {"beat": 4})
+	animator = story._animator
+	_check(
+		story.kalin.texture.resource_path.ends_with("kalin_farewell_hesitate.svg"),
+		"El agradecimiento comienza mirando a los amigos antes del saludo"
+	)
+	animator._kalin_motion_tween.custom_step(1.2)
+	_check(
+		story.kalin.texture.resource_path.ends_with("kalin_farewell.svg"),
+		"Al agradecer, la mano se levanta una sola vez después de la vacilación"
+	)
+	var custom: Texture2D = story.surprised_texture
+	animator.set_gesture_texture(custom)
+	animator.play_kalin_motion(StoryBeat.KalinMotion.FAREWELL)
+	animator._kalin_motion_tween.custom_step(1.3)
+	_check(story.kalin.texture == custom, "Las fases respetan el recorte del Inspector")
+	story = await _scene("world1_cine1", {"beat": 1})
+	animator = story._animator
+	animator._kalin_motion_tween.custom_step(0.4)
+	_check(
+		story.kalin.texture.resource_path.ends_with("kalin_reach_page.svg"),
+		"Kalin intenta retener la hoja que el viento arranca"
+	)
+	animator._kalin_motion_tween.custom_step(1.0)
+	_check(
+		story.kalin.texture.resource_path.ends_with("kalin_protect_book.svg"),
+		"Al perder la hoja vuelve a proteger el libro que conserva"
+	)
+
+
+func _portal_crossing() -> void:
+	var story: Node = await _scene("world5_cine1", {"beat": 1})
+	var animator: StoryAnimator = story._animator
+	_check(
+		story.current_beat().auto_advance >= StoryAnimator.CROSS_SECONDS,
+		"El avance automático espera el cruce completo incluso con texto instantáneo"
+	)
+	animator.play_kalin_motion(StoryBeat.KalinMotion.CRUZA)
+	animator._kalin_motion_tween.custom_step(1.2)
+	_check(
+		story.kalin.texture.resource_path.ends_with("kalin_portal_look_back.svg"),
+		"Kalin se detiene a mirar atrás antes de cruzar"
+	)
+	_check(
+		story.kalin.modulate.a == 1.0 and story.kalin.scale.x > animator.kalin_base_scale.x * 0.7,
+		"El recorrido conserva una figura legible antes de tocar el plano del portal"
+	)
+	root.get_tree().paused = true
+	var paused_position: Vector2 = story.kalin.position
+	await create_timer(0.12, true).timeout
+	_check(story.kalin.position == paused_position, "La pausa detiene también el cruce del portal")
+	root.get_tree().paused = false
+	var preferences: Node = root.get_node("AccessibilityManager")
+	preferences.set_preference("reduced_motion", true)
+	_check(
+		story.kalin.modulate.a == 0.0,
+		"Reducir movimiento durante el cruce conserva su desenlace sin devolver a Kalin al origen"
+	)
+	story._next_beat()
+	_check(
+		story.kalin.modulate.a == 1.0 and story.kalin.scale == animator.kalin_base_scale,
+		"El siguiente momento restaura opacidad y escala después del cruce"
+	)
+	preferences.set_preference("reduced_motion", false)
+
+
 func _table_transformation() -> void:
 	var story: Node = await _scene("world2_story1", {"beat": 5})
 	var vignette: Node = story.vignette
@@ -135,6 +220,7 @@ func _reading_layouts() -> void:
 		{"key": "world1_cine1", "beat": 1, "name": "pagina_en_el_viento"},
 		{"key": "world2_story1", "beat": 1, "name": "extranar_casa"},
 		{"key": "world5_story1", "beat": 1, "name": "despedirse"},
+		{"key": "world5_cine1", "beat": 1, "name": "mirar_atras"},
 		{"key": "world5_cine1", "beat": 4, "name": "regresar_a_casa"}
 	]
 	for window_size: Vector2i in [Vector2i(1280, 720), Vector2i(640, 360)]:
@@ -144,6 +230,9 @@ func _reading_layouts() -> void:
 			story.get_node("ScreenLayout").preview_compact = window_size.x < 1024
 			story.get_node("ScreenLayout").refresh()
 			story._complete_text()
+			if sample.name == "mirar_atras":
+				story._animator._kalin_motion_tween.pause()
+				story._animator._kalin_motion_tween.custom_step(1.2)
 			await process_frame
 			_check(
 				story.dialogue_text.get_content_height() <= story.dialogue_text.size.y + 1,

@@ -16,7 +16,7 @@ actors = Array[String]([])
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
 speaker = "Miis"
-text = "Tu libro une lugares y personas. Buscaremos sus páginas contigo."
+text = "Mira la marca de tu cubierta. Quizá el libro guarde el camino de regreso. Busquemos sus páginas."
 kalin_pose = 1
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 
@@ -38,7 +38,7 @@ visual_scene = "camino"
 [sub_resource type="Resource" id="Beat_5"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Vamos! Al ayudar buscaremos las páginas. Comprender sus palabras puede devolverles la luz."
+text = "Quiero volver a casa... pero primero abramos ese camino. Buscaremos las páginas juntos y probaremos sus palabras."
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 
 [sub_resource type="Resource" id="Beat_6"]

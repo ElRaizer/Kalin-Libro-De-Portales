@@ -8,6 +8,9 @@
 [ext_resource type="Script" path="res://scripts/features/village/homecoming_memory.gd" id="memory_script"]
 [ext_resource type="PackedScene" path="res://scenes/features/village/memory_moment.tscn" id="memory_moment"]
 [ext_resource type="Texture2D" path="res://Arte/sprites/kalin_hold_book.svg" id="hold_book"]
+[ext_resource type="Texture2D" path="res://Arte/efectos/home_drawing_path.svg" id="drawing_path"]
+[ext_resource type="Texture2D" path="res://Arte/sprites/kalin_home_rest.svg" id="home_rest"]
+[ext_resource type="Texture2D" path="res://Arte/sprites/kalin_farewell_hesitate.svg" id="hesitate"]
 
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
@@ -15,6 +18,7 @@ speaker = "Narrador"
 text = "Kalin sostuvo el libro contra el pecho. Miró una vez más a sus amigos antes de dar el primer paso."
 background = ExtResource("3_bg_portal_isla")
 kalin_motion = 8
+gesture_texture = ExtResource("hesitate")
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 effects = 0
 auto_advance = 1.8
@@ -22,16 +26,16 @@ auto_advance = 1.8
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Dio un paso, luego otro... y el portal lo envolvió en una luz dorada."
+text = "Dio unos pasos, volvió la mirada hacia sus amigos y cruzó. El portal lo envolvió en una luz dorada."
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 effects = 0
 kalin_motion = 5
-auto_advance = 2.2
+auto_advance = 2.8
 
 [sub_resource type="Resource" id="Beat_3"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Kalin cerró el libro sobre las páginas recuperadas. Sus palabras conservaron la luz durante el cruce."
+text = "Las páginas recuperadas conservaron su luz. El libro sostuvo el camino de vuelta durante el cruce."
 background = ExtResource("4_bg_portal")
 kalin_pose = 2
 effects = 0
@@ -60,11 +64,10 @@ effects = 0
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Kalin cerró el libro con cuidado. Los caminos quedaban lejos; sus amigos seguían cerca en cada palabra."
+text = "Kalin añadió al dibujo de su casa un camino hacia la aldea y dejó el libro a su lado. Había un lugar al que quería volver."
 effects = 0
-kalin_motion = 0
-title = "Fin"
-subtitle = "Tak ti' uláak' k'iin"
+kalin_motion = 7
+gesture_texture = ExtResource("home_rest")
 
 [node name="Cine3" instance=ExtResource("1_base")]
 chapter_title = "Epílogo — Regreso a casa"
@@ -74,8 +77,22 @@ beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2
 [node name="SkipButton" parent="UI" index="1"]
 text = "Saltar cinemática ▶▶"
 
-[node name="HomecomingMemory" type="Node" parent="."]
+[node name="HomeDrawing" type="TextureRect" parent="Background"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("drawing_path")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HomecomingMemory" type="Node" parent="." node_paths=PackedStringArray("completed_drawing")]
 script = ExtResource("memory_script")
+completed_drawing = NodePath("../Background/HomeDrawing")
 
 [node name="UI" type="CanvasLayer" parent="HomecomingMemory"]
 

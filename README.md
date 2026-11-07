@@ -51,7 +51,7 @@ abre la pausa. Las pruebas y capturas verifican la implementación; el testeo ex
 
 Las páginas cuentan descubrimientos. El libro distingue además práctica, primer recuerdo y recuperaciones sin ayuda en situaciones separadas. Las rondas de recuerdo comienzan por escribir sin dibujos de solución. Un primer error muestra huecos conservando lo acertado. Si se corrige al menos una parte, se mantienen los huecos; si no hay ninguna corrección nueva, aparecen los bloques, sin selector de modalidad. Las partes correctas de una frase se conservan. Consultar el libro, recibir pistas o corregir errores se registra como práctica apoyada. Los apoyos y las posiciones de las piezas se guardan por intento.
 
-Tras la casa y el taller hay encargos para preparar rincones y una fiesta. Tras la historia del portal, **Los encargos de la aldea** permite caminar, recibir peticiones, crear objetos, transportarlos y entregarlos a sus destinatarios. Cada visita selecciona tres necesidades distintas del catálogo permitido para su capítulo y prioriza palabras con menos evidencia de recuerdo. Las 28 combinaciones válidas de objeto y cualidad varían entre partidas, junto con sus destinatarios; se conservan al continuar. También se puede abrir `scenes/worlds/world4/mision_encargos_aldea.tscn` con F6.
+Tras la casa y el taller hay encargos para preparar rincones y una fiesta. Tras la señal del portal, **Un lugar para volver** permite caminar, recibir peticiones, crear objetos, transportarlos y dejar un espacio para reuniones futuras. Cada visita selecciona tres necesidades distintas del catálogo permitido para su capítulo y prioriza palabras con menos evidencia de recuerdo. Las 28 combinaciones válidas de objeto y cualidad varían entre partidas, junto con sus destinatarios; se conservan al continuar. También se puede abrir `scenes/worlds/world4/mision_encargos_aldea.tscn` con F6.
 
 El vocabulario fue cotejado documentalmente con la UADY; las fuentes por entrada y los cambios se detallan en [docs/vocabulary.md](docs/vocabulary.md). Las frases completas y pronunciaciones siguen pendientes de revisión con personas hablantes. El diseño de aprendizaje, la misión y la persistencia vigente se explican en [docs/learning_and_missions.md](docs/learning_and_missions.md).
 
@@ -71,7 +71,7 @@ Cada **mundo** representa una mecánica. Los **niveles** de un mismo mundo reuti
 | 4 | 2 | Las Piedras que Cuentan | Numeración maya de puntos, barras y concha: números sorteados del 1 al 50 |
 | 5 | 1 | El Portal de Regreso | Recapitulación, cortesía y despedida |
 
-El orden de progreso es Mundo 1 completo → Mundo 2 → Mundo 3 → Mundo 4 → Mundo 5. El último mundo recupera los fragmentos finales del libro y cierra la aventura con el portal de regreso.
+El orden de progreso es Mundo 1 completo → Mundo 2 → Mundo 3 → Mundo 4 → Mundo 5. El último mundo reúne lo aprendido para abrir el paso a casa; después llegan la despedida personal y el cruce. El dibujo que Kalin dejó sin terminar al principio recibe un camino hacia la aldea al regresar. La [continuidad vigente](docs/adventure.md#continuidad-narrativa-vigente) explica las reglas del libro y la función de cada etapa.
 
 La interfaz muestra páginas recuperadas. Los puntos mágicos abren diseños una sola vez; las copias y los ensayos son gratuitos. Cada palabra acredita como máximo 10 puntos según el apoyo usado. Comprar diseños nunca bloquea el acceso a la historia.
 
@@ -176,7 +176,7 @@ magia sigue ocurriendo en los niveles.
 |---|---|---|
 | Camino a la Casa Maya | Capítulo 5 y la cinemática de la casa vacía | `mayak`, `lak`, `k'áan`, `k'áanche'`, `janal` |
 | La milpa | Capítulo 7 y el Mundo 4 | `ja'`, `ja'as`, `ich`, `K'úum` |
-| El camino al portal | Los encargos de la aldea y el Mundo 5 | `Bix a beel`, `Yuum bo'otik`, `Ka xi'ik tech jats'uts`, `Tak ti' uláak' k'iin` |
+| El camino al portal | Un lugar para volver y el Mundo 5 | `Bix a beel`, `Yuum bo'otik`, `Ka xi'ik tech jats'uts`, `Tak ti' uláak' k'iin` |
 
 ### Cinemáticas y animaciones
 

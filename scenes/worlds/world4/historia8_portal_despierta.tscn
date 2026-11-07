@@ -8,7 +8,7 @@
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "Compartimos la comida y las semillas. ¡Hoy todos pudimos ayudar!"
+text = "Al usar las palabras para escucharnos, volvió su tinta. ¡El libro guarda lo que aprendimos juntos!"
 background = ExtResource("5_bg_milpa")
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 celebrate_page = true
@@ -21,7 +21,7 @@ effects = 16
 [sub_resource type="Resource" id="Beat_5"]
 script = ExtResource("2_beat")
 kind = 4
-text = "Las páginas brillaron juntas. A lo lejos, una luz dibujó el camino hacia el portal."
+text = "Las páginas iluminaron el camino al portal. Era una señal: todavía faltaba abrir el paso a casa."
 background = ExtResource("6_bg_portal_isla")
 kalin_pose = 1
 actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
@@ -33,7 +33,7 @@ flash = true
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "El libro une lugares y personas. Quiero llevar también las palabras con las que nos cuidamos."
+text = "El libro recuerda los caminos que vivimos. Ya veo el de regreso; quiero llevar también las palabras con las que nos cuidamos."
 kalin_pose = 1
 actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
 effects = 24
@@ -41,7 +41,7 @@ effects = 24
 [sub_resource type="Resource" id="Beat_7"]
 script = ExtResource("2_beat")
 speaker = "Peek'"
-text = "Bix a beel: así saludamos. Yo iré contigo y revisaré el camino al portal."
+text = "Bix a beel: así saludamos. Mis amigos vigilarán la aldea; yo puedo acompañarte hasta el portal."
 actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
 effects = 24
 
@@ -64,7 +64,7 @@ effects = 24
 
 [sub_resource type="Resource" id="Beat_10"]
 script = ExtResource("2_beat")
-text = "Antes de partir, dejarán preparada una mesa común. Después acompañarán a Kalin hasta el portal."
+text = "Kalin quiso dejar un lugar para las próximas reuniones. Sus amigos lo prepararían con él antes de acompañarlo al portal."
 actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
 effects = 24
 title = "Mundo 5"

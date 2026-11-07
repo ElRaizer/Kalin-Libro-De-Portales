@@ -34,6 +34,8 @@ var _authored: Dictionary = {}
 var _table_layout: VignetteLayout
 var _reveal_progress: float = 1.0
 var _reveal_tween: Tween
+var _prop_stretch_mode: TextureRect.StretchMode
+var _table_arm: Line2D
 @onready var _place_settings: Array[TextureRect] = [$PlaceSetting0, $PlaceSetting1]
 
 
@@ -47,6 +49,9 @@ func _ready() -> void:
 			"modulate": control.modulate
 		}
 	actor_home = actor.position
+	_prop_stretch_mode = ($Prop as TextureRect).stretch_mode
+	_table_arm = get_node_or_null("TableArm") as Line2D
+	add_to_group("comfort_visuals")
 	_thought_home = _thought.position
 	_reward_home = _reward.position
 	for index: int in range(3):
@@ -75,6 +80,7 @@ func show_situation(value: String, complete: bool = false) -> void:
 		return
 	_build_actor(layout.actor_word)
 	prop = $Prop
+	(prop as TextureRect).stretch_mode = _prop_stretch_mode
 	prop.texture = layout.solved_texture if complete else layout.unsolved_texture
 	prop.position = layout.solved_position if complete else layout.position
 	prop.size = layout.solved_size if complete else layout.size
@@ -83,15 +89,16 @@ func show_situation(value: String, complete: bool = false) -> void:
 	_table_layout = layout if value == "tamano" else null
 	_build_support("mayak" if value == "tamano" else "janal")
 	if _table_layout != null:
+		# Crece el espacio útil, sin convertir la mesa en un pedestal alto.
+		(prop as TextureRect).stretch_mode = TextureRect.STRETCH_SCALE
 		for setting: TextureRect in _place_settings:
 			setting.show()
+		if is_instance_valid(_table_arm):
+			_table_arm.visible = layout.actor_word == "Áak"
 		if complete and not get_node("/root/AccessibilityManager").reduced_motion:
 			_reveal_progress = 0.0
 			_reveal_tween = create_tween()
-			_reveal_tween.tween_interval(0.25)
-			_reveal_tween.tween_method(set_reveal_progress, 0.0, 1.0, 1.0).set_trans(
-				Tween.TRANS_SINE
-			)
+			_reveal_tween.tween_method(set_reveal_progress, 0.0, 1.0, 2.8)
 	seek_cycle(0)
 
 
@@ -174,6 +181,20 @@ func set_reveal_progress(value: float) -> void:
 		queue_redraw()
 
 
+## Al reanudar se conserva el resultado, sin representar otra entrega.
+func finish_reveal() -> void:
+	if _table_layout == null:
+		return
+	if _reveal_tween:
+		_reveal_tween.kill()
+	set_reveal_progress(1.0)
+
+
+func apply_comfort_settings() -> void:
+	if get_node("/root/AccessibilityManager").reduced_motion and _table_layout != null:
+		finish_reveal()
+
+
 func _apply_cycle(phase: float) -> void:
 	# Calcular cada fotograma desde la base de autor, sin acumular efectos.
 	for control: Control in _authored:
@@ -233,10 +254,7 @@ func _apply_cycle(phase: float) -> void:
 				_question.modulate.a = _bell(phase, 0.48, 0.76)
 				emotion = "duda" if attempt > 0.1 else "neutro"
 			"tamano":
-				# El caparazón no cabe; la mesa se sacude al intentarlo.
-				actor.scale += actor_scale * Vector2(0.065, -0.045) * attempt
-				actor.position.x += attempt * 17.0
-				prop.position.x += sin(phase * TAU * 20) * attempt * 3.0
+				# El segundo plato se queda en la mano: falta sitio para compartir.
 				_thought.modulate.a = _bell(phase, 0.46, 0.83) * 0.95
 				_thought.position.y -= _bell(phase, 0.46, 0.83) * 9.0
 				emotion = "duda" if attempt > 0.08 else "neutro"
@@ -289,35 +307,68 @@ func _apply_cycle(phase: float) -> void:
 		_footprints[index].modulate.a = travel * 0.38 if situation == "camino" else 0.0
 	for control: Control in _authored:
 		control.modulate *= Color(_authored[control].modulate)
-	_apply_table_settings(attempt)
+	_apply_table_settings()
 	if kalin_mood != _mood:
 		_mood = kalin_mood
 		mood_changed.emit(_mood)
 
 
-func _apply_table_settings(attempt: float) -> void:
+func _apply_table_settings() -> void:
 	if _table_layout == null:
 		return
-	var progress: float = (
-		1.0 if get_node("/root/AccessibilityManager").reduced_motion else _reveal_progress
-	)
+	var reduced: bool = get_node("/root/AccessibilityManager").reduced_motion
+	var progress: float = 1.0 if reduced else _reveal_progress
+	var growth: float = _ease(progress, 0.18, 0.65) if solved else 0.0
+	var placing: float = _ease(progress, 0.72, 1.0) if solved else 0.0
 	if solved:
-		prop.position = _table_layout.position.lerp(_table_layout.solved_position, progress)
-		prop.size = _table_layout.size.lerp(_table_layout.solved_size, progress)
-	var top: Vector2 = prop.position + Vector2(0, prop.size.y * 0.31)
-	_place_settings[0].position = top + Vector2(prop.size.x * 0.36 - 24, -15)
-	_place_settings[1].position = (
-		top
-		+ Vector2(
-			(
-				lerpf(_table_layout.size.x + 20, prop.size.x * 0.68 - 24, progress)
-				if solved
-				else prop.size.x + 20
-			),
-			-15 + (0.0 if solved else attempt * 8)
+		prop.position = _table_layout.position.lerp(_table_layout.solved_position, growth)
+		prop.size = _table_layout.size.lerp(_table_layout.solved_size, growth)
+	else:
+		prop.position = _table_layout.position
+		prop.size = _table_layout.size
+	# Áak camina con su plato antes de ampliar la mesa; sus pies nunca suben con ella.
+	var approach: float = (
+		_ease(progress, 0.0, 0.18)
+		if solved
+		else (
+			1.0
+			if reduced
+			else (
+				_ease(elapsed / cycle_seconds, 0.08, 0.30)
+				- _ease(elapsed / cycle_seconds, 0.72, 0.94)
+			)
 		)
 	)
-	_place_settings[1].modulate.a = 1.0 if solved else 0.65
+	var destination: float = (
+		_table_layout.solved_position.x + _table_layout.solved_size.x * 0.30
+		if solved
+		else _table_layout.position.x
+	)
+	var actor_scale: Vector2 = _authored[actor].scale
+	var hand_offset: Vector2 = actor.size * Vector2(0.90, 0.59) * actor_scale
+	actor.position = actor_home.lerp(Vector2(destination - hand_offset.x, actor_home.y), approach)
+	actor.scale = actor_scale
+	actor.rotation = float(_authored[actor].rotation)
+	actor.texture = _faces["feliz" if solved and placing >= 1.0 else "duda"]
+	if reduced:
+		_thought.modulate.a = 0.0
+		for heart: TextureRect in _hearts:
+			heart.modulate.a = 0.0
+	var top: Vector2 = prop.position + Vector2(0, prop.size.y * 0.31)
+	var first_fraction: float = lerpf(0.48, 0.70, growth)
+	_place_settings[0].position = (
+		top + Vector2(prop.size.x * first_fraction, 0) - _place_settings[0].size * 0.5
+	)
+	var carried: Vector2 = actor.position + hand_offset - _place_settings[1].size * 0.5
+	var served: Vector2 = top + Vector2(prop.size.x * 0.30, 0) - _place_settings[1].size * 0.5
+	_place_settings[1].position = carried.lerp(served, placing)
+	_place_settings[1].modulate.a = float(_authored[_place_settings[1]].modulate.a)
+	if is_instance_valid(_table_arm) and _table_arm.visible:
+		var shoulder: Vector2 = actor.position + actor.size * Vector2(0.78, 0.74) * actor_scale
+		var hand: Vector2 = _place_settings[1].position + _place_settings[1].size * 0.5
+		_table_arm.points = PackedVector2Array(
+			[shoulder, shoulder.lerp(hand, 0.5) + Vector2(8, 8), hand + Vector2(0, 5)]
+		)
 
 
 static func _ease(value: float, start: float, end: float) -> float:
@@ -335,7 +386,12 @@ func _draw() -> void:
 	if not visible or not is_instance_valid(actor):
 		return
 	if situation != "portal" and _external_shadow:
-		draw_set_transform(Vector2(actor.position.x + 97, 285), 0, Vector2(1, 0.15))
+		var ground_y: float = (
+			actor_home.y + actor.size.y * 0.94 * actor.scale.y if _table_layout != null else 285.0
+		)
+		draw_set_transform(
+			Vector2(actor.position.x + actor.size.x * 0.5, ground_y), 0, Vector2(1, 0.15)
+		)
 		draw_circle(Vector2.ZERO, 63, Color(0.23, 0.16, 0.08, 0.17), true, -1, true)
 		draw_set_transform(Vector2.ZERO)
 	elif situation == "portal":

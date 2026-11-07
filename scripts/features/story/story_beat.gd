@@ -27,7 +27,7 @@ enum KalinMotion {
 	SALTA,  ## Da dos saltos de alegría.
 	TIEMBLA,  ## Tiembla de susto o de frío.
 	DORMIDO,  ## Está acostado y respira despacio.
-	CRUZA,  ## Camina hacia el portal, se hace pequeño y desaparece.
+	CRUZA,  ## Da unos pasos, mira atrás y atraviesa la luz del portal.
 	PROTECT_BOOK,  ## Abraza el libro y se afirma contra el viento.
 	THINK_HOME,  ## Mira el libro, baja la cabeza y hace una pausa.
 	FAREWELL,  ## Vacila antes de levantar la mano para despedirse.

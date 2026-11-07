@@ -210,7 +210,7 @@ func _narrative() -> void:
 		"Levantarse debe recuperar la transformación del Inspector"
 	)
 	story._play_kalin_motion(StoryBeat.KalinMotion.CRUZA)
-	story._animator._kalin_motion_tween.custom_step(2)
+	story._animator._kalin_motion_tween.custom_step(StoryAnimator.CROSS_SECONDS + 0.1)
 	_check(
 		kalin.scale.is_equal_approx(SCALE * StoryAnimator.CROSS_SCALE),
 		"Cruzar el portal debe reducir la escala de autor proporcionalmente"

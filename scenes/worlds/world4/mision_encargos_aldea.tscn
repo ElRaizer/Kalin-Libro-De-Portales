@@ -77,10 +77,10 @@ success = "¡Ya podemos compartir la comida!"
 script = ExtResource("script")
 free_roam = true
 tasks = Array[ExtResource("task")]([SubResource("task_0"), SubResource("task_1"), SubResource("task_2"), SubResource("task_3"), SubResource("task_4"), SubResource("task_5")])
-chapter_title = "Misión · Los encargos de la aldea"
+chapter_title = "Misión · Un lugar para volver"
 next_scene_key = "world4_explore1"
-objective_text = "Habla con tus amigos, crea y entrega sus encargos."
-intro_lines = Array[String](["Antes de mi viaje prepararemos una mesa común. Cada aporte quedará en la plaza para las próximas reuniones. Elegiré por dónde empezar."])
+objective_text = "Deja con tus amigos un lugar para las próximas reuniones."
+intro_lines = Array[String](["Ya vemos el camino de regreso. Antes de irme, quiero dejar algo para sus reuniones. Elegiré qué aporte preparar primero."])
 
 [node name="Terreno" parent="." index="1"]
 scale = Vector2(2, 1)
@@ -120,8 +120,8 @@ sprite_scale = Vector2(1.05, 1.05)
 
 [node name="Salida" parent="Spots" index="4" unique_id=306559844 instance=ExtResource("spot")]
 position = Vector2(2300, 580)
-prompt = "Despertar el portal"
-lines = Array[String](["¡Todos recibieron sus encargos! Usaré las palabras del libro para despertar el portal."])
+prompt = "Ir al portal"
+lines = Array[String](["Nuestro lugar queda listo para las próximas visitas. Ahora reuniremos las palabras del viaje para abrir el portal."])
 reach_radius = 175.0
 is_goal = true
 spot_texture = ExtResource("exit")

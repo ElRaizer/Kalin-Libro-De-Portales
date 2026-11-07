@@ -30,7 +30,7 @@ next_scene_key = "world5_level1"
 footstep_surface = "piedra"
 objective_text = "Sigue el Sak Beh hasta el portal →"
 intro_speaker = "Narrador"
-intro_lines = Array[String](["Peek' revisó el sendero y los amigos acompañan a Kalin. El libro ilumina el último tramo a casa."])
+intro_lines = Array[String](["Los amigos acompañan a Kalin. El libro reconoce el regreso; al reunir las palabras del viaje podrán abrir el paso."])
 
 [node name="Imagen" parent="Cielo" index="0"]
 texture = ExtResource("3_r")
@@ -52,7 +52,7 @@ offset = Vector2(0, -58)
 
 [node name="Estela" parent="Spots" index="0" instance=ExtResource("2_r")]
 position = Vector2(700, 634)
-lines = Array[String](["Un sol tallado. Por la mañana se saluda así."])
+lines = Array[String](["Un sol tallado. Me recuerda los saludos que compartimos al encontrarnos."])
 vocabulary_word = "Bix a beel"
 spot_texture = ExtResource("7_r")
 sprite_offset = Vector2(0, -117)
@@ -73,7 +73,7 @@ glow_extents = Vector2(150, 70)
 
 [node name="Ofrenda" parent="Spots" index="2" instance=ExtResource("2_r")]
 position = Vector2(1900, 630)
-lines = Array[String](["Flores y velas para dar las gracias."])
+lines = Array[String](["Flores y velas. ¡Tengo tanto que agradecer a mis amigos!"])
 vocabulary_word = "Yuum bo'otik"
 spot_texture = ExtResource("9_r")
 sprite_offset = Vector2(0, -67)
@@ -82,7 +82,7 @@ glow_extents = Vector2(70, 30)
 
 [node name="Arco" parent="Spots" index="3" instance=ExtResource("2_r")]
 position = Vector2(2500, 618)
-lines = Array[String](["Un arco para desear buen viaje."])
+lines = Array[String](["Un arco para desear buen viaje. Mis amigos quieren que encuentre el camino a casa."])
 vocabulary_word = "Ka xi'ik tech jats'uts"
 spot_texture = ExtResource("10_r")
 sprite_offset = Vector2(0, -127)
@@ -91,7 +91,7 @@ glow_extents = Vector2(70, 70)
 
 [node name="Piedra" parent="Spots" index="4" instance=ExtResource("2_r")]
 position = Vector2(2950, 606)
-lines = Array[String](["Una mano tallada que dice adiós."])
+lines = Array[String](["Una mano tallada. Despedirme no borrará lo que vivimos juntos."])
 vocabulary_word = "Tak ti' uláak' k'iin"
 sprite_scale = Vector2(1.1, 1.1)
 spot_texture = ExtResource("11_r")

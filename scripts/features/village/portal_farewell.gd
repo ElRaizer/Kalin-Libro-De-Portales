@@ -130,7 +130,6 @@ func _choose(index: int) -> void:
 		LearningContext.identify("farewell", gift.animal, [phrase], true, _seed),
 		true
 	)
-	AudioManager.play_sfx("acierto")
 	AudioManager.play_sfx("pagina_pasar")
 	collected.append(completed)
 	_friend(completed).mark_examined()
