@@ -62,7 +62,7 @@ gathering_title = "¡La fiesta ya está lista!"
 completion_objective = "¡Listo! Vamos a compartir la comida →"
 next_scene_key = "world3_story1"
 tasks = Array[ExtResource("task")]([SubResource("task_0"), SubResource("task_1"), SubResource("task_2"), SubResource("task_3"), SubResource("task_4"), SubResource("task_5")])
-intro_lines = Array[String](["Cada amigo necesita algo diferente para la fiesta. Hablaré con ellos, crearé sus encargos y comprobaré que sean a su medida."])
+intro_lines = Array[String](["Ya podemos visitarnos. Ahora prepararemos la fiesta: escucharé a cada amigo para que todos tengan su lugar."])
 
 [node name="Terreno" parent="."]
 texture = ExtResource("background")

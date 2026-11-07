@@ -22,7 +22,7 @@ script = ExtResource("editor_3")
 background = ExtResource("editor_4")
 kalin = ExtResource("editor_5")
 kalin_x = 760.0
-text = "En Yucatán, Kalin aprendía magia con su Libro de Hechizos."
+text = "En su casa de Yucatán, Kalin practicaba magia con un libro capaz de abrir portales."
 subtext = ""
 
 [sub_resource type="Resource" id="Panel_2"]
@@ -30,7 +30,7 @@ script = ExtResource("editor_3")
 background = ExtResource("editor_6")
 kalin = ExtResource("editor_7")
 kalin_x = 200.0
-text = "¡El libro abrió un portal! Sus páginas salieron volando."
+text = "Una noche, el libro abrió un portal. Kalin lo cruzó para descubrir adónde llevaba."
 subtext = ""
 
 [sub_resource type="Resource" id="Panel_3"]
@@ -38,7 +38,7 @@ script = ExtResource("editor_3")
 background = ExtResource("editor_6")
 kalin = ExtResource("editor_7")
 kalin_x = 200.0
-text = "¡Ayuda a Kalin a recuperar las palabras y volver a casa!"
+text = "Del otro lado lo esperaba una isla en plena tormenta. Su camino a casa estaba por comenzar."
 subtext = ""
 
 

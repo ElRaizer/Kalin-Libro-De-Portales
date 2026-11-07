@@ -45,6 +45,11 @@ const BREATH_SCALE := 1.03
 const PORTAL_CENTER := Vector2(800, 320)
 const CROSS_SECONDS := 1.6
 const CROSS_SCALE := 0.2
+const GESTURE_TEXTURES: Dictionary[StoryBeat.KalinMotion, Texture2D] = {
+	StoryBeat.KalinMotion.PROTECT_BOOK: preload("res://Arte/sprites/kalin_protect_book.svg"),
+	StoryBeat.KalinMotion.THINK_HOME: preload("res://Arte/sprites/kalin_think_home.svg"),
+	StoryBeat.KalinMotion.FAREWELL: preload("res://Arte/sprites/kalin_farewell.svg"),
+}
 
 var sleeping: bool = false
 var _host: Node2D
@@ -76,6 +81,15 @@ var _ambient_tween: Tween
 var _shake_tween: Tween
 var _flash_tween: Tween
 var _title_tween: Tween
+var _gesture_texture: Texture2D
+var _gesture_active: bool = false
+var _page: TextureRect
+var _page_ink: TextureRect
+var _page_word: Label
+var _page_home: Vector2
+var _page_scale: Vector2
+var _page_tween: Tween
+var _page_motion: StoryBeat.PageMotion = StoryBeat.PageMotion.NONE
 
 
 func _init(
@@ -111,6 +125,11 @@ func _init(
 	_celebration_scale = celebration.scale
 	_celebration_alpha = celebration.modulate.a
 	_current_background = background.texture
+	_page = effects_root.get_node("StoryPage") as TextureRect
+	_page_ink = _page.get_node("Ink") as TextureRect
+	_page_word = _page.get_node("Word") as Label
+	_page_home = _page.position
+	_page_scale = _page.scale
 
 
 func start_idle() -> void:
@@ -134,8 +153,9 @@ func celebrate_page() -> void:
 	if _celebration_tween:
 		_celebration_tween.kill()
 	_celebration.visible = true
-	(_effects_root.get_node("ConfetiPaginas") as CPUParticles2D).restart()
-	(_effects_root.get_node("ConfetiChispas") as CPUParticles2D).restart()
+	# La página recuperada ya cuenta el cambio: evitar otra lluvia de páginas.
+	if _page_motion == StoryBeat.PageMotion.NONE:
+		present_page(StoryBeat.PageMotion.RECOVER, "")
 	_celebration.pivot_offset = _celebration.size * 0.5
 	_celebration.scale = (
 		_celebration_scale
@@ -245,6 +265,15 @@ func apply_comfort_settings() -> void:
 			_kalin.rotation = _kalin_rotation
 		_kalin.scale = kalin_base_scale
 		start_idle()
+		if _page_tween:
+			_page_tween.kill()
+		if _page_motion != StoryBeat.PageMotion.NONE:
+			_page.position = _page_home
+			_page.rotation = 0.0
+			_page.scale = _page_scale
+			_page.modulate.a = 1.0
+			_page_ink.modulate.a = 1.0 if _page_motion == StoryBeat.PageMotion.RECOVER else 0.0
+			_page_word.visible_ratio = 1.0
 	if preferences.reduced_flashes:
 		if _flash_tween:
 			_flash_tween.kill()
@@ -272,6 +301,11 @@ func show_title(title: String, subtitle: String) -> void:
 func play_kalin_motion(motion: StoryBeat.KalinMotion) -> void:
 	var stand_up: bool = sleeping and motion == StoryBeat.KalinMotion.QUIETO
 	_reset_kalin(stand_up)
+	_gesture_active = GESTURE_TEXTURES.has(motion)
+	if _gesture_active:
+		_kalin.texture = (
+			_gesture_texture if _gesture_texture != null else GESTURE_TEXTURES[motion]
+		)
 	match motion:
 		StoryBeat.KalinMotion.ENTRA:
 			_kalin_walk_in()
@@ -283,9 +317,83 @@ func play_kalin_motion(motion: StoryBeat.KalinMotion) -> void:
 			_kalin_sleep()
 		StoryBeat.KalinMotion.CRUZA:
 			_kalin_cross_portal()
+		StoryBeat.KalinMotion.PROTECT_BOOK:
+			_kalin_gesture(Vector2(-9, 5), -0.025, 0.32)
+		StoryBeat.KalinMotion.THINK_HOME:
+			_kalin_gesture(Vector2(0, 7), 0.025, 0.75)
+		StoryBeat.KalinMotion.FAREWELL:
+			_kalin_farewell()
 		_:
 			if not stand_up:
 				start_idle()
+
+
+func set_gesture_texture(texture: Texture2D) -> void:
+	_gesture_texture = texture
+
+
+func has_gesture() -> bool:
+	return _gesture_active
+
+
+func _kalin_gesture(offset: Vector2, angle: float, seconds: float) -> void:
+	if _host.get_node("/root/AccessibilityManager").reduced_motion:
+		return
+	_kalin_motion_tween = _host.create_tween().set_parallel(true)
+	_kalin_motion_tween.tween_property(_kalin, "position", _kalin_home + offset, seconds)
+	_kalin_motion_tween.tween_property(_kalin, "rotation", _kalin_rotation + angle, seconds)
+
+
+func _kalin_farewell() -> void:
+	if _host.get_node("/root/AccessibilityManager").reduced_motion:
+		return
+	# Una vacilación y un único saludo conservan la pausa emocional del final.
+	_kalin_motion_tween = _host.create_tween()
+	_kalin_motion_tween.tween_interval(0.45)
+	_kalin_motion_tween.tween_property(_kalin, "rotation", _kalin_rotation - 0.025, 0.35)
+	_kalin_motion_tween.tween_property(_kalin, "rotation", _kalin_rotation + 0.015, 0.4)
+	_kalin_motion_tween.tween_property(_kalin, "rotation", _kalin_rotation, 0.4)
+
+
+func present_page(motion: StoryBeat.PageMotion, word: String) -> void:
+	if _page_tween:
+		_page_tween.kill()
+	_page_motion = motion
+	_page.visible = motion != StoryBeat.PageMotion.NONE
+	_page.position = _page_home
+	_page.scale = _page_scale
+	_page.rotation = 0.0
+	_page.modulate.a = 1.0
+	_page_word.text = word
+	_page_word.visible_ratio = 0.0
+	_page_ink.modulate.a = 0.0
+	if motion == StoryBeat.PageMotion.NONE:
+		return
+	if _host.get_node("/root/AccessibilityManager").reduced_motion:
+		_page_ink.modulate.a = 1.0 if motion == StoryBeat.PageMotion.RECOVER else 0.0
+		_page_word.visible_ratio = 1.0
+		return
+	_page_tween = _host.create_tween()
+	if motion == StoryBeat.PageMotion.SCATTER:
+		_page.position = Vector2(145, 390)
+		_page.scale = _page_scale * 0.6
+		_page_tween.set_parallel(true)
+		_page_tween.tween_property(_page, "position", _page_home, 0.75).set_trans(Tween.TRANS_SINE)
+		_page_tween.tween_property(_page, "scale", _page_scale, 0.75)
+		_page_tween.tween_property(_page, "rotation", -0.18, 0.75)
+		_page_tween.chain().tween_interval(0.4)
+		_page_tween.chain().tween_property(_page, "position", Vector2(1360, 95), 1.2)
+		_page_tween.parallel().tween_property(_page, "rotation", 0.65, 1.2)
+		_page_tween.parallel().tween_property(_page, "modulate:a", 0.0, 0.4).set_delay(0.8)
+	else:
+		_page.rotation = -0.09
+		_page_tween.tween_property(_page, "rotation", 0.0, 0.35)
+		_page_tween.tween_property(_page_ink, "modulate:a", 1.0, 0.7)
+		_page_tween.parallel().tween_property(_page_word, "visible_ratio", 1.0, 0.7)
+		_page_tween.tween_interval(0.75)
+		_page_tween.tween_property(_page, "position", Vector2(112, 470), 0.7)
+		_page_tween.parallel().tween_property(_page, "scale", _page_scale * 0.25, 0.7)
+		_page_tween.parallel().tween_property(_page, "modulate:a", 0.0, 0.3).set_delay(0.4)
 
 
 func _reset_kalin(animated: bool) -> void:

@@ -11,7 +11,8 @@ func _ready() -> void:
 	for entry: Array in [
 		["ReducedMotion", "reduced_motion"],
 		["ReducedFlashes", "reduced_flashes"],
-		["InstantText", "instant_text"]
+		["InstantText", "instant_text"],
+		["ManualCinematics", "manual_cinematics"]
 	]:
 		var button: CheckButton = $Shade/Panel.get_node(entry[0]) as CheckButton
 		button.toggled.connect(_preference_toggled.bind(entry[1]))
@@ -66,6 +67,7 @@ func open_pause() -> void:
 	$Shade/Panel/ReducedMotion.set_pressed_no_signal(AccessibilityManager.reduced_motion)
 	$Shade/Panel/ReducedFlashes.set_pressed_no_signal(AccessibilityManager.reduced_flashes)
 	$Shade/Panel/InstantText.set_pressed_no_signal(AccessibilityManager.instant_text)
+	$Shade/Panel/ManualCinematics.set_pressed_no_signal(AccessibilityManager.manual_cinematics)
 	AudioManager.play_sfx("pausa_abrir")
 	resume_button.grab_focus()
 

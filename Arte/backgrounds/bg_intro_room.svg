@@ -4,11 +4,6 @@
       <stop offset="0%"   stop-color="#0A0618"/>
       <stop offset="100%" stop-color="#180C28"/>
     </linearGradient>
-    <radialGradient id="bookGlow" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0%"   stop-color="#60E8FF" stop-opacity="0.9"/>
-      <stop offset="50%"  stop-color="#2080D0" stop-opacity="0.4"/>
-      <stop offset="100%" stop-color="#0030A0" stop-opacity="0"/>
-    </radialGradient>
     <radialGradient id="candleGlow" cx="0.5" cy="0.5" r="0.5">
       <stop offset="0%"   stop-color="#FFD070" stop-opacity="0.9"/>
       <stop offset="100%" stop-color="#FF6000" stop-opacity="0"/>
@@ -20,7 +15,6 @@
     <filter id="blur6"><feGaussianBlur stdDeviation="6"/></filter>
     <filter id="blur12"><feGaussianBlur stdDeviation="12"/></filter>
     <filter id="blur3"><feGaussianBlur stdDeviation="3"/></filter>
-    <filter id="blur20"><feGaussianBlur stdDeviation="20"/></filter>
   </defs>
 
   <!-- Room background -->
@@ -134,45 +128,11 @@
   <!-- Desk surface items shadow -->
   <rect x="280" y="418" width="580" height="10" rx="4" fill="#200E06" opacity="0.5"/>
 
-  <!-- Glowing book on desk (CENTER) -->
-  <!-- Book glow halo -->
-  <ellipse cx="560" cy="400" rx="200" ry="140" fill="url(#bookGlow)" filter="url(#blur20)"/>
-  <ellipse cx="560" cy="410" rx="160" ry="100" fill="#40B8FF" opacity="0.15" filter="url(#blur12)"/>
-  <!-- Book shadow on desk -->
-  <ellipse cx="560" cy="428" rx="100" ry="18" fill="#000000" opacity="0.5"/>
-  <!-- Book body (open) -->
-  <path d="M 420 310 Q 425 390 430 418 Q 555 408 560 415 L 560 310 Z" fill="#1A4080"/>
-  <path d="M 700 310 Q 695 390 690 418 Q 565 408 560 415 L 560 310 Z" fill="#1A3870"/>
-  <!-- Book spine -->
-  <rect x="555" y="310" width="10" height="108" rx="3" fill="#0D2850"/>
-  <!-- Left page (glowing blue-white) -->
-  <path d="M 424 314 Q 426 388 432 414 Q 556 405 558 413 L 558 314 Z" fill="#D0EEFF"/>
-  <!-- Right page -->
-  <path d="M 696 314 Q 694 388 688 414 Q 564 405 562 413 L 562 314 Z" fill="#C8E8FF"/>
-  <!-- Page glow lines (magic text) -->
-  <g stroke="#40A8FF" stroke-width="1.5" opacity="0.7">
-    <line x1="445" y1="335" x2="540" y2="332"/>
-    <line x1="445" y1="348" x2="535" y2="345"/>
-    <line x1="445" y1="361" x2="540" y2="358"/>
-    <line x1="445" y1="374" x2="530" y2="371"/>
-    <line x1="445" y1="387" x2="538" y2="384"/>
-  </g>
-  <g stroke="#40A8FF" stroke-width="1.5" opacity="0.7">
-    <line x1="578" y1="335" x2="672" y2="332"/>
-    <line x1="578" y1="348" x2="668" y2="345"/>
-    <line x1="578" y1="361" x2="672" y2="358"/>
-    <line x1="578" y1="374" x2="665" y2="371"/>
-    <line x1="578" y1="387" x2="670" y2="384"/>
-  </g>
-  <!-- Floating magic pages -->
-  <g opacity="0.7">
-    <rect x="660" y="260" width="60" height="80" rx="3" fill="#C0DEFF" transform="rotate(-18, 690, 300)"/>
-    <rect x="360" y="250" width="55" height="75" rx="3" fill="#C0DEFF" transform="rotate(15, 387, 287)"/>
-    <rect x="720" y="200" width="45" height="62" rx="3" fill="#D0E8FF" transform="rotate(-30, 742, 231)"/>
-    <rect x="310" y="180" width="48" height="65" rx="3" fill="#D0E8FF" transform="rotate(25, 334, 212)"/>
-  </g>
+  <!-- El único libro viaja con Kalin; sobre la mesa quedan sus apuntes. -->
+  <path d="M486 393 L605 395 L613 418 L479 418 Z" fill="#d8c890" stroke="#8b7348" stroke-width="2"/>
+  <path d="M500 401 H588 M497 407 H581 M495 413 H564" stroke="#8b7348" stroke-width="2" opacity=".55"/>
 
-  <!-- Candles on desk (left and right of book) -->
+  <!-- Velas sobre el escritorio -->
   <!-- Left candle -->
   <rect x="360" y="378" width="14" height="42" rx="3" fill="#F0E0C0"/>
   <ellipse cx="367" cy="372" rx="7" ry="4" fill="#D8C8A0"/>
@@ -193,6 +153,4 @@
   <rect x="680" y="398" width="80" height="22" rx="4" fill="#D8C890" opacity="0.8" transform="rotate(-5,720,409)"/>
   <rect x="300" y="400" width="70" height="20" rx="4" fill="#D8C890" opacity="0.7" transform="rotate(8,335,410)"/>
 
-  <!-- Room corner glow (ambient from book) -->
-  <ellipse cx="560" cy="400" rx="400" ry="300" fill="#1040A0" opacity="0.06"/>
 </svg>

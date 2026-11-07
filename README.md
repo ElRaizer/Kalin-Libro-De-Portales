@@ -117,11 +117,14 @@ repasa lo aprendido en el nivel anterior y presenta lo del siguiente.
 | 8 | Después del Mundo 4 | Los amigos alimentados, mediante una escena | El portal de regreso, *Bix a beel* y *Yuum bo'otik* |
 | 9 | Después del Mundo 5 (epílogo) | Animales y frases de cortesía | Despedida y regreso de Kalin a casa (cinemática final) |
 
-El hilo narrativo sigue el GDD: el huracán borró los caminos (Mundo 1) y se
-llevó los muebles de la aldea (Mundo 2). Los animales piden después objetos a
-su medida (Mundo 3) y comida (Mundo 4). Por último, las palabras amables
-completan el libro y abren el portal (Mundo 5). Con cada capítulo Kalin
-recupera páginas de su Libro de Hechizos.
+El portal lleva a Kalin hasta una isla durante un huracán. La tormenta dispersa
+las páginas del libro, apaga sus palabras, rompe los caminos (Mundo 1) y se lleva
+los muebles (Mundo 2). Kalin y los habitantes reconstruyen juntos sus espacios,
+adaptan objetos para compartir (Mundo 3) y preparan comida y un reparto de semillas
+(Mundo 4). Comprender y usar las palabras devuelve su luz al libro; agradecer y
+despedirse cierran el camino de regreso (Mundo 5). Kalin extraña su casa mientras
+encuentra un lugar entre sus nuevos amigos. La [continuidad vigente](docs/adventure.md)
+describe las reglas de esta ficción y los recuerdos de cada partida.
 
 Los capítulos se pueden saltar con **Saltar historia**. `Esc` abre la pausa. **Continuar**
 retoma la escena y el momento guardados. En partidas antiguas sin punto de
@@ -177,14 +180,15 @@ magia sigue ocurriendo en los niveles.
 
 ### Cinemáticas y animaciones
 
-Además de los capítulos, tres cinemáticas cortas avanzan solas (un clic las
-adelanta y **Saltar cinemática** las omite):
+Además de los capítulos, tres cinemáticas cortas esperan **Continuar**.
+**A tu ritmo** permite activar el avance automático; **Saltar cinemática**
+está disponible al repetir una visita terminada:
 
 | Cinemática | Momento | Qué muestra |
 |---|---|---|
-| Prólogo · La noche del huracán | Entre la introducción y la exploración de la orilla | El huracán con lluvia, viento y relámpagos; las páginas del libro caen como estrellas; Kalin despierta dormido en la orilla |
+| Prólogo · La noche del huracán | Entre la introducción y la exploración de la orilla | Kalin protege su libro; la tormenta dispersa las páginas; al amanecer sigue las huellas hasta la aldea |
 | Intermedio · La Casa Maya vacía | Entre el Capítulo 5 y el Mundo 2 | Kalin y sus amigos caminan al atardecer hasta la Casa Maya, la encuentran sin muebles y Kalin abre su libro |
-| Epílogo · Regreso a casa | Entre el Capítulo 9 y el menú | Kalin cruza el portal, las páginas vuelven al libro y despierta en su cuarto |
+| Epílogo · Regreso a casa | Entre el Capítulo 9 y el menú | Kalin vacila al despedirse, cruza el portal y reconoce en su cuarto el recuerdo que eligió en la aldea |
 
 Los capítulos también usan estas animaciones: fondos nuevos con fundido
 (noche del huracán, Casa Maya por dentro, atardecer en la aldea, milpa y portal

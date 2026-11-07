@@ -23,9 +23,9 @@ visible = false
 [node name="Panel" type="Panel" parent="Shade"]
 layout_mode = 0
 offset_left = 360.0
-offset_top = 45.0
+offset_top = 20.0
 offset_right = 920.0
-offset_bottom = 645.0
+offset_bottom = 700.0
 theme = ExtResource("2_cnq3x")
 theme_type_variation = &"KalinCreamPanel"
 
@@ -91,20 +91,28 @@ offset_bottom = 446.0
 theme_override_font_sizes/font_size = 20
 text = "Mostrar el texto completo"
 
+[node name="ManualCinematics" type="CheckButton" parent="Shade/Panel"]
+offset_left = 30.0
+offset_top = 454.0
+offset_right = 530.0
+offset_bottom = 504.0
+theme_override_font_sizes/font_size = 20
+text = "Avanzar cinemáticas al pulsar"
+
 [node name="ComfortHint" type="Label" parent="Shade/Panel"]
 offset_left = 30.0
-offset_top = 458.0
+offset_top = 516.0
 offset_right = 530.0
-offset_bottom = 490.0
+offset_bottom = 548.0
 theme_override_colors/font_color = Color(0.35, 0.25, 0.13, 1)
 theme_override_font_sizes/font_size = 16
 text = "Puedes cambiar estas opciones cuando quieras."
 
 [node name="VolumeControls" parent="Shade/Panel" instance=ExtResource("volume_controls")]
 offset_left = 30.0
-offset_top = 504.0
+offset_top = 560.0
 offset_right = 530.0
-offset_bottom = 578.0
+offset_bottom = 634.0
 
 [node name="ScreenLayout" parent="." instance=ExtResource("responsive")]
 profile = ExtResource("layout_profile")

@@ -7,7 +7,7 @@
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "¡La casa tiene muebles otra vez!"
+text = "La casa volvió a llenarse de vida. Los vecinos ya tenían dónde descansar y reunirse."
 background = ExtResource("4_bg_casa")
 actors = Array[String](["Miis", "Kaax", "Peek'", "Áak"])
 effects = 16
@@ -17,9 +17,12 @@ visual_solved = true
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Las palabras están volviendo!"
+text = "Extraño mi cuarto. Aquí también me están haciendo un lugar... y las palabras vuelven al libro."
 actors = Array[String](["Miis", "Kaax", "Peek'", "Áak"])
 celebrate_page = true
+kalin_motion = 7
+page_motion = 2
+page_word = "mayak"
 
 
 
@@ -27,7 +30,7 @@ celebrate_page = true
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
 speaker = "Áak"
-text = "¡Mi mesa es demasiado pequeña!"
+text = "Ven, siéntate conmigo. Mi mesa es pequeña; quiero que también haya sitio para nuestros amigos."
 actors = Array[String](["Peek'", "Áak"])
 kind = 4
 visual_scene = "tamano"
@@ -35,14 +38,14 @@ visual_scene = "tamano"
 [sub_resource type="Resource" id="Beat_7"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Podemos hacerla grande!"
+text = "Entonces hagamos sitio. ¿Qué palabra necesita la mesa para crecer?"
 actors = Array[String](["Peek'", "Áak"])
 
 [sub_resource type="Resource" id="Beat_8"]
 script = ExtResource("2_beat")
 kind = 3
 speaker = "Áak"
-text = "Grande se dice nojoch. ¿Lo encuentras?"
+text = "Una mesa grande: nojoch. Busquemos esa palabra en tu libro."
 actors = Array[String](["Peek'", "Áak"])
 target_word = "nojoch"
 options = Array[String](["mejen", "nojoch", "ki'", "Jats'uts"])
@@ -52,21 +55,21 @@ reveal_translation = "Mesa grande."
 [sub_resource type="Resource" id="Beat_9"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "¡Ahora sí! mayak · nojoch."
+text = "La mesa creció. Áak acercó otro plato: ahora había sitio para compartir. mayak · nojoch."
 actors = Array[String](["Áak", "K'éek'en", "Kéej", "Miis"])
 visual_scene = "tamano"
 visual_solved = true
 
 [sub_resource type="Resource" id="Beat_10"]
 script = ExtResource("2_beat")
-speaker = "K'éek'en"
-text = "¡Ayudemos a los demás!"
+speaker = "Miis"
+text = "Me gusta la calma, pero hoy abriré mi rincón. También hay un sitio para ti, Kalin."
 actors = Array[String](["Áak", "K'éek'en", "Kéej", "Miis"])
 
 [sub_resource type="Resource" id="Beat_11"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "El taller nos espera."
+text = "Cada vecino necesita algo distinto. Juntos prepararán un lugar para compartir."
 actors = Array[String](["Áak", "K'éek'en", "Kéej", "Miis"])
 effects = 16
 title = "Mundo 3"

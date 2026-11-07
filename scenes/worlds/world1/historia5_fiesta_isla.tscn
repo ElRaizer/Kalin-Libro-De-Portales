@@ -7,7 +7,7 @@
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Todos los animales se reunieron en la aldea para celebrar a Kalin."
+text = "Los caminos volvieron a unir la aldea. Los vecinos se reunieron para reconocerse y celebrar."
 background = ExtResource("3_bg_isla")
 actors = Array[String](["Peek'", "Kéej", "Báalam", "Kay"])
 effects = 16
@@ -16,8 +16,8 @@ effects = 16
 script = ExtResource("2_beat")
 kind = 2
 speaker = "Peek'"
-text = "¡Juego de la fiesta! ¿Quién es Kéej?"
-question_template = "¡Juego de la fiesta! ¿Quién es {animal}?"
+text = "¡Mira quién llegó del bosque! ¿Quién es Kéej?"
+question_template = "¡Mira quién llegó del bosque! ¿Quién es {animal}?"
 actors = Array[String](["Peek'", "Kéej", "Báalam", "Kay"])
 target_word = "Kéej"
 effects = 16
@@ -45,16 +45,18 @@ effects = 16
 [sub_resource type="Resource" id="Beat_5"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Mi libro recuperó todas las páginas de los animales! Gracias, amigos."
+text = "Las páginas de los animales vuelven a tener palabras. ¡Ya conozco a todos nuestros amigos!"
 kalin_pose = 1
 actors = Array[String](["Kaax", "Ma'ax", "Kuuts", "Áak"])
 celebrate_page = true
+page_motion = 2
+page_word = "Kay"
 effects = 16
 
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
 speaker = "Peek'"
-text = "¡Nuestras casas están vacías!"
+text = "Ya podemos visitarnos, pero el huracán dejó las casas vacías. Falta un sitio para reunirnos."
 actors = Array[String](["Peek'", "Miis", "Kaax"])
 mood = 2
 kind = 4
@@ -63,11 +65,11 @@ visual_scene = "casa"
 [sub_resource type="Resource" id="Beat_7"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Crearemos lo que necesitan!"
+text = "Ustedes me enseñan los nombres; yo probaré a crear lo que nos falta."
 actors = Array[String](["Peek'", "Miis", "Kaax"])
 mood = 2
 
 [node name="Historia5" instance=ExtResource("1_base")]
-chapter_title = "Mundo 1 · Capítulo 5 — La fiesta de la isla"
+chapter_title = "Mundo 1 · Capítulo 5 — El reencuentro de la isla"
 next_scene_key = "world1_explore2"
 beats = Array[ExtResource("2_beat")]([SubResource("Beat_1"), SubResource("Beat_2"), SubResource("Beat_3"), SubResource("Beat_4"), SubResource("Beat_5"), SubResource("Beat_6"), SubResource("Beat_7")])

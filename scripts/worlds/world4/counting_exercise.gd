@@ -1,8 +1,8 @@
 @tool
 ## Mundo 4, nivel 2 — Las piedras que cuentan.
-## En el tianguis, los animales piden números sorteados del 1 al 50 y Kalin los
-## escribe como los antiguos mayas: granos de cacao (1), varitas (5) y la concha
-## del cero, en dos pisos (unidades abajo, veintenas arriba). Las reglas viven
+## En el tianguis, Kalin registra semillas para compartir con números del 1 al 50.
+## Las piezas representan puntos, barras y el cero en dos pisos (unidades abajo,
+## veintenas arriba). Las reglas viven
 ## en CountingSession; este controlador sólo presenta y conecta la entrada.
 extends Node2D
 
@@ -23,7 +23,9 @@ var _navigating: bool = false
 @onready var animal_sprite: TextureRect = $UI/RequestPanel/Content/AnimalSprite
 @onready var animal_label: Label = $UI/RequestPanel/Content/AnimalLabel
 @onready var target_label: Label = $UI/RequestPanel/Content/TargetNumber
+@onready var request_label: Label = $UI/RequestPanel/Content/AskLabel
 @onready var hint_label: Label = $UI/RequestPanel/Content/HintLabel
+@onready var provision: CountingProvision = $UI/StagePanel/Provision
 @onready var upper_floor: Button = $UI/StagePanel/Tablet/UpperFloor
 @onready var lower_floor: Button = $UI/StagePanel/Tablet/LowerFloor
 @onready var upper_numeral: NumeralView = $UI/StagePanel/Tablet/UpperFloor/Numeral
@@ -82,9 +84,14 @@ func _show_round() -> void:
 		return
 	var target: int = current_target()
 	var requester: String = _session.requester(content)
-	round_label.text = "Número %d de %d" % [_session.round_index + 1, content.round_count]
+	round_label.text = "Reparto %d de %d" % [_session.round_index + 1, content.round_count]
 	animal_label.text = requester
 	animal_sprite.texture = GameManager.get_visual_texture(requester)
+	request_label.text = content.request_text
+	provision.show_quantity(0, false)
+	provision.hide()
+	$UI/StagePanel/ProvisionCaption.hide()
+	$UI/StagePanel/Legend.show()
 	target_label.text = str(target)
 	hint_label.text = (
 		_breakdown(target) if _session.is_guided(content) else "Escríbelo con piezas mayas."
@@ -256,7 +263,18 @@ func _render_success(animate: bool) -> void:
 	_session.waiting = true
 	guide.stop()
 	var target: int = current_target()
-	_set_feedback("✓ ¡Así escribían los mayas el %d!" % target, COLOR_SUCCESS)
+	_set_feedback(
+		(
+			"✓ Una semilla lista para compartir. ¡Gracias, Kalin!"
+			if target == 1
+			else "✓ %d semillas listas para compartir. ¡Gracias, Kalin!" % target
+		),
+		COLOR_SUCCESS
+	)
+	$UI/StagePanel/Legend.hide()
+	provision.show()
+	provision.show_quantity(target, animate)
+	$UI/StagePanel/ProvisionCaption.show()
 	_set_pieces_enabled(false)
 	_refresh_tablet()
 	action_button.text = "Continuar →"
@@ -279,8 +297,11 @@ func _finish_level() -> void:
 	action_button.disabled = true
 	GameManager.complete_level(4, 2)
 	completion.show_completion(
-		"¡Ya cuentas como los mayas!",
-		"Escribiste números con granos, varitas y la concha del cero.",
+		"¡El reparto está listo!",
+		(
+			"Los vecinos trajeron semillas y tú anotaste las cantidades con numerales mayas."
+			+ " Ahora podemos compartirlas."
+		),
 		"Al portal →"
 	)
 	GameManager.checkpoint(self)

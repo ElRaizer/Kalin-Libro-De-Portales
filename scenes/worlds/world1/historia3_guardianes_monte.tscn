@@ -23,9 +23,11 @@ target_word = "Ma'ax"
 [sub_resource type="Resource" id="Beat_3"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Otra página recuperada! Mi libro ya se siente más pesado."
+text = "Otra página encontró su lugar. Ya sé quién vive al otro lado del bosque."
 actors = Array[String](["Kéej", "K'éek'en", "Ma'ax", "Peek'"])
 celebrate_page = true
+page_motion = 2
+page_word = "Ma'ax"
 
 [sub_resource type="Resource" id="Beat_4"]
 script = ExtResource("2_beat")

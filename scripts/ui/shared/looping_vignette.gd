@@ -31,6 +31,10 @@ var _mood: String = ""
 var _magic: float = 0.0
 var _external_shadow: bool = false
 var _authored: Dictionary = {}
+var _table_layout: VignetteLayout
+var _reveal_progress: float = 1.0
+var _reveal_tween: Tween
+@onready var _place_settings: Array[TextureRect] = [$PlaceSetting0, $PlaceSetting1]
 
 
 func _ready() -> void:
@@ -76,7 +80,18 @@ func show_situation(value: String, complete: bool = false) -> void:
 	prop.size = layout.solved_size if complete else layout.size
 	prop.visible = value != "portal" or portal_sprite_visible
 	_prop_home = prop.position
+	_table_layout = layout if value == "tamano" else null
 	_build_support("mayak" if value == "tamano" else "janal")
+	if _table_layout != null:
+		for setting: TextureRect in _place_settings:
+			setting.show()
+		if complete and not get_node("/root/AccessibilityManager").reduced_motion:
+			_reveal_progress = 0.0
+			_reveal_tween = create_tween()
+			_reveal_tween.tween_interval(0.25)
+			_reveal_tween.tween_method(set_reveal_progress, 0.0, 1.0, 1.0).set_trans(
+				Tween.TRANS_SINE
+			)
 	seek_cycle(0)
 
 
@@ -97,6 +112,10 @@ func show_reward(word: String, quality: String, animal_word: String) -> void:
 
 func _clear() -> void:
 	set_process(false)
+	if _reveal_tween:
+		_reveal_tween.kill()
+	_reveal_progress = 1.0
+	_table_layout = null
 	for child: Node in get_children():
 		if child is CanvasItem:
 			child.hide()
@@ -145,6 +164,14 @@ func seek_cycle(seconds: float) -> void:
 		return
 	_apply_cycle(elapsed / cycle_seconds)
 	queue_redraw()
+
+
+## La transformación sucede una vez; los gestos posteriores siguen su ciclo.
+func set_reveal_progress(value: float) -> void:
+	_reveal_progress = clampf(value, 0.0, 1.0)
+	if is_instance_valid(actor):
+		_apply_cycle(elapsed / cycle_seconds)
+		queue_redraw()
 
 
 func _apply_cycle(phase: float) -> void:
@@ -262,9 +289,35 @@ func _apply_cycle(phase: float) -> void:
 		_footprints[index].modulate.a = travel * 0.38 if situation == "camino" else 0.0
 	for control: Control in _authored:
 		control.modulate *= Color(_authored[control].modulate)
+	_apply_table_settings(attempt)
 	if kalin_mood != _mood:
 		_mood = kalin_mood
 		mood_changed.emit(_mood)
+
+
+func _apply_table_settings(attempt: float) -> void:
+	if _table_layout == null:
+		return
+	var progress: float = (
+		1.0 if get_node("/root/AccessibilityManager").reduced_motion else _reveal_progress
+	)
+	if solved:
+		prop.position = _table_layout.position.lerp(_table_layout.solved_position, progress)
+		prop.size = _table_layout.size.lerp(_table_layout.solved_size, progress)
+	var top: Vector2 = prop.position + Vector2(0, prop.size.y * 0.31)
+	_place_settings[0].position = top + Vector2(prop.size.x * 0.36 - 24, -15)
+	_place_settings[1].position = (
+		top
+		+ Vector2(
+			(
+				lerpf(_table_layout.size.x + 20, prop.size.x * 0.68 - 24, progress)
+				if solved
+				else prop.size.x + 20
+			),
+			-15 + (0.0 if solved else attempt * 8)
+		)
+	)
+	_place_settings[1].modulate.a = 1.0 if solved else 0.65
 
 
 static func _ease(value: float, start: float, end: float) -> float:

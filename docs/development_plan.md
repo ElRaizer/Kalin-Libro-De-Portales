@@ -1,5 +1,12 @@
 # Mejoras de experiencia y mantenimiento
 
+La revisión narrativa autorizada el 6 de noviembre de 2026 amplía el cierre de
+octubre: aclara las reglas del libro, desarrolla el arco de Kalin y la ayuda
+recíproca, contextualiza el tianguis y deriva recuerdos de entregas confirmadas.
+Conserva la campaña, el vocabulario y el formato de partida. La continuidad actual
+está en [Aventura](adventure.md#continuidad-narrativa-vigente); los apartados de
+octubre siguientes conservan el contexto de las decisiones anteriores.
+
 Especificación acordada el 27 de octubre de 2026. Este documento registra el
 alcance, orden, aceptación y trabajo pendiente; Arquitectura, Mantenimiento y la
 guía técnica siguen definiendo los contratos vigentes.

@@ -6,7 +6,7 @@
 
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
-text = "La aldea arma un tianguis para darle las gracias a Kalin."
+text = "Después de comer, los vecinos abrieron un tianguis. También tenían algo que compartir con Kalin."
 background = ExtResource("3_bg_tianguis")
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 mood = 1
@@ -16,33 +16,33 @@ subtitle = "Mundo 4 · Las piedras que cuentan"
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
 speaker = "Peek'"
-text = "¡Kalin, en el tianguis todos piden números!"
+text = "Trajimos semillas para compartir. Ayúdanos a contar las porciones que preparará cada vecino."
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 
 [sub_resource type="Resource" id="Beat_3"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¿Números? ¿Cómo los escribían los mayas?"
+text = "¡Así todos podrán llevarse una porción! ¿Cómo anotamos las cantidades?"
 kalin_pose = 1
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 
 [sub_resource type="Resource" id="Beat_4"]
 script = ExtResource("2_beat")
 speaker = "Áak"
-text = "Con granos de cacao y varitas. Un grano vale uno y una varita vale cinco."
+text = "Representaremos los puntos con granos y las barras con varitas. Un grano vale uno; una varita, cinco."
 actors = Array[String](["Áak"])
 
 [sub_resource type="Resource" id="Beat_5"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Y cuando junto veinte, suben al piso de arriba!"
+text = "¡Y cada grupo de veinte se cuenta en el piso de arriba!"
 actors = Array[String](["Áak", "Peek'"])
 effects = 16
 
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
 speaker = "Áak"
-text = "Si un piso queda vacío, ponemos una concha. La concha es el cero."
+text = "La concha representa el cero en un piso vacío. Contemos con calma para preparar cada porción."
 actors = Array[String](["Áak", "Peek'"])
 
 [node name="HistoriaTianguis" instance=ExtResource("1_base")]

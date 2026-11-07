@@ -1,5 +1,46 @@
 # Revisión de aventura, interacción y comodidad
 
+## Continuidad narrativa vigente
+
+El portal lleva a Kalin desde su cuarto hasta una isla durante un huracán. Sólo
+la tormenta dispersa las páginas y apaga sus palabras; también daña los caminos y
+los hogares. Kalin conserva la cubierta y recoge una primera página en la orilla.
+Las demás se reúnen y recuperan sus palabras al comprenderlas y ayudar a los vecinos.
+Su magia básica puede apartar una palmera, pero crear objetos y darles cualidades
+requiere las palabras del libro. Son reglas de esta ficción, no afirmaciones sobre
+las prácticas culturales o la lengua maya.
+
+Kalin primero busca volver a casa, después extraña su cuarto mientras descubre un
+lugar entre sus amigos y al final vacila antes de despedirse. Peek' comparte el
+cuidado de los caminos; Miis abre su rincón a las visitas; Kaax organiza y acepta
+ayuda; Áak acompaña con calma. Los habitantes aportan conocimiento, trabajo y
+semillas para compartir: el regreso se consigue con su ayuda recíproca.
+
+El reencuentro tras reparar los caminos, la preparación de un lugar común, la comida
+y el tianguis cumplen funciones sucesivas. Contar registra las semillas del reparto;
+al confirmar una cantidad, una bandeja muestra el resultado. No cambia los números,
+la tablilla ni la evidencia educativa. Reanudar muestra la cantidad confirmada sin
+volver a animar su llegada ni registrar otro reparto.
+
+El portal conserva la recuperación evaluada de vocabulario. Después, la despedida
+permite elegir qué expresión conocida comunicar, con traducción visible, sin una
+segunda respuesta obligatoria. Cuenta como práctica apoyada. Cada amigo sólo evoca
+una entrega concreta si su destinatario y objeto constan en las misiones guardadas;
+si no hay una entrega suya, utiliza el texto narrativo de autor. El recuerdo personal
+elegido vuelve a aparecer al llegar al cuarto. Kalin regresa por el portal y reconoce
+algo vivido; el cierre no presenta la aventura como un sueño.
+
+Las cinemáticas esperan **Continuar** de manera predeterminada. **A tu ritmo**
+permite activar su avance automático; cambiar esa preferencia conserva el momento
+actual. La preferencia vive con los ajustes de comodidad, fuera de la partida.
+Las nuevas poses de proteger el libro, pensar en casa y despedirse, y la página
+protagonista que pierde o recupera su luz, mantienen el estilo de recortes.
+
+Se conserva el orden de escenas, los índices de momentos y el formato de partida 9.
+Los apartados fechados siguientes describen ampliaciones anteriores; este apartado
+define la continuidad actual. La revisión con hablantes y las sesiones con niños
+siguen pendientes: las pruebas automáticas no certifican su comprensión ni su recepción.
+
 ## Ampliación del 24 de octubre de 2026
 
 El objetivo es aumentar las decisiones y las consecuencias dentro del mundo,

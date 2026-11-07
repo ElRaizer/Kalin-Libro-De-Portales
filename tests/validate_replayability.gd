@@ -100,6 +100,12 @@ func _boards() -> void:
 			var scene: Node = await _scene(key, {"layout_seed": 541, "board_variant": layout.id})
 			var board: GridBoard = scene.grid_board
 			_check(scene._board_variant == layout.id, "La escena aplica la variante elegida")
+			var routes: Dictionary = GridPathFixture.routes(board)
+			_check(
+				routes.size() == 3, "El recorrido encuentra el testigo conjunto: " + str(layout.id)
+			)
+			if routes.size() != 3:
+				continue
 			var geometry: Array = [board.obstacles]
 			for word: GridWordData in board.words:
 				geometry.append([word.start_cell, word.destination_cell])
@@ -148,7 +154,7 @@ func _boards() -> void:
 				)
 				# Recorrer el controlador real: valida que las rutas sirvan en el juego.
 				board._handle_press(route[0])
-				for cell: Vector2i in route.slice(1):
+				for cell: Vector2i in routes[index]:
 					board._try_cell(cell)
 				_check(
 					index in board.connected,

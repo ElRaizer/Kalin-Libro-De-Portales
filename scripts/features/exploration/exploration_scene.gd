@@ -532,7 +532,7 @@ func _close_spot(spot: ExplorationSpot) -> void:
 		return
 	discovered += 1
 	if spot.name == &"Pagina":
-		_show_notice("¡Encontraste tu libro! Las palabras volverán con tus hechizos.")
+		_show_notice("¡Una página recuperada! Sus palabras volverán al comprenderlas y ayudar.")
 	if spot.teaches_word():
 		words_found += 1
 		AudioManager.play_sfx("palabra_anotada")

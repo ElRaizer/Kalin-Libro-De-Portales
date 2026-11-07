@@ -19,6 +19,8 @@
 [ext_resource type="Texture2D" path="res://Arte/numeros/pieza_barra.svg" id="barra"]
 [ext_resource type="Texture2D" path="res://Arte/numeros/pieza_concha.svg" id="concha"]
 [ext_resource type="Texture2D" path="res://Arte/numeros/tablilla.svg" id="tablilla"]
+[ext_resource type="Script" path="res://scripts/features/counting/counting_provision.gd" id="provision"]
+[ext_resource type="Texture2D" path="res://Arte/numeros/tianguis_seed_tray.svg" id="seed_tray"]
 
 [sub_resource type="StyleBoxFlat" id="floor_normal"]
 bg_color = Color(1, 1, 1, 0)
@@ -126,8 +128,9 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.28, 0.2, 0.12, 1)
 theme_override_font_sizes/font_size = 18
-text = "pide este número:"
+text = "Semillas para compartir:"
 horizontal_alignment = 1
+autowrap_mode = 3
 
 [node name="TargetNumber" type="Label" parent="UI/RequestPanel/Content"]
 custom_minimum_size = Vector2(0, 96)
@@ -164,7 +167,7 @@ offset_right = 844.0
 offset_bottom = 46.0
 theme_override_colors/font_color = Color(0.23, 0.12, 0.06, 1)
 theme_override_font_sizes/font_size = 18
-text = "Toca un piso de la tablilla y pon piezas, como en los códices mayas."
+text = "Anota el reparto: granos para puntos, varitas para barras y concha para cero."
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
@@ -220,6 +223,31 @@ offset_bottom = 330.0
 texture = ExtResource("tablilla")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="Provision" type="Control" parent="UI/StagePanel"]
+visible = false
+layout_mode = 0
+offset_left = 666.0
+offset_top = 64.0
+offset_right = 842.0
+offset_bottom = 280.0
+mouse_filter = 2
+script = ExtResource("provision")
+tray_texture = ExtResource("seed_tray")
+seed_texture = ExtResource("cacao")
+
+[node name="ProvisionCaption" type="Label" parent="UI/StagePanel"]
+visible = false
+layout_mode = 0
+offset_left = 656.0
+offset_top = 282.0
+offset_right = 852.0
+offset_bottom = 328.0
+theme_override_colors/font_color = Color(0.13, 0.42, 0.4, 1)
+text = "Para compartir"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
 
 [node name="UpperFloor" type="Button" parent="UI/StagePanel/Tablet" groups=["sin_sonido_clic"]]
 layout_mode = 0

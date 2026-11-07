@@ -7,15 +7,16 @@
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Mi libro perdió sus palabras!"
+text = "Quiero volver a casa. Abro el libro... pero el portal no aparece."
 background = ExtResource("3_bg_isla")
 kalin_pose = 1
+kalin_motion = 7
 actors = Array[String]([])
 
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
-speaker = "Narrador"
-text = "¡Hay amigos en la isla!"
+speaker = "Miis"
+text = "Tu libro une lugares y personas. Buscaremos sus páginas contigo."
 kalin_pose = 1
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 
@@ -29,7 +30,7 @@ actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 [sub_resource type="Resource" id="Beat_4"]
 script = ExtResource("2_beat")
 speaker = "Peek'"
-text = "¡El camino está roto!"
+text = "La tormenta rompió nuestro camino. Yo conozco el sendero; podemos repararlo juntos."
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 kind = 4
 visual_scene = "camino"
@@ -37,7 +38,7 @@ visual_scene = "camino"
 [sub_resource type="Resource" id="Beat_5"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Vamos a repararlo!"
+text = "¡Vamos! Al ayudar buscaremos las páginas. Comprender sus palabras puede devolverles la luz."
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 
 [sub_resource type="Resource" id="Beat_6"]
@@ -52,7 +53,7 @@ target_word = "Miis"
 [sub_resource type="Resource" id="Beat_7"]
 script = ExtResource("2_beat")
 speaker = "Kaax"
-text = "Lleva a Peek', Miis y Kaax a sus casas."
+text = "Yo avisaré a los vecinos. Ayuda a Peek', Miis y Kaax a llegar a sus casas."
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 
 [node name="Historia1" instance=ExtResource("1_base")]

@@ -290,9 +290,11 @@ func _validate_story_choice_runtime() -> void:
 	await process_frame
 
 
-## La primera cinemática activa lluvia y páginas, muestra su cartel, avanza sola,
+## La primera cinemática activa lluvia y páginas, muestra su cartel, permite avance automático,
 ## acuesta a Kalin en la orilla y lo levanta al despertar.
 func _validate_cinematic_runtime() -> void:
+	var preferences: Node = root.get_node("AccessibilityManager")
+	preferences.manual_cinematics = false
 	var packed: PackedScene = (
 		load("res://scenes/worlds/world1/cine1_noche_huracan.tscn") as PackedScene
 	)
@@ -306,8 +308,11 @@ func _validate_cinematic_runtime() -> void:
 	var pages: CPUParticles2D = cine.get_node("Effects/Paginas") as CPUParticles2D
 	if not rain.emitting or pages.emitting:
 		failures.append("El primer momento del huracán debe tener lluvia y no páginas")
-	if cine.kalin.visible:
-		failures.append("Kalin no debe verse durante la noche del huracán")
+	if (
+		not cine.kalin.visible
+		or cine.current_beat().kalin_motion != StoryBeat.KalinMotion.PROTECT_BOOK
+	):
+		failures.append("Kalin debe proteger su libro al llegar durante el huracán")
 	if cine.title_label.text != "Prólogo" or cine.subtitle_label.text != "La noche del huracán":
 		failures.append("La cinemática no muestra su cartel de título")
 	if cine.auto_timer.is_stopped():
@@ -330,6 +335,7 @@ func _validate_cinematic_runtime() -> void:
 		failures.append("Kalin no se levantó al despertar")
 	cine.queue_free()
 	await process_frame
+	preferences.manual_cinematics = true
 
 	# Cinemática final: Kalin cruza el portal y desaparece.
 	packed = load("res://scenes/worlds/world5/cine3_regreso_a_casa.tscn") as PackedScene

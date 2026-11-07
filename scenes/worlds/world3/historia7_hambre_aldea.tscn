@@ -8,10 +8,12 @@
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Los objetos ya están a su medida!"
+text = "¡Ya hay sitio para compartir! Me alegra haberme quedado a preparar la fiesta con ustedes."
 background = ExtResource("4_bg_atardecer")
 actors = Array[String](["Peek'", "Miis", "Áak", "K'éek'en"])
 celebrate_page = true
+page_motion = 2
+page_word = "nojoch"
 effects = 16
 visual_scene = "tamano"
 visual_solved = true
@@ -23,7 +25,7 @@ visual_solved = true
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "¡Tanto trabajar nos dio hambre!"
+text = "Kaax dejó de correr de un lado a otro: necesitaba ayuda para compartir la comida."
 actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
 screen_shake = false
 kind = 4
@@ -32,14 +34,14 @@ visual_scene = "hambre"
 [sub_resource type="Resource" id="Beat_7"]
 script = ExtResource("2_beat")
 speaker = "K'éek'en"
-text = "In k'a'at significa: yo quiero."
+text = "Digamos qué necesita cada uno. In k'a'at significa: yo quiero."
 actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
 
 [sub_resource type="Resource" id="Beat_8"]
 script = ExtResource("2_beat")
 kind = 3
 speaker = "Peek'"
-text = "Quiero agua: In k'a'at ja'. ¿Encuentras ja'?"
+text = "Después de revisar los senderos tengo sed. In k'a'at ja'. Busquemos agua: ja'."
 actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
 target_word = "ja'"
 options = Array[String](["janal", "ja'", "ja'as", "K'úum"])
@@ -47,19 +49,19 @@ options = Array[String](["janal", "ja'", "ja'as", "K'úum"])
 [sub_resource type="Resource" id="Beat_9"]
 script = ExtResource("2_beat")
 speaker = "Kéej"
-text = "¡Yo quiero plátano! Ja'as."
+text = "¡Yo quiero plátano! Ja'as. Después llevaré una canasta para los demás."
 actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
 
 [sub_resource type="Resource" id="Beat_10"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Vamos a servirles!"
+text = "¡Repartamos juntos! Yo escucharé qué quiere cada amigo."
 actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
 
 [sub_resource type="Resource" id="Beat_11"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "¡A buscar comida!"
+text = "Kaax preparó los platos y los amigos fueron juntos a buscar lo que faltaba para la comida."
 background = ExtResource("5_bg_milpa")
 actors = Array[String](["K'éek'en", "Kéej", "Peek'", "Miis"])
 kalin_motion = 1

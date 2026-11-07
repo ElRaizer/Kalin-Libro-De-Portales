@@ -145,6 +145,17 @@ script propio. En el Inspector se configuran:
 
 Cada `StoryBeat` define:
 
+Los gestos `PROTECT_BOOK`, `THINK_HOME` y `FAREWELL` de `kalin_motion` mantienen
+recortes SVG editables. `gesture_texture` permite personalizar su dibujo desde el
+Inspector. `page_motion` (`NONE`, `SCATTER`, `RECOVER`) configura la página
+protagonista; `page_word` debe pertenecer al contenido ya vivido en ese momento.
+La transformación de la mesa muestra el espacio que necesitan dos platos.
+
+Las cinemáticas esperan al lector de forma predeterminada. **A tu ritmo → Avanzar
+cinemáticas al pulsar** conserva esa preferencia fuera del guardado. Desactivarla
+habilita `auto_advance`, que espera la escritura del texto y el intervalo de autor.
+Cambiar la preferencia durante la pausa no salta el momento actual.
+
 La revisión visual incorpora también `kind = EXPLORAR`, `visual_scene` (vacío,
 `camino`, `casa`, `tamano`, `hambre` o `portal`) y `visual_solved`. En EXPLORAR,
 la escena representa el problema automáticamente en un bucle continuo; Continuar
@@ -165,7 +176,7 @@ compartidos de presentación y ayuda.
 | `target_word` | Respuesta correcta en `ADIVINAR` o `ELEGIR`. En `ADIVINAR` no debe coincidir con `speaker`, porque su nombre en español delataría la respuesta. |
 | `options` | Palabras mayas que se ofrecen en `ELEGIR`; deben incluir `target_word`. |
 | `reveal_phrase`, `reveal_translation` | Frase completa que se muestra al acertar en `ELEGIR`. Es obligatoria para los adjetivos, cuya estructura en `VOCABULARY` usa el marcador `[sust.]`. |
-| `celebrate_page` | Muestra la animación "¡Página recuperada!", lanza páginas y chispas y hace saltar a Kalin. |
+| `celebrate_page` | Muestra "¡Página recuperada!" y la página protagonista. Kalin salta si no se configuró otro gesto. |
 
 Las propiedades de la categoría **Animación** convierten un capítulo en una
 cinemática. Todas son opcionales y, salvo `mood`, valen solo para su momento:
@@ -174,7 +185,7 @@ cinemática. Todas son opcionales y, salvo `mood`, valen solo para su momento:
 |---|---|
 | `mood` | Color ambiental: `DIA`, `ATARDECER`, `NOCHE`, `TORMENTA` o `AMANECER`. Cambia con una transición suave; `SIN_CAMBIO` conserva el anterior. Los colores están en `StoryScene.AMBIENT_COLORS`. |
 | `effects` | Casillas `Hojas`, `Lluvia`, `Muebles`, `Páginas` y `Chispas`. Se pueden combinar. Son nodos `CPUParticles2D` dentro de `Effects` en `story_scene.tscn`, así que su cantidad, velocidad y textura se ajustan en el Inspector. |
-| `kalin_motion` | `QUIETO`, `ENTRA` (camina desde la izquierda), `SALTA`, `TIEMBLA`, `DORMIDO` (acostado; en el siguiente momento se levanta) o `CRUZA` (camina hacia el portal de `bg_portal_isla.svg` y desaparece). |
+| `kalin_motion` | `QUIETO`, `ENTRA`, `SALTA`, `TIEMBLA`, `DORMIDO`, `CRUZA`, `PROTECT_BOOK`, `THINK_HOME` o `FAREWELL`. Los tres últimos usan los recortes de gesto descritos arriba. |
 | `screen_shake` | Sacude la pantalla, como un trueno. |
 | `flash` | Destello blanco, como un relámpago o la luz del portal. |
 | `title`, `subtitle` | Cartel central, por ejemplo "Mundo 3" y "Hechizos de Adjetivos". |
@@ -393,6 +404,12 @@ Los encargos tempranos heredan `mision_encargos_aldea.tscn`: se editan seis recu
 por escritura y activan completar y bloques después de los errores. Se reutilizan las combinaciones ya
 registradas en el vocabulario. La despedida se configura con tres `ExerciseEntry`
 en `despedida_los_recuerdos.tscn`.
+
+Sus opciones conocidas muestran significado y permiten elegir qué expresar, sin
+otra respuesta obligatoria después del portal. Los recuerdos de cada amigo se
+derivan de las entregas confirmadas mediante `VillageMemory`; el texto `translation`
+del recurso es la alternativa cuando no hay una entrega suya. Evitar que esa
+alternativa afirme objetos, cualidades o destinatarios que pueden variar.
 
 Ejecutar `tools/validate.ps1` antes de integrar cambios. El detalle del recorrido,
 los contextos semánticos y el guardado vigente están en

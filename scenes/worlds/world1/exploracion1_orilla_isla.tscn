@@ -45,7 +45,7 @@ spot_texture = ExtResource("3_concha")
 [node name="Pagina" parent="Spots" index="1" unique_id=318250681 instance=ExtResource("2_spot")]
 position = Vector2(900, 618)
 prompt = "Recoger"
-lines = Array[String](["¡Una página de mi libro! La guardaré."])
+lines = Array[String](["¡Una página de mi libro! Está en blanco. La guardaré y buscaré sus palabras."])
 surprised = true
 reaction = 2
 spot_texture = ExtResource("4_pagina")
@@ -54,7 +54,7 @@ sprite_offset = Vector2(0, -50)
 [node name="Tronco" parent="Spots" index="2" unique_id=247531688 instance=ExtResource("2_spot")]
 position = Vector2(1500, 636)
 prompt = "Mover con magia"
-lines = Array[String](["¡La palmera tapa el camino! La moveré con magia."])
+lines = Array[String](["Aún puedo mover cosas con magia. Para crear algo nuevo necesito las palabras del libro."])
 reach_radius = 190.0
 blocks_path = true
 reaction = 1
@@ -83,7 +83,7 @@ glow_extents = Vector2(110, 20)
 [node name="Aldea" parent="Spots" index="5" unique_id=329002914 instance=ExtResource("2_spot")]
 position = Vector2(3360, 579)
 prompt = "Saludar"
-lines = Array[String](["¡Hola! ¿Me ayudan a recuperar mis palabras?"])
+lines = Array[String](["¡Hola! Mi portal se cerró con la tormenta. ¿Pueden ayudarme a volver a casa?"])
 surprised = true
 reach_radius = 170.0
 is_goal = true

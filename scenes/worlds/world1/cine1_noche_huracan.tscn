@@ -8,9 +8,9 @@
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Un huracán cruzó la isla."
+text = "Kalin salió del portal en medio de un huracán. Abrazó su libro para protegerlo."
 background = ExtResource("3_bg_huracan")
-kalin_pose = 2
+kalin_motion = 6
 effects = 3
 screen_shake = true
 flash = true
@@ -21,8 +21,9 @@ auto_advance = 1.8
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Las páginas volaron con el viento."
-kalin_pose = 2
+text = "Una ráfaga arrancó las páginas. El viento las dispersó y sus palabras dejaron de brillar."
+kalin_motion = 6
+page_motion = 1
 effects = 11
 flash = true
 auto_advance = 1.8
@@ -30,8 +31,8 @@ auto_advance = 1.8
 [sub_resource type="Resource" id="Beat_3"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Los caminos desaparecieron."
-kalin_pose = 2
+text = "La tormenta también rompió los caminos de la isla. El portal se cerró detrás de Kalin."
+kalin_motion = 6
 effects = 3
 screen_shake = true
 auto_advance = 1.8
@@ -39,7 +40,7 @@ auto_advance = 1.8
 [sub_resource type="Resource" id="Beat_4"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Al amanecer, Kalin llegó a la orilla."
+text = "Al amanecer, Kalin descansó en la orilla con la cubierta del libro entre las manos."
 background = ExtResource("4_bg_isla")
 mood = 5
 effects = 16
@@ -49,7 +50,7 @@ auto_advance = 2.2
 [sub_resource type="Resource" id="Beat_5"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "¡Sigue las huellas!"
+text = "Unas huellas llegaban hasta las casas. Quizá allí alguien pudiera ayudarlo a volver."
 kalin_pose = 1
 mood = 1
 effects = 16

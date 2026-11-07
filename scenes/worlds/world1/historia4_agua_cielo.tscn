@@ -24,9 +24,11 @@ target_word = "Báalam"
 [sub_resource type="Resource" id="Beat_3"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Una página más! Ya casi tengo a todos los animales de la isla."
+text = "¡Una página más! Cada nombre guarda un encuentro de nuestro viaje."
 actors = Array[String](["Báalam", "Kuuts", "T'u'ul", "Peek'"])
 celebrate_page = true
+page_motion = 2
+page_word = "Báalam"
 
 [sub_resource type="Resource" id="Beat_4"]
 script = ExtResource("2_beat")
@@ -46,7 +48,7 @@ actors = Array[String](["Kay", "Ch'íich'", "Áak", "Peek'"])
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
 speaker = "Áak"
-text = "Las olas se llevaron las señales de nuestras casas. Obsérvalas bien, porque después solo verás signos de pregunta."
+text = "Las olas borraron las señales. Mira dónde vive cada amigo; luego tendremos que recordar sus casas."
 actors = Array[String](["Kay", "Ch'íich'", "Áak", "Peek'"])
 
 [node name="Historia4" instance=ExtResource("1_base")]

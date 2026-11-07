@@ -91,7 +91,7 @@ glow_extents = Vector2(70, 60)
 [node name="Canasta" parent="Spots" index="3" instance=ExtResource("2_r")]
 position = Vector2(2250, 630)
 prompt = "Recoger"
-lines = Array[String](["Una canasta llena de fruta para Kaax."])
+lines = Array[String](["Una canasta llena de fruta. La llevaremos para compartir."])
 vocabulary_word = "ich"
 reaction = 2
 spot_texture = ExtResource("11_r")
@@ -99,7 +99,7 @@ sprite_offset = Vector2(0, -57)
 
 [node name="Calabaza" parent="Spots" index="4" instance=ExtResource("2_r")]
 position = Vector2(2800, 628)
-lines = Array[String](["¡Una calabaza grande para Áak!"])
+lines = Array[String](["¡Una calabaza! En la mesa común habrá sitio para lo que traiga cada amigo."])
 vocabulary_word = "K'úum"
 spot_texture = ExtResource("12_r")
 sprite_offset = Vector2(0, -67)

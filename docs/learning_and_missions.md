@@ -105,12 +105,19 @@ sobre ellas. El reinicio es explícito desde el menú, conforme a Mantenimiento.
 
 ## Recuerdo personal al volver
 
-Después de las tres cortesías, el niño elige un recuerdo de una visita completada.
+Después de los tres encuentros de despedida, el niño elige un recuerdo de una visita completada.
 Si no realizó esas visitas opcionales, puede recordar una cortesía que acaba de
 compartir. La elección cambia la imagen que se ve junto al portal y en el cuarto de
 Kalin. Puede cambiarla antes de confirmar el cruce; no hay opción incorrecta,
 puntos ni resultados de aprendizaje. El formato 9 conserva la imagen elegida al
 reanudar y rechaza el formato anterior sin sobrescribir la partida.
+
+La recuperación evaluada permanece en el portal. En la despedida se elige una
+expresión conocida con su significado visible: todas las opciones permiten
+continuar y se registran como práctica apoyada, sin errores ni recuerdo independiente.
+Al conversar, un amigo sólo menciona un objeto concreto si recibió esa entrega
+en las misiones guardadas. Reanudar conserva el diálogo abierto sin volver a
+acreditar la elección.
 
 
 ## Puntos y construcción

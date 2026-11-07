@@ -30,7 +30,7 @@ next_scene_key = "world5_level1"
 footstep_surface = "piedra"
 objective_text = "Sigue el Sak Beh hasta el portal →"
 intro_speaker = "Narrador"
-intro_lines = Array[String](["El libro brilla. ¡El portal está al final del Sak Beh!"])
+intro_lines = Array[String](["Peek' revisó el sendero y los amigos acompañan a Kalin. El libro ilumina el último tramo a casa."])
 
 [node name="Imagen" parent="Cielo" index="0"]
 texture = ExtResource("3_r")
@@ -101,7 +101,7 @@ glow_position = Vector2(0, -120)
 [node name="Portal" parent="Spots" index="5" instance=ExtResource("2_r")]
 position = Vector2(3500, 584)
 prompt = "Acercarse"
-lines = Array[String](["¡El portal! Sus runas están apagadas. ¡Vamos a encenderlas!"])
+lines = Array[String](["El portal ya tiene luz. Reuniremos las palabras de nuestro viaje para abrir el paso a casa."])
 surprised = true
 reach_radius = 200
 is_goal = true

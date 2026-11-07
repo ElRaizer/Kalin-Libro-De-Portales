@@ -9,6 +9,7 @@ var _memories: Array[Dictionary] = []
 var choice_index: int = -1
 var _seed: int = 1
 var _choices: Array[String] = []
+var _friend_memories: Array[String] = []
 @onready var choices_panel: Panel = $UI/FarewellChoices
 @onready var memory_choice: MemoryChoice = $UI/MemoryChoice
 
@@ -20,7 +21,9 @@ func _ready() -> void:
 	if collected.size() < 3:
 		memory.clear()
 	_seed = int(saved.get("layout_seed", randi_range(1, 2000000000)))
+	var visits: Array[Dictionary] = _mission_visits()
 	for index: int in range(3):
+		_friend_memories.append(_memory_line(gifts[index], visits))
 		var spot: ExplorationSpot = _friend(index)
 		spot.speaker = gifts[index].animal
 		spot.lines.assign([gifts[index].request])
@@ -69,7 +72,7 @@ func open_spot(spot: ExplorationSpot) -> void:
 		return
 	var index: int = _friend_index(spot)
 	if index >= 0 and index in collected:
-		spot.lines.assign([gifts[index].translation])
+		spot.lines.assign(_friend_lines(index))
 	super.open_spot(spot)
 
 
@@ -103,23 +106,23 @@ func _show_choices(index: int) -> void:
 	for cursor: int in range(order.size()):
 		_choices[cursor] = original[order[cursor]]
 		var button: Button = $UI/FarewellChoices/Options.get_child(cursor) as Button
-		button.text = _choices[cursor]
+		button.text = (
+			_choices[cursor]
+			+ " · "
+			+ str(VocabularyCatalog.entry(_choices[cursor]).get("spanish", ""))
+		)
 	choices_panel.show()
 	($UI/FarewellChoices/Options.get_child(0) as Button).grab_focus()
 	GameManager.checkpoint(self)
 
 
 func _choose(index: int) -> void:
-	if choice_index < 0 or not choices_panel.visible:
+	if choice_index < 0 or not choices_panel.visible or index not in range(_choices.size()):
 		return
 	var gift: ExerciseEntry = gifts[choice_index]
 	var phrase: String = _choices[index]
-	if phrase != gift.correct:
-		AudioManager.play_sfx("error_suave")
-		$UI/FarewellChoices/Feedback.text = (
-			"Esa expresión dice: " + str(VocabularyCatalog.entry(phrase).get("spanish", ""))
-		)
-		return
+	# La recuperación evaluada ya ocurrió en el portal. Aquí se elige qué expresar,
+	# con traducción visible y evidencia de práctica apoyada, sin otra respuesta obligatoria.
 	var completed: int = choice_index
 	GameManager.record_learning(
 		[phrase],
@@ -128,20 +131,16 @@ func _choose(index: int) -> void:
 		true
 	)
 	AudioManager.play_sfx("acierto")
-	AudioManager.play_sfx("pagina_recuperada")
+	AudioManager.play_sfx("pagina_pasar")
 	collected.append(completed)
 	_friend(completed).mark_examined()
 	_friend(completed).sprite.texture = GameManager.get_visual_expression(
 		gift.animal, "reaccion_feliz"
 	)
 	_close_choices()
-	magic.restart()
 	_update_counter()
-	_start_dialogue(
-		gift.animal,
-		[gift.translation, "Esta página guardará el recuerdo de nuestra amistad."],
-		false
-	)
+	_active_spot = _friend(completed)
+	_start_dialogue(gift.animal, _friend_lines(completed), false)
 	GameManager.checkpoint(self)
 
 
@@ -165,14 +164,45 @@ func _open_memory_choice() -> void:
 	_place_kalin($Spots/Salida.position.x - 360)
 	camera.offset.x = 280
 	camera.reset_smoothing()
-	var visits: Array[Dictionary] = []
-	for world: int in [2, 3, 4]:
-		visits.append(GameManager.saved_scene_state("world%d_mission1" % world))
-	_memories = VillageMemory.options(visits, gifts)
+	_memories = VillageMemory.options(_mission_visits(), gifts)
 	memory_choice.open_choice(_memories, memory)
 	$UI/ObjectivePanel.hide()
 	controls_label.hide()
 	prompt_button.hide()
+
+
+func _mission_visits() -> Array[Dictionary]:
+	var visits: Array[Dictionary] = []
+	for world: int in [2, 3, 4]:
+		visits.append(GameManager.saved_scene_state("world%d_mission1" % world))
+	return visits
+
+
+func _friend_lines(index: int) -> Array[String]:
+	return [
+		_friend_memories[index],
+		(
+			gifts[index].translation
+			if _friend_memories[index] != gifts[index].translation
+			else "Esta página guardará el recuerdo de nuestra amistad."
+		)
+	]
+
+
+func _memory_line(gift: ExerciseEntry, visits: Array[Dictionary]) -> String:
+	var shared: Dictionary = VillageMemory.for_animal(visits, gift.animal)
+	if shared.is_empty():
+		return gift.translation
+	var item_name: String = str(VocabularyCatalog.entry(shared.item).get("spanish", shared.item))
+	var quality_name: String = (
+		str(VocabularyCatalog.entry(shared.quality).get("spanish", shared.quality))
+		if not shared.quality.is_empty()
+		else ""
+	)
+	var description: String = (
+		item_name + (" · " + quality_name if not quality_name.is_empty() else "")
+	)
+	return "Recuerdo lo que preparaste para mí: %s. ¡Ahora es parte de nuestra aldea!" % description
 
 
 func _select_memory(value: Dictionary) -> void:

@@ -7,4 +7,4 @@ rectangles = {
 NodePath("UI/ActionButton"): Rect2(980, 632, 276, 72),
 NodePath("UI/MissionProgress"): Rect2(24, 632, 932, 72)
 }
-font_sizes = {NodePath("UI/FeedbackPanel/FeedbackLabel"): 24, NodePath("UI/RequestPanel/Content/HintLabel"): 22, NodePath("UI/StagePanel/StageHint"): 20}
+font_sizes = {NodePath("UI/FeedbackPanel/FeedbackLabel"): 24, NodePath("UI/RequestPanel/Content/HintLabel"): 22, NodePath("UI/StagePanel/StageHint"): 20, NodePath("UI/StagePanel/ProvisionCaption"): 22}

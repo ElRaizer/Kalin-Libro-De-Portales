@@ -13,6 +13,8 @@ class_name CountingSet
 @export_range(0, 20) var guided_rounds: int = 2
 ## Animales del vocabulario que piden los números (se sortean).
 @export var requesters: Array[String] = []
+## Motivo visible del reparto; no cambia el valor ni las reglas del numeral.
+@export var request_text: String = "Semillas para compartir:"
 
 
 func get_configuration_issues() -> PackedStringArray:

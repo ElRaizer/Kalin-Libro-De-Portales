@@ -210,6 +210,10 @@ Ver [mantenimiento y validación](maintenance.md) para los comandos.
   deterministas. `StoryInteraction` posee el progreso, la presentación y la entrada
   de conocer/adivinar/elegir; expone eventos y snapshots. `StoryScene` conserva los
   momentos, el texto y la navegación; la cinemática permanece en `StoryAnimator`.
+  `StoryBeat` configura gestos y página protagonista como presentación, sin añadir
+  progreso. `AccessibilityManager` conserva `manual_cinematics` con los ajustes de
+  comodidad. `StoryScene` detiene o programa su temporizador al cambiar la
+  preferencia, sin avanzar el momento.
 - `LearningAttempt` posee orientación, apoyo de contenido y evidencia por palabra;
   `LearningProgress` calcula los contadores. `GameSession` confirma resultados.
 - `SpellLaboratory` presenta práctica opcional de contenido conocido; conserva su
@@ -226,6 +230,18 @@ con las visitas realizadas; `MemoryChoice` presenta la preferencia y `MemoryMome
 representa la misma imagen al elegir y al regresar. `HomecomingMemory` escucha el
 evento público `beat_presented` sólo en la cinemática de regreso. Los formatos
 anteriores se rechazan y requieren reinicio explícito, sin conversión.
+
+`VillageMemory.delivered_moments()` valida destinatarios, combinaciones y marcadores
+de entrega antes de producir recuerdos; `for_animal()` consulta los vividos por un
+habitante. `PortalFarewell` los presenta con un texto de autor como alternativa
+cuando no hay una entrega confirmada para ese amigo. Elegir una expresión en esta
+despedida es práctica apoyada, sin respuesta obligatoria; no cambia la evaluación
+previa del portal ni añade campos al checkpoint.
+
+`CountingProvision` presenta las semillas de una cantidad confirmada del tianguis.
+Se reconstruye desde `CountingSession.waiting` y su objetivo; no posee contadores
+de entregas ni añade recompensas. Su transición pertenece al control y respeta la
+pausa y el movimiento reducido.
 
 La entrega coloca el objeto en su lugar funcional y registra el uso una sola vez.
 Restaurar repone sus datos e imagen. El acomodo libre pertenece al jardín; las

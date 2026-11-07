@@ -7,26 +7,27 @@
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Narrador"
-text = "Las páginas encontraron su lugar. El portal guardaba los caminos, los hogares y los recuerdos que Kalin compartió con sus amigos."
+text = "Las páginas reunidas iluminaron el portal. Los amigos acompañaron a Kalin hasta el último tramo."
 background = ExtResource("5_bg_portal_isla")
+kalin_motion = 8
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
-effects = 16
+effects = 0
 
 [sub_resource type="Resource" id="Beat_2"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "Cuando llegué, las páginas estaban en blanco. Ahora cada palabra me recuerda algo que hicimos juntos."
+text = "Quería volver a casa cuanto antes. Ahora que puedo irme... también me cuesta despedirme."
+kalin_motion = 8
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
-celebrate_page = true
-effects = 16
+effects = 0
 
 [sub_resource type="Resource" id="Beat_3"]
 script = ExtResource("2_beat")
-speaker = "Kalin"
-text = "También llegaron los amigos del monte y del agua. Kalin reconoció a cada uno y recordó los caminos que habían recuperado."
+speaker = "Narrador"
+text = "También llegaron los amigos del monte y del agua. Cada encuentro tenía ya un lugar en el libro."
 actors = Array[String](["Báalam", "Kay", "Ch'íich'", "Ma'ax"])
 target_word = "Ch'íich'"
-effects = 16
+effects = 0
 
 [sub_resource type="Resource" id="Beat_4"]
 script = ExtResource("2_beat")
@@ -35,14 +36,15 @@ text = "La próxima vez que descanses, recuerda nuestra aldea. Aquí siempre ten
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 target_word = "Yuum bo'otik"
 options = Array[String](["Bix a beel", "Yuum bo'otik", "Tak ti' uláak' k'iin", "Ka xi'ik tech jats'uts"])
-effects = 16
+effects = 0
 
 [sub_resource type="Resource" id="Beat_5"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "Yuum bo'otik, Peek'. Yuum bo'otik, Miis, Kaax y Áak... ¡Yuum bo'otik a todos!"
+text = "Yuum bo'otik por caminar conmigo, hacerme un sitio y enseñarme sus palabras. Llevaré nuestro recuerdo."
+kalin_motion = 8
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
-effects = 16
+effects = 0
 
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
@@ -51,16 +53,16 @@ text = "Ka xi'ik tech jats'uts. Yo cuidaré los senderos para cuando vuelvas."
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 target_word = "Ka xi'ik tech jats'uts"
 options = Array[String](["Bix a beel", "Ka xi'ik tech jats'uts", "janal", "Yuum bo'otik"])
-effects = 16
+effects = 0
 
 [sub_resource type="Resource" id="Beat_7"]
 script = ExtResource("2_beat")
 speaker = "Kaax"
-text = "Tak ti' uláak' k'iin. Lleva nuestras palabras contigo... ¡y vuelve para compartir otra merienda!"
+text = "Tak ti' uláak' k'iin. La próxima merienda la prepararemos entre todos. Aquí te esperamos."
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 target_word = "Tak ti' uláak' k'iin"
 options = Array[String](["Yuum bo'otik", "Ka xi'ik tech jats'uts", "Tak ti' uláak' k'iin", "Bix a beel"])
-effects = 16
+effects = 0
 
 [node name="Historia9" instance=ExtResource("1_base")]
 chapter_title = "Mundo 5 · Capítulo 9 — Tak ti' uláak' k'iin"

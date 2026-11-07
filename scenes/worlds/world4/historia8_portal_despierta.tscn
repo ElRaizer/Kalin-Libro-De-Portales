@@ -8,10 +8,12 @@
 [sub_resource type="Resource" id="Beat_1"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Todos han comido!"
+text = "Compartimos la comida y las semillas. ¡Hoy todos pudimos ayudar!"
 background = ExtResource("5_bg_milpa")
 actors = Array[String](["Peek'", "Miis", "Kaax", "Áak"])
 celebrate_page = true
+page_motion = 2
+page_word = "In k'a'at ja'"
 visual_scene = "hambre"
 visual_solved = true
 effects = 16
@@ -19,7 +21,7 @@ effects = 16
 [sub_resource type="Resource" id="Beat_5"]
 script = ExtResource("2_beat")
 kind = 4
-text = "¡El portal está despertando!"
+text = "Las páginas brillaron juntas. A lo lejos, una luz dibujó el camino hacia el portal."
 background = ExtResource("6_bg_portal_isla")
 kalin_pose = 1
 actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
@@ -31,7 +33,7 @@ flash = true
 [sub_resource type="Resource" id="Beat_6"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Faltan las palabras amables!"
+text = "El libro une lugares y personas. Quiero llevar también las palabras con las que nos cuidamos."
 kalin_pose = 1
 actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
 effects = 24
@@ -39,7 +41,7 @@ effects = 24
 [sub_resource type="Resource" id="Beat_7"]
 script = ExtResource("2_beat")
 speaker = "Peek'"
-text = "Bix a beel: así saludamos."
+text = "Bix a beel: así saludamos. Yo iré contigo y revisaré el camino al portal."
 actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
 effects = 24
 
@@ -47,7 +49,7 @@ effects = 24
 script = ExtResource("2_beat")
 kind = 3
 speaker = "Kaax"
-text = "Yuum bo'otik: muchas gracias. ¿Lo encuentras?"
+text = "Yuum bo'otik: muchas gracias. Eso quiero decirles a todos. ¿Qué palabra expresa mi agradecimiento?"
 actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
 target_word = "Yuum bo'otik"
 options = Array[String](["Tak ti' uláak' k'iin", "Yuum bo'otik", "Bix a beel", "Ka xi'ik tech jats'uts"])
@@ -56,13 +58,13 @@ effects = 24
 [sub_resource type="Resource" id="Beat_9"]
 script = ExtResource("2_beat")
 speaker = "Kalin"
-text = "¡Yuum bo'otik, amigos!"
+text = "Yuum bo'otik. Ustedes también me enseñaron, me acompañaron y me ayudaron a encontrar mi camino."
 actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
 effects = 24
 
 [sub_resource type="Resource" id="Beat_10"]
 script = ExtResource("2_beat")
-text = "¡Abramos el camino a casa!"
+text = "Antes de partir, dejarán preparada una mesa común. Después acompañarán a Kalin hasta el portal."
 actors = Array[String](["Kaax", "Kéej", "Peek'", "Miis"])
 effects = 24
 title = "Mundo 5"
