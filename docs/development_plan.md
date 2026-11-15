@@ -1222,3 +1222,26 @@ La entrega local de continuidad está en
 `.ui-review/design_points_and_assembly_2026_10_27/`, con fragmentos, vistas de prueba,
 generador, capturas y resultados. Es una carpeta ignorada de revisión visual.
 La documentación pasó `python tools/check_structure.py` y `git diff --check`.
+
+## Correcciones y validación posteriores a la auditoría del 7 de noviembre de 2026
+
+El usuario autorizó implementación y comprobación en ejecución durante su ausencia,
+con datos aislados y preservación del trabajo existente. Se mantienen público de
+10–12 años, lectura autónoma, PC con ratón y teclado y el estilo visual actual.
+Equipos de 2021 en adelante son una referencia provisional: no constituyen mínimos
+certificados. El profesor recibirá el proyecto Godot completo a inicios de 2027;
+las pruebas infantiles se realizarán después de la primera entrega.
+
+Decisiones de comportamiento:
+
+- Peticiones iguales conservan identidad semántica aunque cambie su ancla interna.
+- Sala: escritura primero y apoyos tras fallo; intentos apoyados sin nuevos puntos.
+- Tianguis: dificultad creciente y presencia de concha inferior en el plan canónico.
+- El cierre normal requiere guardar correctamente; un fallo mantiene la sesión
+  abierta, informa del problema y permite reintentar.
+- Uso personal, respuestas parciales necesarias para reanudar y respaldo local.
+
+Las revisiones lingüísticas, pronunciaciones, derechos, créditos y permisos siguen
+pendientes con el profesor. Las mediciones y comprobaciones de esta fase deben
+registrarse con su alcance real antes de considerarla terminada. El objetivo de
+30–60 minutos y el aprendizaje con público aún requieren observación.

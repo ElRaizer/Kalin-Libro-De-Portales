@@ -22,6 +22,7 @@ var _raining: bool = false
 
 ## `waking` indica que Kalin estaba dormido y se levanta en este momento.
 func play_beat(beat: StoryBeat, motion: StoryBeat.KalinMotion, waking: bool) -> void:
+	AudioManager.cancel_scheduled(self)
 	if beat.music != null:
 		AudioManager.play_music(beat.music)
 	_update_rain((beat.effects & StoryBeat.Effect.LLUVIA) != 0)
@@ -69,4 +70,4 @@ func _play_motion(motion: StoryBeat.KalinMotion, waking: bool) -> void:
 
 
 func _play_later(key: String, delay: float) -> void:
-	AudioManager.play_sfx_later(key, delay)
+	AudioManager.play_sfx_later(key, delay, 1.0, self)

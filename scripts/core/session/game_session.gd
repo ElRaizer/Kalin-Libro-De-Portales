@@ -117,7 +117,8 @@ func record_learning(
 	context: String,
 	supported: bool = false,
 	mistakes: int = 0,
-	evidence: Dictionary = {}
+	evidence: Dictionary = {},
+	award_points: bool = true
 ) -> Dictionary:
 	var fresh: bool = false
 	for word: String in words:
@@ -140,7 +141,11 @@ func record_learning(
 			learned.append(key)
 		var record: Dictionary = LearningProgress.sanitize(learning_progress.get(key))
 		var detail: Dictionary = evidence.get(word, {})
-		if context not in record.contexts and key in VocabularyCatalog.learnable_keys():
+		if (
+			award_points
+			and context not in record.contexts
+			and key in VocabularyCatalog.learnable_keys()
+		):
 			var word_phase: String = str(detail.get("phase", phase))
 			var amount: int = MagicEconomy.reward(word_phase, supported, detail)
 			var previous: int = int(economy.awards.get(key, 0))

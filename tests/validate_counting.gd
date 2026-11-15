@@ -18,6 +18,7 @@ func _initialize() -> void:
 	_numeral_rules()
 	_content_rules()
 	_random_targets()
+	_progressive_targets()
 	_session_rules()
 	await _wrong_answers_teach()
 	await _resume_keeps_progress()
@@ -85,6 +86,79 @@ func _random_targets() -> void:
 		session.seed_value = seed_value
 		differs = differs or session.targets(content) != first
 	check(differs, "Otra partida sortea otros números")
+
+
+func _progressive_targets() -> void:
+	var content: CountingSet = load("res://data/exercises/world4_counting.tres") as CountingSet
+	var session: CountingSession = CountingSession.new()
+	for seed_value: int in range(1, 101):
+		session.seed_value = seed_value
+		var plan: Array[int] = session.targets(content)
+		var has_shell: bool = false
+		for index: int in range(plan.size()):
+			has_shell = has_shell or MayaNumeral.needs_shell(plan[index])
+			if index > 0:
+				check(
+					plan[index] > plan[index - 1], "La dificultad numérica crece sin repeticiones"
+				)
+		check(
+			plan[0] <= 6 and plan[1] <= 12, "Las rondas guiadas comienzan por cantidades pequeñas"
+		)
+		check(has_shell, "Cada partida canónica incluye concha en unidades")
+	var saved: Dictionary = session.snapshot()
+	var expected: Array[int] = session.targets(content)
+	var resumed: CountingSession = CountingSession.new()
+	resumed.restore(JSON.parse_string(JSON.stringify(saved)), content)
+	check(resumed.targets(content) == expected, "JSON conserva el plan concreto completo")
+	var game: GameSession = GameSession.new()
+	game.scene_states.world4_level2 = saved.duplicate(true)
+	var loaded_game: GameSession = GameSession.new()
+	check(
+		loaded_game.restore(JSON.parse_string(JSON.stringify(game.snapshot()))),
+		"La partida valida el checkpoint con plan numérico"
+	)
+	resumed.restore(loaded_game.scene_states.world4_level2, content)
+	check(resumed.targets(content) == expected, "El codec y el esquema conservan el plan concreto")
+	var prior: Array[int] = session._shuffled_targets(content).slice(0, content.round_count)
+	resumed.restore(
+		{
+			"layout_seed": session.seed_value,
+			"round": 2,
+			"waiting": true,
+			"twenties": MayaNumeral.twenties_of(prior[2]),
+			"units": MayaNumeral.units_of(prior[2]),
+			"shell": MayaNumeral.needs_shell(prior[2])
+		},
+		content
+	)
+	check(
+		resumed.waiting and resumed.target(content) == prior[2],
+		"Un checkpoint de semilla conserva su número y su acierto"
+	)
+	saved.targets[0] = 50
+	check(session.targets(content) == expected, "El snapshot no comparte su plan mutable")
+	var narrow: CountingSet = CountingSet.new()
+	narrow.min_value = 3
+	narrow.max_value = 10
+	narrow.round_count = 8
+	check(
+		session.targets(narrow) == [3, 4, 5, 6, 7, 8, 9, 10],
+		"Un rango de autor sin concha conserva cantidades y rondas válidas"
+	)
+	var pending: Dictionary = {
+		"layout_seed": 7,
+		"round": 0,
+		"targets": [40, 1, 2, 3, 4, 5, 6, 7],
+		"twenties": 2,
+		"units": 0,
+		"shell": true,
+		"waiting": true
+	}
+	resumed.restore(pending, content)
+	check(resumed.target(content) == 40 and resumed.waiting, "El plan vivido conserva el acierto")
+	pending.targets = [true, 1, 2, 3, 4, 5, 6, 7]
+	resumed.restore(pending, content)
+	check(not resumed.waiting, "Un plan de tipo inválido no acredita una tablilla ajena")
 
 
 ## Poner piezas sigue la numeración: cinco puntos forman una barra, veinte

@@ -691,7 +691,14 @@ func _skip_exploration() -> void:
 
 
 func _go_to_next_scene() -> void:
-	GameManager.go_to_scene(next_scene_key)
+	if GameManager.go_to_scene(next_scene_key):
+		return
+	_navigating = false
+	fade.modulate.a = 0.0
+	skip_button.text = "Reintentar salida"
+	skip_button.show()
+	skip_button.grab_focus()
+	_show_notice("No se pudo abrir el destino. Puedes reintentar la salida o volver al menú.", true)
 
 
 func _show_help() -> void:
@@ -750,7 +757,8 @@ func get_checkpoint_state() -> Dictionary:
 
 
 func _on_menu_pressed() -> void:
-	GameManager.go_to_scene("main_menu")
+	if not GameManager.go_to_scene("main_menu"):
+		_show_notice("No se pudo abrir el menú. Tu recorrido sigue disponible.", true)
 
 
 func variation_context() -> String:

@@ -355,8 +355,11 @@ func _on_level_complete() -> void:
 
 
 func _safe_navigate(key: String) -> void:
+	var was_enabled: bool = grid_board.input_enabled
 	grid_board.set_interaction_enabled(false)
-	GameManager.go_to_scene(key)
+	if not GameManager.go_to_scene(key):
+		grid_board.set_interaction_enabled(was_enabled)
+		_set_instr("No se pudo abrir el destino. Puedes reintentar o volver al menú.")
 
 
 func _on_next_level_pressed() -> void:

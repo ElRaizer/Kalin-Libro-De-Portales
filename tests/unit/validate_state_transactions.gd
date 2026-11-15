@@ -11,6 +11,8 @@ func _run() -> void:
 	_destination()
 	_incompatible_files()
 	_navigation_failure()
+	_quit_failure()
+	await _scene_navigation_recovery()
 	finish("Transacciones y límites del estado vigente")
 
 
@@ -141,6 +143,153 @@ func _navigation_failure() -> void:
 	current_scene = null
 	source.free()
 	navigator.free()
+
+
+func _quit_failure() -> void:
+	var manager: QuitObserver = QuitObserver.new()
+	root.add_child(manager)
+	var repository: RefusingWriteRepository = RefusingWriteRepository.new(
+		"user://quit_failure.json"
+	)
+	repository.delete_progress()
+	manager.use_save_repository(repository)
+	var notice: CanvasLayer = load("res://scenes/ui/shared/save_notice.tscn").instantiate()
+	manager.add_child(notice)
+	manager.session.learn_word("Miis")
+	manager.retry_save()
+	var saved: String = FileAccess.get_file_as_string(repository.save_path)
+	manager.session.learn_word("Áak")
+	var before: Dictionary = manager.session.snapshot()
+	repository.refuse = true
+	var previous_errors: bool = Engine.print_error_messages
+	Engine.print_error_messages = false
+	manager.quit_game()
+	Engine.print_error_messages = previous_errors
+	check(manager.quit_requests == 0, "No se cierra el juego cuando falla el guardado final")
+	check(manager.session.snapshot() == before, "El cierre rechazado conserva el avance en memoria")
+	check(not manager.save_status_message.is_empty(), "El cierre rechazado informa cómo reintentar")
+	check(
+		notice.get_node("Panel").visible,
+		"El aviso de guardado sigue visible tras rechazar el cierre"
+	)
+	check(
+		FileAccess.get_file_as_string(repository.save_path) == saved,
+		"El cierre rechazado conserva la última partida válida"
+	)
+	repository.refuse = false
+	manager.retry_save()
+	check(manager.save_status_message.is_empty(), "Reintentar permite guardar y retirar el aviso")
+	check(not notice.get_node("Panel").visible, "El aviso se retira tras guardar correctamente")
+	manager.quit_game()
+	check(manager.quit_requests == 1, "El cierre se solicita sólo después de guardar con éxito")
+	var restored: GameSession = GameSession.new()
+	check(restored.restore(repository.load_progress()), "La última partida se restaura")
+	check(restored.snapshot() == before, "El cierre aceptado conserva también el avance reciente")
+	manager.free()
+	repository.delete_progress()
+
+
+func _scene_navigation_recovery() -> void:
+	var manager: Node = root.get_node("GameManager")
+	var previous_navigator: SceneNavigator = manager._scene_navigator
+	var navigator: RefusingNavigator = RefusingNavigator.new(manager.session, manager._save)
+	root.add_child(navigator)
+	manager._scene_navigator = navigator
+	change_scene_to_file(GameContent.SCENE_PATHS.world1_story1)
+	await scene_changed
+	await process_frame
+	var story: Node = current_scene
+	story._complete_text()
+	story.interaction.resolved = true
+	story._narrative_ready = true
+	story.beat_index = story.beats.size()
+	var previous_errors: bool = Engine.print_error_messages
+	Engine.print_error_messages = false
+	story._finish_story()
+	Engine.print_error_messages = previous_errors
+	check(current_scene == story and not story._navigating, "La historia fallida recupera entrada")
+	check(not story.continue_button.disabled, "Continuar permite reintentar la salida narrativa")
+	check(story.hint_label.visible, "La historia muestra el fallo de apertura")
+	check(story.beat_index < story.beats.size(), "El momento permanece dentro del capítulo")
+	paused = true
+	Engine.print_error_messages = false
+	story._on_menu_pressed()
+	Engine.print_error_messages = previous_errors
+	check(not story._navigating, "Un menú rechazado tampoco bloquea la historia")
+	check(paused, "La recuperación de navegación respeta la pausa existente")
+	paused = false
+	change_scene_to_file(GameContent.SCENE_PATHS.world1_level1)
+	await scene_changed
+	await process_frame
+	var paths: Node = current_scene
+	for enabled: bool in [true, false]:
+		paths.grid_board.set_interaction_enabled(enabled)
+		Engine.print_error_messages = false
+		paths._safe_navigate("main_menu")
+		Engine.print_error_messages = previous_errors
+		check(
+			paths.grid_board.input_enabled == enabled,
+			"El tablero recupera su estado de entrada anterior al rechazo"
+		)
+	change_scene_to_file(GameContent.SCENE_PATHS.world3_level1)
+	await scene_changed
+	await process_frame
+	var adjective: Node = current_scene
+	for resolving: bool in [true, false]:
+		adjective._resolving = resolving
+		Engine.print_error_messages = false
+		adjective._safe_navigate("main_menu")
+		Engine.print_error_messages = previous_errors
+		check(
+			adjective._resolving == resolving,
+			"El taller conserva el estado de respuesta anterior al rechazo"
+		)
+	change_scene_to_file(GameContent.SCENE_PATHS.world1_explore1)
+	await scene_changed
+	await process_frame
+	var exploration: Node = current_scene
+	Engine.print_error_messages = false
+	exploration._finish()
+	await create_timer(exploration.FADE_SECONDS + 0.1).timeout
+	Engine.print_error_messages = previous_errors
+	check(
+		current_scene == exploration and not exploration._navigating,
+		"La exploración recupera entrada tras rechazar el destino"
+	)
+	check(is_zero_approx(exploration.fade.modulate.a), "El fallo retira el fundido opaco")
+	check(exploration.skip_button.visible, "La exploración ofrece reintentar su salida")
+	check(
+		exploration.objective_label.text.contains("No se pudo"),
+		"La exploración explica que la apertura ha fallado"
+	)
+	navigator.result = OK
+	exploration.skip_button.pressed.emit()
+	await create_timer(exploration.FADE_SECONDS + 0.1).timeout
+	check(exploration._navigating, "La salida recuperada permite volver a solicitar el destino")
+	check(
+		manager.session.resume_scene_key == exploration.next_scene_key,
+		"Sólo el reintento aceptado confirma el destino de continuación"
+	)
+	manager._scene_navigator = previous_navigator
+	navigator.free()
+	current_scene = null
+	exploration.free()
+
+
+class QuitObserver:
+	extends "res://scripts/autoloads/game_manager.gd"
+	var quit_requests: int = 0
+
+	func _request_quit() -> void:
+		quit_requests += 1
+
+
+class RefusingWriteRepository:
+	extends SaveRepository
+	var refuse: bool = false
+
+	func save_progress(data: Dictionary) -> Error:
+		return ERR_CANT_CREATE if refuse else super.save_progress(data)
 
 
 class RefusingNavigator:

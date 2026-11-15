@@ -49,4 +49,4 @@ La entrada reservada `T'uut'` usará `Tuut.ogg` cuando se incorpore a una escena
 - Normalizar el volumen de todos los clips con el mismo criterio.
 - Probar cada botón **Escuchar** dentro del libro de hechizos.
 
-Mientras un archivo no exista, el libro mostrará **Audio próximamente** y mantendrá el botón desactivado.
+Mientras un archivo no exista, el botón de pronunciación permanece disponible y muestra un aviso escrito al pulsarlo, conforme a la guía técnica. No reproduce una pronunciación sustitutiva.

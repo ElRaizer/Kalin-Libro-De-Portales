@@ -394,11 +394,29 @@ func _play_kalin_motion(motion: StoryBeat.KalinMotion) -> void:
 func _finish_story() -> void:
 	if _navigating:
 		return
-	_navigating = true
 	_completed = true
+	_navigate_to(next_scene_key)
+
+
+func _navigate_to(key: String) -> void:
+	if _navigating:
+		return
+	_navigating = true
 	interaction.set_navigation_locked(true)
 	auto_timer.stop()
-	GameManager.go_to_scene(next_scene_key)
+	if GameManager.go_to_scene(key):
+		return
+	# El motor conserva esta escena; la presentación debe seguir utilizable también.
+	_navigating = false
+	beat_index = mini(beat_index, beats.size() - 1)
+	interaction.set_navigation_locked(false)
+	continue_button.disabled = not can_continue()
+	_set_hint("No se pudo abrir el destino. Puedes reintentar o volver al menú.", COLOR_HINT)
+	hint_label.show()
+	if can_continue():
+		continue_button.grab_focus()
+	else:
+		$UI/MenuButton.grab_focus()
 
 
 func _skip_story() -> void:
@@ -446,10 +464,7 @@ func get_checkpoint_state() -> Dictionary:
 
 
 func _on_menu_pressed() -> void:
-	_navigating = true
-	interaction.set_navigation_locked(true)
-	auto_timer.stop()
-	GameManager.go_to_scene("main_menu")
+	_navigate_to("main_menu")
 
 
 func get_configuration_issues() -> PackedStringArray:

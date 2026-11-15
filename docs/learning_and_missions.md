@@ -132,3 +132,25 @@ Mesa y Fuerte se practican en sus mundos antes del primer proyecto. Su preparaci
 aporta 12 una vez y permite comprar ambas por 10 cada una. La cualidad se compra
 globalmente; copias y ensayos conocidos son gratuitos. Comprar, gastar y decorar
 no acreditan recuerdo. El acceso a mundos y barrios nunca depende del saldo.
+
+## Sala de retos y progresión del tianguis
+
+La sala comienza por escritura independiente de vocabulario conocido. Un fallo
+activa el apoyo gradual; resolver con apoyo conserva práctica y respuestas, pero
+ese intento no añade puntos. Un resultado independiente sólo puede acreditar la
+diferencia permitida por el máximo de cada palabra.
+
+La identidad de la petición depende de su contenido real, no de la palabra usada
+para seleccionarla, su orden o la visita. Una pareja idéntica no añade diversidad
+por tener otra ancla interna. Los resultados históricos no se recalculan; los
+intentos abiertos conservan sus apoyos y su protección frente al doble registro.
+
+Las partidas nuevas del tianguis avanzan desde cantidades pequeñas hacia mayores
+y, si rango y número de rondas lo permiten, incluyen una cantidad con concha en
+el piso inferior. La semilla conserva variación dentro de la curva y el plan se
+guarda para reanudar la misma secuencia. El Inspector mantiene sus rangos propios.
+
+Si no hay vocabulario con separación suficiente, la sala ofrece un ensayo reciente
+que también empieza por escritura. Se explica que esa práctica no paga puntos ni
+acredita recuerdo separado; no se inventa una consulta al libro. El ensayo conserva
+su condición al reanudar y sólo activa huecos o bloques tras fallo o pista solicitada.

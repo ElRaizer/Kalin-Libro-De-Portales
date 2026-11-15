@@ -127,9 +127,12 @@ Sólo hay una actividad: formar el número pedido con clics. Se elige un piso de
 tablilla y se ponen granos, varitas o la concha. Cinco granos se juntan en una
 varita y veinte unidades suben como un grano al piso de arriba, dejando la concha
 si abajo no sobra nada. Un numeral es correcto cuando vale el número y, si sólo
-tiene veintenas, lleva la concha. Los números no se repiten en una partida y se
-derivan de `layout_seed`: al continuar se piden los mismos y **Repetir** sortea
-otros. El nivel no registra vocabulario ni evidencia de aprendizaje.
+tiene veintenas, lleva la concha. Los números no se repiten en una partida.
+Los planes nuevos progresan por bandas
+de cantidades pequeñas a grandes y garantizan una concha inferior cuando el rango
+la admite. Se derivan de `layout_seed` y se guardan completos: continuar conserva
+el plan y la tablilla; **Repetir** prepara otro plan dentro de la misma curva.
+El nivel no registra vocabulario ni evidencia de aprendizaje.
 
 El arte se genera con `python tools/build_counting_art.py`: amate, líneas rojas de
 códice, contorno negro, azul maya y ocre, sin `rgba()`.

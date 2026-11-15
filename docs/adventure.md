@@ -232,7 +232,7 @@ en los seis paseos/misiones. Con renderer real exporta el atlas y capturas dentr
 de la aldea, incluyendo escritorio y teléfono horizontal:
 
 ```powershell
-godot_console.exe --path . --script res://tests/validate_village_composition.gd -- --capture=C:/ruta/a/capturas
+.\tools\validate.ps1 -GodotPath $env:GODOT_BIN -Suite validate_village_composition -CaptureDirectory "C:/ruta/a/capturas"
 ```
 
 Las nueve variantes SVG añadidas al catálogo ampliado se regeneran con `python tools/build_combination_art.py`; los demás SVG permanecen editables en `Arte/aldea/uso/`.
@@ -240,7 +240,7 @@ Las nueve variantes SVG añadidas al catálogo ampliado se regeneran con `python
 Para generar capturas actuales con un renderizador real:
 
 ```powershell
-godot_console.exe --path . --script res://tests/validate_game_expansion.gd -- --capture=C:/ruta/a/capturas
+.\tools\validate.ps1 -GodotPath $env:GODOT_BIN -Suite validate_game_expansion -CaptureDirectory "C:/ruta/a/capturas"
 ```
 
 Se revisan composiciones a 1920 × 1080, 1280 × 720, 960 × 540 y 640 × 360.
@@ -335,7 +335,7 @@ paisaje en los extremos de cinco exploraciones. Puede generar
 capturas con renderer real:
 
 ```powershell
-godot_console.exe --path . --script res://tests/validate_adventure_polish.gd -- --capture=C:/ruta/a/capturas
+.\tools\validate.ps1 -GodotPath $env:GODOT_BIN -Suite validate_adventure_polish -CaptureDirectory "C:/ruta/a/capturas"
 ```
 
 `tests/validate_tutorial_gestures.gd` comprueba clics sin desplazamiento, posiciones

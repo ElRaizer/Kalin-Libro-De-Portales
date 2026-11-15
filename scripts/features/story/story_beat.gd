@@ -9,7 +9,7 @@ class_name StoryBeat
 
 enum Kind {
 	DIALOGO,  ## Alguien habla; se avanza con clic, Espacio o Enter.
-	CONOCER,  ## El jugador toca a cada animal para escuchar su nombre.
+	CONOCER,  ## El jugador toca a cada animal para conocer su nombre.
 	ADIVINAR,  ## El jugador elige al animal que se nombra en maya.
 	ELEGIR,  ## El jugador elige una palabra maya entre opciones escritas.
 	EXPLORAR,  ## La situación se representa en bucle; el jugador decide cuándo seguir.

@@ -512,8 +512,11 @@ func _on_magic_points_changed(value: int) -> void:
 
 
 func _safe_navigate(key: String) -> void:
+	var was_resolving: bool = _resolving
 	_resolving = true
-	GameManager.go_to_scene(key)
+	if not GameManager.go_to_scene(key):
+		_resolving = was_resolving
+		feedback_label.text = "No se pudo abrir el destino. Puedes reintentar o volver al menú."
 
 
 func _on_menu_pressed() -> void:

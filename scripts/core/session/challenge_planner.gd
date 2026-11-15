@@ -38,7 +38,7 @@ static func select_words(known: Dictionary, progress: Dictionary, clock: int) ->
 	if not consolidation.is_empty():
 		result.append(consolidation)
 	if result.is_empty() and not priority.is_empty():
-		# Si no hubo separación, la vista ofrece ensayo guiado, sin simular recuperación.
+		# Si no hubo separación, la vista ofrece ensayo escrito, sin simular recuperación.
 		result.append(priority[0])
 	return result
 
@@ -91,3 +91,8 @@ static func situation(word: String, answers: Array[String]) -> String:
 			% CombinationCatalog.targets()[id]
 		)
 	return prompt(word)
+
+
+## La visita identifica el resultado; el contenido identifica la situación practicada.
+static func context(answers: Array[String], visit: int) -> String:
+	return "challenge_room/%s@%d" % ["|".join(answers), visit]

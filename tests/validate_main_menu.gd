@@ -1,9 +1,13 @@
 extends SceneTree
 
 var failures: Array[String] = []
+var capture_folder: String = ""
 
 
 func _initialize() -> void:
+	for argument: String in OS.get_cmdline_user_args():
+		if argument.begins_with("--capture="):
+			capture_folder = argument.trim_prefix("--capture=")
 	var manager: Node = root.get_node("GameManager")
 	# SceneTree inicia este script junto con los autoloads. Esperar un frame evita
 	# que GameManager._ready() cargue la partida después de preparar el escenario.
@@ -58,6 +62,7 @@ func _initialize() -> void:
 			failures.append("Un nivel completado y el siguiente deben poder abrirse")
 		if not buttons[2].disabled:
 			failures.append("Los niveles posteriores deben seguir bloqueados")
+	await _completed_layout(manager, menu)
 
 	manager.session.completed_levels.clear()
 	manager.session.words_learned.clear()
@@ -70,6 +75,40 @@ func _initialize() -> void:
 	menu.queue_free()
 	await process_frame
 	_finish(manager, original_completed)
+
+
+func _completed_layout(manager: Node, menu: Node) -> void:
+	manager.session.completed_levels.clear()
+	manager.session.resume_scene_key = ""
+	for level: Dictionary in GameContent.LEVEL_ORDER:
+		manager.session.completed_levels.append("w%d_l%d" % [level.world, level.level])
+	menu._refresh_ui()
+	var layout: Node = menu.get_node("ScreenLayout")
+	for compact: bool in [false, true]:
+		root.size = Vector2i(640, 360) if compact else Vector2i(1280, 720)
+		layout.preview_compact = compact
+		layout.refresh()
+		await process_frame
+		await process_frame
+		var status: Label = menu.next_stop
+		var play: Button = menu.play_btn
+		var status_bottom: float = status.get_global_rect().end.y
+		if play.get_global_rect().position.y - status_bottom < 8.0:
+			failures.append("El estado completado necesita espacio sobre Jugar en ambos perfiles")
+		if not play.has_focus():
+			failures.append("Reordenar el menú conserva el foco en la acción principal")
+		if not capture_folder.is_empty():
+			await RenderingServer.frame_post_draw
+			var path: String = capture_folder.path_join(
+				"menu_completo_%s.png" % ("compacto" if compact else "escritorio")
+			)
+			var result: Error = root.get_texture().get_image().save_png(path)
+			if result != OK:
+				failures.append("No se pudo guardar la captura del menú completo")
+	root.size = Vector2i(1280, 720)
+	layout.preview_compact = false
+	layout.refresh()
+	await process_frame
 
 
 func _finish(manager: Node, original_completed: Array[String]) -> void:

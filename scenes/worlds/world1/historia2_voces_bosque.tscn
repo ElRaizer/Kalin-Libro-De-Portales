@@ -43,7 +43,7 @@ kalin_motion = 1
 script = ExtResource("2_beat")
 kind = 1
 speaker = "Narrador"
-text = "Ellos también perdieron su camino. Toca a cada uno para escuchar su nombre."
+text = "Ellos también perdieron su camino. Toca a cada uno para conocer su nombre."
 actors = Array[String](["Kéej", "K'éek'en", "Ma'ax", "Peek'"])
 
 [sub_resource type="Resource" id="Beat_6"]

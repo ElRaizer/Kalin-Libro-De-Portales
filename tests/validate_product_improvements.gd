@@ -138,6 +138,14 @@ func _word_evidence() -> void:
 				"Los campos caben en ambos perfiles"
 			)
 			await _capture("recuerdo_%d_%s" % [world, "compacto" if compact else "escritorio"])
+			scene.recall.first.clear()
+			scene.recall.second.clear()
+			scene.recall.apply_compact(compact)
+			_check(not scene.recall.ready_to_submit(), "La respuesta vacía no se evalúa")
+			_check(
+				scene.recall.caption.is_visible_in_tree(),
+				"El rechazo de respuesta vacía es visible después de cambiar de perfil"
+			)
 			scene.recall.advance_support()
 			scene.recall.advance_support()
 			await process_frame
@@ -145,6 +153,12 @@ func _word_evidence() -> void:
 			_check(
 				scene.recall.get_global_rect().encloses(bank.get_global_rect()),
 				"Los bloques caben en el panel"
+			)
+			scene.recall.apply_compact(compact)
+			_check(not scene.recall.ready_to_submit(), "Los bloques incompletos no se evalúan")
+			_check(
+				scene.recall.caption.is_visible_in_tree(),
+				"El rechazo de bloques incompletos permanece visible en compacto"
 			)
 			await _capture("bloques_%d_%s" % [world, "compacto" if compact else "escritorio"])
 	root.size = Vector2i(1280, 720)

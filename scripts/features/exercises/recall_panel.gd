@@ -253,18 +253,21 @@ func ready_to_submit() -> bool:
 		if not pending:
 			return true
 		caption.text = "Completa una parte antes de comprobar."
+		caption.show()
 		focus_answer()
 		return false
 	elif mode == Mode.BLOCKS:
 		for row: Array in _slots:
 			if -1 in row:
 				caption.text = "Faltan piezas: llena las casillas antes de confirmar."
+				caption.show()
 				return false
 	elif (
 		first.text.strip_edges().is_empty()
 		or second_box.visible and second.text.strip_edges().is_empty()
 	):
 		caption.text = "Escribe tu respuesta antes de confirmar."
+		caption.show()
 		return false
 	return true
 

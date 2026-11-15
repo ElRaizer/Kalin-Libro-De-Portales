@@ -20,6 +20,7 @@ func _run() -> void:
 	await _shared_projects()
 	await _personal_memory()
 	await _action_sequences()
+	await _portion_rebinding()
 	await _actions_in_context()
 	await _meal_furniture()
 	await _layout_exit_lifecycle()
@@ -623,3 +624,52 @@ func _visit_workbench(scene: Node) -> void:
 	_approach_spot(scene, spot)
 	scene.camera.reset_smoothing()
 	scene.open_spot(spot)
+
+
+func _portion_rebinding() -> void:
+	var group: Node2D = Node2D.new()
+	group.position = Vector2(640, 550)
+	root.add_child(group)
+	var actor: Sprite2D = Sprite2D.new()
+	actor.texture = VillageUseArt.ACTORS["Ma'ax"]
+	actor.position = Vector2(0, -60)
+	group.add_child(actor)
+	var art: MeaningIllustration = ART.instantiate() as MeaningIllustration
+	art.size = Vector2(160, 120)
+	art.position = Vector2(-80, -115)
+	group.add_child(art)
+	for item: String in ["ja'as", "janal", "ja'", "ja'as"]:
+		art.show_meaning(item)
+		var motion: VillageUseMotion = VillageUseMotion.attach(actor, art, item, "Ma'ax")
+		motion.set_process(false)
+		await process_frame
+		if item == "ja'":
+			_check(
+				motion._portion.texture == null, "Volver a servir agua retira la porción anterior"
+			)
+			continue
+		var canonical: Texture2D = VillageUseArt.object_texture(item, "")
+		var pixels: PackedByteArray = canonical.get_image().get_data()
+		for instant: float in [0.2, motion._rig.contact_time(), 3.5]:
+			motion.sample_action(instant)
+			_check(
+				motion._portion.texture == canonical,
+				"Cambiar de pedido reutiliza la textura canónica de la porción actual"
+			)
+			var bounds: Rect2i = canonical.get_image().get_used_rect()
+			var extent: Vector2 = Vector2(bounds.size) * motion._portion.global_scale
+			_check(
+				is_equal_approx(maxf(extent.x, extent.y), 22 * actor.global_scale.x),
+				"La parte dibujada del alimento conserva su tamaño después de cambiar textura"
+			)
+			if is_equal_approx(instant, motion._rig.contact_time()):
+				_check(
+					_drawn_food_center(motion).distance_to(motion._rig.mouth_position()) < 1,
+					"La porción actual conserva el contacto con la boca al reusar el resultado"
+				)
+		_check(
+			canonical.get_image().get_data() == pixels,
+			"Animar la porción no modifica los píxeles de su textura compartida"
+		)
+	group.queue_free()
+	await process_frame

@@ -50,6 +50,8 @@ func _initialize() -> void:
 	await _validate_buttons()
 	await _validate_progress_feedback(manager)
 	await _validate_volume()
+	_validate_settings_types()
+	await _validate_scheduled_lifecycle()
 	await _validate_story_sounds()
 	await _validate_exploration_sounds()
 	_finish()
@@ -377,4 +379,91 @@ func _validate_exploration_sounds() -> void:
 	if "examinar_objeto" not in audio.effect_history:
 		failures.append("Examinar un objeto debe sonar")
 	orilla.queue_free()
+	await process_frame
+
+
+func _validate_settings_types() -> void:
+	var original: ConfigFile = ConfigFile.new()
+	original.load(audio.SETTINGS_PATH)
+	var config: ConfigFile = ConfigFile.new()
+	config.set_value("volumen", "musica", {"invalid": 1})
+	config.set_value("volumen", "sonidos", 0.25)
+	config.set_value("volumen", "silencio", "false")
+	config.save(audio.SETTINGS_PATH)
+	audio._load_settings()
+	if (
+		not is_equal_approx(audio.music_volume, audio.default_music_volume)
+		or not is_equal_approx(audio.effects_volume, 0.25)
+		or audio.muted
+	):
+		failures.append("Las claves inválidas usan su predeterminado sin perder las válidas")
+	config.clear()
+	config.set_value("volumen", "musica", 2)
+	config.set_value("volumen", "silencio", true)
+	config.save(audio.SETTINGS_PATH)
+	audio._load_settings()
+	if (
+		not is_equal_approx(audio.music_volume, 1.0)
+		or not is_equal_approx(audio.effects_volume, audio.default_effects_volume)
+		or not audio.muted
+	):
+		failures.append("Las claves ausentes conservan defaults y los números válidos se acotan")
+	for invalid: Variant in [NAN, INF, -INF, [], true]:
+		if not is_equal_approx(audio._settings_volume(invalid, 0.5), 0.5):
+			failures.append("Un volumen no finito o de otro tipo conserva el predeterminado")
+	original.save(audio.SETTINGS_PATH)
+	audio._load_settings()
+
+
+func _validate_scheduled_lifecycle() -> void:
+	audio.clear_history()
+	var first_owner: RefCounted = RefCounted.new()
+	var second_owner: RefCounted = RefCounted.new()
+	audio.play_sfx_later("salto", 0.05, 1.0, first_owner)
+	audio.play_sfx_later("acierto", 0.05, 1.0, second_owner)
+	audio.cancel_scheduled(first_owner)
+	await create_timer(0.15).timeout
+	if "salto" in audio.effect_history or "acierto" not in audio.effect_history:
+		failures.append("Cancelar un propietario conserva los efectos de los demás")
+	audio.clear_history()
+	var expired: RefCounted = RefCounted.new()
+	audio.play_sfx_later("salto", 0.05, 1.0, expired)
+	expired = null
+	await create_timer(0.15).timeout
+	if "salto" in audio.effect_history:
+		failures.append("Destruir al propietario retira sus efectos pendientes")
+	audio.clear_history()
+	audio.play_sfx_later("salto", 0.1)
+	paused = true
+	audio.play_sfx("boton_clic")
+	await create_timer(0.2).timeout
+	if "salto" in audio.effect_history or "boton_clic" not in audio.effect_history:
+		failures.append("Pausar suspende movimiento diferido sin silenciar la UI")
+	paused = false
+	await create_timer(0.2).timeout
+	if "salto" not in audio.effect_history:
+		failures.append("Reanudar conserva el tiempo pendiente del sonido de movimiento")
+	audio.clear_history()
+	var story_sound: RefCounted = load("res://scripts/features/story/story_sound.gd").new()
+	var beat: StoryBeat = StoryBeat.new()
+	story_sound.play_beat(beat, StoryBeat.KalinMotion.ENTRA, false)
+	audio.effect_history.clear()
+	story_sound.play_beat(beat, StoryBeat.KalinMotion.QUIETO, false)
+	await create_timer(0.9).timeout
+	if "pasos_tierra" in audio.effect_history:
+		failures.append("Avanzar el momento cancela los pasos de su entrada anterior")
+	var old_scene: Node = Node.new()
+	var next_scene: Node = Node.new()
+	root.add_child(old_scene)
+	root.add_child(next_scene)
+	current_scene = old_scene
+	audio.clear_history()
+	audio.play_sfx_later("salto", 0.05, 1.0, second_owner)
+	current_scene = next_scene
+	await create_timer(0.15).timeout
+	if "salto" in audio.effect_history:
+		failures.append("Cambiar de escena retira efectos del mundo anterior")
+	current_scene = null
+	old_scene.queue_free()
+	next_scene.queue_free()
 	await process_frame

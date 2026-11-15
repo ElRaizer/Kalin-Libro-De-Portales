@@ -47,4 +47,38 @@ func _run() -> void:
 	)
 	var limited: Array[String] = ChallengePlanner.select_words({"Miis": known.Miis}, {}, 0)
 	check(limited == ["Miis"], "Con pocos candidatos reduce la tanda sin repetir")
+	_check_context_identity()
+	_check_reward_policy()
 	finish("Selección local y contextos de la sala de retos")
+
+
+func _check_context_identity() -> void:
+	var known: Dictionary = {"mayak": {}, "mejen": {}, "nojoch": {}}
+	var noun: Array[String] = ChallengePlanner.targets("mayak", known)
+	var quality: Array[String] = ChallengePlanner.targets("mejen", known)
+	check(noun == quality, "Las dos anclas pueden representar la misma petición")
+	var first: String = ChallengePlanner.context(noun, 1)
+	var repeated: String = ChallengePlanner.context(quality, 2)
+	var changed: String = ChallengePlanner.context(["mayak", "nojoch"], 3)
+	var record: Dictionary = LearningProgress.empty_record()
+	LearningProgress.record_result(record, "recall", first, false, 0, 3)
+	LearningProgress.record_result(record, "recall", repeated, false, 0, 6)
+	check(record.recalls.size() == 1, "Cambiar ancla o visita no inventa otra situación")
+	LearningProgress.record_result(record, "recall", changed, false, 0, 9)
+	check(record.recalls.size() == 2, "Cambiar el contenido sí distingue la situación")
+	check(record.contexts.size() == 3, "Cada ocasión conserva su resultado propio")
+
+
+func _check_reward_policy() -> void:
+	var session: GameSession = GameSession.new()
+	session.learn_word("Miis")
+	var result: Dictionary = session.record_learning(
+		["Miis"], "reconstruction", "challenge_room/Miis@1", true, 1, {}, false
+	)
+	check(result.changed and result.awarded == 0, "Apoyo en la sala conserva práctica sin premio")
+	check(session.magic_points == 0, "Un intento apoyado no añade puntos")
+	check(session.learning_progress.Miis.reconstruction == 1, "Se registra la reconstrucción")
+	result = session.record_learning(["Miis"], "recall", "challenge_room/Miis@2")
+	check(result.awarded == 10, "Escritura independiente conserva el premio máximo")
+	result = session.record_learning(["Miis"], "recall", "challenge_room/Miis@3")
+	check(result.awarded == 0, "Repetir el acierto no vuelve a pagar")

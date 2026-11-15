@@ -72,7 +72,7 @@ descubre todas las suites `validate_*.gd` recursivamente.
 | `PhraseExerciseSession` | Ronda, plan, respuestas, intento y transiciones de mundos 3 y 4 | No conoce controles, GameManager ni archivos |
 | `RecallPanel` | Edición de respuestas, apoyos y bloques | Expone consultas de estado y restauración; los consumidores no consultan banderas privadas |
 | `SpellingCorrection` / `SpellingField` | Alineación de grafías y presentación de huecos | El modelo confirma progreso y valida sus snapshots; la vista conserva foco e inserción de símbolos |
-| `CountingSession` | Números sorteados, tablilla y errores del nivel de números | Recibe `CountingSet`; no conoce nodos, autoloads ni archivos. Sortea con la semilla guardada. Reglas de puntos, barras, concha y veintenas en `MayaNumeral` |
+| `CountingSession` | Plan numérico progresivo, tablilla y errores del nivel de números | Recibe `CountingSet`; no conoce nodos, autoloads ni archivos. Genera con la semilla y conserva el plan en el checkpoint. Reglas de puntos, barras, concha y veintenas en `MayaNumeral` |
 | `AudioManager` | Música y ambiente por escena, efectos por nombre y volumen persistente | Lee `AudioCatalog`; no decide reglas de juego. Ver [Música y efectos](audio.md) |
 | `ScreenLayout` | Base de distribución y perfil compacto | Reaplica la transformación de fase sobre esa base; los controladores no fijan coordenadas del panel |
 
@@ -253,9 +253,11 @@ pausa y el movimiento reducido.
 La entrega coloca el objeto en su lugar funcional y registra el uso una sola vez.
 Restaurar repone sus datos e imagen. El acomodo libre pertenece al jardín; las
 misiones no añaden elecciones de ubicación ni barras de ajuste obligatorias.
-`VisualCatalog` conserva las poses editables `activity_look`, `activity_reach` y
-`activity_consume` de cada animal. `VillageUseMotion` compone su secuencia, porción,
-apoyos y profundidad; el trabajo vive y se pausa con el resultado del mundo.
+`VisualCatalog` conserva la pose editable `activity_look` de cada animal. Alcanzar
+y consumir utilizan las piezas y puntos de contacto de `SpeciesActionRig`; sus
+recortes completos no son propiedades de las actuaciones vigentes.
+`VillageUseMotion` compone la secuencia, porción, apoyos y profundidad; el trabajo
+vive y se pausa con el resultado del mundo.
 
 
 ## Aldea persistente y economía del formato 9
@@ -303,3 +305,12 @@ conserva los metadatos de `previous_variation` al guardar una repetición, inclu
 el permiso de omitir una escena ya terminada. No se habilita el salto por reanudar
 ni por pertenecer a una cadena de repetición. Son campos opcionales del formato
 vigente y no sustituyen su estado de avance.
+
+## Recuperación de navegación y cierre
+
+`GameManager.go_to_scene()` conserva el resultado booleano de `SceneNavigator`.
+Los propietarios que bloquean controles o funden la pantalla revierten su
+presentación si el destino se rechaza, conservando checkpoint y continuación.
+El cierre normal sólo se solicita tras un guardado correcto; un error mantiene
+la sesión abierta y el aviso de reintento. No se sobrescribe una partida rechazada
+por versión para permitir el cierre.

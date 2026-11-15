@@ -100,7 +100,7 @@ preguntas, alternativas, fases, JSON, restauración y la acción Repetir. Puede
 generar capturas con el renderizador real:
 
 ```powershell
-godot_console.exe --path . --script res://tests/validate_replayability.gd -- --capture=C:/ruta/a/capturas
+.\tools\validate.ps1 -GodotPath $env:GODOT_BIN -Suite validate_replayability -CaptureDirectory "C:/ruta/a/capturas"
 ```
 
 ## Combinaciones de objeto y cualidad
