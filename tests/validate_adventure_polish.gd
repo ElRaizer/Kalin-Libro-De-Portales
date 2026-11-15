@@ -60,6 +60,15 @@ func _type(value: String) -> void:
 		await _key(value[index].to_upper().unicode_at(0), value.unicode_at(index))
 
 
+func _wrong_answer(panel: RecallPanel) -> void:
+	for node: Node in panel.find_children("*", "LineEdit", true, false):
+		var field: LineEdit = node as LineEdit
+		if field.is_visible_in_tree():
+			await _click(field)
+			field.select_all()
+			await _type("z")
+
+
 func _close_dialogue(scene: Node) -> void:
 	await process_frame
 	await process_frame
@@ -276,8 +285,7 @@ func _drafts() -> void:
 		mission.recall.mode == RecallPanel.Mode.CLOZE,
 		"El primer error del borrador ofrece completar"
 	)
-	await _click(mission.recall.first)
-	await _type("incorrecto")
+	await _wrong_answer(mission.recall)
 	await _click(mission.forge_button)
 	_check(mission.recall.mode == RecallPanel.Mode.BLOCKS, "El segundo error ofrece las piezas")
 	await _click(mission.recall.get_node("Margin/Content/Blocks/Bank").get_child(0))
@@ -299,11 +307,7 @@ func _fallbacks() -> void:
 			await _click(current_scene.mission_break.continue_button)
 		var submit: Button = current_scene.cast_button if world == 3 else current_scene.serve_button
 		for mode_value: int in [RecallPanel.Mode.CLOZE, RecallPanel.Mode.BLOCKS]:
-			await _click(current_scene.recall.first)
-			await _type("incorrecto")
-			if current_scene.recall.second_box.visible:
-				await _click(current_scene.recall.second)
-				await _type("incorrecto")
+			await _wrong_answer(current_scene.recall)
 			await _click(submit)
 			_check(
 				(

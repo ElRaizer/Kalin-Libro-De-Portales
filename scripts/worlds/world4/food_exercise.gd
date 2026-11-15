@@ -149,7 +149,7 @@ func _ready() -> void:
 	mission_break.continued.connect(
 		func():
 			if recall.visible:
-				recall.first.grab_focus()
+				recall.focus_answer()
 				guide.watch_action(recall)
 			else:
 				_refresh_step()
@@ -406,9 +406,7 @@ func _update_choice_labels(guided: bool) -> void:
 			else ("%s\n%s" % [modifier.maya, modifier.spanish] if bridge else modifier.maya)
 		)
 		button.icon = (
-			GameManager.get_visual_texture(modifier.maya)
-			if guided and modifier.maya != ""
-			else null
+			QualityCue.texture_for(modifier.maya) if guided and modifier.maya != "" else null
 		)
 
 

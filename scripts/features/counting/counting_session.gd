@@ -26,10 +26,20 @@ var units: int = 0
 var shell: bool = false
 var active_floor: MayaNumeral.Floor = MayaNumeral.Floor.UNITS
 var mistakes: int = 0
+var _targets: Array[int] = []
+var _plan_key: String = ""
 
 
 func restore(state: Dictionary, content: CountingSet) -> void:
 	seed_value = clampi(_int(state.get("layout_seed"), seed_value), 1, 2000000000)
+	_targets.clear()
+	_plan_key = _content_key(content)
+	var saved_targets: Variant = state.get("targets")
+	if _valid_targets(saved_targets, content):
+		_targets.assign(saved_targets)
+	elif not state.has("targets") and state.has("round"):
+		# Un checkpoint de semilla conserva sus cantidades; la siguiente captura guarda el plan.
+		_targets = _shuffled_targets(content).slice(0, content.round_count)
 	round_index = clampi(_int(state.get("round"), 0), 0, content.round_count)
 	if round_index >= content.round_count:
 		return
@@ -56,7 +66,8 @@ func snapshot() -> Dictionary:
 			"units": units,
 			"shell": shell,
 			"floor": int(active_floor),
-			"mistakes": mistakes
+			"mistakes": mistakes,
+			"targets": _targets.duplicate()
 		}
 		. duplicate(true)
 	)
@@ -64,6 +75,57 @@ func snapshot() -> Dictionary:
 
 ## Los números de la partida, distintos entre sí y en el orden en que se piden.
 func targets(content: CountingSet) -> Array[int]:
+	if _plan_key == _content_key(content) and _targets.size() == content.round_count:
+		return _targets.duplicate()
+	_plan_key = _content_key(content)
+	_targets.clear()
+	var random: RandomNumberGenerator = RandomNumberGenerator.new()
+	random.seed = hash("%d:numbers" % seed_value)
+	var shells: Array[int] = []
+	for value: int in range(content.min_value, content.max_value + 1):
+		if MayaNumeral.needs_shell(value):
+			shells.append(value)
+	var required_shell: int = (
+		shells[random.randi_range(0, shells.size() - 1)] if not shells.is_empty() else -1
+	)
+	var span: int = content.max_value - content.min_value + 1
+	for index: int in range(content.round_count):
+		var lower: int = content.min_value + floori(float(span * index) / content.round_count)
+		var upper: int = (
+			content.min_value + floori(float(span * (index + 1)) / content.round_count) - 1
+		)
+		_targets.append(
+			(
+				required_shell
+				if required_shell >= lower and required_shell <= upper
+				else random.randi_range(lower, upper)
+			)
+		)
+	return _targets.duplicate()
+
+
+func _content_key(content: CountingSet) -> String:
+	return "%d:%d:%d:%d" % [seed_value, content.min_value, content.max_value, content.round_count]
+
+
+func _valid_targets(value: Variant, content: CountingSet) -> bool:
+	if value is not Array or value.size() != content.round_count:
+		return false
+	var seen: Array[int] = []
+	for number: Variant in value:
+		if (
+			not SaveSchema.is_number(number)
+			or float(number) != floor(float(number))
+			or float(number) < content.min_value
+			or float(number) > content.max_value
+			or int(number) in seen
+		):
+			return false
+		seen.append(int(number))
+	return true
+
+
+func _shuffled_targets(content: CountingSet) -> Array[int]:
 	var pool: Array[int] = []
 	for value: int in range(content.min_value, content.max_value + 1):
 		pool.append(value)
@@ -128,6 +190,16 @@ func clear_numeral() -> void:
 	units = 0
 	shell = false
 	active_floor = MayaNumeral.Floor.UNITS
+
+
+## Retira una pieza visible del piso elegido sin modificar el otro piso.
+func remove_piece() -> void:
+	if active_floor == MayaNumeral.Floor.TWENTIES:
+		twenties = maxi(0, twenties - 1)
+	elif units > 0:
+		units -= MayaNumeral.DOT_VALUE if MayaNumeral.dots_of(units) > 0 else MayaNumeral.BAR_VALUE
+	else:
+		shell = false
 
 
 func numeral_value() -> int:

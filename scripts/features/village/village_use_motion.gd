@@ -17,6 +17,7 @@ var _action_time: float = 4.0
 var _look: Texture2D
 var _rest: Texture2D
 var _portion: Sprite2D
+var _portion_bounds: Rect2i
 var _stage: String = "rest"
 var _rig: SpeciesActionRig
 var _vessel: Sprite2D
@@ -71,7 +72,7 @@ static func attach(
 		motion._portion.name = "Portion"
 		motion._portion.z_index = 5
 		motion.add_child(motion._portion)
-	motion._portion.texture = (null if word == "ja'" else VillageUseArt.object_texture(word, ""))
+	motion._set_portion_texture(null if word == "ja'" else VillageUseArt.object_texture(word, ""))
 	motion._portion.hide()
 	if is_instance_valid(motion._rig):
 		motion._rig.queue_free()
@@ -102,6 +103,13 @@ static func attach(
 	motion._pose(0.0)
 	motion._apply_action(4.0)
 	return motion
+
+
+## La porción usa una textura canónica inmutable durante la actuación.
+## Reutilizar el resultado con otro pedido vuelve a calcular su geometría.
+func _set_portion_texture(texture: Texture2D) -> void:
+	_portion.texture = texture
+	_portion_bounds = texture.get_image().get_used_rect() if texture != null else Rect2i()
 
 
 func receive() -> void:
@@ -232,7 +240,7 @@ func _serve_food(contact: Vector2, seconds: float) -> void:
 	if _portion.texture == null:
 		return
 	_portion.show()
-	var used: Rect2i = _portion.texture.get_image().get_used_rect()
+	var used: Rect2i = _portion_bounds
 	var scale_factor: float = 22 * actor.global_scale.x / maxf(used.size.x, used.size.y)
 	var food_point: Vector2 = served
 	if animal == "Ma'ax":

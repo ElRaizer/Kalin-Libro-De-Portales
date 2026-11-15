@@ -119,9 +119,11 @@ func _complete_paths() -> void:
 	var board: GridBoard = level.grid_board
 	if int(level.level_number) in [3, 4]:
 		level._toggle_preview()
-	var routes: Dictionary = _find_routes(board)
+	var routes: Dictionary = GridPathFixture.routes(board)
 	if routes.is_empty():
-		failures.append("El tablero no tiene tres rutas sin cruces: " + level.scene_file_path)
+		failures.append(
+			"El tablero no tiene tres rutas con pisos independientes: " + level.scene_file_path
+		)
 		return
 	for index: int in range(board.words.size()):
 		board._handle_press(board.words[index].start_cell)
@@ -131,7 +133,12 @@ func _complete_paths() -> void:
 		while level._arrival_animating and Time.get_ticks_msec() < arrival_deadline:
 			await process_frame
 		if level._arrival_animating:
-			failures.append("La llegada del animal no terminó")
+			failures.append(
+				(
+					"La llegada no terminó: %s, animal %d, pausa=%s, tween=%s, ruta=%s"
+					% [level._board_variant, index, paused, level.arrival_tween, board.paths[index]]
+				)
+			)
 			return
 		if level._naming_pending:
 			level.recall.first.text = board.words[index].maya_word
@@ -147,66 +154,6 @@ func _complete_paths() -> void:
 	await process_frame
 	if not current_scene.completion_overlay.visible:
 		failures.append("El tablero completado conserva su estado al reabrirlo")
-
-
-func _find_routes(board: GridBoard) -> Dictionary:
-	var orders: Array = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]]
-	var directions: Array[Vector2i] = [Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT]
-	for bias: int in range(4):
-		for order: Array in orders:
-			var blocked: Dictionary = {}
-			for cell: Vector2i in board.obstacles:
-				blocked[cell] = true
-			var routes: Dictionary = {}
-			for index: int in order:
-				var occupied: Dictionary = blocked.duplicate()
-				for other: int in range(board.words.size()):
-					if other != index:
-						occupied[board.words[other].start_cell] = true
-						occupied[board.words[other].destination_cell] = true
-				var route: Array[Vector2i] = _bfs(
-					board,
-					board.words[index].start_cell,
-					board.words[index].destination_cell,
-					occupied,
-					directions
-				)
-				if route.is_empty():
-					break
-				routes[index] = route
-				for cell: Vector2i in route:
-					blocked[cell] = true
-			if routes.size() == board.words.size():
-				return routes
-		directions.append(directions.pop_front())
-	return {}
-
-
-func _bfs(
-	board: GridBoard,
-	start: Vector2i,
-	target: Vector2i,
-	blocked: Dictionary,
-	directions: Array[Vector2i]
-) -> Array[Vector2i]:
-	var queue: Array[Vector2i] = [start]
-	var parents: Dictionary = {start: start}
-	var cursor: int = 0
-	while cursor < queue.size():
-		var cell: Vector2i = queue[cursor]
-		cursor += 1
-		if cell == target:
-			var route: Array[Vector2i] = []
-			while cell != start:
-				route.push_front(cell)
-				cell = parents[cell]
-			return route
-		for direction: Vector2i in directions:
-			var next: Vector2i = cell + direction
-			if board.is_valid_cell(next) and next not in blocked and next not in parents:
-				parents[next] = cell
-				queue.append(next)
-	return []
 
 
 func _close_lines(scene: Node) -> void:

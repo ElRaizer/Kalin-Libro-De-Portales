@@ -9,7 +9,7 @@ class_name StoryBeat
 
 enum Kind {
 	DIALOGO,  ## Alguien habla; se avanza con clic, Espacio o Enter.
-	CONOCER,  ## El jugador toca a cada animal para escuchar su nombre.
+	CONOCER,  ## El jugador toca a cada animal para conocer su nombre.
 	ADIVINAR,  ## El jugador elige al animal que se nombra en maya.
 	ELEGIR,  ## El jugador elige una palabra maya entre opciones escritas.
 	EXPLORAR,  ## La situación se representa en bucle; el jugador decide cuándo seguir.
@@ -27,8 +27,13 @@ enum KalinMotion {
 	SALTA,  ## Da dos saltos de alegría.
 	TIEMBLA,  ## Tiembla de susto o de frío.
 	DORMIDO,  ## Está acostado y respira despacio.
-	CRUZA,  ## Camina hacia el portal, se hace pequeño y desaparece.
+	CRUZA,  ## Da unos pasos, mira atrás y atraviesa la luz del portal.
+	PROTECT_BOOK,  ## Abraza el libro y se afirma contra el viento.
+	THINK_HOME,  ## Mira el libro, baja la cabeza y hace una pausa.
+	FAREWELL,  ## Vacila antes de levantar la mano para despedirse.
 }
+
+enum PageMotion { NONE, SCATTER, RECOVER }
 
 ## Bits de `effects`; el orden debe coincidir con las etiquetas de `@export_flags`.
 enum Effect {
@@ -78,6 +83,12 @@ var visual_scene: String = "ninguna"
 ## Efectos que caen o flotan durante este momento (no se heredan del anterior).
 @export_flags("Hojas", "Lluvia", "Muebles", "Páginas", "Chispas") var effects: int = 0
 @export var kalin_motion: KalinMotion = KalinMotion.QUIETO
+## Sustituye el recorte del gesto sin cambiar las poses de otros momentos.
+@export var gesture_texture: Texture2D
+## Una página protagonista conecta visualmente pérdida y recuperación.
+@export var page_motion: PageMotion = PageMotion.NONE
+## Sólo usar una palabra que pertenezca al momento vivido; vacío conserva el dibujo.
+@export var page_word: String = ""
 ## Sacude la pantalla, como un trueno o un golpe de viento.
 @export var screen_shake: bool = false
 ## Destello blanco, como un relámpago o la luz del portal.

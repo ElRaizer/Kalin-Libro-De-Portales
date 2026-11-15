@@ -56,9 +56,8 @@ var _last_played: Dictionary = {}
 ## lleva la cuenta de lo que sonaría, sin reproducir.
 var _silent: bool = false
 var _save_pending: bool = false
-## Efectos programados para más tarde: {"at": msec, "key": String, "pitch": float}.
-## Se procesan aquí en lugar de con temporizadores para no dejar ninguno
-## pendiente al cerrar el juego o al cambiar de escena.
+## Los efectos diferidos conservan referencias débiles al propietario y la escena.
+## Su espera sigue el tiempo del mundo; la pausa no adelanta pasos o saltos.
 var _scheduled: Array[Dictionary] = []
 
 
@@ -75,15 +74,22 @@ func _ready() -> void:
 	_on_scene_changed.call_deferred()
 
 
-func _process(_delta: float) -> void:
-	var now: int = Time.get_ticks_msec()
-	var due: Array[Dictionary] = []
-	for entry: Dictionary in _scheduled:
-		if int(entry.at) <= now:
-			due.append(entry)
-	for entry: Dictionary in due:
-		_scheduled.erase(entry)
-		play_sfx(str(entry.key), float(entry.pitch))
+func _process(delta: float) -> void:
+	for entry: Dictionary in _scheduled.duplicate():
+		var owner_reference: WeakRef = entry.owner
+		var scene_reference: WeakRef = entry.scene
+		if (
+			(owner_reference != null and owner_reference.get_ref() == null)
+			or (scene_reference != null and scene_reference.get_ref() != get_tree().current_scene)
+		):
+			_scheduled.erase(entry)
+			continue
+		if get_tree().paused:
+			continue
+		entry.remaining = float(entry.remaining) - delta
+		if float(entry.remaining) <= 0.0:
+			_scheduled.erase(entry)
+			play_sfx(str(entry.key), float(entry.pitch))
 	if _scheduled.is_empty():
 		set_process(false)
 
@@ -197,20 +203,36 @@ func play_sfx(key: String, pitch_scale: float = 1.0, volume_db: float = 0.0) -> 
 
 
 ## Programa un efecto para dentro de `delay` segundos (pasos, saltos, campanitas).
-func play_sfx_later(key: String, delay: float, pitch_scale: float = 1.0) -> void:
+func play_sfx_later(
+	key: String, delay: float, pitch_scale: float = 1.0, source: Object = null
+) -> void:
 	if delay <= 0.0:
 		play_sfx(key, pitch_scale)
 		return
+	var scene: Node = get_tree().current_scene
+	var effect_owner: Object = source if source != null else scene
 	_scheduled.append(
-		{"at": Time.get_ticks_msec() + int(delay * 1000.0), "key": key, "pitch": pitch_scale}
+		{
+			"remaining": delay,
+			"key": key,
+			"pitch": pitch_scale,
+			"owner": weakref(effect_owner) if effect_owner != null else null,
+			"scene": weakref(scene) if scene != null else null
+		}
 	)
 	set_process(true)
 
 
-## Olvida los efectos programados (por ejemplo, al saltar una cinemática).
-func cancel_scheduled() -> void:
-	_scheduled.clear()
-	set_process(false)
+## Sin propietario cancela todo; con él sólo retira sus efectos momentáneos.
+func cancel_scheduled(source: Object = null) -> void:
+	if source == null:
+		_scheduled.clear()
+	else:
+		for entry: Dictionary in _scheduled.duplicate():
+			var reference: WeakRef = entry.owner
+			if reference != null and reference.get_ref() == source:
+				_scheduled.erase(entry)
+	set_process(not _scheduled.is_empty())
 
 
 func play_stream(stream: AudioStream, pitch_scale: float = 1.0, volume_db: float = 0.0) -> void:
@@ -276,13 +298,24 @@ func _load_settings() -> void:
 	var config: ConfigFile = ConfigFile.new()
 	music_volume = default_music_volume
 	effects_volume = default_effects_volume
+	muted = false
 	if config.load(SETTINGS_PATH) == OK:
-		music_volume = clampf(float(config.get_value("volumen", "musica", music_volume)), 0.0, 1.0)
-		effects_volume = clampf(
-			float(config.get_value("volumen", "sonidos", effects_volume)), 0.0, 1.0
+		music_volume = _settings_volume(
+			config.get_value("volumen", "musica", music_volume), music_volume
 		)
-		muted = bool(config.get_value("volumen", "silencio", false))
+		effects_volume = _settings_volume(
+			config.get_value("volumen", "sonidos", effects_volume), effects_volume
+		)
+		var saved_mute: Variant = config.get_value("volumen", "silencio", false)
+		if saved_mute is bool:
+			muted = saved_mute
 	_apply_bus_volumes()
+
+
+func _settings_volume(value: Variant, fallback: float) -> float:
+	if (value is int or value is float) and is_finite(float(value)):
+		return clampf(float(value), 0.0, 1.0)
+	return fallback
 
 
 ## Los deslizadores cambian el valor muchas veces por segundo: se guarda una vez por cuadro.

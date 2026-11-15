@@ -94,7 +94,7 @@ func _refresh_ui() -> void:
 			"world3_explore1": "Una aldea a su medida",
 			"world2_mission1": "Rincones para compartir",
 			"world3_mission1": "Una fiesta a la medida",
-			"world4_mission1": "Los encargos de la aldea",
+			"world4_mission1": "Un lugar para volver",
 			"village_home": "Tu aldea"
 		}
 		if GameManager.session.resume_scene_key in visits:

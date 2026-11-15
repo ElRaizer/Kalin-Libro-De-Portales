@@ -41,7 +41,8 @@ const TEXT := [
 	"return_scene",
 	"recall_text",
 	"board_variant",
-	"district"
+	"district",
+	"replay_run"
 ]
 const LISTS := [
 	"known",
@@ -83,6 +84,7 @@ const OBJECTS := [
 	"walk_target"
 ]
 const REPLAY_KEYS := [
+	"complete",
 	"guess_targets",
 	"board_variant",
 	"plan",
@@ -163,7 +165,7 @@ static func _scaffold(scaffold: Dictionary) -> Dictionary:
 			scaffold.mode = int(clampf(float(scaffold.mode), 0, 2))
 		else:
 			scaffold.erase("mode")
-	for key: String in ["slots", "history"]:
+	for key: String in ["slots", "history", "corrections"]:
 		if scaffold.has(key) and scaffold[key] is not Array:
 			scaffold.erase(key)
 	return scaffold
@@ -175,4 +177,10 @@ static func replay_state(value: Dictionary) -> Dictionary:
 	for key: String in REPLAY_KEYS:
 		if state.has(key):
 			previous[key] = state[key]
+	var prior: Variant = state.get("previous_variation", {})
+	if (
+		state.get("complete", false) == true
+		or (prior is Dictionary and prior.get("complete") == true)
+	):
+		previous.complete = true
 	return {"previous_variation": previous}.duplicate(true)

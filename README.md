@@ -45,14 +45,13 @@ La [revisión visual](docs/learning_and_missions.md) añade una introducción m�
 peticiones y tarjetas grandes, pistas graduales, bloques de tres peticiones en
 taller y comida, reacciones visuales a las elecciones y cinco situaciones
 narrativas que se animan solas en ciclos continuos. El libro tiene pestañas ilustradas y `Esc`
-abre la pausa. Las pruebas y capturas verifican la implementación; la prueba
-con niños sigue pendiente.
+abre la pausa. Las pruebas y capturas verifican la implementación; el testeo exploratorio de InnovaFest con jóvenes y adultos aportó observaciones de usabilidad. La prueba con el público infantil sigue pendiente.
 
 ## Aprendizaje y misión de encargos
 
-Las páginas cuentan descubrimientos. El libro distingue además práctica, primer recuerdo y recuperaciones sin ayuda en situaciones separadas. Las rondas de recuerdo comienzan por escribir sin dibujos de solución. Un primer error activa completar la palabra y un segundo error activa los bloques, sin selector de modalidad. Las partes correctas de una frase se conservan. Consultar el libro, recibir pistas o corregir errores se registra como práctica apoyada. Los apoyos y las posiciones de las piezas se guardan por intento.
+Las páginas cuentan descubrimientos. El libro distingue además práctica, primer recuerdo y recuperaciones sin ayuda en situaciones separadas. Las rondas de recuerdo comienzan por escribir sin dibujos de solución. Un primer error muestra huecos conservando lo acertado. Si se corrige al menos una parte, se mantienen los huecos; si no hay ninguna corrección nueva, aparecen los bloques, sin selector de modalidad. Las partes correctas de una frase se conservan. Consultar el libro, recibir pistas o corregir errores se registra como práctica apoyada. Los apoyos y las posiciones de las piezas se guardan por intento.
 
-Tras la casa y el taller hay encargos para preparar rincones y una fiesta. Tras la historia del portal, **Los encargos de la aldea** permite caminar, recibir peticiones, crear objetos, transportarlos y entregarlos a sus destinatarios. Cada visita selecciona tres necesidades distintas del catálogo permitido para su capítulo y prioriza palabras con menos evidencia de recuerdo. Las 28 combinaciones válidas de objeto y cualidad varían entre partidas, junto con sus destinatarios; se conservan al continuar. También se puede abrir `scenes/worlds/world4/mision_encargos_aldea.tscn` con F6.
+Tras la casa y el taller hay encargos para preparar rincones y una fiesta. Tras la señal del portal, **Un lugar para volver** permite caminar, recibir peticiones, crear objetos, transportarlos y dejar un espacio para reuniones futuras. Cada visita selecciona tres necesidades distintas del catálogo permitido para su capítulo y prioriza palabras con menos evidencia de recuerdo. Las 28 combinaciones válidas de objeto y cualidad varían entre partidas, junto con sus destinatarios; se conservan al continuar. También se puede abrir `scenes/worlds/world4/mision_encargos_aldea.tscn` con F6.
 
 El vocabulario fue cotejado documentalmente con la UADY; las fuentes por entrada y los cambios se detallan en [docs/vocabulary.md](docs/vocabulary.md). Las frases completas y pronunciaciones siguen pendientes de revisión con personas hablantes. El diseño de aprendizaje, la misión y la persistencia vigente se explican en [docs/learning_and_missions.md](docs/learning_and_missions.md).
 
@@ -72,7 +71,7 @@ Cada **mundo** representa una mecánica. Los **niveles** de un mismo mundo reuti
 | 4 | 2 | Las Piedras que Cuentan | Numeración maya de puntos, barras y concha: números sorteados del 1 al 50 |
 | 5 | 1 | El Portal de Regreso | Recapitulación, cortesía y despedida |
 
-El orden de progreso es Mundo 1 completo → Mundo 2 → Mundo 3 → Mundo 4 → Mundo 5. El último mundo recupera los fragmentos finales del libro y cierra la aventura con el portal de regreso.
+El orden de progreso es Mundo 1 completo → Mundo 2 → Mundo 3 → Mundo 4 → Mundo 5. El último mundo reúne lo aprendido para abrir el paso a casa; después llegan la despedida personal y el cruce. El dibujo que Kalin dejó sin terminar al principio recibe un camino hacia la aldea al regresar. La [continuidad vigente](docs/adventure.md#continuidad-narrativa-vigente) explica las reglas del libro y la función de cada etapa.
 
 La interfaz muestra páginas recuperadas. Los puntos mágicos abren diseños una sola vez; las copias y los ensayos son gratuitos. Cada palabra acredita como máximo 10 puntos según el apoyo usado. Comprar diseños nunca bloquea el acceso a la historia.
 
@@ -118,11 +117,14 @@ repasa lo aprendido en el nivel anterior y presenta lo del siguiente.
 | 8 | Después del Mundo 4 | Los amigos alimentados, mediante una escena | El portal de regreso, *Bix a beel* y *Yuum bo'otik* |
 | 9 | Después del Mundo 5 (epílogo) | Animales y frases de cortesía | Despedida y regreso de Kalin a casa (cinemática final) |
 
-El hilo narrativo sigue el GDD: el huracán borró los caminos (Mundo 1) y se
-llevó los muebles de la aldea (Mundo 2). Los animales piden después objetos a
-su medida (Mundo 3) y comida (Mundo 4). Por último, las palabras amables
-completan el libro y abren el portal (Mundo 5). Con cada capítulo Kalin
-recupera páginas de su Libro de Hechizos.
+El portal lleva a Kalin hasta una isla durante un huracán. La tormenta dispersa
+las páginas del libro, apaga sus palabras, rompe los caminos (Mundo 1) y se lleva
+los muebles (Mundo 2). Kalin y los habitantes reconstruyen juntos sus espacios,
+adaptan objetos para compartir (Mundo 3) y preparan comida y un reparto de semillas
+(Mundo 4). Comprender y usar las palabras devuelve su luz al libro; agradecer y
+despedirse cierran el camino de regreso (Mundo 5). Kalin extraña su casa mientras
+encuentra un lugar entre sus nuevos amigos. La [continuidad vigente](docs/adventure.md)
+describe las reglas de esta ficción y los recuerdos de cada partida.
 
 Los capítulos se pueden saltar con **Saltar historia**. `Esc` abre la pausa. **Continuar**
 retoma la escena y el momento guardados. En partidas antiguas sin punto de
@@ -174,18 +176,19 @@ magia sigue ocurriendo en los niveles.
 |---|---|---|
 | Camino a la Casa Maya | Capítulo 5 y la cinemática de la casa vacía | `mayak`, `lak`, `k'áan`, `k'áanche'`, `janal` |
 | La milpa | Capítulo 7 y el Mundo 4 | `ja'`, `ja'as`, `ich`, `K'úum` |
-| El camino al portal | Los encargos de la aldea y el Mundo 5 | `Bix a beel`, `Yuum bo'otik`, `Ka xi'ik tech jats'uts`, `Tak ti' uláak' k'iin` |
+| El camino al portal | Un lugar para volver y el Mundo 5 | `Bix a beel`, `Yuum bo'otik`, `Ka xi'ik tech jats'uts`, `Tak ti' uláak' k'iin` |
 
 ### Cinemáticas y animaciones
 
-Además de los capítulos, tres cinemáticas cortas avanzan solas (un clic las
-adelanta y **Saltar cinemática** las omite):
+Además de los capítulos, tres cinemáticas cortas esperan **Continuar**.
+**A tu ritmo** permite activar el avance automático; **Saltar cinemática**
+está disponible al repetir una visita terminada:
 
 | Cinemática | Momento | Qué muestra |
 |---|---|---|
-| Prólogo · La noche del huracán | Entre la introducción y la exploración de la orilla | El huracán con lluvia, viento y relámpagos; las páginas del libro caen como estrellas; Kalin despierta dormido en la orilla |
+| Prólogo · La noche del huracán | Entre la introducción y la exploración de la orilla | Kalin protege su libro; la tormenta dispersa las páginas; al amanecer sigue las huellas hasta la aldea |
 | Intermedio · La Casa Maya vacía | Entre el Capítulo 5 y el Mundo 2 | Kalin y sus amigos caminan al atardecer hasta la Casa Maya, la encuentran sin muebles y Kalin abre su libro |
-| Epílogo · Regreso a casa | Entre el Capítulo 9 y el menú | Kalin cruza el portal, las páginas vuelven al libro y despierta en su cuarto |
+| Epílogo · Regreso a casa | Entre el Capítulo 9 y el menú | Kalin vacila al despedirse, cruza el portal y reconoce en su cuarto el recuerdo que eligió en la aldea |
 
 Los capítulos también usan estas animaciones: fondos nuevos con fundido
 (noche del huracán, Casa Maya por dentro, atardecer en la aldea, milpa y portal
@@ -258,9 +261,7 @@ estado y criterios de aceptación. Taller y comida conservan el arte SVG y prese
 una petición estable con campos de respuesta verticales. Los paseos permiten
 interpretar fichas conocidas y consultar su traducción. **Mi aldea** ofrece barrios,
 jardín con almacén, mesa de trazos y sala de retos opcional. Las entregas muestran
-el uso del objeto y una celebración conjunta, sin otro menú obligatorio de acomodo. El libro incluye
-**Ver mi práctica**, con evidencia diferenciada y orientación de controles separada
-de pistas de contenido. El formato 9 requiere reiniciar partidas de otros formatos
+el uso del objeto y una celebración conjunta, sin otro menú obligatorio de acomodo. El libro utiliza sellos laterales y pronunciación circular; la evidencia diferenciada permanece en el registro de aprendizaje, con orientación de controles separada de pistas de contenido. El formato 9 requiere reiniciar partidas de otros formatos
 desde el menú; no se borran automáticamente.
 
 ## Trabajo pendiente

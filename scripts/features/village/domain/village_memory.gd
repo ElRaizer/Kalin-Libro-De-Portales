@@ -17,23 +17,53 @@ static func options(visits: Array[Dictionary], gifts: Array[ExerciseEntry]) -> A
 			"item": "",
 			"quality": ""
 		}
-		var visit: Dictionary = visits[index]
 		var fallback: Dictionary = memory.duplicate(true)
-		var delivered: Array[int] = ExerciseProgress.restore_markers(visit.get("delivered"), 3)
-		var combinations: Variant = visit.get("combination_tasks")
-		var residents: Variant = visit.get("residents")
-		if not delivered.is_empty() and combinations is Array and residents is Array:
-			var task: int = delivered[0]
-			if task < combinations.size() and task < residents.size():
-				if combinations[task] is String and residents[task] is String:
-					var parts: PackedStringArray = combinations[task].split("|")
-					if parts.size() == 2 and CombinationCatalog.allowed(combinations[task]):
-						memory.animal = residents[task]
-						memory.item = parts[0]
-						memory.quality = parts[1]
-						memory.title = TITLES[index]
+		var delivered: Array[Dictionary] = (
+			delivered_moments(visits[index], index) if index < visits.size() else []
+		)
+		if not delivered.is_empty():
+			memory = delivered[0]
 		var normalized: Dictionary = normalize(memory)
 		result.append(normalize(fallback) if normalized.is_empty() else normalized)
+	return result
+
+
+## Sólo las entregas confirmadas pueden convertirse en recuerdos de un habitante.
+static func for_animal(visits: Array[Dictionary], animal: String) -> Dictionary:
+	for index: int in range(mini(visits.size(), KEYS.size()) - 1, -1, -1):
+		for moment: Dictionary in delivered_moments(visits[index], index):
+			if moment.animal == animal:
+				return moment
+	return {}
+
+
+static func delivered_moments(visit: Dictionary, chapter: int) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	if chapter not in range(KEYS.size()):
+		return result
+	var combinations: Variant = visit.get("combination_tasks")
+	var residents: Variant = visit.get("residents")
+	if combinations is not Array or residents is not Array:
+		return result
+	for task: int in ExerciseProgress.restore_markers(visit.get("delivered"), 3):
+		if task >= combinations.size() or task >= residents.size():
+			continue
+		if combinations[task] is not String or residents[task] is not String:
+			continue
+		var parts: PackedStringArray = combinations[task].split("|")
+		if parts.size() != 2 or not CombinationCatalog.allowed(combinations[task]):
+			continue
+		var moment: Dictionary = normalize(
+			{
+				"kind": KEYS[chapter],
+				"title": TITLES[chapter],
+				"animal": residents[task],
+				"item": parts[0],
+				"quality": parts[1]
+			}
+		)
+		if not moment.is_empty():
+			result.append(moment)
 	return result
 
 

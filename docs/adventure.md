@@ -1,5 +1,67 @@
 # Revisión de aventura, interacción y comodidad
 
+## Continuidad narrativa vigente
+
+El portal lleva a Kalin desde su cuarto hasta una isla durante un huracán. Sólo
+la tormenta dispersa las páginas y apaga sus palabras; también daña los caminos y
+los hogares. Kalin conserva la cubierta y recoge una primera página en la orilla.
+Los vecinos encuentran hojas físicas al reabrir los senderos; en el reencuentro
+reúnen también las que aún están apagadas. Comprender y usar sus palabras devuelve
+la tinta y la luz. El libro conserva los caminos vividos, incluido el de vuelta;
+Miis propone esa posibilidad al observar la marca de la cubierta, antes de que
+Kalin pueda comprobarla. Las páginas no aparecen como pago de un encargo.
+Su magia básica puede apartar una palmera, pero crear objetos y darles cualidades
+requiere las palabras del libro. Son reglas de esta ficción, no afirmaciones sobre
+las prácticas culturales o la lengua maya.
+
+Kalin deja un dibujo de casa sin terminar antes de cruzar por curiosidad. Primero
+busca regresar, decide abrir el camino con los vecinos y después extraña su cuarto
+mientras encuentra un lugar entre sus amigos. Al final vacila antes de despedirse.
+Peek' confía el cuidado de los caminos a otros para acompañarlo; Miis invita a su
+rincón; Kaax pide ayuda; Áak observa el espacio que necesitan dos platos. Los
+habitantes aportan conocimiento, trabajo y semillas: el regreso se consigue con
+su ayuda recíproca.
+
+El reencuentro tras reparar los caminos recupera las visitas; la casa ofrece
+refugio; las cualidades permiten que todos tengan sitio; la comida necesita
+escuchar peticiones y el tianguis organiza el reparto. El último encargo,
+**Un lugar para volver**, nace del deseo de Kalin de dejar un espacio para las
+reuniones futuras. El portal primero señala un camino, después abre el paso al
+reunir lo aprendido y sólo se cruza tras la despedida. Contar registra las semillas;
+al confirmar una cantidad, una bandeja muestra el resultado. No cambia los números,
+la tablilla ni la evidencia educativa. Reanudar muestra la cantidad confirmada sin
+volver a animar su llegada ni registrar otro reparto.
+
+El portal conserva la recuperación evaluada de vocabulario. Después, la despedida
+permite elegir qué expresión conocida comunicar, con traducción visible, sin una
+segunda respuesta obligatoria. Cuenta como práctica apoyada. Cada amigo sólo evoca
+una entrega concreta si su destinatario y objeto constan en las misiones guardadas;
+si no hay una entrega suya, utiliza el texto narrativo de autor. El recuerdo personal
+elegido vuelve a aparecer al llegar al cuarto. Después, Kalin añade al dibujo de
+casa un camino hacia la aldea y deja el único libro sobre el escritorio. La imagen
+se reconstruye al reanudar sin repetir su llegada ni añadir evidencia educativa.
+El regreso reconoce algo vivido; el cierre no presenta la aventura como un sueño.
+
+Las cinemáticas esperan **Continuar** de manera predeterminada. **A tu ritmo**
+permite activar su avance automático; cambiar esa preferencia conserva el momento
+actual. La preferencia vive con los ajustes de comodidad, fuera de la partida.
+Las poses de proteger el libro, pensar en casa y despedirse mantienen el estilo de
+recortes. Kalin intenta retener la hoja que arranca el viento; sostiene el libro
+con la mirada baja al extrañar casa; vacila durante la frase de despedida y saluda
+después. Antes del cruce da pasos y mira atrás. La mesa se ensancha sobre el mismo
+suelo y Áak baja el segundo plato desde su mano al nuevo espacio. Al restaurar,
+la transformación ya presentada queda resuelta; el movimiento reducido conserva
+el resultado y la pausa detiene el trabajo de presentación.
+
+Los puntos del jardín guardan diseños para construir copias libremente. No compran
+el conocimiento de las palabras ni condicionan la magia de la campaña. La
+despedida utiliza el sonido de pasar página, sin anunciar una respuesta correcta.
+
+Se conserva el orden de escenas, los índices de momentos y el formato de partida 9.
+Los apartados fechados siguientes describen ampliaciones anteriores; este apartado
+define la continuidad actual. La revisión con hablantes y las sesiones con niños
+siguen pendientes: las pruebas automáticas no certifican su comprensión ni su recepción.
+
 ## Ampliación del 24 de octubre de 2026
 
 El objetivo es aumentar las decisiones y las consecuencias dentro del mundo,
@@ -29,7 +91,7 @@ o repetir el nivel anterior desde el mapa.
 ### Recordar, reconstruir y escribir
 
 `RecallPanel` comienza por escritura libre en cada ronda de recuerdo y encargo.
-El primer error activa Completar; el segundo activa Bloques. No hay selector ni
+El primer error activa huecos sobre las partes pendientes. Una respuesta que añade al menos una corrección válida mantiene los huecos; una respuesta sin correcciones nuevas activa Bloques. No hay selector ni
 botón de tarjetas durante el recuerdo. Se conservan las partes correctas de una
 frase. Una respuesta vacía o unas casillas incompletas no consumen un intento.
 El libro continúa disponible, y consultarlo mantiene la marca de apoyo.
@@ -137,7 +199,7 @@ de Áak. Kay prepara los muebles para sus visitas de la orilla.
 Cada pedido contiene los bancos `requests` (tres peticiones) y `thanks` (dos
 agradecimientos). Se eligen por separado según la semilla, la escena, el habitante
 y el pedido; las seis parejas de textos pueden aparecer. Ambas variantes permanecen
-estables durante la visita y al reanudar, también en las opciones, el diario, la
+estables durante la visita y al reanudar, también en las opciones, las tarjetas del taller, la
 mesa y los avisos de error. No se modifican las respuestas ni el formato de guardado.
 Los vecinos y los amigos ya
 ayudados rotan quince saludos propios sin repetir hasta completar el banco. Los
@@ -170,7 +232,7 @@ en los seis paseos/misiones. Con renderer real exporta el atlas y capturas dentr
 de la aldea, incluyendo escritorio y teléfono horizontal:
 
 ```powershell
-godot_console.exe --path . --script res://tests/validate_village_composition.gd -- --capture=C:/ruta/a/capturas
+.\tools\validate.ps1 -GodotPath $env:GODOT_BIN -Suite validate_village_composition -CaptureDirectory "C:/ruta/a/capturas"
 ```
 
 Las nueve variantes SVG añadidas al catálogo ampliado se regeneran con `python tools/build_combination_art.py`; los demás SVG permanecen editables en `Arte/aldea/uso/`.
@@ -178,11 +240,11 @@ Las nueve variantes SVG añadidas al catálogo ampliado se regeneran con `python
 Para generar capturas actuales con un renderizador real:
 
 ```powershell
-godot_console.exe --path . --script res://tests/validate_game_expansion.gd -- --capture=C:/ruta/a/capturas
+.\tools\validate.ps1 -GodotPath $env:GODOT_BIN -Suite validate_game_expansion -CaptureDirectory "C:/ruta/a/capturas"
 ```
 
 Se revisan composiciones a 1920 × 1080, 1280 × 720, 960 × 540 y 640 × 360.
-Las pruebas de niños, exportación móvil y teclado en hardware real siguen pendientes.
+Se realizó un testeo exploratorio en InnovaFest de Mérida, principalmente con participantes de finales de preparatoria e inicios de universidad, en una laptop y una partida compartida. Aporta observaciones de usabilidad, no evidencia de aprendizaje individual ni de aceptación infantil. Siguen pendientes las pruebas con el público infantil y la exportación móvil en hardware objetivo.
 
 ## Registro anterior
 
@@ -232,9 +294,7 @@ que dos usos durante una partida demuestren retención a largo plazo.
 - Los errores al guardar tienen un aviso visible y una acción de reintento. Si la
   partida no pudo leerse, reintentar vuelve a leerla y no escribe datos vacíos encima.
 
-Las teclas de vocales acentuadas y apóstrofo **permanecen ocultas por decisión
-del autor**, pendientes de consulta con el profesor. No deben volver a contarse
-como un fallo accidental de interfaz. Se conserva la entrada mediante teclado.
+Las teclas de vocales acentuadas y apóstrofo permanecen visibles tras la decisión del autor basada en el testeo exploratorio. La inserción conserva la posición y el foco de escritura.
 
 ## Presentación y comodidad
 
@@ -275,7 +335,7 @@ paisaje en los extremos de cinco exploraciones. Puede generar
 capturas con renderer real:
 
 ```powershell
-godot_console.exe --path . --script res://tests/validate_adventure_polish.gd -- --capture=C:/ruta/a/capturas
+.\tools\validate.ps1 -GodotPath $env:GODOT_BIN -Suite validate_adventure_polish -CaptureDirectory "C:/ruta/a/capturas"
 ```
 
 `tests/validate_tutorial_gestures.gd` comprueba clics sin desplazamiento, posiciones
@@ -290,7 +350,6 @@ con solución comprobada se documentan en [docs/replayability.md](replayability.
 
 - Comprensión y duración real de las actividades con el público objetivo.
 - Revisión de enunciados y contexto cultural con personas hablantes.
-- Decisión del profesor sobre las teclas adicionales de escritura.
 - Tamaño de texto ajustable: requiere recomponer y comprobar las pantallas actuales.
 - Exportaciones finales y mediciones en dispositivos objetivo; el equipo no tiene
   instalada la plantilla de exportación de Godot 4.6.3.
@@ -300,8 +359,9 @@ con solución comprobada se documentan en [docs/replayability.md](replayability.
 ## Plaza y cierre vigentes
 
 Las misiones de Casa, Fiesta y Comida distribuyen los tres grupos en un recorrido
-con profundidad, cámara y espacio entre aportes. Su orden es elegible. El diario
-«Encargos y lugares» permite ir directamente mediante toque, Tab y Enter.
+con profundidad, cámara y espacio entre aportes. Su orden es elegible. Las tarjetas
+del taller reúnen los encargos; los habitantes y los letreros conservan la
+interacción por toque, Tab y Enter.
 Entregar coloca el objeto directamente en su lugar funcional, sin otro menú de
 ubicación. El acomodo libre pertenece al jardín. Mirada, alcance y uso tienen
 gestos específicos; la comida permanece en un recipiente apoyado, Ma’ax lleva
@@ -309,6 +369,14 @@ su porción con una mano visible, las aves alcanzan el recipiente con el pico y
 Kay recibe desde el agua. La pausa y el movimiento reducido conservan los apoyos.
 
 El formato vigente 9 conserva el recuerdo personal, la economía y el jardín.
+
+Las mejoras del testeo exploratorio de InnovaFest incorporan tarjetas laterales
+de encargos, borradores independientes y un solo objeto transportado. Los avisos
+de teclado aparecen cerca de Kalin tras una pausa y respetan el movimiento reducido.
+La escala de Kalin sigue la profundidad del suelo; las pantallas de cierre y descanso
+quedan encima de las ilustraciones de objetos. Las teclas de acentos y apóstrofo
+permanecen visibles. Las regresiones están en `tests/validate_festival_feedback.gd`.
+
 El cierre permite elegir un momento en lugar de emparejar páginas idénticas.
 `memory` guarda una preferencia personal validada, y no afecta a los contadores de
 aprendizaje. Las comprobaciones y capturas de la continuación se registran en

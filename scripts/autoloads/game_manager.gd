@@ -55,10 +55,11 @@ func record_learning(
 	context: String,
 	supported: bool = false,
 	mistakes: int = 0,
-	evidence: Dictionary = {}
+	evidence: Dictionary = {},
+	award_points: bool = true
 ) -> void:
 	var result: Dictionary = session.record_learning(
-		words, phase, context, supported, mistakes, evidence
+		words, phase, context, supported, mistakes, evidence, award_points
 	)
 	if not result.changed:
 		return
@@ -157,8 +158,8 @@ func all_levels_completed() -> bool:
 	return next_unlocked_scene() == "main_menu"
 
 
-func go_to_scene(key: String) -> void:
-	_navigation().go_to_scene(key)
+func go_to_scene(key: String) -> bool:
+	return _navigation().go_to_scene(key)
 
 
 func reset_save() -> void:
@@ -173,10 +174,10 @@ func reset_save() -> void:
 	progress_reset.emit()
 
 
-func _save() -> void:
+func _save() -> bool:
 	# No sustituir una partida ilegible por datos vacíos al abrir el menú.
 	if load_failed:
-		return
+		return false
 	var data: Dictionary = session.snapshot()
 	var error: Error = _get_save_repository().save_progress(data)
 	_set_save_status(
@@ -188,6 +189,7 @@ func _save() -> void:
 	)
 	if error != OK:
 		push_warning("GameManager: no se pudo guardar el progreso (error %d)" % error)
+	return error == OK
 
 
 func _set_save_status(message: String) -> void:
@@ -262,7 +264,12 @@ func mark_tutorial_seen(key: String) -> void:
 
 func quit_game() -> void:
 	checkpoint_current_scene()
-	_save()
+	if not _save():
+		return
+	_request_quit()
+
+
+func _request_quit() -> void:
 	get_tree().quit()
 
 

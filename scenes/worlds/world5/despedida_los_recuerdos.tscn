@@ -14,25 +14,25 @@
 [sub_resource type="Resource" id="gift0"]
 script = ExtResource("entry")
 animal = "Peek'"
-request = "Peek' cuidó los senderos conmigo. Quiero agradecerle su ayuda."
+request = "Peek' seguirá cuidando los senderos. ¿Qué quieres decirle antes de partir?"
 correct = "Yuum bo'otik"
-translation = "Antes los caminos estaban rotos. Ahora volveré a recorrerlos para visitar a mis amigos."
+translation = "¡Yuum bo'otik, Kalin! Cuidaré los caminos que recuperamos para que podamos volver a encontrarnos."
 options = Array[String](["Bix a beel", "Yuum bo'otik", "Ka xi'ik tech jats'uts", "Tak ti' uláak' k'iin"])
 
 [sub_resource type="Resource" id="gift1"]
 script = ExtResource("entry")
 animal = "Miis"
-request = "Miis me desea que tenga un buen viaje. Elige esa expresión."
+request = "Miis te ha hecho un sitio en la aldea. ¿Qué quieres compartir al despedirte?"
 correct = "Ka xi'ik tech jats'uts"
-translation = "Cada vez que descanse en mi hamaca recordaré la ayuda que me diste."
+translation = "Buen viaje, Kalin. Me alegró hacerte un sitio. Aquí podrás volver."
 options = Array[String](["Bix a beel", "Yuum bo'otik", "Ka xi'ik tech jats'uts", "Tak ti' uláak' k'iin"])
 
 [sub_resource type="Resource" id="gift2"]
 script = ExtResource("entry")
 animal = "Kaax"
-request = "Nos veremos otro día. Elige cómo despedirnos hasta entonces."
+request = "Kaax espera volver a verte para otra merienda. ¿Cómo quieres despedirte?"
 correct = "Tak ti' uláak' k'iin"
-translation = "Siempre habrá un plato para ti en nuestra mesa. ¡Vuelve a visitarnos!"
+translation = "Nos veremos otro día. La próxima merienda la prepararemos juntos. ¡Vuelve a visitarnos!"
 options = Array[String](["Bix a beel", "Yuum bo'otik", "Ka xi'ik tech jats'uts", "Tak ti' uláak' k'iin"])
 
 [node name="DespedidaJugable" instance=ExtResource("base")]
@@ -41,7 +41,7 @@ free_roam = true
 chapter_title = "Los recuerdos que llevamos"
 next_scene_key = "world5_story1"
 objective_text = "Despídete de tus amigos y elige tu recuerdo."
-intro_lines = Array[String](["El portal ya tiene luz. Antes de partir, compartiré un último momento con mis amigos y elegiré qué momento quiero llevar a casa."])
+intro_lines = Array[String](["El portal está listo. Quiero volver a casa... y también me cuesta dejar a mis amigos. Me despediré y elegiré un recuerdo para llevar."])
 gifts = Array[ExtResource("entry")]([SubResource("gift0"), SubResource("gift1"), SubResource("gift2")])
 
 [node name="Terreno" parent="."]

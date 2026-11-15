@@ -8,11 +8,12 @@ NodePath("Shade/Panel"): Rect2(290, 30, 700, 664),
 NodePath("Shade/Panel/ResumeButton"): Rect2(28, 82, 644, 72),
 NodePath("Shade/Panel/MenuButton"): Rect2(28, 166, 644, 72),
 NodePath("Shade/Panel/ComfortTitle"): Rect2(28, 250, 644, 36),
-NodePath("Shade/Panel/ReducedMotion"): Rect2(28, 290, 644, 60),
-NodePath("Shade/Panel/ReducedFlashes"): Rect2(28, 358, 644, 60),
-NodePath("Shade/Panel/InstantText"): Rect2(28, 426, 644, 60),
-NodePath("Shade/Panel/ComfortHint"): Rect2(28, 506, 644, 48),
-NodePath("Shade/Panel/VolumeControls"): Rect2(28, 562, 644, 84),
+NodePath("Shade/Panel/ReducedMotion"): Rect2(28, 290, 644, 52),
+NodePath("Shade/Panel/ReducedFlashes"): Rect2(28, 348, 644, 52),
+NodePath("Shade/Panel/InstantText"): Rect2(28, 406, 644, 52),
+NodePath("Shade/Panel/ManualCinematics"): Rect2(28, 464, 644, 52),
+NodePath("Shade/Panel/ComfortHint"): Rect2(28, 524, 644, 34),
+NodePath("Shade/Panel/VolumeControls"): Rect2(28, 570, 644, 76),
 NodePath("Shade/Panel/Title"): Rect2(28, 20, 644, 42)
 }
 hidden = Array[NodePath]([])

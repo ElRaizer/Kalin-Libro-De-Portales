@@ -38,6 +38,7 @@ var beat_index: int = -1
 var interaction: StoryInteraction = StoryInteraction.new()
 var _narrative_ready: bool = false
 var _navigating: bool = false
+var _completed: bool = false
 var _layout_seed: int = 1
 var _guess_targets: Dictionary = {}
 var _text_tween: Tween
@@ -84,7 +85,7 @@ func _ready() -> void:
 		push_error("Configuración del capítulo: " + "; ".join(issues))
 		return
 	chapter_label.text = chapter_title
-	skip_button.pressed.connect(_finish_story)
+	skip_button.pressed.connect(_skip_story)
 	word_bubble.visible = false
 	celebration.visible = false
 	auto_timer.timeout.connect(_on_auto_timer_timeout)
@@ -111,6 +112,8 @@ func _ready() -> void:
 	$UI/MenuButton.pressed.connect(_on_menu_pressed)
 	_start_kalin_idle()
 	var state: Dictionary = GameManager.get_scene_state(self)
+	_completed = state.get("complete", false) == true
+	skip_button.visible = ReplayVariation.can_skip(state)
 	interaction.setup(actors_root, choices_box, word_bubble, guide, continue_button)
 	interaction.entry_distance = entry_distance
 	interaction.entry_stagger = entry_stagger
@@ -129,6 +132,8 @@ func _ready() -> void:
 			_apply_mood(beats[index].mood)
 	beat_index = saved_beat - 1
 	_next_beat()
+	if state.has("beat"):
+		vignette.finish_reveal()
 	interaction.restore_beat(state)
 
 
@@ -183,6 +188,7 @@ func _show_beat(beat: StoryBeat) -> void:
 	_apply_kalin_pose(beat.kalin_pose)
 	var motion: StoryBeat.KalinMotion = _effective_motion(beat)
 	var waking: bool = _animator.sleeping and motion == StoryBeat.KalinMotion.QUIETO
+	_animator.set_gesture_texture(beat.gesture_texture)
 	_play_kalin_motion(motion)
 	for effect_name: String in ["ConfetiPaginas", "ConfetiChispas"]:
 		(effects_root.get_node(effect_name) as CPUParticles2D).visible = (
@@ -191,6 +197,7 @@ func _show_beat(beat: StoryBeat) -> void:
 	vignette.show_situation(
 		"" if beat.visual_scene == "ninguna" else beat.visual_scene, beat.visual_solved
 	)
+	_animator.present_page(beat.page_motion, beat.page_word)
 	actors_root.visible = beat.visual_scene == "ninguna" or beat.visual_scene.is_empty()
 	speaker_label.text = _speaker_name(beat.speaker)
 	speaker_label.visible = speaker_label.text != ""
@@ -214,7 +221,7 @@ func _show_beat(beat: StoryBeat) -> void:
 	interaction.refresh()
 	if beat.kind in [StoryBeat.Kind.DIALOGO, StoryBeat.Kind.EXPLORAR]:
 		hint_label.hide()
-		if beat.auto_advance <= 0:
+		if beat.auto_advance <= 0 or AccessibilityManager.manual_cinematics:
 			guide.watch_continue(continue_button, 7.0)
 	else:
 		hint_label.show()
@@ -225,7 +232,7 @@ func _show_beat(beat: StoryBeat) -> void:
 
 
 func _on_vignette_mood(expression: String) -> void:
-	if not kalin.visible or _animator.sleeping:
+	if not kalin.visible or _animator.sleeping or _animator.has_gesture():
 		return
 	kalin.texture = (
 		normal_texture
@@ -271,6 +278,8 @@ func apply_comfort_settings() -> void:
 	interaction.apply_comfort_settings()
 	if get_node("/root/AccessibilityManager").instant_text:
 		_complete_text()
+	if beat_index >= 0 and not _navigating:
+		_schedule_auto_advance(current_beat())
 
 
 func _complete_text() -> void:
@@ -336,7 +345,11 @@ func _show_title(title: String, subtitle: String) -> void:
 
 func _schedule_auto_advance(beat: StoryBeat) -> void:
 	auto_timer.stop()
-	if beat.auto_advance <= 0.0 or beat.kind != StoryBeat.Kind.DIALOGO:
+	if (
+		beat.auto_advance <= 0.0
+		or beat.kind != StoryBeat.Kind.DIALOGO
+		or AccessibilityManager.manual_cinematics
+	):
 		return
 	# Se espera a que termine de escribirse el texto y luego el tiempo indicado.
 	# Las escenas con texto esperan una lectura cómoda; se pueden adelantar.
@@ -349,7 +362,13 @@ func _schedule_auto_advance(beat: StoryBeat) -> void:
 
 
 func _on_auto_timer_timeout() -> void:
-	if _navigating or not can_continue():
+	if (
+		_navigating
+		or get_tree().paused
+		or AccessibilityManager.manual_cinematics
+		or _is_revealing_text()
+		or not can_continue()
+	):
 		return
 	_next_beat()
 
@@ -375,10 +394,34 @@ func _play_kalin_motion(motion: StoryBeat.KalinMotion) -> void:
 func _finish_story() -> void:
 	if _navigating:
 		return
+	_completed = true
+	_navigate_to(next_scene_key)
+
+
+func _navigate_to(key: String) -> void:
+	if _navigating:
+		return
 	_navigating = true
 	interaction.set_navigation_locked(true)
 	auto_timer.stop()
-	GameManager.go_to_scene(next_scene_key)
+	if GameManager.go_to_scene(key):
+		return
+	# El motor conserva esta escena; la presentación debe seguir utilizable también.
+	_navigating = false
+	beat_index = mini(beat_index, beats.size() - 1)
+	interaction.set_navigation_locked(false)
+	continue_button.disabled = not can_continue()
+	_set_hint("No se pudo abrir el destino. Puedes reintentar o volver al menú.", COLOR_HINT)
+	hint_label.show()
+	if can_continue():
+		continue_button.grab_focus()
+	else:
+		$UI/MenuButton.grab_focus()
+
+
+func _skip_story() -> void:
+	if skip_button.visible:
+		_finish_story()
 
 
 func _on_continue_pressed() -> void:
@@ -410,6 +453,7 @@ func get_checkpoint_state() -> Dictionary:
 	var saved: Dictionary = interaction.snapshot() if interaction != null else {}
 	saved.merge(
 		{
+			"complete": _completed,
 			"beat": maxi(beat_index, 0),
 			"layout_seed": _layout_seed,
 			"guess_targets": _guess_targets.duplicate(),
@@ -420,10 +464,7 @@ func get_checkpoint_state() -> Dictionary:
 
 
 func _on_menu_pressed() -> void:
-	_navigating = true
-	interaction.set_navigation_locked(true)
-	auto_timer.stop()
-	GameManager.go_to_scene("main_menu")
+	_navigate_to("main_menu")
 
 
 func get_configuration_issues() -> PackedStringArray:

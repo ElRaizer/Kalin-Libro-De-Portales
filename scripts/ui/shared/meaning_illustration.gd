@@ -127,11 +127,31 @@ func _layout_art() -> void:
 			quality_badge.show()
 			quality_badge.size = Vector2(width * 0.42, width * 0.32)
 			quality_badge.position = picture.position + Vector2(width * 0.63, -width * 0.04)
+		if not world_object:
+			_fit_presentation()
 		return
 	reference.hide()
 	quality_badge.hide()
 	picture.position = Vector2.ZERO
 	picture.size = size
+
+
+## Las tarjetas reservan un rectángulo; el mobiliario del mundo conserva su escala física.
+func _fit_presentation() -> void:
+	var bounds: Rect2 = Rect2(picture.position, picture.size)
+	var layers: Array[TextureRect] = [picture, world_front, world_mat, quality_badge]
+	for layer: TextureRect in layers:
+		if layer.visible:
+			bounds = bounds.merge(Rect2(layer.position, layer.size))
+	var available: Vector2 = (size - Vector2(12, 12)).max(Vector2.ONE)
+	# Reservar escalas distintas evita que ajustar al panel iguale grande y pequeño.
+	available *= 0.76 if quality == "mejen" else (1.0 if quality == "nojoch" else 0.88)
+	var factor: float = minf(1.0, minf(available.x / bounds.size.x, available.y / bounds.size.y))
+	var origin: Vector2 = (size - bounds.size * factor) * 0.5
+	for layer: TextureRect in layers:
+		if layer.visible:
+			layer.position = origin + (layer.position - bounds.position) * factor
+			layer.size *= factor
 
 
 func picture_rect() -> Rect2:

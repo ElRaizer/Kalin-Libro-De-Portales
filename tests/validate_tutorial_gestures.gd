@@ -181,11 +181,27 @@ func _exploration() -> void:
 func _boards() -> void:
 	for level: int in range(1, 5):
 		var scene: Node = await _scene("world1_level%d" % level)
+		var board: GridBoard = scene.grid_board
 		if scene.has_method("_toggle_preview"):
 			scene._show_help()
+			if not board.bridges.is_empty():
+				var center: Vector2 = (
+					board.cell_to_local_position(board.bridges[0])
+					+ Vector2.ONE * board.tile_size * 0.5
+				)
+				for direction: Vector2 in [Vector2.RIGHT, Vector2.DOWN]:
+					var demo: Array[Vector2] = []
+					for offset: int in [-1, 0, 1]:
+						demo.append(
+							(
+								board.get_global_transform_with_canvas()
+								* (center + direction * board.tile_size * offset)
+							)
+						)
+					_drag_hint(scene.guide, demo, "Cruce recto del puente")
+					scene._bridge_demo.custom_step(2.01)
 			_control_click(scene.guide, scene.preview_button, "Listo en tablero %d" % level)
 			scene._toggle_preview()
-		var board: GridBoard = scene.grid_board
 		var before: Dictionary = board.get_path_state().duplicate(true)
 		for index: int in range(board.words.size()):
 			var route: Array[Vector2i] = board.get_hint_path(index)
@@ -208,11 +224,16 @@ func _boards() -> void:
 						cursor == route.size() - 1
 						or (
 							board.grid_state[route[cursor].y][route[cursor].x]
-							== GridBoard.Cell.EMPTY
+							in [GridBoard.Cell.EMPTY, GridBoard.Cell.BRIDGE]
 						)
 					),
 					"La ayuda evita rocas, otras fichas y caminos"
 				)
+				if route[cursor] in board.bridges and cursor + 1 < route.size():
+					_check(
+						route[cursor + 1] - route[cursor] == step,
+						"La ayuda conserva el mismo piso y dirección al cruzar el puente"
+					)
 			_check(
 				board.get_hint_path(index, 2).size() <= 3,
 				"Los niveles avanzados sólo demuestran dos pasos"

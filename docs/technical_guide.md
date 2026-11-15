@@ -15,7 +15,7 @@ Esta guía explica cómo abrir, ejecutar y mantener el repositorio. La presentac
 3. Espera a que Godot importe los SVG y las escenas.
 4. Pulsa **F5** para ejecutar el juego completo.
 
-La escena principal es `res://scenes/ui/main_menu/main_menu.tscn`. **Jugar** abre una introducción breve, seguida del huracán y la exploración; **Continuar** recupera el punto guardado. **Saltar intro** pasa a la exploración de la isla.
+La escena principal es `res://scenes/ui/main_menu/main_menu.tscn`. **Jugar** abre una introducción breve, seguida del huracán y la exploración; **Continuar** recupera el punto guardado. **Saltar intro** sólo aparece al repetir una introducción terminada y continúa con el huracán.
 
 ## Configuración esencial
 
@@ -54,8 +54,9 @@ expresiones se asignan en `data/visual_catalog.tres`.
 | `kalin_interactuar` | `E`, `Espacio`, `Enter`, `Enter` del teclado numérico |
 
 En la aldea y las misiones con suelo libre, `↑`/`W` y `↓`/`S` controlan la
-profundidad. Un clic calcula una ruta alrededor de muebles y estanques. El diario
-«Encargos y lugares» conserva los accesos directos por teclado. Decorar cambia a
+profundidad. Un clic calcula una ruta alrededor de muebles y estanques. Los encargos
+se consultan en las tarjetas del taller; los habitantes y letreros conservan su
+botón de interacción por teclado. Decorar cambia a
 un modo explícito: flechas mueven la vista previa, Enter confirma y Escape cancela
 o sale. Las orientaciones de sillas y mesas usan vistas SVG distintas, sin girar el dibujo plano.
 
@@ -126,9 +127,12 @@ Sólo hay una actividad: formar el número pedido con clics. Se elige un piso de
 tablilla y se ponen granos, varitas o la concha. Cinco granos se juntan en una
 varita y veinte unidades suben como un grano al piso de arriba, dejando la concha
 si abajo no sobra nada. Un numeral es correcto cuando vale el número y, si sólo
-tiene veintenas, lleva la concha. Los números no se repiten en una partida y se
-derivan de `layout_seed`: al continuar se piden los mismos y **Repetir** sortea
-otros. El nivel no registra vocabulario ni evidencia de aprendizaje.
+tiene veintenas, lleva la concha. Los números no se repiten en una partida.
+Los planes nuevos progresan por bandas
+de cantidades pequeñas a grandes y garantizan una concha inferior cuando el rango
+la admite. Se derivan de `layout_seed` y se guardan completos: continuar conserva
+el plan y la tablilla; **Repetir** prepara otro plan dentro de la misma curva.
+El nivel no registra vocabulario ni evidencia de aprendizaje.
 
 El arte se genera con `python tools/build_counting_art.py`: amate, líneas rojas de
 códice, contorno negro, azul maya y ocre, sin `rgba()`.
@@ -143,6 +147,38 @@ script propio. En el Inspector se configuran:
 - `beats`: lista de recursos `StoryBeat`, uno por momento.
 
 Cada `StoryBeat` define:
+
+Los gestos `PROTECT_BOOK`, `THINK_HOME` y `FAREWELL` de `kalin_motion` mantienen
+recortes SVG editables. `gesture_texture` permite personalizar su dibujo desde el
+Inspector. `page_motion` (`NONE`, `SCATTER`, `RECOVER`) configura la página
+protagonista; `page_word` debe pertenecer al contenido ya vivido en ese momento.
+La transformación de la mesa muestra el espacio que necesitan dos platos.
+
+La despedida comienza con el libro abrazado y después levanta la mano. Para
+mantener la vacilación durante todo un diálogo, asigna
+`Arte/sprites/kalin_farewell_hesitate.svg` a `gesture_texture`; la frase sobre la
+dificultad de partir ya lo configura así. `CRUZA` incluye pasos, una mirada atrás y
+desaparición al atravesar la luz, conservando la escala relativa del Inspector.
+`THINK_HOME` utiliza una mirada baja y el libro entre los brazos. El último momento
+del regreso personaliza ese gesto con `kalin_home_rest.svg`, sin libro: el único
+ejemplar queda visible en el escritorio junto al dibujo terminado.
+
+La mesa compartida crece en ancho sobre el mismo apoyo. El `TableArm` editable de
+la viñeta une la mano de Áak con el segundo plato; la colocación empieza después
+de ampliar la mesa. `StoryScene` solicita `finish_reveal()` al restaurar un momento
+guardado. El resultado accesible es estable y no vuelve a representar la entrega.
+
+El dibujo sin terminar pertenece al fondo del cuarto compartido por introducción
+y regreso. `HomecomingMemory.completed_drawing` recibe desde la escena la capa
+transparente con el camino hacia la aldea y el libro sobre el escritorio. Sólo
+aparece en `drawing_beat`; reanudar muestra su estado final, sin nuevos campos de
+partida ni evidencia de aprendizaje. El recuerdo elegido se conserva en los
+momentos anteriores y deja libre el dibujo al cerrar.
+
+Las cinemáticas esperan al lector de forma predeterminada. **A tu ritmo → Avanzar
+cinemáticas al pulsar** conserva esa preferencia fuera del guardado. Desactivarla
+habilita `auto_advance`, que espera la escritura del texto y el intervalo de autor.
+Cambiar la preferencia durante la pausa no salta el momento actual.
 
 La revisión visual incorpora también `kind = EXPLORAR`, `visual_scene` (vacío,
 `camino`, `casa`, `tamano`, `hambre` o `portal`) y `visual_solved`. En EXPLORAR,
@@ -164,7 +200,7 @@ compartidos de presentación y ayuda.
 | `target_word` | Respuesta correcta en `ADIVINAR` o `ELEGIR`. En `ADIVINAR` no debe coincidir con `speaker`, porque su nombre en español delataría la respuesta. |
 | `options` | Palabras mayas que se ofrecen en `ELEGIR`; deben incluir `target_word`. |
 | `reveal_phrase`, `reveal_translation` | Frase completa que se muestra al acertar en `ELEGIR`. Es obligatoria para los adjetivos, cuya estructura en `VOCABULARY` usa el marcador `[sust.]`. |
-| `celebrate_page` | Muestra la animación "¡Página recuperada!", lanza páginas y chispas y hace saltar a Kalin. |
+| `celebrate_page` | Muestra "¡Página recuperada!" y la página protagonista. Kalin salta si no se configuró otro gesto. |
 
 Las propiedades de la categoría **Animación** convierten un capítulo en una
 cinemática. Todas son opcionales y, salvo `mood`, valen solo para su momento:
@@ -173,7 +209,7 @@ cinemática. Todas son opcionales y, salvo `mood`, valen solo para su momento:
 |---|---|
 | `mood` | Color ambiental: `DIA`, `ATARDECER`, `NOCHE`, `TORMENTA` o `AMANECER`. Cambia con una transición suave; `SIN_CAMBIO` conserva el anterior. Los colores están en `StoryScene.AMBIENT_COLORS`. |
 | `effects` | Casillas `Hojas`, `Lluvia`, `Muebles`, `Páginas` y `Chispas`. Se pueden combinar. Son nodos `CPUParticles2D` dentro de `Effects` en `story_scene.tscn`, así que su cantidad, velocidad y textura se ajustan en el Inspector. |
-| `kalin_motion` | `QUIETO`, `ENTRA` (camina desde la izquierda), `SALTA`, `TIEMBLA`, `DORMIDO` (acostado; en el siguiente momento se levanta) o `CRUZA` (camina hacia el portal de `bg_portal_isla.svg` y desaparece). |
+| `kalin_motion` | `QUIETO`, `ENTRA`, `SALTA`, `TIEMBLA`, `DORMIDO`, `CRUZA`, `PROTECT_BOOK`, `THINK_HOME` o `FAREWELL`. Los tres últimos usan los recortes de gesto descritos arriba. |
 | `screen_shake` | Sacude la pantalla, como un trueno. |
 | `flash` | Destello blanco, como un relámpago o la luz del portal. |
 | `title`, `subtitle` | Cartel central, por ejemplo "Mundo 3" y "Hechizos de Adjetivos". |
@@ -183,9 +219,9 @@ Cuando `background` cambia, el fondo nuevo entra con un fundido.
 
 Los capítulos 6 a 9 viven en `scenes/worlds/world2/` a `scenes/worlds/world5/` y usan a los
 seis animales de la aldea que también aparecen en los mundos 2, 3 y 4, con sus
-mismas peticiones. El capítulo 9 es el epílogo: se abre desde **Cerrar la
-aventura** al terminar el Mundo 5 y continúa con la cinemática de regreso a
-casa, que termina en el menú principal.
+mismas peticiones. Tras completar el Mundo 5, **Preparar mi despedida** abre el
+paseo para hablar con los amigos y elegir un recuerdo. Después se presenta el
+capítulo 9 y la cinemática de regreso a casa, que termina en el menú principal.
 
 Los animales se identifican por su palabra maya. La ilustración, la frase
 *In k'aaba'e' ___* y su traducción se leen de `GameManager`, así que un
@@ -361,7 +397,7 @@ entrada detiene a Kalin, el tronco no deja pasar hasta examinarlo y llegar a la
 aldea lleva al Capítulo 1.
 
 1. Abrir el proyecto con Godot 4.6 y comprobar que no existan errores de análisis.
-2. Ejecutar la introducción y probar **Saltar intro**.
+2. Completar la introducción y comprobar que **Saltar intro** sólo aparece al repetirla.
 3. Recorrer la exploración de la orilla con teclado y con clic, y comprobar que termina en el Capítulo 1.
 4. Completar al menos un nivel de cada mundo.
 5. Volver al menú entre niveles y comprobar **Continuar**.
@@ -393,6 +429,12 @@ por escritura y activan completar y bloques después de los errores. Se reutiliz
 registradas en el vocabulario. La despedida se configura con tres `ExerciseEntry`
 en `despedida_los_recuerdos.tscn`.
 
+Sus opciones conocidas muestran significado y permiten elegir qué expresar, sin
+otra respuesta obligatoria después del portal. Los recuerdos de cada amigo se
+derivan de las entregas confirmadas mediante `VillageMemory`; el texto `translation`
+del recurso es la alternativa cuando no hay una entrega suya. Evitar que esa
+alternativa afirme objetos, cualidades o destinatarios que pueden variar.
+
 Ejecutar `tools/validate.ps1` antes de integrar cambios. El detalle del recorrido,
 los contextos semánticos y el guardado vigente están en
 [docs/adventure.md](adventure.md).
@@ -417,8 +459,13 @@ actividad y que estas respuestas no generen evidencia de recuerdo sin ayuda.
 
 ## Casillas y apoyos automáticos
 
-`RecallPanel.advance_support()` conserva las partes correctas y avanza escritura →
-completar → bloques. `ready_to_submit()` evita evaluar campos vacíos o piezas pendientes.
+`RecallPanel.advance_support()` pasa de escritura a huecos que conservan lo acertado.
+`SpellingCorrection` alinea letras, omisiones y sobrantes; `SpellingField` presenta sólo
+las partes editables. Cada comprobación que corrige al menos una parte mantiene
+los huecos; sin progreso nuevo pasa a bloques. El foco vuelve a la primera parte
+pendiente. `scaffold.corrections` conserva valores, posiciones y partes protegidas,
+validados contra la respuesta actual. `ready_to_submit()` evita evaluar respuestas
+completamente vacías o bloques incompletos.
 Los controladores llaman estos métodos en su validación habitual; no hay cambio de
 modalidad accesible al jugador. Las tarjetas de presentación inicial se mantienen.
 
@@ -491,7 +538,7 @@ peticiones pueden combinarse con cualquiera de los dos agradecimientos. Consulta
 el encargo otra vez, fallar una respuesta o reanudar no vuelve a elegir sus textos.
 Ambos se reconstruyen desde la semilla guardada; los bancos son configuración y no
 añaden campos al formato de partida ni cambian la respuesta esperada del encargo.
-No modificar el texto desde el diálogo o el diario: ambos leen el mismo `VillageTask`.
+No modificar el texto desde el diálogo o las tarjetas del taller: ambos leen el mismo `VillageTask`.
 Para añadir un pedido, cubrirlo para todos los habitantes y ejecutar
 `validate_village_dialogue.gd`; la prueba detecta combinaciones sin personalizar.
 
@@ -563,8 +610,7 @@ guardados pendientes anteriores no se sustituyen.
 
 `Arte/ui/request_stage.svg` proporciona el globo de la petición sobre los fondos
 actuales. Taller y comida usan campos verticales y composición compacta; los perfiles
-de distribución mantienen sus posiciones por fase. El libro permite alternar el
-ejemplo y **Ver mi práctica** sin depender de tooltips.
+de distribución mantienen sus posiciones por fase. El libro mantiene el ejemplo, sellos ilustrados en sus bordes y pronunciación circular. El detalle de práctica se conserva en el registro, sin un botón dentro de las páginas infantiles.
 
 `VillageWalk.interpret_requests` activa las fichas mayas y la traducción opcional.
 Las respuestas conservan significado e ilustración. Las fichas representan contenido
@@ -596,3 +642,35 @@ se reubican los nodos de autoría ni se duplican las preguntas de `StoryQuestion
 
 El formato 9 requiere reiniciar explícitamente las partidas de otro formato. Se
 conservan escritura temporal y respaldo, sin migraciones ni acreditación al reanudar.
+
+## Pulido de interacción y capas
+
+Los botones creados durante la partida heredan el tema compartido. `SelectionButton`
+distingue el marrón de la presión física del dorado de selección; las tarjetas de
+palabras y de encargos utilizan el mismo contrato. `QualityCue` proporciona símbolos
+neutros de cualidades para las opciones, sin cambiar los ejemplos del libro.
+
+Los huecos avanzan a la siguiente casilla vacía, incluso entre palabras. Retroceso
+desde una casilla vacía borra la anterior editable. `RecallPanel` coordina ese foco;
+`SpellingField` conserva la edición de cada palabra. La recepción y el resaltado de
+`WordDropSlot` comparten una tolerancia de 6 píxeles laterales y 28 verticales.
+
+`MeaningIllustration` ajusta todas sus capas al rectángulo de las tarjetas. Los
+objetos de escenario activan `world_object` para conservar sus dimensiones físicas.
+`MissionTaskPreview` reutiliza las poses de uso al consultar un encargo entregado;
+los desconocidos muestran una interrogación sin revelar su habitante ni su pedido.
+La pose de transporte de `KalinWalker` expone `carry_anchor()` para mantener el objeto
+sobre su mano, delante del cuerpo. La milpa separa su primera fila de maíces en
+`bg_explora_milpa_front.svg`; esta capa comparte coordenadas con el terreno.
+
+En la tablilla, **Borrar** retira un grano, o una varita si no quedan granos, del piso
+seleccionado. El otro piso y la selección se conservan. `clear_numeral()` sigue
+reservado para iniciar una ronda. El portal presenta «Quiero…» cuando espera
+`In k'a'at…`, conservando las descripciones simples en las demás preguntas.
+
+Los saltos de introducción, historia y exploración requieren una visita terminada.
+El checkpoint usa `complete` y la repetición conserva ese dato en
+`previous_variation`; guardar y reanudar no habilita saltos de escenas desconocidas.
+Las ayudas de `LearningGuide` se retiran al actuar, abrir respuestas o pausar el
+juego. La suite `validate_playtest_polish` cubre estos comportamientos y admite
+capturas con el ejecutor aislado.

@@ -43,8 +43,19 @@ const SLEEP_POSITION := Vector2(200, 185)
 const STAND_UP_SECONDS := 0.5
 const BREATH_SCALE := 1.03
 const PORTAL_CENTER := Vector2(800, 320)
-const CROSS_SECONDS := 1.6
-const CROSS_SCALE := 0.2
+const CROSS_SECONDS := 2.6
+const CROSS_SCALE := 0.72
+const FAREWELL_HESITATE: Texture2D = preload("res://Arte/sprites/kalin_farewell_hesitate.svg")
+const REACH_PAGE: Texture2D = preload("res://Arte/sprites/kalin_reach_page.svg")
+const PORTAL_STEP: Texture2D = preload("res://Arte/sprites/kalin_portal_step.svg")
+const PORTAL_LOOK_BACK: Texture2D = preload("res://Arte/sprites/kalin_portal_look_back.svg")
+const GESTURE_TEXTURES: Dictionary[StoryBeat.KalinMotion, Texture2D] = {
+	StoryBeat.KalinMotion.PROTECT_BOOK: preload("res://Arte/sprites/kalin_protect_book.svg"),
+	StoryBeat.KalinMotion.THINK_HOME: preload("res://Arte/sprites/kalin_think_home.svg"),
+	StoryBeat.KalinMotion.FAREWELL: FAREWELL_HESITATE,
+	StoryBeat.KalinMotion.CRUZA: PORTAL_STEP,
+}
+const FAREWELL_WAVE: Texture2D = preload("res://Arte/sprites/kalin_farewell.svg")
 
 var sleeping: bool = false
 var _host: Node2D
@@ -76,6 +87,16 @@ var _ambient_tween: Tween
 var _shake_tween: Tween
 var _flash_tween: Tween
 var _title_tween: Tween
+var _gesture_texture: Texture2D
+var _gesture_active: bool = false
+var _motion: StoryBeat.KalinMotion = StoryBeat.KalinMotion.QUIETO
+var _page: TextureRect
+var _page_ink: TextureRect
+var _page_word: Label
+var _page_home: Vector2
+var _page_scale: Vector2
+var _page_tween: Tween
+var _page_motion: StoryBeat.PageMotion = StoryBeat.PageMotion.NONE
 
 
 func _init(
@@ -111,6 +132,11 @@ func _init(
 	_celebration_scale = celebration.scale
 	_celebration_alpha = celebration.modulate.a
 	_current_background = background.texture
+	_page = effects_root.get_node("StoryPage") as TextureRect
+	_page_ink = _page.get_node("Ink") as TextureRect
+	_page_word = _page.get_node("Word") as Label
+	_page_home = _page.position
+	_page_scale = _page.scale
 
 
 func start_idle() -> void:
@@ -134,8 +160,9 @@ func celebrate_page() -> void:
 	if _celebration_tween:
 		_celebration_tween.kill()
 	_celebration.visible = true
-	(_effects_root.get_node("ConfetiPaginas") as CPUParticles2D).restart()
-	(_effects_root.get_node("ConfetiChispas") as CPUParticles2D).restart()
+	# La página recuperada ya cuenta el cambio: evitar otra lluvia de páginas.
+	if _page_motion == StoryBeat.PageMotion.NONE:
+		present_page(StoryBeat.PageMotion.RECOVER, "")
 	_celebration.pivot_offset = _celebration.size * 0.5
 	_celebration.scale = (
 		_celebration_scale
@@ -245,6 +272,23 @@ func apply_comfort_settings() -> void:
 			_kalin.rotation = _kalin_rotation
 		_kalin.scale = kalin_base_scale
 		start_idle()
+		if _motion == StoryBeat.KalinMotion.CRUZA:
+			if _kalin_idle_tween:
+				_kalin_idle_tween.kill()
+			_finish_crossing()
+		elif _motion == StoryBeat.KalinMotion.PROTECT_BOOK:
+			_set_gesture_texture(GESTURE_TEXTURES[_motion])
+		elif _motion == StoryBeat.KalinMotion.FAREWELL:
+			_set_gesture_texture(FAREWELL_HESITATE)
+		if _page_tween:
+			_page_tween.kill()
+		if _page_motion != StoryBeat.PageMotion.NONE:
+			_page.position = _page_home
+			_page.rotation = 0.0
+			_page.scale = _page_scale
+			_page.modulate.a = 1.0
+			_page_ink.modulate.a = 1.0 if _page_motion == StoryBeat.PageMotion.RECOVER else 0.0
+			_page_word.visible_ratio = 1.0
 	if preferences.reduced_flashes:
 		if _flash_tween:
 			_flash_tween.kill()
@@ -272,6 +316,10 @@ func show_title(title: String, subtitle: String) -> void:
 func play_kalin_motion(motion: StoryBeat.KalinMotion) -> void:
 	var stand_up: bool = sleeping and motion == StoryBeat.KalinMotion.QUIETO
 	_reset_kalin(stand_up)
+	_motion = motion
+	_gesture_active = GESTURE_TEXTURES.has(motion)
+	if _gesture_active:
+		_set_gesture_texture(GESTURE_TEXTURES[motion])
 	match motion:
 		StoryBeat.KalinMotion.ENTRA:
 			_kalin_walk_in()
@@ -283,9 +331,108 @@ func play_kalin_motion(motion: StoryBeat.KalinMotion) -> void:
 			_kalin_sleep()
 		StoryBeat.KalinMotion.CRUZA:
 			_kalin_cross_portal()
+		StoryBeat.KalinMotion.PROTECT_BOOK:
+			_kalin_gesture(Vector2(-9, 5), -0.025, 0.32)
+		StoryBeat.KalinMotion.THINK_HOME:
+			_kalin_gesture(Vector2(0, 7), 0.025, 0.75)
+		StoryBeat.KalinMotion.FAREWELL:
+			_kalin_farewell()
 		_:
 			if not stand_up:
 				start_idle()
+
+
+func set_gesture_texture(texture: Texture2D) -> void:
+	_gesture_texture = texture
+
+
+func has_gesture() -> bool:
+	return _gesture_active
+
+
+func _set_gesture_texture(texture: Texture2D) -> void:
+	# Un recorte personalizado conserva su autoría durante todas las fases del gesto.
+	_kalin.texture = _gesture_texture if _gesture_texture != null else texture
+
+
+func _kalin_gesture(offset: Vector2, angle: float, seconds: float) -> void:
+	if _host.get_node("/root/AccessibilityManager").reduced_motion:
+		return
+	_kalin_motion_tween = _host.create_tween().set_parallel(true)
+	_kalin_motion_tween.tween_property(_kalin, "position", _kalin_home + offset, seconds)
+	_kalin_motion_tween.tween_property(_kalin, "rotation", _kalin_rotation + angle, seconds)
+
+
+func _kalin_farewell() -> void:
+	if _host.get_node("/root/AccessibilityManager").reduced_motion:
+		return
+	# Mirar a los amigos y abrazar el libro preceden al saludo, sin sonrisa eufórica.
+	_kalin_motion_tween = _host.create_tween()
+	_kalin_motion_tween.tween_property(_kalin, "rotation", _kalin_rotation + 0.015, 0.45)
+	_kalin_motion_tween.tween_interval(0.6)
+	_kalin_motion_tween.tween_callback(_set_gesture_texture.bind(FAREWELL_WAVE))
+	_kalin_motion_tween.tween_property(_kalin, "rotation", _kalin_rotation - 0.015, 0.35)
+	_kalin_motion_tween.tween_property(_kalin, "rotation", _kalin_rotation, 0.4)
+
+
+func _reach_for_page() -> void:
+	if _motion != StoryBeat.KalinMotion.PROTECT_BOOK:
+		return
+	if _host.get_node("/root/AccessibilityManager").reduced_motion:
+		return
+	if _kalin_motion_tween:
+		_kalin_motion_tween.kill()
+	_kalin_motion_tween = _host.create_tween()
+	_kalin_motion_tween.tween_interval(0.25)
+	_kalin_motion_tween.tween_callback(_set_gesture_texture.bind(REACH_PAGE))
+	_kalin_motion_tween.tween_property(_kalin, "rotation", _kalin_rotation + 0.045, 0.35)
+	_kalin_motion_tween.tween_interval(0.5)
+	_kalin_motion_tween.tween_callback(
+		_set_gesture_texture.bind(GESTURE_TEXTURES[StoryBeat.KalinMotion.PROTECT_BOOK])
+	)
+	_kalin_motion_tween.tween_property(_kalin, "rotation", _kalin_rotation, 0.4)
+
+
+func present_page(motion: StoryBeat.PageMotion, word: String) -> void:
+	if _page_tween:
+		_page_tween.kill()
+	_page_motion = motion
+	_page.visible = motion != StoryBeat.PageMotion.NONE
+	_page.position = _page_home
+	_page.scale = _page_scale
+	_page.rotation = 0.0
+	_page.modulate.a = 1.0
+	_page_word.text = word
+	_page_word.visible_ratio = 0.0
+	_page_ink.modulate.a = 0.0
+	if motion == StoryBeat.PageMotion.NONE:
+		return
+	if _host.get_node("/root/AccessibilityManager").reduced_motion:
+		_page_ink.modulate.a = 1.0 if motion == StoryBeat.PageMotion.RECOVER else 0.0
+		_page_word.visible_ratio = 1.0
+		return
+	_page_tween = _host.create_tween()
+	if motion == StoryBeat.PageMotion.SCATTER:
+		_reach_for_page()
+		_page.position = Vector2(145, 390)
+		_page.scale = _page_scale * 0.6
+		_page_tween.set_parallel(true)
+		_page_tween.tween_property(_page, "position", _page_home, 0.75).set_trans(Tween.TRANS_SINE)
+		_page_tween.tween_property(_page, "scale", _page_scale, 0.75)
+		_page_tween.tween_property(_page, "rotation", -0.18, 0.75)
+		_page_tween.chain().tween_interval(0.4)
+		_page_tween.chain().tween_property(_page, "position", Vector2(1360, 95), 1.2)
+		_page_tween.parallel().tween_property(_page, "rotation", 0.65, 1.2)
+		_page_tween.parallel().tween_property(_page, "modulate:a", 0.0, 0.4).set_delay(0.8)
+	else:
+		_page.rotation = -0.09
+		_page_tween.tween_property(_page, "rotation", 0.0, 0.35)
+		_page_tween.tween_property(_page_ink, "modulate:a", 1.0, 0.7)
+		_page_tween.parallel().tween_property(_page_word, "visible_ratio", 1.0, 0.7)
+		_page_tween.tween_interval(0.75)
+		_page_tween.tween_property(_page, "position", Vector2(112, 470), 0.7)
+		_page_tween.parallel().tween_property(_page, "scale", _page_scale * 0.25, 0.7)
+		_page_tween.parallel().tween_property(_page, "modulate:a", 0.0, 0.3).set_delay(0.4)
 
 
 func _reset_kalin(animated: bool) -> void:
@@ -426,19 +573,32 @@ func _kalin_sleep() -> void:
 
 func _kalin_cross_portal() -> void:
 	_kalin.z_index = _kalin_z_index + 1
-	_kalin_motion_tween = _host.create_tween().set_parallel(true)
+	if _host.get_node("/root/AccessibilityManager").reduced_motion:
+		_finish_crossing()
+		return
+	_kalin_motion_tween = _host.create_tween()
+	_kalin_motion_tween.tween_method(_cross_portal_step, 0.0, 1.0, CROSS_SECONDS)
+
+
+func _cross_portal_step(progress: float) -> void:
+	# La pausa a mitad de camino permite mirar atrás antes de atravesar la luz.
+	var travel: float = (
+		progress * 1.5
+		if progress < 0.4
+		else (0.6 if progress < 0.58 else lerpf(0.6, 1.0, (progress - 0.58) / 0.42))
+	)
+	var stride: float = 0.0 if progress >= 0.4 and progress < 0.58 else sin(travel * PI * 5.0)
 	var target: Vector2 = PORTAL_CENTER - _kalin.pivot_offset
-	(
-		_kalin_motion_tween
-		. tween_property(_kalin, "position", target, CROSS_SECONDS)
-		. set_trans(Tween.TRANS_SINE)
-		. set_ease(Tween.EASE_IN_OUT)
-	)
-	(
-		_kalin_motion_tween
-		. tween_property(_kalin, "scale", kalin_base_scale * CROSS_SCALE, CROSS_SECONDS)
-		. set_trans(Tween.TRANS_SINE)
-	)
-	_kalin_motion_tween.tween_property(_kalin, "modulate:a", 0.0, CROSS_SECONDS * 0.4).set_delay(
-		CROSS_SECONDS * 0.6
-	)
+	_kalin.position = _kalin_home.lerp(target, travel)
+	_kalin.position.y -= absf(stride) * 9.0 * (1.0 - travel * 0.5)
+	_kalin.rotation = _kalin_rotation + stride * 0.025
+	_kalin.scale = kalin_base_scale * lerpf(1.0, CROSS_SCALE, travel)
+	_kalin.modulate.a = _kalin_alpha * (1.0 - smoothstep(0.82, 1.0, travel))
+	_set_gesture_texture(PORTAL_LOOK_BACK if progress >= 0.4 and progress < 0.58 else PORTAL_STEP)
+
+
+func _finish_crossing() -> void:
+	_kalin.position = PORTAL_CENTER - _kalin.pivot_offset
+	_kalin.rotation = _kalin_rotation
+	_kalin.scale = kalin_base_scale * CROSS_SCALE
+	_kalin.modulate.a = 0.0

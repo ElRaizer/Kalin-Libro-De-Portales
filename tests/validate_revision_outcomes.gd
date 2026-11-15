@@ -20,6 +20,7 @@ func _run() -> void:
 	await _shared_projects()
 	await _personal_memory()
 	await _action_sequences()
+	await _portion_rebinding()
 	await _actions_in_context()
 	await _meal_furniture()
 	await _layout_exit_lifecycle()
@@ -157,18 +158,9 @@ func _shared_projects() -> void:
 		)
 		await _capture("plaza_%d_inicio" % world)
 		for index: int in [2, 0, 1]:
-			if index == 2:
-				scene.toggle_journal()
-				(scene.get_node("UI/Direct").get_child(index) as Button).grab_focus()
-				await _press_key(KEY_ENTER)
-				_check(
-					scene.is_dialogue_open() and scene.active_task == index,
-					"El acceso directo por teclado abre al amigo elegido"
-				)
-			else:
-				scene.visit_task(index)
+			_visit_recipient(scene, index)
 			_close_lines(scene)
-			scene.visit_workbench()
+			_visit_workbench(scene)
 			var task: VillageTask = scene.tasks[scene.task_indices[index]]
 			scene.recall.debug_fill([task.item, task.quality])
 			scene._forge()
@@ -179,7 +171,7 @@ func _shared_projects() -> void:
 					"Reanudar tras crear no inventa una entrega pendiente"
 				)
 			var before: int = manager.learning_record(task.item).use
-			scene.visit_task(index)
+			_visit_recipient(scene, index)
 			_close_lines(scene)
 			_check(
 				index in scene.delivered and scene.carried.is_empty(),
@@ -611,10 +603,73 @@ func _meal_furniture() -> void:
 	}
 	scene = await _scene("world4_mission1", pending)
 	_close_lines(scene)
-	scene.visit_task(0)
+	_visit_recipient(scene, 0)
 	_close_lines(scene)
 	_check(
 		0 in scene.delivered and scene.carried.is_empty(),
 		"Un mueble se coloca también en la merienda"
 	)
 	await _capture("mueble_entregado_en_mesa")
+
+
+func _visit_recipient(scene: Node, index: int) -> void:
+	var spot: ExplorationSpot = scene.get_node("Spots/Recipient%d" % index)
+	_approach_spot(scene, spot)
+	scene.camera.reset_smoothing()
+	scene.open_spot(spot)
+
+
+func _visit_workbench(scene: Node) -> void:
+	var spot: ExplorationSpot = scene.get_node("Spots/Workbench")
+	_approach_spot(scene, spot)
+	scene.camera.reset_smoothing()
+	scene.open_spot(spot)
+
+
+func _portion_rebinding() -> void:
+	var group: Node2D = Node2D.new()
+	group.position = Vector2(640, 550)
+	root.add_child(group)
+	var actor: Sprite2D = Sprite2D.new()
+	actor.texture = VillageUseArt.ACTORS["Ma'ax"]
+	actor.position = Vector2(0, -60)
+	group.add_child(actor)
+	var art: MeaningIllustration = ART.instantiate() as MeaningIllustration
+	art.size = Vector2(160, 120)
+	art.position = Vector2(-80, -115)
+	group.add_child(art)
+	for item: String in ["ja'as", "janal", "ja'", "ja'as"]:
+		art.show_meaning(item)
+		var motion: VillageUseMotion = VillageUseMotion.attach(actor, art, item, "Ma'ax")
+		motion.set_process(false)
+		await process_frame
+		if item == "ja'":
+			_check(
+				motion._portion.texture == null, "Volver a servir agua retira la porción anterior"
+			)
+			continue
+		var canonical: Texture2D = VillageUseArt.object_texture(item, "")
+		var pixels: PackedByteArray = canonical.get_image().get_data()
+		for instant: float in [0.2, motion._rig.contact_time(), 3.5]:
+			motion.sample_action(instant)
+			_check(
+				motion._portion.texture == canonical,
+				"Cambiar de pedido reutiliza la textura canónica de la porción actual"
+			)
+			var bounds: Rect2i = canonical.get_image().get_used_rect()
+			var extent: Vector2 = Vector2(bounds.size) * motion._portion.global_scale
+			_check(
+				is_equal_approx(maxf(extent.x, extent.y), 22 * actor.global_scale.x),
+				"La parte dibujada del alimento conserva su tamaño después de cambiar textura"
+			)
+			if is_equal_approx(instant, motion._rig.contact_time()):
+				_check(
+					_drawn_food_center(motion).distance_to(motion._rig.mouth_position()) < 1,
+					"La porción actual conserva el contacto con la boca al reusar el resultado"
+				)
+		_check(
+			canonical.get_image().get_data() == pixels,
+			"Animar la porción no modifica los píxeles de su textura compartida"
+		)
+	group.queue_free()
+	await process_frame

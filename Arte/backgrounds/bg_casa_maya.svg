@@ -86,26 +86,12 @@
     <rect x="628" y="0" width="24" height="182" rx="4" fill="#4A3016"/>
   </g>
 
-  <!-- Ganchos vacíos de la hamaca -->
-  <g fill="#4A3016">
-    <circle cx="90"  cy="330" r="10"/><circle cx="640" cy="330" r="0"/>
-    <circle cx="560" cy="300" r="10"/>
-  </g>
-  <path d="M100 336 Q330 420 552 306" stroke="#C8B078" stroke-width="3" stroke-dasharray="6 8" fill="none" opacity="0.5"/>
-
   <!-- Suelo de tierra apisonada -->
   <rect x="0" y="510" width="1280" height="210" fill="url(#floor)"/>
   <g stroke="#5E4426" stroke-width="2" opacity="0.4">
     <line x1="0" y1="560" x2="1280" y2="560"/>
     <line x1="0" y1="620" x2="1280" y2="620"/>
     <line x1="0" y1="680" x2="1280" y2="680"/>
-  </g>
-
-  <!-- Marcas de los muebles que se llevó el huracán -->
-  <g fill="none" stroke="#F0DFB0" stroke-width="3" stroke-dasharray="10 8" opacity="0.6">
-    <rect x="330" y="580" width="220" height="84" rx="10"/>
-    <ellipse cx="740" cy="640" rx="70" ry="24"/>
-    <rect x="990" y="600" width="170" height="70" rx="10"/>
   </g>
 
   <!-- Polvo y hojas que entró con el viento -->

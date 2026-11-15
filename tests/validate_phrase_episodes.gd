@@ -273,13 +273,20 @@ func _supported_recall(world: int) -> void:
 			scene.recall.second.text = scene.recall.expected[1]
 		(scene.cast_button if world == 3 else scene.serve_button).pressed.emit()
 		_check(scene.recall.mode == RecallPanel.Mode.CLOZE, "El primer error activa completar")
-		scene.recall.first.text = "parcial"
+		for node: Node in scene.recall.find_children("*", "LineEdit", true, false):
+			if node.is_visible_in_tree():
+				(node as LineEdit).text = "z"
+				(node as LineEdit).text_changed.emit("z")
+				break
+		var partial: String = scene.recall.values()[0]
+		var scaffold: Dictionary = scene.recall.scaffold_state()
 		scene._show_help()
 		var saved: Dictionary = scene.get_checkpoint_state()
 		scene = await _resume(key)
 		_check(
 			(
-				scene.recall.first.text == "parcial"
+				scene.recall.first.text == partial
+				and scene.recall.scaffold_state().corrections == scaffold.corrections
 				and scene.recall.mode == RecallPanel.Mode.CLOZE
 				and scene._attempt.snapshot() == saved.attempt
 				and scene.round_plan == saved.plan
@@ -287,11 +294,14 @@ func _supported_recall(world: int) -> void:
 			),
 			"Cada episodio conserva borrador, apoyo, errores, orientación y evidencia por palabra"
 		)
-		scene.recall.first.text = "incorrecto"
+		for node: Node in scene.recall.find_children("*", "LineEdit", true, false):
+			if node.is_visible_in_tree():
+				(node as LineEdit).text = "z"
+				(node as LineEdit).text_changed.emit("z")
 		(scene.cast_button if world == 3 else scene.serve_button).pressed.emit()
 		_check(
 			scene.recall.mode == RecallPanel.Mode.BLOCKS,
-			"Reanudar conserva la progresión a bloques"
+			"Reanudar conserva el paso a bloques cuando no hay correcciones nuevas"
 		)
 		scene = await _resume(key)
 		_check(

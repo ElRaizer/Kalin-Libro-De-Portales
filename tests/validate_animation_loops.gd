@@ -99,10 +99,11 @@ func _run() -> void:
 			loop.actor.position.x > loop.actor_home.x + 180
 			and loop.actor.texture.resource_path.ends_with("aak_duda.svg")
 		),
-		"Áak debe intentar caber y cambiar de expresión"
+		"Áak debe acercar el plato que no cabe y cambiar de expresión"
 	)
 	loop.seek_cycle(loop.cycle_seconds * 0.63)
 	_check(loop._thought.modulate.a > 0.8, "Áak debe imaginar una mesa mayor")
+	await _check_table_sharing(loop)
 	loop.show_situation("hambre")
 	loop.seek_cycle(loop.cycle_seconds * 0.47)
 	_check(
@@ -164,3 +165,84 @@ func _run() -> void:
 		for failure: String in failures:
 			push_error(failure)
 		quit(1)
+
+
+func _check_table_sharing(loop: StoryVignette) -> void:
+	var settings: Array[TextureRect] = [
+		loop.get_node("PlaceSetting0") as TextureRect, loop.get_node("PlaceSetting1") as TextureRect
+	]
+	var arm: Line2D = loop.get_node("TableArm") as Line2D
+	loop.show_situation("tamano")
+	loop.set_process(false)
+	loop.seek_cycle(loop.cycle_seconds * 0.47)
+	_check(
+		settings[1].position.x < loop.prop.position.x,
+		"El segundo plato permanece en manos de Áak fuera de la mesa pequeña"
+	)
+	_check(
+		arm.points[-1].distance_to(settings[1].position + settings[1].size * 0.5) < 6.0,
+		"La mano sostiene el segundo plato; no flota junto al personaje"
+	)
+	loop.show_situation("tamano", true)
+	loop.set_process(false)
+	loop.finish_reveal()
+	loop.set_reveal_progress(0.15)
+	var small: Vector2 = loop.prop.size
+	var ground: float = loop.actor.position.y
+	loop.set_reveal_progress(0.65)
+	var held: Vector2 = settings[1].position
+	_check(
+		loop.prop.size.x > small.x and is_equal_approx(loop.actor.position.y, ground),
+		"La mesa amplía su espacio útil sin elevar a Áak del suelo"
+	)
+	loop.set_reveal_progress(1.0)
+	_check(
+		settings[1].position.y > held.y,
+		"Áak baja el plato hacia la superficie después de ampliar la mesa"
+	)
+	_check(
+		not settings[0].get_rect().intersects(settings[1].get_rect()),
+		"El resultado tiene dos puestos separados para compartir"
+	)
+	for setting: TextureRect in settings:
+		_check(
+			loop.prop.get_rect().encloses(setting.get_rect()),
+			"Los dos platos terminan apoyados dentro de la mesa"
+		)
+	loop.show_situation("tamano", true)
+	await process_frame
+	paused = true
+	var paused_plate: Vector2 = settings[1].position
+	var paused_table: Vector2 = loop.prop.size
+	await create_timer(0.1, true).timeout
+	_check(
+		settings[1].position == paused_plate and loop.prop.size == paused_table,
+		"La pausa conserva tanto el plato como la transformación pendiente"
+	)
+	paused = false
+	var preferences: Node = root.get_node("AccessibilityManager")
+	var previous_reduced: bool = preferences.reduced_motion
+	preferences.set_preference("reduced_motion", true)
+	_check(
+		loop.prop.size == loop._table_layout.solved_size,
+		"Activar movimiento reducido muestra inmediatamente la mesa terminada"
+	)
+	var resting_actor: Vector2 = loop.actor.position
+	var resting_plate: Vector2 = settings[1].position
+	var resting_table: Vector2 = loop.prop.size
+	loop.seek_cycle(loop.cycle_seconds * 0.5)
+	_check(
+		(
+			loop.actor.position == resting_actor
+			and settings[1].position == resting_plate
+			and loop.prop.size == resting_table
+		),
+		"El resultado accesible mantiene actor, plato y mesa inmóviles"
+	)
+	preferences.set_preference("reduced_motion", previous_reduced)
+	loop.show_situation("tamano", true)
+	loop.finish_reveal()
+	_check(
+		loop.prop.get_rect().encloses(settings[1].get_rect()),
+		"La restauración del resultado no vuelve a dejar el plato pendiente"
+	)

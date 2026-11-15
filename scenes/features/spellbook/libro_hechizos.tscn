@@ -8,7 +8,10 @@
 
 [ext_resource type="Script" path="res://scripts/features/spellbook/book_motion.gd" id="motion"]
 [ext_resource type="Texture2D" path="res://Arte/ilustraciones/libro_cubierta.svg" id="cover"]
-[ext_resource type="Texture2D" path="res://Arte/ilustraciones/ui_altavoz.svg" id="speaker"]
+
+[ext_resource type="Texture2D" path="res://Arte/ui/book_portal_previous.svg" id="seal_previous"]
+[ext_resource type="Texture2D" path="res://Arte/ui/book_portal_next.svg" id="seal_next"]
+[ext_resource type="Texture2D" path="res://Arte/ui/book_voice.svg" id="voice_icon"]
 
 [sub_resource type="StyleBoxFlat" id="Badge"]
 bg_color = Color(0.87, 0.89, 0.77, 1)
@@ -29,6 +32,8 @@ colors = PackedColorArray(0.27, 0.15, 0.05, 0, 0.27, 0.15, 0.05, 0.12, 0.27, 0.1
 gradient = SubResource("FoldGradient")
 fill_from = Vector2(0, 0)
 fill_to = Vector2(1, 0)
+
+[sub_resource type="StyleBoxEmpty" id="seal_empty"]
 
 [node name="LibroHechizos" type="CanvasLayer"]
 layer = 10
@@ -181,30 +186,20 @@ text = "Significado del ejemplo"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="DiagramLabel" type="Label" parent="BG/Book/Pages/LeftPage/Content"]
-custom_minimum_size = Vector2(0, 44)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.45, 0.28, 0.58, 1)
-theme_override_font_sizes/font_size = 13
-text = "[ estructura ]  →  [ visual ]"
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 3
-visible = false
-
-[node name="PracticeButton" type="Button" parent="BG/Book/Pages/LeftPage/Content"]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 36)
-theme_type_variation = &"KalinSecondaryButton"
-text = "Ver mi práctica"
 
 [node name="AudioButton" type="Button" parent="BG/Book/Pages/LeftPage/Content"]
-custom_minimum_size = Vector2(0, 40)
+theme_override_styles/normal = SubResource("seal_empty")
+theme_override_styles/hover = SubResource("seal_empty")
+theme_override_styles/pressed = SubResource("seal_empty")
+custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
-text = "Pronunciación · audio próximamente"
-icon = ExtResource("speaker")
+icon = ExtResource("voice_icon")
+expand_icon = true
+theme_override_constants/icon_max_width = 60
+flat = true
+size_flags_horizontal = 4
 
 [node name="LockedPage" type="Label" parent="BG/Book/Pages/LeftPage"]
 visible = false
@@ -308,30 +303,20 @@ text = "Significado del ejemplo"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="DiagramLabel" type="Label" parent="BG/Book/Pages/RightPage/Content"]
-custom_minimum_size = Vector2(0, 44)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.45, 0.28, 0.58, 1)
-theme_override_font_sizes/font_size = 13
-text = "[ estructura ]  →  [ visual ]"
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 3
-visible = false
-
-[node name="PracticeButton" type="Button" parent="BG/Book/Pages/RightPage/Content"]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 36)
-theme_type_variation = &"KalinSecondaryButton"
-text = "Ver mi práctica"
 
 [node name="AudioButton" type="Button" parent="BG/Book/Pages/RightPage/Content"]
-custom_minimum_size = Vector2(0, 40)
+theme_override_styles/normal = SubResource("seal_empty")
+theme_override_styles/hover = SubResource("seal_empty")
+theme_override_styles/pressed = SubResource("seal_empty")
+custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 16
-text = "Pronunciación · audio próximamente"
-icon = ExtResource("speaker")
+icon = ExtResource("voice_icon")
+expand_icon = true
+theme_override_constants/icon_max_width = 60
+flat = true
+size_flags_horizontal = 4
 
 [node name="LockedPage" type="Label" parent="BG/Book/Pages/RightPage"]
 visible = false
@@ -377,11 +362,20 @@ offset_right = 966.0
 offset_bottom = 650.0
 theme_override_constants/separation = 18
 
-[node name="PreviousButton" type="Button" parent="BG/Book/Footer"]
-custom_minimum_size = Vector2(180, 44)
-layout_mode = 2
-theme_type_variation = &"KalinSecondaryButton"
-text = "Página anterior"
+[node name="PreviousButton" type="Button" parent="BG/Book"]
+theme_override_styles/normal = SubResource("seal_empty")
+theme_override_styles/hover = SubResource("seal_empty")
+theme_override_styles/pressed = SubResource("seal_empty")
+offset_left = -16.0
+offset_top = 300.0
+offset_right = 56.0
+offset_bottom = 372.0
+custom_minimum_size = Vector2(72, 72)
+icon = ExtResource("seal_previous")
+expand_icon = true
+theme_override_constants/icon_max_width = 68
+flat = true
+tooltip_text = "Página anterior"
 
 [node name="PageLabel" type="Label" parent="BG/Book/Footer"]
 layout_mode = 2
@@ -392,11 +386,20 @@ text = "Pliego 1 de 1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="NextButton" type="Button" parent="BG/Book/Footer"]
-custom_minimum_size = Vector2(180, 44)
-layout_mode = 2
-theme_type_variation = &"KalinPrimaryButton"
-text = "Página siguiente"
+[node name="NextButton" type="Button" parent="BG/Book"]
+theme_override_styles/normal = SubResource("seal_empty")
+theme_override_styles/hover = SubResource("seal_empty")
+theme_override_styles/pressed = SubResource("seal_empty")
+offset_left = 1140.0
+offset_top = 300.0
+offset_right = 1212.0
+offset_bottom = 372.0
+custom_minimum_size = Vector2(72, 72)
+icon = ExtResource("seal_next")
+expand_icon = true
+theme_override_constants/icon_max_width = 68
+flat = true
+tooltip_text = "Página siguiente"
 
 [node name="AudioNotice" type="Label" parent="BG"]
 visible = false
@@ -471,6 +474,7 @@ theme_override_font_sizes/font_size = 26
 theme_override_colors/font_color = Color(0.23, 0.14, 0.08, 1)
 
 [node name="Illustration" type="Panel" parent="BG/Book/CompactPage/Content"]
+theme_type_variation = &"KalinCreamPanel"
 offset_left = 0.0
 offset_top = 54.0
 offset_right = 310.0
@@ -540,24 +544,22 @@ autowrap_mode = 3
 
 theme_override_colors/font_color = Color(0.23, 0.14, 0.08, 1)
 
-[node name="DiagramLabel" type="Label" parent="BG/Book/CompactPage/Content"]
-visible = false
-
-theme_override_colors/font_color = Color(0.23, 0.14, 0.08, 1)
-
-[node name="PracticeButton" type="Button" parent="BG/Book/CompactPage/Content"]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 36)
-theme_type_variation = &"KalinSecondaryButton"
-text = "Ver mi práctica"
 
 [node name="AudioButton" type="Button" parent="BG/Book/CompactPage/Content"]
-offset_left = 340.0
+theme_override_styles/normal = SubResource("seal_empty")
+theme_override_styles/hover = SubResource("seal_empty")
+theme_override_styles/pressed = SubResource("seal_empty")
+offset_left = 664.0
 offset_top = 354.0
-offset_right = 1080.0
+offset_right = 736.0
 offset_bottom = 420.0
 theme_type_variation = &"KalinSecondaryButton"
 theme_override_font_sizes/font_size = 26
+icon = ExtResource("voice_icon")
+expand_icon = true
+theme_override_constants/icon_max_width = 60
+flat = true
+size_flags_horizontal = 4
 
 [node name="LockedPage" type="Label" parent="BG/Book/CompactPage"]
 visible = false

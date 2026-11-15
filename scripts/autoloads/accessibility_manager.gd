@@ -12,6 +12,10 @@ const PREFERENCES_PATH := "user://kalin_preferences.cfg"
 var reduced_motion: bool = false
 var reduced_flashes: bool = false
 var instant_text: bool = false
+var manual_cinematics: bool = true
+const PREFERENCE_KEYS: Array[String] = [
+	"reduced_motion", "reduced_flashes", "instant_text", "manual_cinematics"
+]
 
 
 func _ready() -> void:
@@ -19,17 +23,18 @@ func _ready() -> void:
 	var config: ConfigFile = ConfigFile.new()
 	if config.load(PREFERENCES_PATH) != OK:
 		return
-	for key: String in ["reduced_motion", "reduced_flashes", "instant_text"]:
-		var enabled: Variant = config.get_value("comfort", key, false)
-		set(key, enabled is bool and enabled)
+	for key: String in PREFERENCE_KEYS:
+		var default_enabled: bool = key == "manual_cinematics"
+		var enabled: Variant = config.get_value("comfort", key, default_enabled)
+		set(key, enabled if enabled is bool else default_enabled)
 
 
 func set_preference(key: String, enabled: bool) -> void:
-	if key not in ["reduced_motion", "reduced_flashes", "instant_text"]:
+	if key not in PREFERENCE_KEYS:
 		return
 	set(key, enabled)
 	var config: ConfigFile = ConfigFile.new()
-	for name: String in ["reduced_motion", "reduced_flashes", "instant_text"]:
+	for name: String in PREFERENCE_KEYS:
 		config.set_value("comfort", name, get(name))
 	var error: Error = config.save(PREFERENCES_PATH)
 	if error != OK:

@@ -135,7 +135,148 @@ func _run() -> void:
 		"Sendero transitable con muebles"
 	)
 	await _garden_views(home)
+	await _challenge_attempts(home)
+	await _recent_challenge_attempts(home)
 	finish("Aldea, primer proyecto, magia y sala de retos")
+
+
+func _challenge_attempts(home: Node) -> void:
+	var room: Node = home.room
+	room.close_room()
+	manager.session.learning_clock += LearningProgress.RECALL_GAP
+	room.restore({"words": ["Miis"], "targets": [["Miis"]], "visit": 100})
+	room.open_room(home.return_button)
+	check(room.recall.mode == RecallPanel.Mode.WRITE, "La sala empieza por escritura independiente")
+	var points: int = manager.session.magic_points
+	room.recall.first.text = "incorrecta"
+	room.submit()
+	check(room.recall.mode == RecallPanel.Mode.CLOZE, "El error ofrece apoyo gradual")
+	check(room.attempt.mistakes == 1 and room.attempt.supported, "El error conserva el apoyo")
+	var supported: Dictionary = room.snapshot()
+	room.close_room()
+	room.restore(JSON.parse_string(JSON.stringify(supported)))
+	room.open_room(home.return_button)
+	check(
+		room.attempt.mistakes == 1 and room.recall.mode == RecallPanel.Mode.CLOZE,
+		"Continuar conserva error y huecos"
+	)
+	room.recall.debug_fill(["Miis"])
+	room.submit()
+	check(room.waiting, "La reconstrucción correcta permite terminar")
+	check(manager.session.magic_points == points, "La reconstrucción de sala no paga puntos")
+	var completed: Dictionary = room.snapshot()
+	room.close_room()
+	room.restore(JSON.parse_string(JSON.stringify(completed)))
+	check(room.waiting, "El resultado guardado sigue confirmado")
+	check(manager.session.magic_points == points, "Restaurar no acredita puntos")
+	# Un intento ya abierto conserva su clave y evidencia aunque guardase sólo el ancla.
+	completed.waiting = false
+	completed.attempt.context = "challenge_room/Miis@100"
+	completed.attempt.mistakes = 2
+	room.restore(completed)
+	check(room.attempt.mistakes == 2, "La identidad guardada no borra errores al reanudar")
+	check(room.attempt.supported, "La identidad guardada no borra apoyos")
+	manager.session.learning_clock += LearningProgress.RECALL_GAP
+	room.restore({"words": ["Miis"], "targets": [["Miis"]], "visit": 101})
+	room.open_room(home.return_button)
+	room.recall.first.text = "Miis"
+	room.submit()
+	check(room.waiting, "Una respuesta independiente también termina la ronda")
+	check(
+		int(manager.session.economy.awards.Miis) == 10,
+		"La escritura mantiene el máximo por palabra"
+	)
+	room.close_room()
+	var previous_context: String = "challenge_room/mayak@102"
+	manager.record_learning(
+		["mayak", "mejen"], "reconstruction", previous_context, true, 2, {}, false
+	)
+	points = manager.session.magic_points
+	room.restore(
+		{
+			"words": ["mayak"],
+			"targets": [["mayak", "mejen"]],
+			"visit": 102,
+			"waiting": true,
+			"answer": "mayak",
+			"second_answer": "mejen",
+			"attempt": {"context": previous_context, "supported": true, "mistakes": 2}
+		}
+	)
+	check(room.waiting, "Un resultado previo con ancla conserva su confirmación")
+	check(room.attempt.mistakes == 2 and room.attempt.supported, "Conserva evidencia del intento")
+	check(manager.session.magic_points == points, "El resultado previo no vuelve a pagar")
+	manager.session.learning_clock += LearningProgress.RECALL_GAP
+	room.restore({"words": ["Áak"], "targets": [["Áak"]], "visit": 103})
+	room.open_room(home.return_button)
+	points = manager.session.magic_points
+	var previous_award: int = int(manager.session.economy.awards.get("Áak", 0))
+	room.recall.first.text = "Aak"
+	room.submit()
+	check(room.waiting, "La corrección de acento deja continuar")
+	check(manager.session.magic_points == points, "El apoyo de grafía tampoco añade puntos")
+	check(
+		int(manager.session.economy.awards.get("Áak", 0)) == previous_award,
+		"La corrección apoyada no eleva el máximo acreditado"
+	)
+	room.close_room()
+	await process_frame
+
+
+func _recent_challenge_attempts(home: Node) -> void:
+	var room: Node = home.room
+	room.close_room()
+	# Todos los candidatos son recientes: la selección usa su ensayo de reserva.
+	for word: String in manager.learned_words():
+		var record: Dictionary = LearningProgress.empty_record()
+		record.last_seen = manager.session.learning_clock
+		manager.session.learning_progress[word] = record
+	room.restore({"visit": 200})
+	room.open_room(home.return_button)
+	check(
+		room.recall.mode == RecallPanel.Mode.WRITE,
+		"También el vocabulario reciente empieza escrito"
+	)
+	check(not room.attempt.content_help, "La recencia no inventa una consulta de solución")
+	var points: int = manager.session.magic_points
+	var answers: Array[String] = room.targets[room.index].duplicate()
+	var active: Dictionary = room.snapshot()
+	room.close_room()
+	manager.session.learning_clock += LearningProgress.RECALL_GAP
+	room.restore(JSON.parse_string(JSON.stringify(active)))
+	room.open_room(home.return_button)
+	check(room.recall.mode == RecallPanel.Mode.WRITE, "Reanudar conserva el ensayo escrito")
+	room.recall.debug_fill(answers)
+	room.submit()
+	check(room.waiting, "Un ensayo reciente correcto permite continuar")
+	check(manager.session.magic_points == points, "El ensayo reciente no acredita premios")
+	for word: String in answers:
+		check(
+			manager.learning_record(word).recalls.is_empty(),
+			"La recencia no simula recuerdo separado"
+		)
+	room.close_room()
+	var record: Dictionary = manager.learning_record("Miis")
+	record.last_seen = manager.session.learning_clock
+	manager.session.learning_progress["Miis"] = record
+	room.restore({"words": ["Miis"], "targets": [["Miis"]], "visit": 203})
+	room.open_room(home.return_button)
+	check(
+		room.recall.mode == RecallPanel.Mode.WRITE, "Otro ensayo reciente tampoco anticipa bloques"
+	)
+	room.recall.first.text = "incorrecta"
+	room.submit()
+	check(room.recall.mode == RecallPanel.Mode.CLOZE, "El apoyo llega después del fallo")
+	var supported: Dictionary = room.snapshot()
+	room.close_room()
+	room.restore(JSON.parse_string(JSON.stringify(supported)))
+	room.open_room(home.return_button)
+	check(
+		room.recall.mode == RecallPanel.Mode.CLOZE and room.attempt.mistakes == 1,
+		"Retomar el apoyo no obliga a empezar de nuevo por escritura"
+	)
+	room.close_room()
+	await process_frame
 
 
 func _garden_views(home: Node) -> void:

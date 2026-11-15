@@ -196,11 +196,7 @@ func _dock_keyboard(focused: LineEdit, height: int) -> void:
 	$Keyboard/Dock.position.y = maxf(76, top)
 	$Keyboard/Dock/Submit.text = (
 		"Siguiente campo"
-		if (
-			_keyboard_panel != null
-			and (_keyboard_panel as RecallPanel).second_box.visible
-			and focused == (_keyboard_panel as RecallPanel).first
-		)
+		if (_keyboard_panel != null and (_keyboard_panel as RecallPanel).has_next_answer(focused))
 		else "Confirmar"
 	)
 	$Keyboard/Dock.show()
@@ -220,8 +216,7 @@ func _restore_keyboard() -> void:
 func _submit_keyboard() -> void:
 	if is_instance_valid(_keyboard_panel):
 		var panel: RecallPanel = _keyboard_panel as RecallPanel
-		if _keyboard_field == panel.first and panel.second_box.visible:
-			panel.second.grab_focus()
+		if panel.focus_next_answer(_keyboard_field):
 			return
 		panel.submitted.emit()
 	_hide_keyboard()

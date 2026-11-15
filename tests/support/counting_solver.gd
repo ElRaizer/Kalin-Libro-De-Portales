@@ -7,7 +7,14 @@ class_name CountingSolver
 
 static func solve_round(level: Node) -> void:
 	var target: int = level.current_target()
-	level._on_clear_pressed()
+	for floor_button: Button in [level.upper_floor, level.lower_floor]:
+		floor_button.pressed.emit()
+		while (
+			level._session.twenties > 0
+			if level._session.active_floor == MayaNumeral.Floor.TWENTIES
+			else level._session.units > 0 or level._session.shell
+		):
+			level._on_clear_pressed()
 	var twenties: int = MayaNumeral.twenties_of(target)
 	if twenties > 0:
 		level.upper_floor.pressed.emit()

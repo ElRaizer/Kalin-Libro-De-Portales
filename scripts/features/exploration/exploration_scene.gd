@@ -40,6 +40,7 @@ const COLOR_NOTICE := Color("ffd27a")
 @export var free_roam: bool = false
 @export var roaming_floor: Vector2 = Vector2(420, 640)
 var _roaming: ExplorationRoaming
+var _keyboard_cue: KeyboardCue
 
 @export_category("Entrada")
 ## Diálogo opcional que aparece al empezar, antes de que Kalin pueda caminar.
@@ -67,6 +68,7 @@ var _nearby_spot: ExplorationSpot
 var _active_spot: ExplorationSpot
 var _resolving: bool = false
 var _navigating: bool = false
+var _completed: bool = false
 var _walk_phase: float = 0.0
 var _time: float = 0.0
 var _animal_bases: Dictionary = {}  # Sprite2D -> posición en reposo
@@ -105,9 +107,11 @@ var _objective_color: Color
 
 # ────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
+	_keyboard_cue = KeyboardCue.new()
+	$UI.add_child(_keyboard_cue)
 	chapter_label.text = chapter_title
 	objective_label.text = objective_text
-	skip_button.pressed.connect(_finish)
+	skip_button.pressed.connect(_skip_exploration)
 	prompt_button.pressed.connect(_on_prompt_pressed)
 	dialogue_box.hide()
 	_objective_color = objective_label.get_theme_color("font_color")
@@ -142,6 +146,8 @@ func _ready() -> void:
 	$UI/HelpButton.pressed.connect(_show_help)
 	$UI/MenuButton.pressed.connect(_on_menu_pressed)
 	var state: Dictionary = GameManager.get_scene_state(self)
+	_completed = state.get("complete", false) == true
+	skip_button.visible = ReplayVariation.can_skip(state)
 	var examined: Variant = state.get("examined", [])
 	for spot: ExplorationSpot in spots:
 		if examined is Array and str(spot.name) in examined:
@@ -200,8 +206,17 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	continue_button.visible = is_dialogue_open()
 	_time += delta
+	var previous: Vector2 = kalin.position
 	walk(Input.get_axis(&"kalin_izquierda", &"kalin_derecha"), delta)
 	_update_nearby_spot()
+	_keyboard_cue.update_cue(
+		get_viewport().get_canvas_transform() * Vector2(kalin.global_position.x, _kalin_top()),
+		_can_walk(),
+		kalin.position.distance_squared_to(previous) > 0.01,
+		_nearby_spot != null,
+		free_roam,
+		delta
+	)
 	_update_arrow()
 	_animate_animals()
 
@@ -457,7 +472,7 @@ func _update_nearby_spot() -> void:
 		)
 	if _nearby_spot == null:
 		return
-	prompt_button.text = _nearby_spot.prompt
+	prompt_button.text = interaction_prompt(_nearby_spot)
 	prompt_button.tooltip_text = "Clic o E para interactuar"
 	var anchor: Vector2 = _nearby_spot.prompt_anchor()
 	anchor.y = minf(anchor.y, _kalin_top() - PROMPT_ABOVE_KALIN)
@@ -467,7 +482,13 @@ func _update_nearby_spot() -> void:
 	)
 
 
+func interaction_prompt(spot: ExplorationSpot) -> String:
+	return spot.prompt
+
+
 func _kalin_top() -> float:
+	if _roaming != null:
+		return _roaming.walker.head_position().y
 	return kalin.global_position.y - kalin_sprite.texture.get_height() * kalin_sprite.scale.y
 
 
@@ -511,7 +532,7 @@ func _close_spot(spot: ExplorationSpot) -> void:
 		return
 	discovered += 1
 	if spot.name == &"Pagina":
-		_show_notice("¡Encontraste tu libro! Las palabras volverán con tus hechizos.")
+		_show_notice("¡Una página recuperada! Sus palabras volverán al comprenderlas y ayudar.")
 	if spot.teaches_word():
 		words_found += 1
 		AudioManager.play_sfx("palabra_anotada")
@@ -567,6 +588,7 @@ func _restore_objective() -> void:
 
 # ─── Diálogo ─────────────────────────────────────────────────────────────────
 func _start_dialogue(speaker: String, lines: Array[String], surprised: bool) -> void:
+	guide.stop()
 	_dialogue.start(speaker, lines, surprised)
 	prompt_button.hide()
 
@@ -653,6 +675,8 @@ func _finish() -> void:
 	if _navigating:
 		return
 	_navigating = true
+	_completed = true
+	guide.stop()
 	if _dialogue.is_open():
 		_dialogue.close()
 	prompt_button.hide()
@@ -661,8 +685,20 @@ func _finish() -> void:
 	tween.tween_callback(_go_to_next_scene)
 
 
+func _skip_exploration() -> void:
+	if skip_button.visible:
+		_finish()
+
+
 func _go_to_next_scene() -> void:
-	GameManager.go_to_scene(next_scene_key)
+	if GameManager.go_to_scene(next_scene_key):
+		return
+	_navigating = false
+	fade.modulate.a = 0.0
+	skip_button.text = "Reintentar salida"
+	skip_button.show()
+	skip_button.grab_focus()
+	_show_notice("No se pudo abrir el destino. Puedes reintentar la salida o volver al menú.", true)
 
 
 func _show_help() -> void:
@@ -702,6 +738,7 @@ func get_checkpoint_state() -> Dictionary:
 		if spot.examined:
 			examined.append(str(spot.name))
 	var state: Dictionary = {
+		"complete": _completed,
 		"x": kalin.position.x,
 		"examined": examined,
 		"intro_done": _intro_done,
@@ -720,7 +757,8 @@ func get_checkpoint_state() -> Dictionary:
 
 
 func _on_menu_pressed() -> void:
-	GameManager.go_to_scene("main_menu")
+	if not GameManager.go_to_scene("main_menu"):
+		_show_notice("No se pudo abrir el menú. Tu recorrido sigue disponible.", true)
 
 
 func variation_context() -> String:

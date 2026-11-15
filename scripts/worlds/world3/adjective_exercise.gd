@@ -148,7 +148,7 @@ func _ready() -> void:
 	mission_break.continued.connect(
 		func():
 			if recall.visible:
-				recall.first.grab_focus()
+				recall.focus_answer()
 				guide.watch_action(recall)
 			else:
 				_refresh_step()
@@ -351,7 +351,7 @@ func _update_choice_labels() -> void:
 			if bridge
 			else adjective.maya
 		)
-		button.icon = GameManager.get_visual_texture(adjective.maya) if guided else null
+		button.icon = QualityCue.texture_for(adjective.maya) if guided else null
 
 
 func _select_noun(word: String) -> void:
@@ -512,8 +512,11 @@ func _on_magic_points_changed(value: int) -> void:
 
 
 func _safe_navigate(key: String) -> void:
+	var was_resolving: bool = _resolving
 	_resolving = true
-	GameManager.go_to_scene(key)
+	if not GameManager.go_to_scene(key):
+		_resolving = was_resolving
+		feedback_label.text = "No se pudo abrir el destino. Puedes reintentar o volver al menú."
 
 
 func _on_menu_pressed() -> void:

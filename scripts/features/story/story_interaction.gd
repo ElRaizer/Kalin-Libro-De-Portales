@@ -547,7 +547,35 @@ func _show_meet_hint() -> void:
 
 func animate_speaker(speaker: String) -> void:
 	if speaker in actor_buttons and not _entering_actors.has(actor_buttons[speaker]):
-		_hop(actor_buttons[speaker])
+		if current_beat().kind != StoryBeat.Kind.DIALOGO:
+			_hop(actor_buttons[speaker])
+			return
+		var button: Button = actor_buttons[speaker]
+		if _actor_tweens.has(button):
+			_actor_tweens[button].kill()
+		var home: Vector2 = button.get_meta("home_position")
+		button.position = home
+		if get_node("/root/AccessibilityManager").reduced_motion:
+			return
+		var offset: Vector2 = Vector2(0, -3)
+		var seconds: float = 0.2
+		match speaker:
+			"Peek'":
+				offset = Vector2(-5, -3)
+			"Miis":
+				offset = Vector2(2, -2)
+				seconds = 0.4
+			"Kaax":
+				offset = Vector2(-3, -5)
+				seconds = 0.15
+			"Áak":
+				offset = Vector2(-2, -2)
+				seconds = 0.5
+		var tween: Tween = create_tween()
+		_actor_tweens[button] = tween
+		tween.tween_property(button, "position", home + offset, seconds).set_trans(Tween.TRANS_SINE)
+		tween.tween_interval(seconds * 0.5)
+		tween.tween_property(button, "position", home, seconds).set_trans(Tween.TRANS_SINE)
 
 
 func apply_comfort_settings() -> void:

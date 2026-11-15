@@ -3,19 +3,26 @@
 extends ProjectTest
 
 var manager: Node
+var capture_folder: String = ""
 
 
 func _initialize() -> void:
 	await process_frame
+	for argument: String in OS.get_cmdline_user_args():
+		if argument.begins_with("--capture="):
+			capture_folder = argument.trim_prefix("--capture=")
+			DirAccess.make_dir_recursive_absolute(capture_folder)
 	manager = root.get_node("GameManager")
 	manager._save_repository = repository_for("counting")
 	manager.reset_save()
 	_numeral_rules()
 	_content_rules()
 	_random_targets()
+	_progressive_targets()
 	_session_rules()
 	await _wrong_answers_teach()
 	await _resume_keeps_progress()
+	await _provision_lifecycle()
 	await _full_level()
 	finish("Validación de los números")
 
@@ -79,6 +86,79 @@ func _random_targets() -> void:
 		session.seed_value = seed_value
 		differs = differs or session.targets(content) != first
 	check(differs, "Otra partida sortea otros números")
+
+
+func _progressive_targets() -> void:
+	var content: CountingSet = load("res://data/exercises/world4_counting.tres") as CountingSet
+	var session: CountingSession = CountingSession.new()
+	for seed_value: int in range(1, 101):
+		session.seed_value = seed_value
+		var plan: Array[int] = session.targets(content)
+		var has_shell: bool = false
+		for index: int in range(plan.size()):
+			has_shell = has_shell or MayaNumeral.needs_shell(plan[index])
+			if index > 0:
+				check(
+					plan[index] > plan[index - 1], "La dificultad numérica crece sin repeticiones"
+				)
+		check(
+			plan[0] <= 6 and plan[1] <= 12, "Las rondas guiadas comienzan por cantidades pequeñas"
+		)
+		check(has_shell, "Cada partida canónica incluye concha en unidades")
+	var saved: Dictionary = session.snapshot()
+	var expected: Array[int] = session.targets(content)
+	var resumed: CountingSession = CountingSession.new()
+	resumed.restore(JSON.parse_string(JSON.stringify(saved)), content)
+	check(resumed.targets(content) == expected, "JSON conserva el plan concreto completo")
+	var game: GameSession = GameSession.new()
+	game.scene_states.world4_level2 = saved.duplicate(true)
+	var loaded_game: GameSession = GameSession.new()
+	check(
+		loaded_game.restore(JSON.parse_string(JSON.stringify(game.snapshot()))),
+		"La partida valida el checkpoint con plan numérico"
+	)
+	resumed.restore(loaded_game.scene_states.world4_level2, content)
+	check(resumed.targets(content) == expected, "El codec y el esquema conservan el plan concreto")
+	var prior: Array[int] = session._shuffled_targets(content).slice(0, content.round_count)
+	resumed.restore(
+		{
+			"layout_seed": session.seed_value,
+			"round": 2,
+			"waiting": true,
+			"twenties": MayaNumeral.twenties_of(prior[2]),
+			"units": MayaNumeral.units_of(prior[2]),
+			"shell": MayaNumeral.needs_shell(prior[2])
+		},
+		content
+	)
+	check(
+		resumed.waiting and resumed.target(content) == prior[2],
+		"Un checkpoint de semilla conserva su número y su acierto"
+	)
+	saved.targets[0] = 50
+	check(session.targets(content) == expected, "El snapshot no comparte su plan mutable")
+	var narrow: CountingSet = CountingSet.new()
+	narrow.min_value = 3
+	narrow.max_value = 10
+	narrow.round_count = 8
+	check(
+		session.targets(narrow) == [3, 4, 5, 6, 7, 8, 9, 10],
+		"Un rango de autor sin concha conserva cantidades y rondas válidas"
+	)
+	var pending: Dictionary = {
+		"layout_seed": 7,
+		"round": 0,
+		"targets": [40, 1, 2, 3, 4, 5, 6, 7],
+		"twenties": 2,
+		"units": 0,
+		"shell": true,
+		"waiting": true
+	}
+	resumed.restore(pending, content)
+	check(resumed.target(content) == 40 and resumed.waiting, "El plan vivido conserva el acierto")
+	pending.targets = [true, 1, 2, 3, 4, 5, 6, 7]
+	resumed.restore(pending, content)
+	check(not resumed.waiting, "Un plan de tipo inválido no acredita una tablilla ajena")
 
 
 ## Poner piezas sigue la numeración: cinco puntos forman una barra, veinte
@@ -200,7 +280,62 @@ func _resume_keeps_progress() -> void:
 	var again: Node = await _open_level(solved_state)
 	check(again._session.waiting, "Una ronda resuelta sigue resuelta al volver")
 	check(again.dot_button.disabled, "Las piezas quedan bloqueadas hasta continuar")
+	check(
+		again.provision.visible and again.provision.quantity == target,
+		"Reanudar conserva la cantidad preparada, sin registrar otro reparto"
+	)
+	check(
+		is_equal_approx(again.provision.revealed, float(target)),
+		"El reparto restaurado aparece completo sin repetir la llegada"
+	)
 	await _close(again)
+
+
+func _provision_lifecycle() -> void:
+	var preferences: Node = root.get_node("AccessibilityManager")
+	var previous_reduced: bool = preferences.reduced_motion
+	preferences.reduced_motion = false
+	var level: Node = await _open_level({"layout_seed": 803})
+	check(not level.provision.visible, "Contar no presenta todavía un reparto confirmado")
+	check(level.request_label.text == level.content.request_text, "Se conserva el motivo de autor")
+	CountingSolver.solve_round(level)
+	level._on_action_pressed()
+	check(level.provision.visible, "Confirmar muestra semillas con una finalidad en la aldea")
+	check(level.provision.quantity == level.current_target(), "Se prepara la cantidad solicitada")
+	await process_frame
+	root.get_tree().paused = true
+	var paused_revealed: float = level.provision.revealed
+	await create_timer(0.12, true).timeout
+	check(
+		is_equal_approx(level.provision.revealed, paused_revealed),
+		"La llegada de semillas se pausa con su propietario"
+	)
+	root.get_tree().paused = false
+	preferences.reduced_motion = true
+	level.provision.apply_comfort_settings()
+	check(
+		is_equal_approx(level.provision.revealed, float(level.current_target())),
+		"Reducir movimiento completa la imagen sin esperar la animación"
+	)
+	await _capture("tianguis_reparto_escritorio")
+	root.size = Vector2i(640, 360)
+	level.get_node("ScreenLayout").preview_compact = true
+	level.get_node("ScreenLayout").refresh()
+	await _capture("tianguis_reparto_compacto")
+	level._on_action_pressed()
+	check(not level.provision.visible, "La siguiente petición retira la entrega anterior")
+	check(level.provision.quantity == 0, "La siguiente ronda no acumula semillas de otra petición")
+	root.size = Vector2i(1280, 720)
+	preferences.reduced_motion = previous_reduced
+	await _close(level)
+
+
+func _capture(name: String) -> void:
+	if capture_folder.is_empty():
+		return
+	await process_frame
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(capture_folder.path_join(name + ".png"))
 
 
 ## Recorrer todo el nivel lo completa y continúa al capítulo del portal.

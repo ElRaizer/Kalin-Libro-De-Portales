@@ -127,6 +127,18 @@ func watch_action(control: Control, delay: float = 8.0) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	var activated: bool = (
+		(event is InputEventMouseButton and event.pressed)
+		or (event is InputEventKey and event.pressed and not event.echo)
+		or (event is InputEventScreenTouch and event.pressed)
+	)
+	if activated and gesture_mode != Gesture.NONE:
+		if is_instance_valid(_continue_target):
+			_suspend_guidance()
+			_idle_seconds = 0.0
+		else:
+			stop()
+		return
 	if not is_instance_valid(_continue_target) and not is_instance_valid(_action_target):
 		return
 	var interacted: bool = (
@@ -144,10 +156,18 @@ func _input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	if not is_inside_tree() or is_queued_for_deletion():
+		return
+	if get_tree().paused:
+		_suspend_guidance()
+		return
 	if gesture_mode == Gesture.DRAG:
 		_process_drag(delta)
 		return
 	if is_instance_valid(_action_target):
+		if not _action_target.is_visible_in_tree():
+			stop()
+			return
 		_idle_seconds += delta
 		if _idle_seconds >= _idle_delay:
 			var target: Control = _action_target
@@ -215,6 +235,22 @@ func _process(delta: float) -> void:
 	_click_pulse.scale = Vector2.ONE * (1.0 if reduced else 0.7 + phase * 1.3)
 	_click_pulse.modulate.a = 0.65 if reduced else maxf(0, 1.0 - phase / 0.6)
 	_click_pulse.visible = reduced or phase < 0.6
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PAUSED and is_node_ready():
+		_suspend_guidance()
+
+
+func _suspend_guidance() -> void:
+	var continuing: Control = _continue_target if is_instance_valid(_continue_target) else null
+	var action: Control = _action_target if is_instance_valid(_action_target) else null
+	var elapsed: float = _idle_seconds
+	stop()
+	_continue_target = continuing
+	_action_target = action
+	_idle_seconds = elapsed
+	set_process(is_instance_valid(continuing) or is_instance_valid(action))
 
 
 func _process_drag(delta: float) -> void:

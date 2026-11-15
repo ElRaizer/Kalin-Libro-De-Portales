@@ -8,8 +8,8 @@ var _compact: bool = false
 @onready var compact_page: Panel = $BG/Book/CompactPage
 
 @onready var close_button: Button = $BG/Book/CloseButton
-@onready var previous_button: Button = $BG/Book/Footer/PreviousButton
-@onready var next_button: Button = $BG/Book/Footer/NextButton
+@onready var previous_button: Button = $BG/Book/PreviousButton
+@onready var next_button: Button = $BG/Book/NextButton
 @onready var page_label: Label = $BG/Book/Footer/PageLabel
 @onready var word_count_label: Label = $BG/Book/Header/WordCount
 @onready var empty_label: Label = $BG/Book/EmptyLabel
@@ -66,8 +66,6 @@ func _ready() -> void:
 	motion.closed.connect(_on_closed)
 	compact_page.get_node("Content/AudioButton").pressed.connect(_play_visible_audio.bind(0))
 	get_window().size_changed.connect(_update_screen_layout)
-	for page: Panel in [left_page, right_page, compact_page]:
-		page.get_node("Content/PracticeButton").pressed.connect(_toggle_practice.bind(page))
 	_update_screen_layout()
 
 
@@ -277,9 +275,6 @@ func _render_page(page: Panel, entry_index: int, visible_slot: int) -> void:
 	var translation: String = str(data.get("traduccion", ""))
 	(content.get_node("ExampleLabel") as Label).text = example
 	(content.get_node("TranslationLabel") as Label).text = translation
-	(content.get_node("DiagramLabel") as Label).text = _structure_diagram(
-		str(data.get("estructura", maya_word))
-	)
 	var illustration: TextureRect = content.get_node("Illustration/ContextSprite") as TextureRect
 	var placeholder: Label = content.get_node("Illustration/Placeholder") as Label
 	var image_path: String = GameManager.get_book_illustration(maya_word)
@@ -292,28 +287,15 @@ func _render_page(page: Panel, entry_index: int, visible_slot: int) -> void:
 		illustration.visible = false
 		placeholder.visible = true
 		placeholder.text = "%s\nIlustración futura" % str(data.get("emoji", "✦"))
-	_render_practice(page)
 	var audio_button: Button = content.get_node("AudioButton") as Button
 	var audio_exists: bool = ResourceLoader.exists(_audio_path(maya_word))
 	audio_button.disabled = _turning or motion.busy
-	audio_button.text = (
-		"Escuchar pronunciación" if audio_exists else "Pronunciación · audio próximamente"
-	)
+	audio_button.text = ""
 	audio_button.tooltip_text = (
-		"Esta palabra todavía no tiene audio."
+		"Pronunciación · audio próximamente"
 		if not audio_exists
 		else "Escuchar la grabación de esta palabra."
 	)
-
-
-func _structure_diagram(example: String) -> String:
-	var tokens: PackedStringArray = example.split(" ", false)
-	if tokens.size() <= 1:
-		return "[ %s ]" % example
-	var boxes: Array[String] = []
-	for token: String in tokens:
-		boxes.append("[ %s ]" % token)
-	return "  →  ".join(boxes)
 
 
 func _refresh_learning() -> void:
@@ -394,7 +376,6 @@ func _set_page_input(enabled: bool) -> void:
 	)
 	for page: Panel in [left_page, right_page, compact_page]:
 		(page.get_node("Content/AudioButton") as Button).disabled = not enabled
-		(page.get_node("Content/PracticeButton") as Button).disabled = not enabled
 
 
 func _play_visible_audio(slot: int) -> void:
@@ -472,38 +453,16 @@ func _update_screen_layout() -> void:
 	for button: Button in category_buttons:
 		button.custom_minimum_size.y = 64 if _compact else 44
 		button.add_theme_font_size_override("font_size", 26 if _compact else 18)
-	previous_button.custom_minimum_size.y = 64 if _compact else 44
+	previous_button.custom_minimum_size = Vector2(72, 72)
 	previous_button.add_theme_font_size_override("font_size", 26 if _compact else 16)
 	next_button.add_theme_font_size_override("font_size", 26 if _compact else 16)
 	page_label.add_theme_font_size_override("font_size", 24 if _compact else 16)
 	close_button.add_theme_font_size_override("font_size", 26 if _compact else 16)
 	$BG/Book/Header/WordCount.add_theme_font_size_override("font_size", 22 if _compact else 15)
-	next_button.custom_minimum_size.y = 60 if _compact else 44
+	next_button.custom_minimum_size = Vector2(72, 72)
 	close_button.custom_minimum_size.y = 60 if _compact else 42
 	if visible:
 		_render_spread()
-
-
-func _toggle_practice(page: Panel) -> void:
-	if motion.busy or _turning:
-		return
-	page.set_meta("practice_details", not page.get_meta("practice_details", false))
-	_render_practice(page)
-
-
-func _render_practice(page: Panel) -> void:
-	var details: bool = page.get_meta("practice_details", false)
-	var content: Control = page.get_node("Content")
-	for node_name: String in ["ExampleHeading", "ExampleLabel", "TranslationLabel"]:
-		content.get_node(node_name).visible = not details
-	var label: Label = content.get_node("DiagramLabel")
-	label.visible = details
-	content.get_node("Illustration").visible = not details
-	label.add_theme_font_size_override("font_size", 22)
-	label.text = GameManager.learning_detail(str(page.get_meta("entry_word", "")))
-	(content.get_node("PracticeButton") as Button).text = (
-		"Ver ejemplo" if details else "Ver mi práctica"
-	)
 
 
 func show_project() -> void:

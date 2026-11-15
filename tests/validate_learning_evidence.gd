@@ -368,7 +368,10 @@ func _mission() -> void:
 
 func _intro_keyboard() -> void:
 	for path: String in ["UI/SkipBtn", "UI/MenuButton"]:
-		await _scene("intro")
+		var replaying: bool = path.ends_with("SkipBtn")
+		if replaying:
+			manager.session.scene_states.intro = {"complete": true}
+		await _scene("intro", not replaying)
 		await create_timer(0.4).timeout
 		current_scene._finish_typewriter()
 		current_scene.get_node(path).grab_focus()
@@ -379,7 +382,7 @@ func _intro_keyboard() -> void:
 		await process_frame
 		await process_frame
 		var expected: String = (
-			GameContent.SCENE_PATHS.world1_explore1
+			GameContent.SCENE_PATHS.world1_cine1
 			if path.ends_with("SkipBtn")
 			else GameContent.SCENE_PATHS.main_menu
 		)

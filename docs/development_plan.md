@@ -1,5 +1,20 @@
 # Mejoras de experiencia y mantenimiento
 
+La revisión narrativa autorizada el 6 de noviembre de 2026 amplía el cierre de
+octubre: aclara las reglas del libro, desarrolla el arco de Kalin y la ayuda
+recíproca, contextualiza el tianguis y deriva recuerdos de entregas confirmadas.
+Conserva la campaña, el vocabulario y el formato de partida. La continuidad actual
+está en [Aventura](adventure.md#continuidad-narrativa-vigente); los apartados de
+octubre siguientes conservan el contexto de las decisiones anteriores.
+
+La integración de noviembre hace explícitas las hojas recuperadas por los vecinos,
+vincula el regreso con un dibujo pendiente de casa y distingue refugio, adaptación,
+reparto y legado. La actuación incluye intento de retener la página, nostalgia,
+vacilación, saludo y mirada atrás al cruzar. La mesa se ensancha y recibe el plato
+desde la mano de Áak. El dibujo final y la mesa resuelta se reconstruyen al reanudar
+sin añadir progreso. Continúan pendientes la revisión con hablantes, las voces
+grabadas y la observación con niños; la validación técnica no las sustituye.
+
 Especificación acordada el 27 de octubre de 2026. Este documento registra el
 alcance, orden, aceptación y trabajo pendiente; Arquitectura, Mantenimiento y la
 guía técnica siguen definiendo los contratos vigentes.
@@ -1207,3 +1222,26 @@ La entrega local de continuidad está en
 `.ui-review/design_points_and_assembly_2026_10_27/`, con fragmentos, vistas de prueba,
 generador, capturas y resultados. Es una carpeta ignorada de revisión visual.
 La documentación pasó `python tools/check_structure.py` y `git diff --check`.
+
+## Correcciones y validación posteriores a la auditoría del 7 de noviembre de 2026
+
+El usuario autorizó implementación y comprobación en ejecución durante su ausencia,
+con datos aislados y preservación del trabajo existente. Se mantienen público de
+10–12 años, lectura autónoma, PC con ratón y teclado y el estilo visual actual.
+Equipos de 2021 en adelante son una referencia provisional: no constituyen mínimos
+certificados. El profesor recibirá el proyecto Godot completo a inicios de 2027;
+las pruebas infantiles se realizarán después de la primera entrega.
+
+Decisiones de comportamiento:
+
+- Peticiones iguales conservan identidad semántica aunque cambie su ancla interna.
+- Sala: escritura primero y apoyos tras fallo; intentos apoyados sin nuevos puntos.
+- Tianguis: dificultad creciente y presencia de concha inferior en el plan canónico.
+- El cierre normal requiere guardar correctamente; un fallo mantiene la sesión
+  abierta, informa del problema y permite reintentar.
+- Uso personal, respuestas parciales necesarias para reanudar y respaldo local.
+
+Las revisiones lingüísticas, pronunciaciones, derechos, créditos y permisos siguen
+pendientes con el profesor. Las mediciones y comprobaciones de esta fase deben
+registrarse con su alcance real antes de considerarla terminada. El objetivo de
+30–60 minutos y el aprendizaje con público aún requieren observación.

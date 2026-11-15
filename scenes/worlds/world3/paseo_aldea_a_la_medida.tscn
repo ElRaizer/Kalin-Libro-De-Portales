@@ -123,7 +123,7 @@ choices = Array[ExtResource("entry")]([SubResource("choice2_0"), SubResource("ch
 encounters = Array[ExtResource("encounter")]([SubResource("encounter0"), SubResource("encounter1"), SubResource("encounter2")])
 chapter_title = "Una aldea a su medida"
 next_scene_key = "world3_story1"
-intro_lines = Array[String](["Mis hechizos ya cambian los objetos. Veré cómo les sirven a mis amigos antes de seguir."])
+intro_lines = Array[String](["Un mismo mueble no sirve igual a todos. Veré cómo ayudan sus cualidades a cada amigo antes de seguir."])
 
 [node name="Visit0" parent="Spots" index="0"]
 spot_texture = ExtResource("actor0")

@@ -62,7 +62,7 @@ func _automatic_support() -> void:
 			scene._attempt.mistakes == 0 and panel.mode == RecallPanel.Mode.WRITE,
 			"Un campo vacío no cuenta como fallo"
 		)
-		panel.first.text = "incorrecto"
+		panel.first.text = "zzzzzzzz"
 		if panel.second_box.visible:
 			panel.second.text = panel.expected[1]
 		panel.submitted.emit()
@@ -79,11 +79,11 @@ func _automatic_support() -> void:
 				panel.second.text == panel.expected[1],
 				"Una segunda parte correcta permanece resuelta"
 			)
-		panel.first.text = "incorrecto"
+		panel.first.text = "zzzzzzzz"
 		panel.submitted.emit()
 		_check(
 			panel.mode == RecallPanel.Mode.BLOCKS and scene._attempt.mistakes == 2,
-			"El segundo fallo pasa a bloques: " + key
+			"Sin ninguna corrección nueva se pasa a bloques: " + key
 		)
 		_check(
 			not panel.first.visible and not panel.second.visible,
@@ -138,9 +138,9 @@ func _mission_support() -> void:
 		_close_lines(mission)
 		mission._open_workbench()
 		for expected_mode: int in [RecallPanel.Mode.CLOZE, RecallPanel.Mode.BLOCKS]:
-			mission.recall.first.text = "incorrecto"
+			mission.recall.first.text = "zzzzzzzz"
 			if mission.recall.second_box.visible:
-				mission.recall.second.text = "incorrecto"
+				mission.recall.second.text = "zzzzzzzz"
 			mission._forge()
 			_check(
 				mission.recall.mode == expected_mode and mission.carried.is_empty(),

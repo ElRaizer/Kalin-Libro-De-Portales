@@ -16,6 +16,8 @@
 [ext_resource type="PackedScene" path="res://scenes/features/story/story_choice.tscn" id="editor_14"]
 [ext_resource type="PackedScene" path="res://scenes/ui/shared/screen_layout.tscn" id="responsive"]
 [ext_resource type="Resource" path="res://data/layouts/story.tres" id="layout_profile"]
+[ext_resource type="Texture2D" path="res://Arte/efectos/story_page.svg" id="story_page"]
+[ext_resource type="Texture2D" path="res://Arte/efectos/story_page_ink.svg" id="story_page_ink"]
 
 
 
@@ -96,6 +98,37 @@ theme_override_constants/separation = 28
 alignment = 1
 
 [node name="Effects" type="Node2D" parent="."]
+
+[node name="StoryPage" type="TextureRect" parent="Effects"]
+visible = false
+offset_left = 580.0
+offset_top = 145.0
+offset_right = 740.0
+offset_bottom = 345.0
+pivot_offset = Vector2(80, 100)
+mouse_filter = 2
+texture = ExtResource("story_page")
+
+[node name="Ink" type="TextureRect" parent="Effects/StoryPage"]
+layout_mode = 0
+offset_right = 160.0
+offset_bottom = 200.0
+mouse_filter = 2
+texture = ExtResource("story_page_ink")
+
+[node name="Word" type="Label" parent="Effects/StoryPage"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 54.0
+offset_right = 144.0
+offset_bottom = 104.0
+mouse_filter = 2
+theme = ExtResource("4_theme")
+theme_override_colors/font_color = Color(0.1, 0.4, 0.36, 1)
+theme_override_font_sizes/font_size = 21
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
 
 [node name="Hojas" type="CPUParticles2D" parent="Effects"]
 position = Vector2(1330, 340)
@@ -388,7 +421,7 @@ layout_mode = 0
 offset_left = 24.0
 offset_top = 42.0
 offset_right = 1136.0
-offset_bottom = 142.0
+offset_bottom = 118.0
 mouse_filter = 2
 theme_override_colors/default_color = Color(0.95, 0.92, 0.82, 1)
 theme_override_font_sizes/normal_font_size = 24
@@ -425,9 +458,9 @@ offset_bottom = 500
 theme = ExtResource("4_theme")
 theme_type_variation = &"KalinPrimaryButton"
 text = "Continuar →"
-offset_left = 964.0
+offset_left = 904.0
 offset_top = 126.0
-offset_right = 1196.0
+offset_right = 1136.0
 offset_bottom = 184.0
 
 [node name="MenuButton" type="Button" parent="UI"]

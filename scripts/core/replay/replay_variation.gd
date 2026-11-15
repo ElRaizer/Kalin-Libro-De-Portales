@@ -41,3 +41,7 @@ static func previous(state: Dictionary, key: String, fallback: Variant = null) -
 
 static func replay_state(state: Dictionary) -> Dictionary:
 	return SceneStateSchema.replay_state(state)
+
+
+static func can_skip(state: Dictionary) -> bool:
+	return state.get("complete", false) == true or previous(state, "complete", false) == true

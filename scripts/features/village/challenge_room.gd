@@ -15,6 +15,7 @@ var _feedback: Label
 var _submit: Button
 var _origin: WeakRef
 var _was_paused: bool = false
+var _rehearsal: bool = false
 
 
 func _ready() -> void:
@@ -84,6 +85,7 @@ func _add_button(parent: Control, text: String, action: Callable) -> Button:
 
 
 func restore(state: Dictionary) -> void:
+	_rehearsal = state.get("rehearsal") is bool and state.rehearsal
 	words.clear()
 	var source: Variant = state.get("words", [])
 	if source is Array and source.size() <= 3:
@@ -117,7 +119,7 @@ func restore(state: Dictionary) -> void:
 				answers.assign(candidate)
 		targets.append(answers)
 	if index < words.size():
-		_show_word()
+		_show_word(true)
 		var scaffold: Dictionary = (
 			state.get("scaffold", {}) if state.get("scaffold") is Dictionary else {}
 		)
@@ -184,12 +186,17 @@ func open_room(origin: Control) -> void:
 		_submit.disabled = true
 	else:
 		_submit.disabled = false
-		recall.first.grab_focus()
+		recall.focus_answer()
 	changed.emit()
 
 
-func _show_word() -> void:
-	attempt.begin("challenge_room/%s@%d" % [words[index], visit])
+func _show_word(restoring: bool = false) -> void:
+	var next_context: String = ChallengePlanner.context(_answers(), visit)
+	var saved_context: String = "challenge_room/%s@%d" % [words[index], visit]
+	# Reanudar conserva el intento ya vivido, también si sólo guardaba la palabra ancla.
+	var continuing_attempt: bool = restoring and attempt.context in [next_context, saved_context]
+	if not continuing_attempt:
+		attempt.begin(next_context)
 	_prompt.text = (
 		"Reto %d de %d\n%s"
 		% [index + 1, words.size(), ChallengePlanner.situation(words[index], _answers())]
@@ -198,10 +205,13 @@ func _show_word() -> void:
 	_submit.text = "Confirmar"
 	_feedback.text = "Puedes pedir una pista cuando la necesites."
 	var record: Dictionary = GameManager.learning_record(words[index])
-	if GameManager.session.learning_clock + 1 - int(record.last_seen) < LearningProgress.RECALL_GAP:
-		attempt.use_content_help()
-		recall.set_mode(RecallPanel.Mode.BLOCKS, false)
-		_feedback.text = "Vamos a ensayar con piezas. Después usaremos estas palabras en otra ocasión."
+	if not continuing_attempt:
+		_rehearsal = (
+			GameManager.session.learning_clock + 1 - int(record.last_seen)
+			< LearningProgress.RECALL_GAP
+		)
+	if _rehearsal:
+		_feedback.text = "Ensaya por escrito. Esta práctica reciente no añade puntos."
 
 
 func submit() -> void:
@@ -221,6 +231,8 @@ func submit() -> void:
 	var answers: Array[String] = _answers()
 	var correct: bool = true
 	var phase: String = "recall" if recall.mode == RecallPanel.Mode.WRITE else "reconstruction"
+	if _rehearsal and recall.mode == RecallPanel.Mode.WRITE:
+		phase = "practice"
 	for position: int in range(answers.size()):
 		var match_result: Dictionary = WordMatcher.match_word(
 			recall.values()[position], answers[position]
@@ -229,23 +241,30 @@ func submit() -> void:
 		correct = correct and match_result.correct
 	if not correct:
 		attempt.miss()
-		_feedback.text = "Prueba de nuevo o pide una pista. Los errores no quitan puntos."
+		recall.advance_support()
+		_feedback.text = "Practiquemos con apoyo. Este intento no añade puntos."
 		changed.emit()
 		return
 	var before: int = GameManager.session.magic_points
+	var evidence: Dictionary = attempt.evidence(answers)
+	var independent: bool = not attempt.supported and attempt.mistakes == 0 and phase == "recall"
+	for word: String in answers:
+		var detail: Dictionary = evidence[word]
+		independent = (
+			independent
+			and not detail.supported
+			and not detail.spelling
+			and int(detail.mistakes) == 0
+			and detail.phase == "recall"
+		)
 	GameManager.record_learning(
-		answers,
-		phase,
-		attempt.context,
-		attempt.supported,
-		attempt.mistakes,
-		attempt.evidence(answers)
+		answers, phase, attempt.context, attempt.supported, attempt.mistakes, evidence, independent
 	)
 	var gained: int = GameManager.session.magic_points - before
 	_feedback.text = (
 		"Aporte completado · +%d puntos" % gained
 		if gained > 0
-		else "Aporte completado. Esta palabra ya entregó estos puntos."
+		else "Práctica completada. Este intento no añade puntos."
 	)
 	waiting = true
 	_submit.text = "Siguiente" if index + 1 < words.size() else "Terminar tanda"
@@ -265,6 +284,7 @@ func snapshot() -> Dictionary:
 		"index": index,
 		"visit": visit,
 		"waiting": waiting,
+		"rehearsal": _rehearsal,
 		"attempt": attempt.snapshot(),
 		"answer": recall.first.text,
 		"second_answer": recall.second.text,

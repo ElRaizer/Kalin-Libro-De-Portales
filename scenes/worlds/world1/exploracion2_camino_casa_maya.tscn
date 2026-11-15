@@ -77,7 +77,7 @@ sprite_offset = Vector2(0, -32)
 [node name="Ramas" parent="Spots" index="2" instance=ExtResource("2_r")]
 position = Vector2(1650, 642)
 prompt = "Mover con magia"
-lines = Array[String](["¡Las ramas tapan el camino! Las moveré con magia."])
+lines = Array[String](["Puedo apartar estas ramas. Para rehacer los muebles tendré que comprender sus nombres."])
 reach_radius = 190
 blocks_path = true
 reaction = 1
@@ -97,7 +97,7 @@ glow_extents = Vector2(100, 30)
 
 [node name="Silla" parent="Spots" index="4" instance=ExtResource("2_r")]
 position = Vector2(2550, 614)
-lines = Array[String](["Una silla caída. ¡La arreglaré!"])
+lines = Array[String](["Una silla caída. Entre todos volveremos a preparar un lugar para sentarnos."])
 vocabulary_word = "k'áanche'"
 spot_texture = ExtResource("12_r")
 sprite_offset = Vector2(0, -77)

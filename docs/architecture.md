@@ -71,7 +71,8 @@ descubre todas las suites `validate_*.gd` recursivamente.
 | `GridBoard` | Entrada y coordinación de presentación | Traduce eventos de las reglas a señales y efectos del tablero |
 | `PhraseExerciseSession` | Ronda, plan, respuestas, intento y transiciones de mundos 3 y 4 | No conoce controles, GameManager ni archivos |
 | `RecallPanel` | Edición de respuestas, apoyos y bloques | Expone consultas de estado y restauración; los consumidores no consultan banderas privadas |
-| `CountingSession` | Números sorteados, tablilla y errores del nivel de números | Recibe `CountingSet`; no conoce nodos, autoloads ni archivos. Sortea con la semilla guardada. Reglas de puntos, barras, concha y veintenas en `MayaNumeral` |
+| `SpellingCorrection` / `SpellingField` | Alineación de grafías y presentación de huecos | El modelo confirma progreso y valida sus snapshots; la vista conserva foco e inserción de símbolos |
+| `CountingSession` | Plan numérico progresivo, tablilla y errores del nivel de números | Recibe `CountingSet`; no conoce nodos, autoloads ni archivos. Genera con la semilla y conserva el plan en el checkpoint. Reglas de puntos, barras, concha y veintenas en `MayaNumeral` |
 | `AudioManager` | Música y ambiente por escena, efectos por nombre y volumen persistente | Lee `AudioCatalog`; no decide reglas de juego. Ver [Música y efectos](audio.md) |
 | `ScreenLayout` | Base de distribución y perfil compacto | Reaplica la transformación de fase sobre esa base; los controladores no fijan coordenadas del panel |
 
@@ -116,13 +117,20 @@ La navegación captura el origen antes de solicitar un cambio de escena y actual
 el destino de continuación sólo cuando el motor acepta la transición. El retorno
 de una visita también se conserva si la apertura falla.
 
+La repetición conserva `replay_run` en los checkpoints del recorrido. Una transición
+aceptada renueva una sola vez cada capítulo o nivel visitado en ese recorrido;
+volver del menú o de una visita no reinicia los resultados pendientes. No borra
+descubrimientos, economía ni logros generales. Los huecos usan el campo opcional
+`scaffold.corrections` del contrato vigente y validan sus posiciones y letras
+contra la respuesta del recurso antes de restaurarse.
+
 Las especializaciones de exploración agregan datos con `checkpoint_extension()`.
 La exploración base no conoce a `VillageDialogue`.
 
 `ExplorationRoaming` posee la entrada vertical, la marcha articulada y la ruta del
 suelo libre. La escena aporta límites y obstáculos; `VillageGround` calcula rutas
 sin nodos. La posición del pie decide la profundidad. Los checkpoints conservan
-ambos ejes y el destino pendiente. El diario detiene el desplazamiento mientras se consulta.
+ambos ejes y el destino pendiente. Consultar las tarjetas del taller detiene el desplazamiento.
 
 `VillageHabitat` mantiene a Kay dentro del estanque antes de recibir un encargo.
 `VillageUseMotion` toma temporalmente su presentación durante el uso y la devuelve
@@ -202,6 +210,10 @@ Ver [mantenimiento y validación](maintenance.md) para los comandos.
   deterministas. `StoryInteraction` posee el progreso, la presentación y la entrada
   de conocer/adivinar/elegir; expone eventos y snapshots. `StoryScene` conserva los
   momentos, el texto y la navegación; la cinemática permanece en `StoryAnimator`.
+  `StoryBeat` configura gestos y página protagonista como presentación, sin añadir
+  progreso. `AccessibilityManager` conserva `manual_cinematics` con los ajustes de
+  comodidad. `StoryScene` detiene o programa su temporizador al cambiar la
+  preferencia, sin avanzar el momento.
 - `LearningAttempt` posee orientación, apoyo de contenido y evidencia por palabra;
   `LearningProgress` calcula los contadores. `GameSession` confirma resultados.
 - `SpellLaboratory` presenta práctica opcional de contenido conocido; conserva su
@@ -219,12 +231,33 @@ representa la misma imagen al elegir y al regresar. `HomecomingMemory` escucha e
 evento público `beat_presented` sólo en la cinemática de regreso. Los formatos
 anteriores se rechazan y requieren reinicio explícito, sin conversión.
 
+`HomecomingMemory` también presenta el camino añadido al dibujo de casa y el
+libro sobre el escritorio en el último momento. La escena le proporciona la vista
+`completed_drawing`; reconstruye su visibilidad desde el momento narrativo, sin
+otro campo persistido. Su transición respeta pausa, movimiento reducido y opacidad
+de autor. `StoryVignette.finish_reveal()` reconstruye el resultado de la mesa al
+restaurar una historia; el plato se mantiene servido sin repetir la transformación.
+
+`VillageMemory.delivered_moments()` valida destinatarios, combinaciones y marcadores
+de entrega antes de producir recuerdos; `for_animal()` consulta los vividos por un
+habitante. `PortalFarewell` los presenta con un texto de autor como alternativa
+cuando no hay una entrega confirmada para ese amigo. Elegir una expresión en esta
+despedida es práctica apoyada, sin respuesta obligatoria; no cambia la evaluación
+previa del portal ni añade campos al checkpoint.
+
+`CountingProvision` presenta las semillas de una cantidad confirmada del tianguis.
+Se reconstruye desde `CountingSession.waiting` y su objetivo; no posee contadores
+de entregas ni añade recompensas. Su transición pertenece al control y respeta la
+pausa y el movimiento reducido.
+
 La entrega coloca el objeto en su lugar funcional y registra el uso una sola vez.
 Restaurar repone sus datos e imagen. El acomodo libre pertenece al jardín; las
 misiones no añaden elecciones de ubicación ni barras de ajuste obligatorias.
-`VisualCatalog` conserva las poses editables `activity_look`, `activity_reach` y
-`activity_consume` de cada animal. `VillageUseMotion` compone su secuencia, porción,
-apoyos y profundidad; el trabajo vive y se pausa con el resultado del mundo.
+`VisualCatalog` conserva la pose editable `activity_look` de cada animal. Alcanzar
+y consumir utilizan las piezas y puntos de contacto de `SpeciesActionRig`; sus
+recortes completos no son propiedades de las actuaciones vigentes.
+`VillageUseMotion` compone la secuencia, porción, apoyos y profundidad; el trabajo
+vive y se pausa con el resultado del mundo.
 
 
 ## Aldea persistente y economía del formato 9
@@ -259,3 +292,25 @@ de cortesía mantienen la identidad completa del catálogo.
 
 El formato 9 rechaza el 8 y cualquier otra versión sin sobrescribirlos. Requiere
 reinicio explícito; no convierte saldos ni vuelve a pagar objetivos históricos.
+
+La presentación de encargos terminados pertenece a `MissionTaskPreview`, que
+reutiliza `VillageUseMotion` sin confirmar entregas ni resultados educativos.
+`KalinWalker` expone el anclaje de la pose de transporte; la misión posee el objeto
+transportado y lo presenta delante de ese anclaje. Los resultados de UI ajustan las
+capas de `MeaningIllustration` a su espacio; el modo `world_object` conserva la escala
+de los muebles físicos. `SelectionButton` comparte el estado de presión temporal.
+
+Los checkpoints narrativos confirman `complete` al terminar. `SceneNavigator`
+conserva los metadatos de `previous_variation` al guardar una repetición, incluido
+el permiso de omitir una escena ya terminada. No se habilita el salto por reanudar
+ni por pertenecer a una cadena de repetición. Son campos opcionales del formato
+vigente y no sustituyen su estado de avance.
+
+## Recuperación de navegación y cierre
+
+`GameManager.go_to_scene()` conserva el resultado booleano de `SceneNavigator`.
+Los propietarios que bloquean controles o funden la pantalla revierten su
+presentación si el destino se rechaza, conservando checkpoint y continuación.
+El cierre normal sólo se solicita tras un guardado correcto; un error mantiene
+la sesión abierta y el aviso de reintento. No se sobrescribe una partida rechazada
+por versión para permitir el cierre.

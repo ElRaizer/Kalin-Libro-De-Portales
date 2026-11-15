@@ -19,6 +19,7 @@ func configure(target: Node2D, original: Sprite2D, floor_bounds: Rect2, walk_spe
 	body.add_child(walker)
 	original.hide()
 	body.z_index = int(body.position.y)
+	walker.apply_depth(body.position.y, Vector2(bounds.position.y, bounds.end.y))
 
 
 func target(location: Vector2, obstacles: Array[Rect2]) -> void:
@@ -58,6 +59,7 @@ func step(
 		body.position = next
 	body.z_index = int(body.position.y)
 	walker.step(velocity, delta, reduced)
+	walker.apply_depth(body.position.y, Vector2(bounds.position.y, bounds.end.y))
 	return false
 
 

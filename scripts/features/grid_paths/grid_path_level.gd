@@ -69,6 +69,7 @@ func _ready() -> void:
 	_set_default_instruction()
 	_set_mouse_passthrough(dialogue)
 	dialogue.mouse_filter = Control.MOUSE_FILTER_STOP
+	continue_button.mouse_filter = Control.MOUSE_FILTER_STOP
 	continue_button.pressed.connect(_close_dialogue)
 	guide = LearningGuide.install(self, $UI/LevelHeader/Bar, _show_help)
 	# Conserva los estilos y colores de las casas guardados desde el Inspector.
@@ -90,6 +91,15 @@ func _ready() -> void:
 	_name_seed = int(state.get("layout_seed", randi_range(1, 2000000000)))
 	if vary_board:
 		_board_variant = GridReplayLayouts.configure(grid_board, level_number, state, _name_seed)
+		if (
+			not _board_variant.is_empty()
+			and state.has("board_variant")
+			and state.board_variant != _board_variant
+		):
+			# Un checkpoint de otra geometría no puede acreditar las rutas de ésta.
+			state = ReplayVariation.replay_state(state)
+			_attempt.restore({})
+			_saved_scaffold = {}
 	_saved_name_text = (
 		str(state.get("recall_text", "")) if bool(state.get("naming_pending", false)) else ""
 	)
@@ -245,7 +255,7 @@ func _show_word_dialogue(word: GridWordData, word_index: int) -> void:
 	walker.pivot_offset = Vector2(walker.size.x * 0.5, walker.size.y)
 	walker.position = grid_board.cell_to_local_position(word.start_cell)
 	walker.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	$UI.add_child(walker)
+	grid_board.add_traveler(walker, word_index)
 	var route: Array = grid_board.paths[word_index].duplicate()
 	route.append(word.destination_cell)
 	var walk: Tween = walker.create_tween()
@@ -345,8 +355,11 @@ func _on_level_complete() -> void:
 
 
 func _safe_navigate(key: String) -> void:
+	var was_enabled: bool = grid_board.input_enabled
 	grid_board.set_interaction_enabled(false)
-	GameManager.go_to_scene(key)
+	if not GameManager.go_to_scene(key):
+		grid_board.set_interaction_enabled(was_enabled)
+		_set_instr("No se pudo abrir el destino. Puedes reintentar o volver al menú.")
 
 
 func _on_next_level_pressed() -> void:
