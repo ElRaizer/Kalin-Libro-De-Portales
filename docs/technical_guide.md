@@ -626,6 +626,340 @@ al entregar; restaurar carga directamente las poses de uso.
 
 ## Autoría de la continuación
 
+### Favoritos y colocación desde la mesa de trazos
+
+Tras probar un hechizo conocido, **Guardar favorito** conserva esa combinación para
+ensayarla de nuevo. **Comparar con esta** fija una referencia ilustrada mientras se
+elige y prueba otra variante; **Dejar de comparar** la retira. Sólo los favoritos
+se guardan entre visitas. Estas acciones no acreditan recuerdo ni puntos.
+
+`SpellLaboratory.profile` permite sustituir
+[laboratory.tres](../data/village/laboratory.tres). `favorite_limit` ofrece inicialmente
+seis espacios, entre uno y doce; reducirlo no borra favoritos guardados. Retirar uno
+sigue disponible aunque la capacidad esté llena. No modificar el recurso compartido
+en ejecución ni añadir parejas fuera del catálogo para crear preferencias.
+
+**Colocar en mi jardín** abre directamente la vista previa del editor en el barrio
+visitado si ya se tienen los diseños. Si falta alguno, **Revisar compra…** muestra
+qué falta, el precio individual, el total y el saldo. **Confirmar compra** adquiere
+una sola vez todos los diseños faltantes; **Volver al ensayo** o Esc cancela la
+confirmación. El ensayo sigue gratis con saldo insuficiente. Antes del primer
+rincón se conserva la preparación de Mesa y Fuerte y la protección de su presupuesto.
+
+La compra no fabrica muebles. Enter o **Colocar** confirma una posición válida;
+Esc descarta la vista previa y **Deshacer** retira la copia confirmada, conservando
+los diseños. El límite global incluye jardín y almacén. Guardar o cerrar con una
+copia provisional no la añade al archivo; reabrir permite elegirla de nuevo.
+Un fallo al guardar la compra o un favorito conserva saldo y preferencias anteriores.
+
+El cuerpo del laboratorio tiene desplazamiento con seguimiento del foco y mantiene
+sus acciones principales visibles. El perfil
+[spell_laboratory.tres](../data/layouts/spell_laboratory.tres) conserva los ajustes
+compactos. `validate_laboratory_state` comprueba datos y operaciones atómicas;
+`validate_spell_laboratory` recorre interfaz, fallos, continuación y ambos perfiles,
+y admite capturas mediante el ejecutor aislado con `-CaptureDirectory`.
+
+### Nombre, adornos, almacén y acomodos
+
+Desde **Mi jardín**, **Nombre y adornos** abre un borrador del nombre de esa parcela
+y de sus detalles. **Guardar mi rincón** confirma; volver o Esc descarta el borrador.
+El nombre admite hasta 32 caracteres, no cambia claves del juego y puede elegirse
+antes de terminar un proyecto. Su presentación en el mundo admite dos líneas y
+el campo de edición conserva el texto completo.
+
+Terminar **Un lugar para descansar** habilita letrero de bienvenida, borde de flores
+y guirnalda de reunión. Se eligen gratuitamente y por parcela, sin otra tienda ni
+premios por decorar. La guirnalda original aparece al confirmar el proyecto aunque
+el patio ya tuviera nombre; después puede retirarse sin borrar el proyecto vivido.
+
+`VillageHome.garden_profile` permite sustituir
+[garden.tres](../data/village/garden.tres). Configura los títulos, las texturas del
+letrero y del borde, sus rectángulos y el rectángulo del nombre. Los SVG editables
+están en `Arte/aldea/garden_sign.svg` y `Arte/aldea/garden_border.svg`; la guirnalda
+mantiene la configuración de `rest_profile`. `configuration_issues()` revisa campos
+obligatorios y límites. Los adornos son presentación y no añaden obstáculos al suelo.
+
+**Acomodos y copias** explica el límite de 80 copias compartido por los tres jardines
+y el almacén. Mover o guardar no libera capacidad. La lista identifica cada copia
+por número, variante y ubicación. **Eliminar copia** exige confirmación y conserva
+el diseño comprado. Una mesa con plato requiere retirar primero el plato; el dominio
+también protege las referencias de invitados. Entrar a editar conserva el cierre
+seguro de las visitas vigente.
+
+Cada parcela ofrece dos espacios de acomodo. **Guardar aquí** pide confirmación
+antes de guardar o sustituir el espacio: sólo incluye muebles colocados, con sus
+IDs, giros y superficies. **Restaurar** reutiliza esas mismas copias y lleva al
+almacén las que sobren en esa parcela. Si una pieza falta, tiene otra clave o una
+mesa mantiene un plato ajeno, se muestra el motivo y no se aplica ningún cambio.
+Los acomodos históricos permanecen al eliminar una pieza; deshacer la eliminación
+puede volver a habilitarlos. No se busca otra copia parecida para sustituirla.
+
+`composition_slots` ofrece entre uno y dos espacios. Reducirlo no borra los ya
+guardados: permite restaurarlos, pero sólo guardar en los espacios ofrecidos.
+**Deshacer última edición** recupera el jardín anterior durante la visita actual;
+no se conserva al cerrar el programa o cambiar de escena. Fallar una escritura
+conserva también esa posibilidad de reintento. Los IDs emitidos no se reutilizan
+al deshacer, para que un acomodo no termine apuntando a una copia distinta.
+
+`garden_identity` y `garden_compositions` son campos opcionales del formato 9.
+`validate_garden_designs` verifica su validación anidada, conjuntos y límites;
+`validate_garden_personalization` recorre la interfaz, fallos de guardado, foco,
+pausa, carga y ambos perfiles. Admite capturas con el ejecutor aislado y
+`-CaptureDirectory`, como las demás suites de presentación.
+
+### Invitaciones al rincón
+
+Una mesa colocada en el patio ofrece **Invitar a un amigo** al acercarse por
+teclado o al pulsarla. Durante la aventura se puede invitar a Áak o Miis si ya se conocen.
+La visita es gratuita, termina sola y se puede repetir. También se puede despedir
+antes; editar el jardín o cambiar de barrio la termina de forma segura.
+
+El recurso [village_visit_profile.tres](../data/village_visit_profile.tres) configura
+la duración activa (18 segundos inicialmente, entre 8 y 120 en el Inspector) y
+una reacción por invitado. Puede personalizarse desde `VillageHome.visit_profile`
+sin modificar el recurso compartido durante una sesión. Pausa, mapa, libro y
+paneles detienen el reloj. Reanudar conserva el tiempo restante y muestra el uso
+estable, sin volver a representar la llegada ni acreditar aprendizaje.
+
+La compatibilidad es una mesa de cualquier variante canónica en el patio, con
+lateral y ruta libres. Tras el regreso narrativo, el panel agrupa por barrio a los
+once vecinos terrestres conocidos. Kay recibe su merienda desde el estanque.
+Los diseños y las copias conservan sus reglas vigentes. Ampliar tipos de soporte
+requiere revisar la ruta, la pose, el apoyo y su validación.
+
+`validate_village_visit_state` comprueba estado, referencias y tiempo;
+`validate_village_visits` recorre la interfaz, las actuaciones y la continuación.
+La segunda admite capturas con el ejecutor aislado:
+
+```powershell
+.\tools\validate.ps1 -GodotPath $env:GODOT_BIN -Suite validate_village_visits -CaptureDirectory "$PWD/.ui-review/village_visits"
+```
+
+### Proyecto posterior al regreso
+
+Después de confirmar el regreso a casa, el menú ofrece **Volver a mi aldea** y
+anuncia **Un lugar para descansar**. En el patio, su botón o hablar con Áak o Miis
+abre la invitación. No se abre automáticamente al entrar. Repetir la aventura
+conserva el permiso de visita obtenido al vivir el cierre.
+
+El recurso [rest_corner.tres](../data/village/rest_corner.tres) se puede sustituir
+desde `VillageHome.rest_profile`. Incluye tres momentos de invitación, alternativas
+de mesa/silla/hamaca, sus descripciones y reacciones de Áak y Miis, una conversación
+posterior y la posición de la guirnalda. `configuration_issues()` comprueba cobertura
+y textos breves. Las identidades de objeto proceden del vocabulario vigente; no
+se editan para introducir una cuarta alternativa sin sus reglas y pruebas.
+
+**Ir a las opciones** permite probar de inmediato y enfoca la primera opción
+disponible. **Continuar** mantiene el avance de la invitación línea por línea.
+Probar es gratuito y temporal; confirmar no compra muebles ni acredita escritura.
+La decoración propia sigue usando diseños y el presupuesto protegido del rincón
+inicial. Los diálogos avanzan manualmente. Cerrar con Esc o salir conserva el
+momento y la elección. Las reacciones pendientes de lectura se retoman al abrir;
+volver a disfrutar del resultado no lo acredita otra vez.
+
+La guirnalda de `Arte/aldea/corner_garland.svg` aparece en el patio al confirmar y
+su visibilidad se reconstruye desde el proyecto, sin otra bandera de recompensa.
+El recuerdo elegido en la despedida de la aventura mantiene su contrato propio.
+
+`validate_rest_corner_state` verifica el cierre real, alternativas, apoyos,
+economía saturada y rechazo atómico de cargas. `validate_rest_corner` recorre menú,
+lectura, prueba, confirmación, edición, retorno y perfiles de distribución. Admite:
+
+```powershell
+.\tools\validate.ps1 -GodotPath $env:GODOT_BIN -Suite validate_rest_corner -CaptureDirectory "$PWD/.ui-review/postgame_pg2"
+```
+
+### Peticiones de la sala de retos
+
+`VillageHome.challenge_profile` permite sustituir
+[challenges.tres](../data/village/challenges.tres). Sus textos describen la bienvenida
+y las consecuencias de identificar un animal, conversar, preparar un pedido o
+describir una cualidad. El vocabulario y las parejas proceden de los catálogos
+vigentes; el perfil no incorpora otro catálogo de respuestas.
+
+La tanda conserva las parejas y los visitantes concretos. Áak y Miis sólo aparecen
+si ya se conocen y no son la respuesta esperada; en los demás casos acompaña Kalin.
+Antes de responder se ve al interlocutor, sin el objeto o animal que resolvería
+la petición. Tras confirmar aparece el resultado, también al usar ayudas o tener
+el premio saturado. Esc y **Salir y guardar** conservan borrador, bloques y apoyos.
+El área de respuesta admite desplazamiento con seguimiento del foco para que
+las frases largas y sus piezas sigan accesibles en el perfil compacto.
+
+**Llevar al rincón** aparece únicamente si el resultado confirmado corresponde
+al mueble ya elegido para el proyecto pendiente. Se puede colaborar con apoyo;
+confirmar sigue siendo voluntario y la vía directa del proyecto permanece libre.
+No es una entrega de un mueble propio ni añade otra recompensa lingüística.
+
+`validate_challenge_planner` cubre distribución e identidad semántica.
+`validate_challenge_room` comprueba continuidad, apoyos, resultados, colaboración
+y límites económicos, y admite capturas con el ejecutor aislado:
+
+```powershell
+.\tools\validate.ps1 -GodotPath $env:GODOT_BIN -Suite validate_challenge_room -CaptureDirectory "$PWD/.ui-review/postgame_pg3"
+```
+
+### Merienda junto al estanque
+
+Tras el regreso narrativo, la orilla ofrece **Merienda junto al estanque**.
+Elige a Kay, a Ch'íich' o a ambos si ya se conocen, una merienda presentada y un
+rincón sencillo o con flores. **Preparar estas cantidades** fija la selección.
+Antes de iniciarla, cerrar descarta el borrador sin coste; si falla una escritura,
+se conserva la elección o preparación ya confirmada y se puede reintentar.
+
+El plan pide una ración de cinco bocados por invitado: primero una o dos raciones,
+después cinco o diez bocados. La tablilla reutiliza puntos, barras, concha y dos
+pisos. **Pista** explica el reparto; pedir más apoyo prepara el numeral para que el
+jugador lo confirme. No exige velocidad ni escritura independiente. Los apoyos,
+errores, cantidades y respuestas confirmadas se conservan al salir y cargar.
+
+**Reunirnos** confirma el proyecto después de preparar ambas cantidades. Kay come
+desde el agua y Ch'íich' utiliza su cuenco; la provisión es temporal y funciona con
+saldo cero y almacén lleno. El adorno cambia la escena y los datos de su recuerdo.
+**Volver a reunirnos** representa la misma elección gratuitamente, sin repetir
+premios, añadir muebles o alterar el registro de palabras.
+
+`VillageHome.snack_profile` permite sustituir
+[snack.tres](../data/village/snack.tres): título, invitación, reacciones, borde de flores
+y tamaño de la composición. El reparto y las meriendas pertenecen a los catálogos
+cerrados de `SnackState`; no añadir otro invitado sin su actuación y validación.
+`configuration_issues()` comprueba los textos y el arte necesarios. El campo opcional
+`snack_project` mantiene compatibilidad dentro del formato 9, sin migraciones.
+
+### Familias de práctica y modo mixto
+
+La **Sala de retos** abre una selección voluntaria de palabras, cantidades,
+caminos o mixto. Palabras conserva las peticiones y apoyos existentes. Cantidades
+se habilita tras **Las piedras que cuentan** y ofrece dos números; su recurso
+[practice_counting.tres](../data/village/practice_counting.tres) configura la tanda.
+Repetir es gratuito y presenta el plan en el otro orden.
+
+Caminos propone ayudar a un animal conocido a venir a la merienda. Toca casillas
+vecinas desde su ficha hasta la estrella, o mueve el foco con flechas y pulsa Enter.
+Las cruces son rocas. Volver a la casilla anterior recorta; tocar la ficha reinicia.
+**Mostrar ruta de apoyo** dibuja círculos sobre una solución revisada, sin resolver
+el tablero por el jugador. Los borradores guardan variante, animal, cursor, trazo,
+llegada y uso del apoyo. No se generan geometrías nuevas fuera del catálogo.
+
+Mixto alterna las familias disponibles al confirmar el cierre de una tanda o camino.
+Salir conserva la siguiente familia; no obliga a realizar las tres. Cada actividad
+mantiene su propio borrador. Las cantidades y caminos no acreditan evidencia de
+palabras ni puntos lingüísticos; palabras conserva sus contratos de aprendizaje.
+
+El libro está disponible durante las actividades. Al cerrarlo se conserva la pausa
+y el foco del panel de origen. **Salir y guardar** o Esc regresa a la aldea; con el
+libro abierto, Esc cierra primero el libro. Los botones de comprobar, continuar y
+apoyo permanecen visibles mientras el contenido central admite desplazamiento.
+
+`validate_snack_state` verifica planes, límites, datos anidados, confirmación,
+recuerdos y restauración de caminos. `validate_postgame_snack` recorre preparación,
+reunión, contactos, libro, carga real y alternancia de familias; admite capturas con
+el ejecutor aislado y `-CaptureDirectory` en escritorio y compacto.
+
+### La aldea que imaginamos
+
+Después de terminar el descanso y la merienda, la orilla ofrece **La aldea que
+imaginamos**. Prueba **Descanso compartido** y **Reunión de merienda**; cada botón
+representa la alternativa y la deja elegida. Marca uno o dos invitados entre
+Ma'ax, Áak y Miis, si se conocen. **Inaugurar el claro** confirma el estreno y abre
+el terreno seco conectado a la orilla. Si hay muebles bloqueando su entrada, hay
+que apartarlos desde el editor antes de inaugurar; la decisión permanece guardada.
+
+El claro tiene su propio letrero, accesible a pie o con clic, y aparece en la
+tarjeta de la orilla del mapa. Al volver no hay que preparar cantidades otra vez.
+**Cambiar a…** redecora gratuitamente; las casillas permiten invitar a otro grupo
+y **Reunirnos otra vez** representa su uso. El recuerdo del estreno conserva el
+propósito y los participantes originales. Los asientos y alimentos de la reunión
+son temporales, independientes de tus muebles; funciona con saldo cero y almacén
+lleno. Libro, Esc, teclado, movimiento reducido y los dos perfiles siguen disponibles.
+
+Autoría espacial en [spaces.tres](../data/village/spaces.tres), mediante recursos
+`VillageSpaces` / `VillageSpace`. Editar por barrio `floor_bounds`, `plot`,
+`obstacles` y `arrival`; en la orilla, `extension_plot`, `extension_entry`,
+`extension_anchor`, `guest_anchors` y `use_clearance`. La entrada debe solaparse con
+el suelo y la ampliación. Los invitados deben quedar dentro de la parcela nueva;
+la interacción puede situarse en la entrada. Todas las anclas necesitan rutas
+libres. El editor comprueba la huella entera; protege el espacio de
+uso y rechaza cambios que cierren el acceso. Los platos se desplazan con su mesa.
+`configuration_issues()` comprueba la geometría y la suite verifica las rutas.
+Cambiar geometría exige revisar también los jardines persistidos y sus acomodos;
+no editar sólo el dibujo del terreno.
+
+`VillageHome.expansion_profile` permite sustituir
+[expansion.tres](../data/village/expansion.tres): título, invitación, objeto de
+descanso, nombres y descripciones de propósitos, reacciones, color y borde. La
+comida procede de la merienda confirmada. Los actores usan las mismas poses y
+contactos de la aventura; ampliar el reparto exige revisar su actuación.
+
+`village_expansion` es opcional en el formato 9. Guarda pruebas, propósito, grupo,
+confirmación y `opening`, sin nodos ni tiempos de animación. Las decisiones se
+persisten antes de anunciar éxito; si falla una escritura, el panel restaura la
+elección anterior. Cargar no inaugura ni entrega premios. `validate_village_expansion`
+cubre estado, rutas, capacidad, parcelas y recuerdos; `validate_postgame_expansion`
+recorre libro, teclado, estreno, visitas posteriores, rediseño, mapa y carga real,
+con capturas de escritorio y compacto mediante el ejecutor aislado.
+
+### Álbum personal y composición de fotos
+
+Después de una invitación a la mesa o de confirmar el descanso, la merienda o
+el estreno del claro, usa **Componer foto**. En la barra de aldea, **Álbum**
+permite volver a las fotos guardadas o componer la última invitación de esta
+visita aunque ya se haya despedido el invitado. El álbum aparece después del
+regreso narrativo y también al invitar a alguien durante una visita anterior al
+regreso. El borrador se descarta al cerrar.
+
+Escribe un título breve de hasta 32 caracteres, elige un encuadre abierto o
+cercano y quién de los invitados compatibles sale. **Saludo** y **Compartiendo**
+fijan poses. Con movimiento normal, **Ver movimiento** permite recorrer la
+actuación y desmarcar la opción para congelar el instante visible. Con movimiento
+reducido se puede elegir directamente una pose. **Vista limpia** amplía el
+mismo encuadre. Pulsa Esc, Enter o toca la imagen para volver a los controles.
+
+**Guardar foto** agrega la composición al álbum. Si los doce espacios están
+ocupados, elige qué foto quieres sustituir y confirma. También puedes elegir
+**Sustituir…** con espacios disponibles. **Borrar foto…** pide su
+propia confirmación. Después de un error de escritura, se puede reintentar la
+operación con el álbum anterior disponible. La galería y sus acciones admiten
+teclado; al cerrar vuelve el foco a la entrada del álbum o del proyecto.
+
+La presentación reusa los perfiles de jardín, descanso, merienda y ampliación
+de `VillageHome`, con recursos y catálogo vigentes. `validate_personal_album`
+comprueba capacidad, copias y rechazo de datos anidados.
+`validate_postgame_album` recorre las cuatro fuentes, reanudación, cambios del
+jardín, teclado, movimiento reducido, fallos y confirmaciones. La suite admite
+capturas de escritorio y compacto con el ejecutor aislado y `-CaptureDirectory`.
+
+### Vecinos, encuentros y regreso libre
+
+La entrada de aldea y el **Mapa** presentan una oportunidad breve. Puedes seguir
+caminando, entrar al jardín o usar cualquier otro acceso. Acércate al letrero
+**Encuentro** para conversar, o abre el destino desde el mapa. Cada línea avanza
+con **Continuar**. La última permite terminar o aceptar la actividad propuesta.
+**Seguir paseando** y Esc conservan la línea disponible para retomarla. Volver a
+cargar la aldea conserva la selección y no abre una ventana.
+
+`VillageHome.neighbour_profile` permite sustituir
+[neighbours.tres](../data/village/neighbours.tres). Cada `PostgameEncounter` define
+una clave estable, barrio, ubicación transitable, título, condición, interlocutor
+por línea y acceso opcional. Las condiciones vigentes consultan el regreso, el
+descanso, la merienda, el estreno o una invitación concreta. El orden del recurso
+prioriza las propuestas disponibles. Mantener las líneas verdaderas si el proyecto
+se completa antes de volver al encuentro ya elegido. Los saludos generales y los
+comentarios por entregas siguen en el banco editable de `VillageDialogue`.
+
+Tras una merienda confirmada sin Kay, **Invitar a Kay al estanque** sirve la
+comida conocida en el agua. El álbum registra a quien aparece en esa reunión.
+**Reunirnos otra vez** en el claro registra su grupo actual y conserva el grupo
+original del estreno. Mover muebles, cambiar visitantes y elegir otro propósito
+conservan las experiencias anteriores. La aldea mantiene jardín, álbum, práctica,
+mesa de trazos, invitaciones y reuniones accesibles al completar los proyectos.
+
+`validate_neighbourhood` comprueba reparto, condiciones, experiencias, edición
+de autor y checkpoints. `validate_postgame_neighbours` recorre las rutas, la
+orientación, teclado, reanudación y regreso libre, y admite capturas de escritorio
+y compacto mediante el ejecutor aislado.
+
+### Misiones de la aventura
+
 `mission_kind` en la misión selecciona `home`, `party` o `meal` para sus objetivos.
 Los objetos se colocan al entregar y se utilizan sin otro menú obligatorio.
 Los SVG de plaza,

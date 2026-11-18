@@ -43,10 +43,73 @@ static func validate(data: Dictionary) -> Dictionary:
 			return {"_load_error": "El campo '%s' no contiene texto válido." % key}
 	if data.has("economy") and not MagicEconomy.valid_state(data.economy):
 		return {"_load_error": "La economía contiene objetivos o compras inválidos."}
-	if data.has("garden") and not GardenLayout.valid_state(data.garden):
-		return {"_load_error": "La parcela contiene muebles o apoyos inválidos."}
+	if not RestCornerState.valid_state(
+		data.get("rest_corner", RestCornerState.empty_state()),
+		data.get("words_learned", {}),
+		data.get("scene_states", {})
+	):
+		return {"_load_error": "El rincón de descanso contiene elecciones o etapas inválidas."}
 	var economy: Dictionary = data.get("economy", MagicEconomy.empty_state())
 	var known: Dictionary = data.get("words_learned", {})
+	if not LaboratoryState.valid_favorites(data.get("laboratory_favorites", []), known):
+		return {"_load_error": "Los favoritos contienen combinaciones desconocidas o inválidas."}
+	if not PersonalAlbum.valid_state(data.get("personal_album", []), known):
+		return {"_load_error": "El álbum contiene un recuerdo personal inválido."}
+	var rest: Dictionary = data.get("rest_corner", RestCornerState.empty_state())
+	if not SnackState.valid_state(
+		data.get("snack_project", SnackState.empty_state()), known, data.get("scene_states", {})
+	):
+		return {"_load_error": "La merienda contiene invitados, cantidades o resultados inválidos."}
+	var snack: Dictionary = data.get("snack_project", SnackState.empty_state())
+	var homecoming: bool = RestCornerState.has_homecoming(data.get("scene_states", {}))
+	var expansion: Variant = data.get("village_expansion", VillageExpansion.empty_state())
+	if not VillageExpansion.valid_state(expansion, known, rest.complete and snack.complete):
+		return {
+			"_load_error": "La ampliación contiene pruebas, invitados o inauguración inválidos."
+		}
+	if not VillageNeighbours.valid_experiences(
+		data.get("village_experiences", VillageNeighbours.empty_experiences()),
+		known,
+		homecoming,
+		snack.complete,
+		expansion.complete
+	):
+		return {"_load_error": "Las experiencias de aldea contienen habitantes inválidos."}
+	if (
+		data.has("garden")
+		and not GardenLayout.valid_state(
+			data.garden, GameContent.VILLAGE_SPACES, expansion.complete
+		)
+	):
+		return {"_load_error": "La parcela contiene muebles o apoyos inválidos."}
+	if not VillageVisitState.valid_state(
+		data.get("village_visit", {}),
+		data.get("garden", GardenLayout.empty_state()),
+		known,
+		homecoming
+	):
+		return {"_load_error": "La visita contiene un invitado, mueble o tiempo inválido."}
+	if (
+		expansion.complete
+		and not VillageGround.extension_accessible(
+			data.get("garden", GardenLayout.empty_state()),
+			GameContent.VILLAGE_SPACES.space("shore")
+		)
+	):
+		return {"_load_error": "La ampliación no conserva una entrada segura para sus invitados."}
+	if not GardenIdentity.valid_state(data.get("garden_identity", {}), rest.complete):
+		return {"_load_error": "El nombre o los adornos del rincón no son válidos."}
+	var garden: Dictionary = data.get("garden", GardenLayout.empty_state())
+	if not GardenCompositions.valid_state(
+		data.get("garden_compositions", {}),
+		known,
+		int(garden.next_id),
+		GameContent.VILLAGE_SPACES,
+		expansion.complete
+	):
+		return {
+			"_load_error": "Los acomodos guardados contienen posiciones o referencias inválidas."
+		}
 	for field: String in ["awards", "designs"]:
 		for word: String in economy[field]:
 			if word not in known:

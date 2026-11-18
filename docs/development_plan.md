@@ -1,5 +1,47 @@
 # Mejoras de experiencia y mantenimiento
 
+## Plan de ampliación del posjuego — 14 de noviembre de 2026
+
+El [plan de desarrollo del posjuego](postgame_plan.md) define el nuevo alcance
+solicitado: convivencia con muebles, proyectos posteriores al final, sala de retos
+con contexto, creación conectada, personalización, ampliación y álbum. Incluye
+dependencias, tareas identificables, criterios de aceptación y continuidad entre
+sesiones. **PG0–PG9 están implementados y validados.**
+
+La primera entrega jugable permite invitar a Áak o Miis a utilizar una mesa del
+patio, con visita breve que termina sola, pausa y reanudación. La ampliación del
+15 de noviembre integra el regreso voluntario y el primer proyecto de descanso,
+con tres elecciones y una guirnalda. El 16 de noviembre se amplía la sala de retos
+con selección de parejas por historial, visitantes, resultados y colaboración
+voluntaria con el rincón pendiente. PG4.1 conecta favoritos y comparación del laboratorio
+con la compra confirmada de diseños y la colocación gratuita en el jardín.
+PG4.2–PG4.3 añaden nombre y adornos del descanso por parcela, administración de
+copias con deshacer y dos acomodos que reutilizan los mismos muebles y superficies.
+PG5 incorpora la merienda del estanque con Kay y Ch'íich', cantidades con apoyo,
+reunión y recuerdo sin premios duplicados; la sala ofrece palabras, cantidades,
+caminos y mixto con borradores independientes y salida libre.
+PG6 abre un claro seco y decorable dentro de la orilla, con elección entre descanso
+y merienda, pruebas de ambos usos, grupo de estreno e inauguración única. La
+geometría por barrio configura suelo, parcelas, obstáculos, llegada y anclas. Las
+visitas posteriores y la redecoración son gratuitas; el recuerdo original permanece.
+PG7 añade el álbum personal de hasta doce fotos, composición de visitas y
+reuniones, encuadre, elección de invitados, poses y vista limpia. Sustituir o
+borrar pide confirmación. La exportación PNG queda aplazada.
+PG8 amplía las invitaciones a los doce vecinos en sus usos compatibles, vincula
+las conversaciones a lo vivido y añade encuentros breves con acceso desde el
+mapa. El paseo, la decoración y la despedida siguen siendo libres. Se conserva
+la campaña y el cierre vigente, los diseños permanentes, las copias gratuitas y la
+separación entre colaboración y evidencia de aprendizaje. Este alcance amplía la
+decisión anterior de mantener únicamente el proyecto inicial; no exige una campaña
+individual para cada animal ni cambia ahora el formato de guardado.
+
+PG9 cierra el recorrido integrado y documenta las demostraciones aisladas, la
+revisión de escritorio y compacto y el guion de observación. El plan de posjuego
+registra la evidencia y las dependencias externas pendientes. Los apartados
+siguientes conservan las decisiones de entregas anteriores.
+
+## Contexto y estado de las entregas anteriores
+
 La revisión narrativa autorizada el 6 de noviembre de 2026 amplía el cierre de
 octubre: aclara las reglas del libro, desarrolla el arco de Kalin y la ayuda
 recíproca, contextualiza el tianguis y deriva recuerdos de entregas confirmadas.

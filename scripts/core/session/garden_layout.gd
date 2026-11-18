@@ -1,8 +1,6 @@
 extends RefCounted
 class_name GardenLayout
 
-## Coordenadas del suelo de cada parcela; los senderos quedan fuera de este rectángulo.
-const PLOT: Rect2 = Rect2(230, 350, 800, 190)
 const MAX_OBJECTS: int = 80
 
 
@@ -29,21 +27,33 @@ static func footprint(key: String, orientation: int = 0) -> Vector2:
 
 
 static func valid_position(
-	state: Dictionary, id: int, location: Vector2, district: String, orientation: int = -1
+	state: Dictionary,
+	id: int,
+	location: Vector2,
+	district: String,
+	space: VillageSpace,
+	expanded: bool,
+	orientation: int = -1
 ) -> bool:
 	var object: Dictionary = object_by_id(state, id)
-	if object.is_empty() or not is_finite(location.x) or not is_finite(location.y):
+	if space == null or object.is_empty() or not location.is_finite():
 		return false
 	var extent: Vector2 = footprint(
 		object.key, int(object.orientation) if orientation < 0 else orientation
 	)
-	if (
-		district == "shore"
-		and Rect2(location - extent * 0.5, extent).intersects(Rect2(940, 295, 280, 160))
-	):
+	var bounds: Rect2 = Rect2(location - extent * 0.5, extent)
+	for obstacle: Rect2 in space.obstacles:
+		if bounds.intersects(obstacle):
+			return false
+	var enclosed: bool = false
+	for plot: Rect2 in space.plots(expanded):
+		enclosed = enclosed or plot.encloses(bounds)
+	if not enclosed:
 		return false
-	if not PLOT.encloses(Rect2(location - extent * 0.5, extent)):
-		return false
+	if expanded and space.extension_plot.has_point(location):
+		for anchor: Vector2 in space.guest_anchors + [space.extension_anchor]:
+			if bounds.intersects(Rect2(anchor - space.use_clearance * 0.5, space.use_clearance)):
+				return false
 	for other: Dictionary in state.objects:
 		if (
 			int(other.id) == id
@@ -61,7 +71,11 @@ static func valid_position(
 
 
 static func add_object(state: Dictionary, key: String, district: String) -> int:
-	if not CombinationCatalog.allowed(key) or state.objects.size() >= MAX_OBJECTS:
+	if (
+		not CombinationCatalog.allowed(key)
+		or state.objects.size() >= MAX_OBJECTS
+		or int(state.next_id) >= 1000000
+	):
 		return 0
 	var id: int = int(state.next_id)
 	state.next_id = id + 1
@@ -80,10 +94,17 @@ static func add_object(state: Dictionary, key: String, district: String) -> int:
 	return id
 
 
-static func move_object(state: Dictionary, id: int, location: Vector2, district: String) -> bool:
+static func move_object(
+	state: Dictionary,
+	id: int,
+	location: Vector2,
+	district: String,
+	space: VillageSpace,
+	expanded: bool
+) -> bool:
 	if (
 		district not in ["patio", "workshop", "shore"]
-		or not valid_position(state, id, location, district)
+		or not valid_position(state, id, location, district, space, expanded)
 	):
 		return false
 	var object: Dictionary = object_by_id(state, id)
@@ -132,7 +153,7 @@ static func store_object(state: Dictionary, id: int) -> bool:
 	return true
 
 
-static func valid_state(value: Variant) -> bool:
+static func valid_state(value: Variant, spaces: VillageSpaces, expanded: bool = false) -> bool:
 	if value is not Dictionary or value.get("objects") is not Array:
 		return false
 	if not _integer(value.get("next_id"), 1, 1000000) or value.objects.size() > MAX_OBJECTS:
@@ -161,18 +182,32 @@ static func valid_state(value: Variant) -> bool:
 			or not SaveSchema.is_number(object.get("y"))
 		):
 			return false
-		if not PLOT.has_point(point(object)):
+		var inside: bool = false
+		for plot: Rect2 in spaces.space(object.district).plots(expanded):
+			inside = inside or plot.has_point(point(object))
+		if not inside:
 			return false
 		ids.append(int(object.id))
+	var occupied_surfaces: Array[int] = []
 	for object: Dictionary in value.objects:
 		if int(object.support) == 0:
 			if (
 				not object.stored
-				and not valid_position(value, int(object.id), point(object), object.district)
+				and not valid_position(
+					value,
+					int(object.id),
+					point(object),
+					object.district,
+					spaces.space(object.district),
+					expanded
+				)
 			):
 				return false
 			continue
 		var table: Dictionary = object_by_id(value, int(object.support))
+		if int(object.support) in occupied_surfaces:
+			return false
+		occupied_surfaces.append(int(object.support))
 		if (
 			table.is_empty()
 			or int(table.support) != 0

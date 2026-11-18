@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="ExpansionProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/features/village/data/expansion_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")

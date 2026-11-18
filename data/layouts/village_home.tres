@@ -3,7 +3,11 @@
 [resource]
 script = ExtResource("script")
 rectangles = {
-NodePath("UI/Controls/Title"): Rect2(20, 10, 610, 48),
+NodePath("UI/Controls/RestProject"): Rect2(24, 78, 440, 56),
+NodePath("UI/Controls/SnackProject"): Rect2(24, 78, 510, 56),
+NodePath("UI/Controls/ExpansionProject"): Rect2(550, 78, 660, 56),
+NodePath("UI/Controls/Title"): Rect2(20, 10, 500, 48),
+NodePath("UI/Controls/PersonalAlbum"): Rect2(530, 8, 140, 56),
 NodePath("UI/Controls/Book"): Rect2(680, 8, 180, 56),
 NodePath("UI/Controls/Map"): Rect2(875, 8, 180, 56),
 NodePath("UI/Controls/Return"): Rect2(1070, 8, 190, 56),

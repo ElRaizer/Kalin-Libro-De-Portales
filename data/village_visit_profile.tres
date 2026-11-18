@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="VillageVisitProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/features/village/data/village_visit_profile.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+duration = 18.0
+aak_reaction = "Aquí puedo hacer una pausa contigo."
+miis_reaction = "Me gusta este rincón que preparaste para compartir."

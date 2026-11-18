@@ -196,6 +196,9 @@ func apply_comfort_settings() -> void:
 
 
 func _apply_cycle(phase: float) -> void:
+	if _table_layout != null and get_node("/root/AccessibilityManager").reduced_motion:
+		# La mesa accesible tiene una sola pose, también al cambiar la preferencia a mitad del ciclo.
+		phase = 0.5
 	# Calcular cada fotograma desde la base de autor, sin acumular efectos.
 	for control: Control in _authored:
 		control.modulate = Color.WHITE

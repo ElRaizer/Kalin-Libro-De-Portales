@@ -31,6 +31,11 @@ func _ready() -> void:
 	reset_confirmation.confirmed.connect(GameManager.reset_save)
 	_refresh_ui()
 	play_btn.grab_focus()
+	if (
+		GameManager.session.has_finished_adventure()
+		and GameManager.session.resume_scene_key.is_empty()
+	):
+		$UI/VisitButton.grab_focus()
 	GameManager.magic_points_changed.connect(_on_progress_changed)
 	GameManager.level_completed.connect(_on_level_completed)
 	GameManager.progress_reset.connect(_on_progress_reset)
@@ -60,6 +65,25 @@ func _refresh_ui() -> void:
 	$UI/VisitButton.visible = not GameManager.session.words_learned.is_empty()
 	$UI/VisitButton.text = "Mi aldea"
 	$UI/VisitHint.visible = $UI/VisitButton.visible
+	$UI/VisitHint.text = "Explora, crea y practica\na tu ritmo"
+	if GameManager.session.has_finished_adventure():
+		$UI/VisitButton.text = "Volver a mi aldea"
+		$UI/VisitHint.text = (
+			"Nuestro rincón te espera\nExplora, crea y practica"
+			if GameManager.session.rest_corner.complete
+			else "Tus amigos te invitan\nUn lugar para descansar"
+		)
+		if (
+			GameManager.session.rest_corner.complete
+			and not GameManager.session.snack_project.complete
+		):
+			$UI/VisitHint.text = "Nuestro rincón te espera\nMerienda en la orilla"
+		if GameManager.session.expansion_ready():
+			$UI/VisitHint.text = (
+				"Nuestro claro te espera\nCambia, decora e invita"
+				if GameManager.session.village_expansion.complete
+				else "Nuestro rincón te espera\nImagina la orilla"
+			)
 	$UI/Center/VBox/ResetBtn.visible = (
 		GameManager.load_failed
 		or not GameManager.session.words_learned.is_empty()
@@ -73,7 +97,7 @@ func _refresh_ui() -> void:
 	if not GameManager.session.resume_scene_key.is_empty():
 		play_btn.text = "Continuar →"
 	elif next == "main_menu":
-		play_btn.text = "¡Completado! Jugar de nuevo"
+		play_btn.text = "Repetir la aventura"
 	elif (
 		GameManager.session.resume_scene_key.is_empty()
 		and GameManager.session.completed_levels.is_empty()
@@ -95,10 +119,20 @@ func _refresh_ui() -> void:
 			"world2_mission1": "Rincones para compartir",
 			"world3_mission1": "Una fiesta a la medida",
 			"world4_mission1": "Un lugar para volver",
+			"world5_cine1": "Regreso a casa",
 			"village_home": "Tu aldea"
 		}
 		if GameManager.session.resume_scene_key in visits:
 			next_stop.text = "Continuar: " + visits[GameManager.session.resume_scene_key]
+		if (
+			GameManager.session.has_finished_adventure()
+			and GameManager.session.resume_scene_key.is_empty()
+		):
+			next_stop.text = (
+				"Tu aldea · Nuestro rincón"
+				if GameManager.session.rest_corner.complete
+				else "Tu aldea · Un lugar para descansar"
+			)
 
 
 func _refresh_level_buttons() -> void:

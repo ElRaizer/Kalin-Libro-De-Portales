@@ -35,6 +35,9 @@ Reglas automáticas:
   escenas seguidas comparten pieza, la música **no se reinicia**.
 - Los efectos con retraso se procesan en una cola del autoload, sin
   temporizadores que queden pendientes al cerrar el juego.
+- Los deslizadores ajustan el volumen sobre el nivel base de cada bus en
+  `default_bus_layout.tres`. El fundido de escena y la atenuación de música
+  durante una fanfarria conservan ese balance de autor.
 - En las pruebas con `--headless` no hay tarjeta de sonido: `AudioManager` sólo
   registra en `effect_history` lo que sonaría.
 

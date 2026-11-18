@@ -55,6 +55,7 @@ func go_to_scene(key: String) -> bool:
 	if key not in ["main_menu", "village_home", source_key] and not replay_run.is_empty():
 		var destination: Dictionary = _session.scene_states.get(key, {})
 		if destination.get("replay_run", "") != replay_run:
+			_session.archive_deliveries(key, destination)
 			destination = ReplayVariation.replay_state(destination)
 			destination.replay_run = replay_run
 			_session.scene_states[key] = destination
@@ -174,7 +175,9 @@ func replay_scene(key: String) -> bool:
 	# Navegar antes de borrar evita que el checkpoint de salida restaure el estado viejo.
 	if not go_to_scene(key):
 		return false
-	_session.scene_states[key] = ReplayVariation.replay_state(_session.scene_states.get(key, {}))
+	var previous: Dictionary = _session.scene_states.get(key, {})
+	_session.archive_deliveries(key, previous)
+	_session.scene_states[key] = ReplayVariation.replay_state(previous)
 	_session.scene_states[key].replay_run = "%d-%d" % [Time.get_ticks_usec(), randi()]
 	_save.call()
 	return true

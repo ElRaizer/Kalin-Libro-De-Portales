@@ -69,18 +69,60 @@ static func prompt(word: String) -> String:
 	return "Prepara un pedido para la aldea. ¿Cómo se dice %s en maya?" % entry.spanish
 
 
-static func targets(word: String, known: Dictionary) -> Array[String]:
+static func targets(
+	word: String, known: Dictionary, progress: Dictionary = {}, used: Array[String] = []
+) -> Array[String]:
 	if word not in MagicEconomy.design_words():
 		return [word]
+	var candidates: Array[String] = []
 	for id: String in CombinationCatalog.targets():
 		var parts: PackedStringArray = id.split("|", false)
 		if parts.size() != 2 or word not in parts:
 			continue
-		if parts[0] in known and parts[1] in known:
-			var result: Array[String] = []
-			result.assign(parts)
-			return result
+		if (
+			parts[0] in known
+			and parts[1] in known
+			and parts[0] not in used
+			and parts[1] not in used
+		):
+			candidates.append(id)
+	candidates.sort_custom(
+		func(a: String, b: String) -> bool:
+			var left: float = _combination_priority(a, progress)
+			var right: float = _combination_priority(b, progress)
+			return left > right if left != right else a < b
+	)
+	if not candidates.is_empty():
+		var result: Array[String] = []
+		result.assign(candidates[0].split("|", false))
+		return result
 	return [word]
+
+
+## El historial vigente aporta frecuencia y orden; no se inventa un reloj por pareja.
+static func _combination_priority(id: String, progress: Dictionary) -> float:
+	var frequency: int = 0
+	var recency: float = 0.0
+	var priority: float = 0.0
+	for word: String in id.split("|", false):
+		var record: Dictionary = LearningProgress.sanitize(progress.get(word))
+		var count: int = 0
+		for position: int in range(record.contexts.size()):
+			var context_id: String = record.contexts[position]
+			if context_id.get_slice("@", 0) == "challenge_room/" + id:
+				count += 1
+				recency = maxf(recency, 20.0 / (record.contexts.size() - position))
+		frequency = maxi(frequency, count)
+		priority += _priority(record, int(record.last_seen))
+	return priority - frequency * 100.0 - recency
+
+
+static func visitor(answers: Array[String], known: Dictionary, visit: int) -> String:
+	var available: Array[String] = []
+	for animal: String in ["Áak", "Miis"]:
+		if animal in known and animal not in answers:
+			available.append(animal)
+	return available[posmod(visit, available.size())] if not available.is_empty() else ""
 
 
 static func situation(word: String, answers: Array[String]) -> String:

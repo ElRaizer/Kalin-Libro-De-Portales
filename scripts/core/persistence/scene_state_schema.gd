@@ -81,7 +81,9 @@ const OBJECTS := [
 	"board",
 	"memory",
 	"challenge_room",
-	"walk_target"
+	"practice",
+	"walk_target",
+	"neighbourhood"
 ]
 const REPLAY_KEYS := [
 	"complete",

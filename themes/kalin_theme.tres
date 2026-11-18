@@ -433,6 +433,9 @@ KalinStagePanel/base_type = &"Panel"
 KalinStagePanel/styles/panel = SubResource("StoryActorNormal")
 KalinStoryActor/base_type = &"Button"
 KalinStoryActor/colors/font_color = Color(1, 0.98, 0.9, 1)
+KalinActivityLabel/base_type = &"Label"
+KalinActivityLabel/colors/font_color = Color(0.086, 0.294, 0.282, 1)
+KalinActivityLabel/font_sizes/font_size = 24
 KalinStoryActor/colors/font_disabled_color = Color(1, 0.98, 0.9, 1)
 KalinStoryActor/colors/font_focus_color = Color(1, 0.98, 0.9, 1)
 KalinStoryActor/colors/font_hover_color = Color(1, 0.98, 0.9, 1)
@@ -463,3 +466,11 @@ KalinNounButton/styles/hover_pressed = SubResource("GoldButtonPressed")
 KalinAdjectiveButton/styles/hover_pressed = SubResource("GoldButtonPressed")
 
 KalinPrimaryButton/styles/hover_pressed = SubResource("GoldButtonPressed")
+
+KalinGuestChoice/base_type = &"CheckButton"
+KalinGuestChoice/styles/normal = SubResource("GoldButtonNormal")
+KalinGuestChoice/styles/hover = SubResource("GoldButtonHover")
+KalinGuestChoice/styles/pressed = SubResource("GoldButtonPressed")
+KalinGuestChoice/styles/hover_pressed = SubResource("GoldButtonPressed")
+KalinGuestChoice/styles/focus = SubResource("KeyboardFocus")
+KalinGuestChoice/styles/disabled = SubResource("DisabledButton")

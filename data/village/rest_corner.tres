@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="RestCornerProfile" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/features/village/data/rest_corner_profile.gd" id="profile"]
+[ext_resource type="Script" path="res://scripts/features/village/data/rest_corner_option.gd" id="option"]
+[ext_resource type="Texture2D" path="res://Arte/aldea/corner_garland.svg" id="garland"]
+
+[sub_resource type="Resource" id="Table"]
+script = ExtResource("option")
+word = "mayak"
+title = "Una mesa para conversar"
+description = "Podemos hacer una pausa junto a la mesa y contarnos lo que hemos vivido."
+aak_reaction = "Áak: Aquí podemos quedarnos un rato a conversar. Me gusta compartir esta pausa contigo."
+miis_reaction = "Miis: Elegiste reunirnos junto a una mesa. Nuestra guirnalda dará la bienvenida a quienes vengan."
+return_line = "Áak: Nuestro rincón junto a la mesa sigue siendo un buen lugar para conversar."
+
+[sub_resource type="Resource" id="Chair"]
+script = ExtResource("option")
+word = "k'áanche'"
+title = "Una silla para descansar"
+description = "Áak puede descansar sentado mientras Miis se acerca a acompañarlo."
+aak_reaction = "Áak: ¡Qué bien se descansa en esta silla! A veces una pausa pequeña cambia todo el paseo."
+miis_reaction = "Miis: Elegiste un lugar para sentarnos y acompañarnos. La guirnalda dirá que todos son bienvenidos."
+return_line = "Miis: Elegiste una silla para nuestra pausa. Podemos volver a disfrutarla cuando quieras."
+
+[sub_resource type="Resource" id="Hammock"]
+script = ExtResource("option")
+word = "k'áan"
+title = "Una hamaca para relajarse"
+description = "Áak prueba la hamaca y Miis le hace compañía. Podemos descansar a nuestro ritmo."
+aak_reaction = "Áak: Desde esta hamaca el patio se ve distinto. Me quedaré un ratito descansando."
+miis_reaction = "Miis: Elegiste una hamaca para hacer una pausa. Colgaremos una guirnalda para recibirte al volver."
+return_line = "Áak: ¿Recuerdas nuestra pausa en la hamaca? El rincón que elegiste sigue esperándonos."
+
+[resource]
+script = ExtResource("profile")
+homecoming = "Kalin: Me gustaría pasar un rato con mis amigos."
+invitation = "Áak: Preparemos un rincón para hacer una pausa juntos."
+proposal = "Miis: Prueba una mesa, una silla y una hamaca. Tú eliges cuál dejar."
+options = Array[ExtResource("option")]([SubResource("Table"), SubResource("Chair"), SubResource("Hammock")])
+reward_line = "Tu rincón ya tiene una guirnalda de bienvenida. La encontrarás en el patio cada vez que regreses."
+garland = ExtResource("garland")

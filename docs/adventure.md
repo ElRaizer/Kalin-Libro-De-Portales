@@ -358,6 +358,51 @@ con solución comprobada se documentan en [docs/replayability.md](replayability.
 
 ## Plaza y cierre vigentes
 
+Antes del regreso, la aldea permite invitar gratuitamente a Áak o Miis a una mesa del
+patio. El jugador puede acercarse o pulsar la mesa; la visita breve termina sola y
+admite otra invitación después. Los vecinos utilizan una representación anclada
+al mueble, conservando su posición. Pausar o consultar paneles detiene el tiempo;
+guardar y volver conserva la duración restante sin repetir la llegada.
+Este incremento no añade premios educativos ni otra despedida a la campaña.
+Tras vivir el regreso a casa, el menú anuncia **Un lugar para descansar**. El
+jugador acepta la invitación de Áak y Miis cuando lo desee, prueba mesa, silla o
+hamaca y confirma una preferencia. Los objetos de prueba son temporales y gratuitos;
+la decoración permanente conserva sus diseños. Al confirmar queda una guirnalda
+de bienvenida en el patio, con reacciones y conversación posterior según la
+elección. La lectura y la prueba son reanudables; repetir no añade puntos.
+La sala de retos representa pequeñas peticiones de encuentro, conversación y
+preparación, sin mostrar la solución antes de confirmar. Las combinaciones conocidas
+varían según el historial. Una aportación compatible permite llevar voluntariamente
+el mueble elegido al proyecto pendiente, también con apoyo. Las otras prácticas
+siguen teniendo su encuentro o resultado aunque el premio ya esté saturado.
+Los proyectos posteriores al final y su introducción siguen el
+[plan del posjuego](postgame_plan.md).
+
+La mesa de trazos permite guardar combinaciones conocidas como favoritos y comparar
+dos ensayos ilustrados. Desde el resultado se puede pasar directamente a colocarlo
+en el jardín del barrio visitado. Si faltan diseños, se muestran sus precios y una
+confirmación explícita; cancelar conserva el saldo y el ensayo gratuito. Las copias
+sólo se guardan al confirmar su colocación. Favoritos y diseños se conservan al
+volver, sin añadir puntos ni resultados educativos por decorar.
+
+Cada jardín admite un nombre propio. El proyecto de descanso habilita un letrero,
+un borde de flores y la guirnalda de reunión, elegibles sin coste. Desde el editor
+se guardan dos acomodos por parcela y se administran las copias del almacén y del
+jardín. Eliminar una copia libera capacidad y permite deshacer durante la visita;
+conserva el diseño comprado. Los acomodos reutilizan IDs y superficies, sin crear
+muebles: una pieza faltante o un apoyo protegido conserva íntegro el jardín actual.
+
+En la orilla, **Una merienda junto al estanque** permite invitar a Kay y Ch'íich',
+elegir comida conocida y preparar una ración de cinco bocados por invitado con la
+tablilla maya. Los apoyos permiten continuar sin coste. Al confirmar, Kay permanece
+en agua y el ave usa su cuenco; la comida es temporal y el adorno elegido forma
+parte de la reunión y de su recuerdo. Reanudar o repetir no compra ni fabrica muebles.
+
+La sala permite elegir palabras, cantidades, caminos o una alternancia mixta.
+Cada familia conserva su borrador y se puede dejar libremente. La numeración y el
+trazado no se registran como aprendizaje de palabras. Consultar el libro conserva
+la actividad y su pausa. Cantidades se habilita después del nivel de numeración.
+
 Las misiones de Casa, Fiesta y Comida distribuyen los tres grupos en un recorrido
 con profundidad, cámara y espacio entre aportes. Su orden es elegible. Las tarjetas
 del taller reúnen los encargos; los habitantes y los letreros conservan la
@@ -368,7 +413,34 @@ gestos específicos; la comida permanece en un recipiente apoyado, Ma’ax lleva
 su porción con una mano visible, las aves alcanzan el recipiente con el pico y
 Kay recibe desde el agua. La pausa y el movimiento reducido conservan los apoyos.
 
-El formato vigente 9 conserva el recuerdo personal, la economía y el jardín.
+El formato vigente 9 conserva el recuerdo de despedida, la economía y el jardín.
+
+Tras confirmar el descanso y la merienda, **La aldea que imaginamos** propone un
+claro en la orilla. Ma'ax invita a probar descanso compartido y reunión de merienda;
+Kalin elige el primer uso y uno o dos amigos entre Ma'ax, Áak y Miis. Inaugurar abre
+un terreno seco conectado al barrio, con entrada, espacio decorable e interacción
+propia. La elección cambia los objetos y la convivencia visibles. Kay conserva su
+hábitat del estanque.
+
+El mapa reconoce el claro dentro de la orilla. Se puede volver a pie, invitar a otro
+grupo y cambiar el uso sin coste; el recuerdo de la inauguración conserva su grupo
+y elección originales. Los objetos de reunión son temporales y no ocupan el almacén.
+Las visitas posteriores no exigen preparar cantidades otra vez. Salir, consultar
+el libro o cargar conserva las decisiones, sin nuevos premios ni evidencia de palabras.
+
+Las invitaciones a la mesa y las reuniones de descanso, merienda y ampliación
+ofrecen **Componer foto**. El jugador elige título, encuadre, pose y quién de los
+invitados sale en la imagen. **Álbum** permite volver a ver hasta doce fotos,
+sustituirlas o borrarlas con confirmación. Una foto conserva el rincón elegido
+aunque después cambien sus adornos o se retire la mesa. El juego conserva por
+separado el momento elegido en la despedida y el registro de aprendizaje.
+
+Tras el regreso, los once vecinos terrestres conocidos pueden visitar la mesa del
+patio. Kay se reúne con Kalin desde el estanque, incluso si la primera merienda se
+compartió con Ch'íich'. Los saludos retoman invitaciones, entregas y reuniones
+confirmadas según lo que vivió cada personaje. La entrada y el mapa señalan un
+encuentro o proyecto que se puede seguir o dejar para otra visita. Pasear,
+decorar y despedirse conserva el progreso.
 
 Las mejoras del testeo exploratorio de InnovaFest incorporan tarjetas laterales
 de encargos, borradores independientes y un solo objeto transportado. Los avisos

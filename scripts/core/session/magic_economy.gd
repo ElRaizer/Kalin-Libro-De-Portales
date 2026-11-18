@@ -94,3 +94,13 @@ static func can_build(state: Dictionary, id: String, known: Dictionary) -> bool:
 		if word not in known or word not in state.designs:
 			return false
 	return true
+
+
+static func missing_designs(state: Dictionary, id: String) -> Array[String]:
+	var missing: Array[String] = []
+	if not CombinationCatalog.allowed(id):
+		return missing
+	for word: String in id.split("|", false):
+		if word not in state.designs and word not in missing:
+			missing.append(word)
+	return missing

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="GardenProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/features/village/data/garden_profile.gd" id="script"]
+[ext_resource type="Texture2D" path="res://Arte/aldea/garden_sign.svg" id="sign"]
+[ext_resource type="Texture2D" path="res://Arte/aldea/garden_border.svg" id="border"]
+
+[resource]
+script = ExtResource("script")
+composition_slots = 2
+sign_texture = ExtResource("sign")
+border_texture = ExtResource("border")

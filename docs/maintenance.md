@@ -115,3 +115,27 @@ suite que lo admita. Seleccionar una sola suite es obligatorio para este modo:
 
 La partida y las preferencias siguen aisladas. Los errores y advertencias del motor
 mantienen los mismos criterios de fallo que la validación headless.
+
+## Demostraciones del posjuego
+
+El ejecutor usa el motor fijado para abrir el menú real desde un escenario
+preparado por `PostgameFixture`.
+
+```powershell
+.\tools\validate.ps1 -GodotPath $env:GODOT_BIN -Demo regreso
+.\tools\validate.ps1 -GodotPath $env:GODOT_BIN -Demo reanudacion -DemoSessions 2
+```
+
+- `regreso` deja la partida en la cinemática final. En el menú, **Continuar**
+  abre el cierre y **Volver a mi aldea** aparece al completarlo.
+- `reanudacion` deja los tres proyectos confirmados, una foto, una mesa con
+  plato y saldo cero. **Continuar** abre el patio. En **Sala de retos → Mixto**
+  se puede retomar el camino empezado y su apoyo. Cerrar la ventana abre la
+  segunda sesión con la partida de la primera.
+
+El ejecutor retira el perfil de demostración al finalizar. El siguiente comando
+ejecuta el recorrido integrado y guarda las capturas y la mezcla de audio.
+
+```powershell
+.\tools\validate.ps1 -GodotPath $env:GODOT_BIN -Suite validate_postgame_delivery -CaptureDirectory "$PWD/.ui-review/postgame_pg9"
+```

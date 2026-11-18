@@ -2,7 +2,9 @@ param(
     [string]$GodotPath = $env:GODOT_BIN,
     [ValidateRange(10, 1800)][int]$TimeoutSeconds = 180,
     [string]$Suite = "",
-    [string]$CaptureDirectory = ""
+    [string]$CaptureDirectory = "",
+    [ValidateSet("", "regreso", "reanudacion")][string]$Demo = "",
+    [ValidateRange(1, 2)][int]$DemoSessions = 1
 )
 
 $ErrorActionPreference = "Stop"
@@ -32,7 +34,10 @@ function Invoke-Godot {
         $null = $process.Start()
         $stdout = $process.StandardOutput.ReadToEndAsync()
         $stderr = $process.StandardError.ReadToEndAsync()
-        if (-not $process.WaitForExit($LimitSeconds * 1000)) {
+        if ($LimitSeconds -eq 0) {
+            $process.WaitForExit()
+        }
+        elseif (-not $process.WaitForExit($LimitSeconds * 1000)) {
             $process.Kill()
             $process.WaitForExit()
             throw "Godot excedió $LimitSeconds segundos: $($Arguments -join ' ')"
@@ -65,6 +70,12 @@ $actualVersion = $version.Output.Trim()
 if ($version.ExitCode -ne 0 -or $actualVersion -notmatch ("^" + [regex]::Escape($expectedVersion) + '(\.|$)')) {
     throw "Este proyecto requiere Godot $expectedVersion; se encontró $actualVersion."
 }
+if ($Demo -and ($Suite -or $CaptureDirectory)) {
+    throw 'La demostración utiliza el menú normal y no se combina con suites o capturas.'
+}
+if (-not $Demo -and $DemoSessions -ne 1) {
+    throw '-DemoSessions requiere un escenario de demostración.'
+}
 $tests = @(Get-ChildItem -LiteralPath (Join-Path $projectRoot "tests") -Recurse -File -Filter 'validate_*.gd' |
     Sort-Object @{Expression = { if ($_.Name -eq 'validate_project.gd') { 0 } else { 1 } }}, FullName |
     ForEach-Object { "res://" + $_.FullName.Substring($projectRoot.Length + 1).Replace('\', '/') })
@@ -93,6 +104,25 @@ try {
     $importOutput | ForEach-Object { Write-Host $_ }
     if ($importResult.ExitCode -ne 0 -or ($importOutput -join "`n") -match "(?m)^(SCRIPT ERROR:|ERROR:|WARNING:)") {
         throw "Falló la carga del proyecto en el editor."
+    }
+    if ($Demo) {
+        $setup = Invoke-Godot -Arguments @(
+            "--headless", "--path", ".", "--script", "res://tests/support/prepare_postgame_demo.gd",
+            "--", "--demo=$Demo"
+        )
+        $setup.Output | ForEach-Object { Write-Host $_ }
+        if ($setup.ExitCode -ne 0 -or $setup.Output -match "(?m)^(SCRIPT ERROR:|ERROR:|WARNING:)") {
+            throw "No se pudo preparar la demostración '$Demo'."
+        }
+        for ($index = 1; $index -le $DemoSessions; $index++) {
+            Write-Host "Demostración '$Demo'. Sesión $index/$DemoSessions en un perfil aislado."
+            $game = Invoke-Godot -Arguments @("--path", ".") -LimitSeconds 0
+            $game.Output | ForEach-Object { Write-Host $_ }
+            if ($game.ExitCode -ne 0 -or $game.Output -match "(?m)^(SCRIPT ERROR:|ERROR:|WARNING:)") {
+                throw "La sesión de demostración terminó con errores."
+            }
+        }
+        return
     }
     foreach ($test in $tests) {
         Write-Host "Ejecutando $test con Godot $actualVersion"

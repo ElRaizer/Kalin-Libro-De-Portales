@@ -4,6 +4,8 @@ class_name GardenEditor
 signal changed
 signal closed
 signal selection_changed(id: int)
+signal identity_requested(origin: Control)
+signal storage_requested(origin: Control)
 var selected_id: int = 0
 var preview: Vector2 = Vector2(640, 440)
 var district: String = "patio"
@@ -13,6 +15,7 @@ var _dragging: bool = false
 var _drag_offset: Vector2 = Vector2.ZERO
 var _new_id: int = 0
 var _new_before: Dictionary = {}
+var _draft_garden: Dictionary = {}
 var _inventory_mode: String = "copies"
 var _undo: Dictionary = {}
 var _inventory: HBoxContainer
@@ -35,6 +38,10 @@ func _ready() -> void:
 	add_child(tabs)
 	_button(tabs, "Copias gratis", _show_inventory.bind("copies"))
 	_button(tabs, "Mis muebles y almacén", _show_inventory.bind("owned"))
+	var identity_button: Button = _button(tabs, "Nombre y adornos", _open_identity)
+	identity_button.name = "Identity"
+	var storage_button: Button = _button(tabs, "Acomodos y copias", _open_storage)
+	storage_button.name = "Storage"
 	var scroll: ScrollContainer = ScrollContainer.new()
 	_shelf = scroll
 	scroll.position = Vector2(20, 130)
@@ -73,7 +80,7 @@ func open_editor(area: String) -> void:
 	district = area
 	show()
 	refresh()
-	_hint.text = "Elige una copia o un mueble. Flechas para mover; Enter para colocar."
+	_hint.text += " Flechas mueven; Enter coloca."
 	if _inventory.get_child_count() > 0:
 		(_inventory.get_child(0) as Button).grab_focus()
 
@@ -91,12 +98,15 @@ func _button(parent: Control, text: String, action: Callable) -> Button:
 
 
 func refresh() -> void:
-	_hint.text = "Elige una copia o un mueble; no cuesta puntos moverlos."
 	_refresh_tools()
 	for child: Node in _inventory.get_children():
 		_inventory.remove_child(child)
 		child.queue_free()
 	var session: GameSession = GameManager.session
+	_hint.text = (
+		"Copias: %d/%d · Jardines y almacén comparten el límite."
+		% [session.garden.objects.size(), GardenLayout.MAX_OBJECTS]
+	)
 	var shown: Array[String] = []
 	if _inventory_mode == "copies" and not _copy_word.is_empty():
 		_button(_inventory, "← Objetos", _choose_copy_word.bind(""))
@@ -143,22 +153,37 @@ func _choose_copy_word(word: String) -> void:
 	refresh()
 
 
-func new_copy(id: String) -> void:
+func new_copy(id: String) -> bool:
 	cancel()
+	if (
+		not MagicEconomy.can_build(GameManager.session.economy, id, GameManager.learned_words())
+		or (not GameManager.session.economy.built and id != "mayak|chich")
+	):
+		_hint.text = "Construye primero el rincón de Mesa y Fuerte; ensayar sigue siendo gratis."
+		return false
 	_new_before = GameManager.session.garden.duplicate(true)
-	selected_id = GameManager.session.create_garden_object(id, district)
+	_draft_garden = _new_before.duplicate(true)
+	selected_id = GardenLayout.add_object(_draft_garden, id, district)
 	_new_id = selected_id
 	if selected_id != 0:
 		select_object(selected_id)
+		return true
 	else:
+		_draft_garden.clear()
+		_new_before.clear()
 		_hint.text = "El almacén está lleno. Reutiliza uno de tus muebles."
+		return false
+
+
+func _editing_garden() -> Dictionary:
+	return _draft_garden if _new_id != 0 else GameManager.session.garden
 
 
 func select_object(id: int) -> void:
 	if _new_id != 0 and id != _new_id:
 		cancel()
 	selected_id = id
-	var object: Dictionary = GardenLayout.object_by_id(GameManager.session.garden, id)
+	var object: Dictionary = GardenLayout.object_by_id(_editing_garden(), id)
 	if object.is_empty():
 		return
 	preview = GardenLayout.point(object)
@@ -168,11 +193,9 @@ func select_object(id: int) -> void:
 		_preview_art.queue_free()
 	_preview_art = GardenObject.new()
 	add_child(_preview_art)
-	var table: Dictionary = GardenLayout.object_by_id(
-		GameManager.session.garden, int(object.support)
-	)
+	var table: Dictionary = GardenLayout.object_by_id(_editing_garden(), int(object.support))
 	_preview_art.configure(object, true, int(table.get("orientation", 0)))
-	for child: Dictionary in GameManager.session.garden.objects:
+	for child: Dictionary in _editing_garden().objects:
 		if int(child.support) == id:
 			var supported: GardenObject = GardenObject.new()
 			_preview_art.add_child(supported)
@@ -183,12 +206,13 @@ func select_object(id: int) -> void:
 	_update_preview()
 	_refresh_tools()
 	selection_changed.emit(id)
+	(_tools.get_child(0) as Button).grab_focus()
 
 
 func _refresh_tools() -> void:
 	_tabs.visible = not placing
 	_shelf.visible = not placing
-	var object: Dictionary = GardenLayout.object_by_id(GameManager.session.garden, selected_id)
+	var object: Dictionary = GardenLayout.object_by_id(_editing_garden(), selected_id)
 	var word: String = str(object.get("key", "")).get_slice("|", 0)
 	_tools.get_child(0).visible = placing
 	_tools.get_child(1).visible = placing and word in ["k'áanche'", "mayak"]
@@ -229,7 +253,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		var location: Vector2 = get_global_mouse_position()
-		if placing and GardenLayout.PLOT.has_point(location):
+		var inside: bool = false
+		for plot: Rect2 in GameContent.VILLAGE_SPACES.space(district).plots(
+			GameManager.session.village_expansion.complete
+		):
+			inside = inside or plot.has_point(location)
+		if placing and inside:
 			preview = location
 			_dragging = true
 			_drag_offset = Vector2.ZERO
@@ -286,7 +315,13 @@ func _update_preview() -> void:
 		return
 	_preview_art.position = preview
 	var valid: bool = GardenLayout.valid_position(
-		GameManager.session.garden, selected_id, preview, district, _orientation
+		_editing_garden(),
+		selected_id,
+		preview,
+		district,
+		GameContent.VILLAGE_SPACES.space(district),
+		GameManager.session.village_expansion.complete,
+		_orientation
 	)
 	_preview_art.modulate = Color(1, 1, 1, 0.8) if valid else Color(1, 0.5, 0.4, 0.8)
 	_hint.text = (
@@ -308,18 +343,32 @@ func commit() -> void:
 		if selected_id == _new_id
 		else GameManager.session.garden.duplicate(true)
 	)
-	if not GameManager.session.place_garden_object(selected_id, preview, district, _orientation):
+	var accepted: bool = false
+	if _new_id != 0:
+		var key: String = GardenLayout.object_by_id(_draft_garden, _new_id).key
+		selected_id = GameManager.session.place_new_garden_object(
+			key, preview, district, _orientation
+		)
+		accepted = selected_id != 0
+		if not accepted:
+			selected_id = _new_id
+	else:
+		accepted = GameManager.session.place_garden_object(
+			selected_id, preview, district, _orientation
+		)
+	if not accepted:
 		_hint.text = "Busca un espacio libre dentro del jardín."
 		return
 	_undo = before
 	_new_id = 0
 	_new_before.clear()
+	_draft_garden.clear()
 	cancel()
 	refresh()
 
 
 func rotate_selected() -> void:
-	var object: Dictionary = GardenLayout.object_by_id(GameManager.session.garden, selected_id)
+	var object: Dictionary = GardenLayout.object_by_id(_editing_garden(), selected_id)
 	if object.is_empty() or object.key.get_slice("|", 0) not in ["k'áanche'", "mayak"]:
 		_hint.text = "Las sillas y mesas tienen vistas de giro."
 		return
@@ -345,10 +394,24 @@ func support_selected() -> void:
 		if table.district != district:
 			continue
 		var before: Dictionary = GameManager.session.garden.duplicate(true)
-		if GardenLayout.put_on_table(GameManager.session.garden, selected_id, int(table.id)):
+		var accepted: bool = false
+		if _new_id != 0:
+			var key: String = GardenLayout.object_by_id(_draft_garden, _new_id).key
+			var placed: int = GameManager.session.place_new_garden_object(
+				key, preview, district, _orientation, int(table.id)
+			)
+			accepted = placed != 0
+			if accepted:
+				selected_id = placed
+		else:
+			accepted = GardenLayout.put_on_table(
+				GameManager.session.garden, selected_id, int(table.id)
+			)
+		if accepted:
 			_undo = _new_before.duplicate(true) if _new_id != 0 else before
 			_new_id = 0
 			_new_before.clear()
+			_draft_garden.clear()
 			cancel()
 			refresh()
 			return
@@ -370,9 +433,9 @@ func cancel() -> void:
 	placing = false
 	_dragging = false
 	if _new_id != 0 and not _new_before.is_empty():
-		GameManager.session.garden = _new_before.duplicate(true)
 		_new_id = 0
 		_new_before.clear()
+		_draft_garden.clear()
 		selected_id = 0
 	if is_instance_valid(_preview_art):
 		_preview_art.queue_free()
@@ -385,6 +448,38 @@ func undo() -> void:
 	if _undo.is_empty():
 		return
 	cancel()
-	GameManager.session.garden = _undo.duplicate(true)
+	if not GameManager.restore_garden_layout(_undo):
+		_hint.text = "No se pudo deshacer. Conservamos tu jardín y puedes reintentar."
+		return
 	_undo.clear()
 	refresh()
+
+
+func has_undo() -> bool:
+	return not _undo.is_empty()
+
+
+func delete_copy(id: int) -> String:
+	var before: Dictionary = GameManager.session.garden.duplicate(true)
+	var error: String = GameManager.delete_garden_copy(id)
+	if error.is_empty():
+		_undo = before
+		refresh()
+	return error
+
+
+func apply_composition(slot: int) -> String:
+	var before: Dictionary = GameManager.session.garden.duplicate(true)
+	var error: String = GameManager.apply_garden_composition(district, slot)
+	if error.is_empty():
+		_undo = before
+		refresh()
+	return error
+
+
+func _open_identity() -> void:
+	identity_requested.emit(_tabs.get_node("Identity") as Control)
+
+
+func _open_storage() -> void:
+	storage_requested.emit(_tabs.get_node("Storage") as Control)

@@ -45,6 +45,7 @@ var duck_offset_db: float = 0.0:
 		duck_offset_db = value
 		_apply_bus_volumes()
 
+var _bus_trim_db: Dictionary[StringName, float] = {}
 var _music_index: int = 0
 var _ambience_index: int = 0
 var _fade_tweens: Dictionary = {}
@@ -63,6 +64,10 @@ var _scheduled: Array[Dictionary] = []
 
 func _ready() -> void:
 	_silent = AudioServer.get_driver_name() == "Dummy"
+	for bus: StringName in [BUS_MUSIC, BUS_AMBIENCE, BUS_EFFECTS]:
+		var index: int = AudioServer.get_bus_index(bus)
+		if index >= 0:
+			_bus_trim_db[bus] = AudioServer.get_bus_volume_db(index)
 	_load_settings()
 	if not _silent:
 		_effects.play()
@@ -291,7 +296,9 @@ func _set_bus(bus_name: StringName, linear: float, offset_db: float) -> void:
 	if index < 0:
 		return
 	AudioServer.set_bus_mute(index, linear <= 0.001)
-	AudioServer.set_bus_volume_db(index, linear_to_db(maxf(linear, 0.001)) + offset_db)
+	AudioServer.set_bus_volume_db(
+		index, _bus_trim_db.get(bus_name, 0.0) + linear_to_db(maxf(linear, 0.001)) + offset_db
+	)
 
 
 func _load_settings() -> void:

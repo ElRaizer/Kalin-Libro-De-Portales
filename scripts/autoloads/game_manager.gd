@@ -80,10 +80,172 @@ func prepare_sharing_corner() -> bool:
 
 
 func purchase_design(word: String) -> bool:
+	var before: Dictionary = session.snapshot()
 	if not session.purchase_design(word):
 		return false
+	if not _save():
+		session.restore(before)
+		return false
 	magic_points_changed.emit(session.magic_points)
-	_save()
+	return true
+
+
+func purchase_combination_designs(id: String) -> bool:
+	var before: Dictionary = session.snapshot()
+	if not session.purchase_combination_designs(id):
+		return false
+	if not _save():
+		session.restore(before)
+		return false
+	magic_points_changed.emit(session.magic_points)
+	return true
+
+
+func set_laboratory_favorite(id: String, enabled: bool, limit: int) -> bool:
+	var before: Array[String] = session.laboratory_favorites.duplicate()
+	if not session.set_laboratory_favorite(id, enabled, limit):
+		return false
+	if not _save():
+		session.laboratory_favorites = before
+		return false
+	return true
+
+
+func set_garden_identity(district: String, title: String, decorations: Array[String]) -> bool:
+	var before: Dictionary = session.garden_identity.duplicate(true)
+	if not session.set_garden_identity(district, title, decorations):
+		return false
+	if not _save():
+		session.garden_identity = before
+		return false
+	return true
+
+
+func select_snack(guests: Array[String], food: String, decoration: String) -> bool:
+	return _commit_snack_change(session.select_snack.bind(guests, food, decoration))
+
+
+func begin_snack_preparation() -> bool:
+	return _commit_snack_change(session.begin_snack_preparation)
+
+
+func update_snack_preparation(state: Dictionary) -> bool:
+	return _commit_snack_change(session.update_snack_preparation.bind(state))
+
+
+func confirm_snack_project() -> bool:
+	return _commit_snack_change(session.confirm_snack_project)
+
+
+func confirm_village_guest(animal: String) -> bool:
+	return _commit_village_experience(session.confirm_village_guest.bind(animal))
+
+
+func confirm_clearing_reunion() -> bool:
+	return _commit_village_experience(session.confirm_clearing_reunion)
+
+
+func _commit_village_experience(action: Callable) -> bool:
+	var before: Dictionary = session.village_experiences.duplicate(true)
+	if not action.call():
+		return false
+	if not _save():
+		session.village_experiences = before
+		return false
+	return true
+
+
+func try_expansion(purpose: String) -> bool:
+	return _commit_expansion_change(session.try_expansion.bind(purpose))
+
+
+func select_expansion_guests(guests: Array[String]) -> bool:
+	return _commit_expansion_change(session.select_expansion_guests.bind(guests))
+
+
+func inaugurate_expansion() -> bool:
+	return _commit_expansion_change(session.inaugurate_expansion)
+
+
+func _commit_expansion_change(action: Callable) -> bool:
+	var before: Dictionary = session.village_expansion.duplicate(true)
+	if not action.call():
+		return false
+	if not _save():
+		session.village_expansion = before
+		return false
+	return true
+
+
+func _commit_snack_change(action: Callable) -> bool:
+	var before: Dictionary = session.snack_project.duplicate(true)
+	if not action.call():
+		return false
+	if not _save():
+		session.snack_project = before
+		return false
+	return true
+
+
+func save_personal_moment(moment: Dictionary, replacement: int = -1) -> bool:
+	var candidate: Array[Dictionary] = session.album_with_moment(moment, replacement)
+	return not candidate.is_empty() and _commit_personal_album(candidate)
+
+
+func delete_personal_moment(index: int) -> bool:
+	if index not in range(session.personal_moment_count()):
+		return false
+	return _commit_personal_album(session.album_without_moment(index))
+
+
+func _commit_personal_album(candidate: Array[Dictionary]) -> bool:
+	var data: Dictionary = session.snapshot()
+	data.personal_album = candidate
+	if not _write_progress(data):
+		return false
+	session.apply_personal_album(candidate)
+	return true
+
+
+func save_garden_composition(district: String, slot: int, capacity: int) -> bool:
+	var before: Dictionary = session.garden_compositions.duplicate(true)
+	if not session.save_garden_composition(district, slot, capacity):
+		return false
+	if not _save():
+		session.garden_compositions = before
+		return false
+	return true
+
+
+func apply_garden_composition(district: String, slot: int) -> String:
+	var before: Dictionary = session.garden.duplicate(true)
+	var error: String = session.apply_garden_composition(district, slot)
+	if not error.is_empty():
+		return error
+	if not _save():
+		session.garden = before
+		return "No se pudo guardar el acomodo. Conservamos tu jardín anterior; puedes reintentar."
+	return ""
+
+
+func delete_garden_copy(id: int) -> String:
+	var before: Dictionary = session.garden.duplicate(true)
+	var error: String = session.delete_garden_copy(id)
+	if not error.is_empty():
+		return error
+	if not _save():
+		session.garden = before
+		return "No se pudo guardar la eliminación. Conservamos la copia; puedes reintentar."
+	return ""
+
+
+func restore_garden_layout(candidate: Dictionary) -> bool:
+	var before: Dictionary = session.garden.duplicate(true)
+	if not session.replace_garden_layout(candidate):
+		return false
+	if not _save():
+		session.garden = before
+		return false
 	return true
 
 
@@ -175,10 +337,13 @@ func reset_save() -> void:
 
 
 func _save() -> bool:
+	return _write_progress(session.snapshot())
+
+
+func _write_progress(data: Dictionary) -> bool:
 	# No sustituir una partida ilegible por datos vacíos al abrir el menú.
 	if load_failed:
 		return false
-	var data: Dictionary = session.snapshot()
 	var error: Error = _get_save_repository().save_progress(data)
 	_set_save_status(
 		(

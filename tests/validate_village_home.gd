@@ -129,7 +129,13 @@ func _run() -> void:
 	check(
 		not (
 			VillageGround
-			. route(Vector2(100, 560), Vector2(1100, 560), manager.session.garden, "patio")
+			. route(
+				Vector2(100, 560),
+				Vector2(1100, 560),
+				manager.session.garden,
+				"patio",
+				GameContent.VILLAGE_SPACES.space("patio")
+			)
 			. is_empty()
 		),
 		"Sendero transitable con muebles"

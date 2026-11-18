@@ -3,4 +3,4 @@
 [resource]
 script = ExtResource("script")
 minimum_body_font = 26
-font_sizes = {NodePath("Shade/Panel/Content/Title"): 28, NodePath("Shade/Panel/Content/Hint"): 24, NodePath("Shade/Panel/Content/Stage/Seal"): 64}
+font_sizes = {NodePath("Shade/Panel/Content/Title"): 28, NodePath("Shade/Panel/Content/Hint"): 24, NodePath("Shade/Panel/Content/Browse/Body/Stage/Seal"): 64}

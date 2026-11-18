@@ -257,7 +257,29 @@ Ver [docs/adventure.md](docs/adventure.md) para el recorrido ampliado, los apoyo
 ## Mejoras de experiencia
 
 El [plan de implementación](docs/development_plan.md) registra especificaciones, orden,
-estado y criterios de aceptación. Taller y comida conservan el arte SVG y presentan
+estado y criterios de aceptación. El [plan del posjuego](docs/postgame_plan.md)
+detalla la ampliación propuesta de convivencia, proyectos, retos, personalización
+y álbum, con tareas y dependencias para sesiones sucesivas. El primer incremento
+permite invitar a Áak o Miis a una mesa del patio, con visita breve y reanudable;
+el proyecto **Un lugar para descansar** añade una invitación tras el regreso,
+pruebas gratuitas de mesa, silla o hamaca y una guirnalda persistente. La sala de
+retos distribuye parejas conocidas según el historial, representa visitantes y
+resultados, y permite llevar una aportación compatible al rincón pendiente.
+La mesa de trazos guarda favoritos, compara variantes conocidas y abre directamente
+la colocación del jardín, con confirmación de los diseños faltantes y ensayo gratuito.
+Cada parcela admite nombre, adornos del proyecto de descanso y dos acomodos
+guardados. Administrar copias permite liberar capacidad con confirmación y deshacer.
+La merienda del estanque reúne a Kay y Ch'íich' tras preparar cantidades con apoyos.
+El álbum personal permite componer y conservar hasta doce fotos de invitaciones
+y reuniones, independientes del jardín actual y de la despedida de la aventura.
+Tras el regreso, los vecinos recuerdan experiencias confirmadas y el mapa propone
+un encuentro o proyecto que puedes visitar cuando quieras.
+La sala ofrece palabras, cantidades, caminos y mixto con borradores independientes.
+**La aldea que imaginamos** amplía la orilla con un claro transitable y decorable:
+permite probar descanso y merienda, elegir invitados e inaugurar gratuitamente.
+Cambiar el uso o volver a reunirse conserva el recuerdo del estreno, sin repetir
+preparativos ni fabricar copias del jardín.
+Las demás ampliaciones siguen el plan. Taller y comida conservan el arte SVG y presentan
 una petición estable con campos de respuesta verticales. Los paseos permiten
 interpretar fichas conocidas y consultar su traducción. **Mi aldea** ofrece barrios,
 jardín con almacén, mesa de trazos y sala de retos opcional. Las entregas muestran

@@ -48,8 +48,46 @@ func _run() -> void:
 	var limited: Array[String] = ChallengePlanner.select_words({"Miis": known.Miis}, {}, 0)
 	check(limited == ["Miis"], "Con pocos candidatos reduce la tanda sin repetir")
 	_check_context_identity()
+	_check_variety()
 	_check_reward_policy()
 	finish("Selección local y contextos de la sala de retos")
+
+
+func _check_variety() -> void:
+	var known: Dictionary = {"mayak": {}, "mejen": {}, "nojoch": {}, "Áak": {}, "Miis": {}}
+	var first: Array[String] = ChallengePlanner.targets("mayak", known)
+	var progress: Dictionary = {}
+	for word: String in first:
+		var record: Dictionary = LearningProgress.empty_record()
+		LearningProgress.record_result(
+			record, "reconstruction", ChallengePlanner.context(first, 1), true, 1, 1
+		)
+		progress[word] = record
+	var second: Array[String] = ChallengePlanner.targets("mayak", known, progress)
+	check(
+		second != first and second.size() == 2,
+		"Otra pareja conocida toma el relevo de la practicada"
+	)
+	check(
+		ChallengePlanner.targets("mayak", known, progress) == second,
+		"El historial produce una decisión estable"
+	)
+	check(
+		ChallengePlanner.targets("mayak", known, {}, [first[1]]) == second,
+		"Busca otra pareja antes de descartar la combinación por solapamiento"
+	)
+	check(
+		ChallengePlanner.targets("mayak", {"mayak": {}}) == ["mayak"],
+		"No introduce cualidades desconocidas"
+	)
+	check(
+		ChallengePlanner.visitor(["Áak"], known, 1) == "Miis",
+		"El interlocutor no revela el animal buscado"
+	)
+	check(
+		ChallengePlanner.visitor(["Miis"], {"Miis": {}}, 1).is_empty(),
+		"Con una sola palabra usa a Kalin y no presenta animales desconocidos"
+	)
 
 
 func _check_context_identity() -> void:

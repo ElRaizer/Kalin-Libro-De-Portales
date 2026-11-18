@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="VillageNeighbourProfile" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/features/village/data/village_neighbour_profile.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/features/village/data/postgame_encounter.gd" id="2"]
+
+[sub_resource type="Resource" id="Patio"]
+script = ExtResource("2")
+id = "patio_plans"
+location = Vector2(480, 550)
+title = "Una pausa en el patio"
+speakers = Array[String](["Áak", "Miis"])
+lines = Array[String](["Cuando termino de caminar, busco un lugar tranquilo para apoyar las patas.", "A mí me gusta quedarme a conversar. Aquí podemos compartir ideas para nuestro rincón."])
+activity = "rest"
+
+[sub_resource type="Resource" id="Shore"]
+script = ExtResource("2")
+id = "shore_baskets"
+district = "shore"
+location = Vector2(580, 510)
+title = "Preparativos en la orilla"
+condition = "rested"
+speakers = Array[String](["Ch'íich'", "Kay"])
+lines = Array[String](["Desde mi sitio en la orilla puedo ver a Kay. Si traemos una merienda, quiero compartirla con él.", "Yo puedo comer desde el agua. Cuando preparamos la merienda, una porción para cada amigo es suficiente."])
+activity = "snack"
+
+[sub_resource type="Resource" id="Clearing"]
+script = ExtResource("2")
+id = "clearing_sign"
+district = "shore"
+location = Vector2(440, 375)
+title = "Un letrero junto al sendero"
+condition = "snack"
+speakers = Array[String](["Ma'ax", "Ch'íich'"])
+lines = Array[String](["Vine a mirar este lado del sendero. El suelo está seco y tiene espacio para reunirnos.", "Yo traería una merienda otra vez. También podríamos usar el claro para sentarnos un rato."])
+activity = "expansion"
+
+[sub_resource type="Resource" id="Workshop"]
+script = ExtResource("2")
+id = "workshop_visit"
+district = "workshop"
+location = Vector2(495, 520)
+title = "Una idea que trajo Ma’ax"
+condition = "visited"
+visitor = "Ma'ax"
+speakers = Array[String](["Ma'ax", "Báalam"])
+lines = Array[String](["Kalin me invitó al patio. Su invitación me dio ganas de preparar algo para cuando volvamos a vernos.", "Si quieres, podemos empezar por imaginar otro mueble aquí en el taller. Yo me quedo por este rumbo."])
+activity = "laboratory"
+
+[sub_resource type="Resource" id="Album"]
+script = ExtResource("2")
+id = "remember_clearing"
+district = "shore"
+location = Vector2(565, 380)
+title = "Un recuerdo del claro"
+condition = "opening"
+speakers = Array[String](["Ch'íich'", "Kay"])
+lines = Array[String](["Desde la orilla se ve el claro que abrió Kalin. Qué distinto es el sendero ahora que se puede llegar allí.", "También podemos guardar los momentos que elegimos. El estanque y el patio seguirán aquí cuando volvamos."])
+activity = "album"
+
+[resource]
+script = ExtResource("1")
+encounters = Array[ExtResource("2")]([SubResource("Patio"), SubResource("Shore"), SubResource("Clearing"), SubResource("Workshop"), SubResource("Album")])

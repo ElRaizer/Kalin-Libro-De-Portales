@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CountingSet" format=3]
+[ext_resource type="Script" path="res://scripts/features/counting/counting_set.gd" id="script"]
+[resource]
+script = ExtResource("script")
+round_count = 2
+min_value = 1
+max_value = 40
+guided_rounds = 0
+requesters = Array[String](["Kay", "Ch'íich'"])
+request_text = "Semillas para nuestra visita:"

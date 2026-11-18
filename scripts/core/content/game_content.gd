@@ -1,6 +1,8 @@
 extends RefCounted
 class_name GameContent
 
+const VILLAGE_SPACES: VillageSpaces = preload("res://data/village/spaces.tres")
+
 ## Catálogo estático del juego. No contiene estado de la partida ni lógica de
 ## navegación: funciona como fuente única para vocabulario, escenas y arte.
 

@@ -23,11 +23,16 @@ var _rig: SpeciesActionRig
 var _vessel: Sprite2D
 var _stand: Line2D
 var _water_front: Sprite2D
+var _fixed_ground: Vector2 = Vector2.INF
 const FOOD: Array[String] = ["ja'", "ja'as", "ich", "K'úum", "janal"]
 
 
 static func attach(
-	target: Sprite2D, result: MeaningIllustration, word: String, actor_word: String
+	target: Sprite2D,
+	result: MeaningIllustration,
+	word: String,
+	actor_word: String,
+	fixed_ground: Vector2 = Vector2.INF
 ) -> VillageUseMotion:
 	result.set_world_object(true)
 	target.z_index = 1
@@ -48,6 +53,7 @@ static func attach(
 		motion._water_front.z_index = 3
 		motion.add_child(motion._water_front)
 	motion.actor = target
+	motion._fixed_ground = fixed_ground
 	target.set_meta("village_motion", weakref(motion))
 	var habitat_reference: WeakRef = (
 		target.get_meta("village_habitat") as WeakRef
@@ -127,6 +133,13 @@ func receive() -> void:
 		actor.position = actor_home
 		actor.scale = actor_scale
 		actor.rotation = 0.0
+
+
+## Una reunión muestra la provisión común aparte de las porciones que se sirven.
+func use_shared_provision() -> void:
+	if item in FOOD:
+		art.picture.hide()
+		art.world_mat.hide()
 
 
 func _process(delta: float) -> void:
@@ -378,6 +391,10 @@ func _pose(wave: float) -> void:
 
 
 func _adjacent(wave: float) -> void:
+	if _fixed_ground.is_finite():
+		actor.rotation = wave * 0.008
+		_anchor_actor(Vector2(0.5, foot_y), _fixed_ground)
+		return
 	var rect: Rect2 = art.picture_rect()
 	var fraction: float = 0.75 if item == "mayak" else (0.9 if item == "k'áan" else 0.76)
 	var object_width: float = rect.size.x * fraction

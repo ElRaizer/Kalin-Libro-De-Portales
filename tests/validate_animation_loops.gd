@@ -237,8 +237,42 @@ func _check_table_sharing(loop: StoryVignette) -> void:
 			and settings[1].position == resting_plate
 			and loop.prop.size == resting_table
 		),
-		"El resultado accesible mantiene actor, plato y mesa inmóviles"
+		(
+			"El resultado accesible mantiene actor, plato y mesa inmóviles: actor %s, plato %s, mesa %s"
+			% [
+				loop.actor.position - resting_actor,
+				settings[1].position - resting_plate,
+				loop.prop.size - resting_table
+			]
+		)
 	)
+	preferences.set_preference("reduced_motion", previous_reduced)
+	for phase: float in [0.01, 0.075, 0.25, 0.47, 0.8]:
+		preferences.set_preference("reduced_motion", false)
+		loop.show_situation("tamano", true)
+		loop.set_process(false)
+		loop.seek_cycle(loop.cycle_seconds * phase)
+		preferences.set_preference("reduced_motion", true)
+		var frozen_actor: Vector2 = loop.actor.position
+		var frozen_plate: Vector2 = settings[1].position
+		var frozen_size: Vector2 = loop.prop.size
+		loop.seek_cycle(loop.cycle_seconds * 0.5)
+		_check(
+			(
+				loop.actor.position == frozen_actor
+				and settings[1].position == frozen_plate
+				and loop.prop.size == frozen_size
+			),
+			(
+				"Resultado reducido estable desde fase %s: actor %s, plato %s, mesa %s"
+				% [
+					phase,
+					loop.actor.position - frozen_actor,
+					settings[1].position - frozen_plate,
+					loop.prop.size - frozen_size
+				]
+			)
+		)
 	preferences.set_preference("reduced_motion", previous_reduced)
 	loop.show_situation("tamano", true)
 	loop.finish_reveal()

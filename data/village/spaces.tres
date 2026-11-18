@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="VillageSpaces" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/features/village/data/village_spaces.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/features/village/data/village_space.gd" id="2"]
+
+[sub_resource type="Resource" id="Patio"]
+script = ExtResource("2")
+id = "patio"
+
+[sub_resource type="Resource" id="Workshop"]
+script = ExtResource("2")
+id = "workshop"
+
+[sub_resource type="Resource" id="Shore"]
+script = ExtResource("2")
+id = "shore"
+obstacles = Array[Rect2]([Rect2(940, 295, 280, 160)])
+extension_plot = Rect2(210, 215, 440, 105)
+extension_entry = Rect2(330, 300, 140, 65)
+extension_anchor = Vector2(400, 345)
+guest_anchors = Array[Vector2]([Vector2(300, 280), Vector2(560, 280)])
+
+[resource]
+script = ExtResource("1")
+districts = Array[ExtResource("2")]([SubResource("Patio"), SubResource("Workshop"), SubResource("Shore")])

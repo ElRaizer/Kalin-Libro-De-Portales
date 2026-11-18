@@ -282,16 +282,23 @@ func _validate_progress_feedback(manager: Node) -> void:
 
 func _validate_volume() -> void:
 	var previous: float = audio.music_volume
+	var previous_effects: float = audio.effects_volume
+	var layout: AudioBusLayout = load("res://default_bus_layout.tres")
 	audio.set_music_volume(0.5)
-	var index: int = AudioServer.get_bus_index(&"Musica")
-	var expected: float = linear_to_db(0.5) + float(audio.duck_offset_db)
-	if absf(AudioServer.get_bus_volume_db(index) - expected) > 0.01:
-		failures.append("El volumen de la música no se aplicó al bus")
+	audio.set_effects_volume(0.5)
+	for bus: String in ["Musica", "Ambiente", "Efectos"]:
+		var index: int = AudioServer.get_bus_index(bus)
+		var trim: float = float(layout.get("bus/%d/volume_db" % index))
+		var relative: float = float(audio.duck_offset_db) if bus == "Musica" else 0.0
+		var expected: float = trim + linear_to_db(0.5) + relative
+		if absf(AudioServer.get_bus_volume_db(index) - expected) > 0.01:
+			failures.append("El ajuste debe conservar la mezcla base de " + bus)
 	audio.set_muted(true)
 	if not AudioServer.is_bus_mute(0):
 		failures.append("Silenciar debe apagar el bus Master")
 	audio.set_muted(false)
 	audio.set_music_volume(previous)
+	audio.set_effects_volume(previous_effects)
 	await process_frame
 	var config: ConfigFile = ConfigFile.new()
 	if config.load(audio.SETTINGS_PATH) != OK:
